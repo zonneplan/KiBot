@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -15,7 +15,7 @@ Dependencies:
       - InteractiveHtmlBom/InteractiveHtmlBom
       - org_openscopeproject_InteractiveHtmlBom
       - org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom
-    version: 2.4.1.4
+    version: 2.7.0
     downloader: pytool
     id: ibom
 """
@@ -47,7 +47,7 @@ class IBoMOptions(VariantOptions):
             self.hide_silkscreen = False
             """ Hide silkscreen by default """
             self.highlight_pin1 = False
-            """ Highlight pin1 by default """
+            """ [boolean|none,all,selected] Highlight pin1 by default """
             self.no_redraw_on_drag = False
             """ Do not redraw pcb on drag by default """
             self.board_rotation = 0
@@ -145,6 +145,8 @@ class IBoMOptions(VariantOptions):
             self._extra_data_file_guess = True
         if self.extra_data_file:
             self.extra_data_file = self.expand_filename('', self.extra_data_file, 'ibom', 'xml')
+        if isinstance(self.highlight_pin1, bool):
+            self.highlight_pin1 = 'all' if self.highlight_pin1 else 'none'
 
     def get_targets(self, out_dir):
         if self.output:
