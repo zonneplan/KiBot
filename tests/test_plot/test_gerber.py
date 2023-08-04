@@ -150,13 +150,14 @@ def test_gerber_variant_1(test_dir):
     # R3 is a component added to the PCB, included in all cases
     # variant: default     directory: gerber      components: R1, R2 and R3
     check_layers_exist(ctx, 'gerber', prj, ALL_LAYERS, '')
-    check_components(ctx, 'gerber', prj, ['F_Paste', 'F_Adhes'], '', ['C1', 'C2'], ['R1', 'R2', 'R3'])
+    check_components(ctx, 'gerber', prj, ['F_Paste', 'F_Adhes', 'F_Mask'], '', ['C1', 'C2'], ['R1', 'R2', 'R3'])
     # variant: production  directory: production  components: R1, R2, R3 and C2
     check_layers_exist(ctx, 'production', prj, ALL_LAYERS, '_(production)')
-    check_components(ctx, 'production', prj, ['F_Paste', 'F_Adhes'], '_(production)', ['C1'], ['R1', 'R2', 'R3', 'C2'])
+    check_components(ctx, 'production', prj, ['F_Paste', 'F_Adhes', 'F_Mask'], '_(production)', ['C1'],
+                     ['R1', 'R2', 'R3', 'C2'])
     # variant: test        directory: test        components: R1, R3 and C2
     check_layers_exist(ctx, 'test', prj, ALL_LAYERS, '_(test)')
-    check_components(ctx, 'test', prj, ['F_Paste', 'F_Adhes'], '_(test)', ['R2'], ['C1', 'R1', 'R3', 'C2'])
+    check_components(ctx, 'test', prj, ['F_Paste', 'F_Adhes', 'F_Mask'], '_(test)', ['R2'], ['C1', 'R1', 'R3', 'C2'])
     ctx.clean_up(keep_project=True)
 
 

@@ -233,6 +233,8 @@ class Globals(FiltersOptions):
             """ When applying filters and variants remove the solder paste for components that won't be included """
             self.remove_adhesive_for_dnp = True
             """ When applying filters and variants remove the adhesive (glue) for components that won't be included """
+            self.remove_solder_mask_for_dnp = False
+            """ When applying filters and variants remove the solder mask apertures for components that won't be included """
             self.restore_project = False
             """ Restore the KiCad project after execution.
                 Note that this option will undo operations like `set_text_variables` """

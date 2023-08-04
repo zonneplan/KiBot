@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.4] - UNRELEASED
 ### Added
+- Global options:
+  - `remove_solder_mask_for_dnp` similar to `remove_solder_paste_for_dnp` but
+    applied to the solder mask apertures. (#476)
 - BoM:
   - Support for ${field} expansion. (#471)
 - iBoM:

@@ -876,6 +876,7 @@ global:
     - `pcb_material`: [string='FR4'] PCB core material. Currently used for documentation and to choose default colors.
                       Currently known are FR1 to FR5.
     - `remove_adhesive_for_dnp`: [boolean=true] When applying filters and variants remove the adhesive (glue) for components that won't be included.
+    - `remove_solder_mask_for_dnp`: [boolean=false] When applying filters and variants remove the solder mask apertures for components that won't be included.
     - `remove_solder_paste_for_dnp`: [boolean=true] When applying filters and variants remove the solder paste for components that won't be included.
     - `resources_dir`: [string='kibot_resources'] Directory where various resources are stored. Currently we support colors and fonts.
                        They must be stored in sub-dirs. I.e. kibot_resources/fonts/MyFont.ttf
