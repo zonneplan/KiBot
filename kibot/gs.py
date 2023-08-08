@@ -14,6 +14,7 @@ except ImportError:
         IU_PER_MM = 1
         IU_PER_MILS = 1
 from datetime import datetime
+import shlex
 from shutil import copy2
 from sys import exit, exc_info
 from traceback import extract_stack, format_list, print_tb
@@ -189,6 +190,7 @@ class GS(object):
     global_kicad_dnp_applied = None
     global_kicad_dnp_applies_to_3D = None
     global_cross_using_kicad = None
+    pasteable_cmd = shlex.join if hasattr(shlex, 'join') else lambda x: str(x)   # novermin
 
     @staticmethod
     def set_sch(name):

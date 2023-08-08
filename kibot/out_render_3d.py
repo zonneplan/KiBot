@@ -13,7 +13,6 @@ Dependencies:
     role: Automatically crop images
 """
 import os
-import shlex
 import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
@@ -26,7 +25,7 @@ logger = log.get_logger()
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+shlex.join(cmd))
+    logger.debug('- Executing: '+GS.pasteable_cmd(cmd))
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:

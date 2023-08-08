@@ -18,7 +18,6 @@ Dependencies:
 import os
 import re
 import pcbnew
-import shlex
 from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
@@ -851,7 +850,7 @@ class ReportOptions(BaseOptions):
         if not out.endswith('.'+self.convert_to):
             logger.warning(W_WRONGEXT+'The conversion tool detects the output format using the extension')
         cmd = [command, '--from', self.convert_from, resources, fname, '-o', out]
-        logger.debug('Executing: '+shlex.join(cmd))
+        logger.debug('Executing: '+GS.pasteable_cmd(cmd))
         try:
             check_output(cmd, stderr=STDOUT)
         except CalledProcessError as e:

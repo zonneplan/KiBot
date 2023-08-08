@@ -21,7 +21,6 @@ Dependencies:
 import os
 import subprocess
 import pprint
-import shlex
 from shutil import copy2
 from math import ceil
 from struct import unpack
@@ -144,7 +143,7 @@ a:hover, a:active { text-decoration: underline;}
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+shlex.join(cmd))
+    logger.debug('- Executing: '+GS.pasteable_cmd(cmd))
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:

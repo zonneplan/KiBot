@@ -14,7 +14,6 @@ import os
 import re
 from sys import exit
 from sys import path as sys_path
-import shlex
 from shutil import which, copy2
 from subprocess import run, PIPE, STDOUT, Popen, CalledProcessError
 from glob import glob
@@ -154,7 +153,7 @@ def _run_command(command, change_to):
 
 
 def run_command(command, change_to=None, just_raise=False, use_x11=False):
-    logger.debug('Executing: '+shlex.join(command))
+    logger.debug('Executing: '+GS.pasteable_cmd(command))
     if change_to is not None:
         logger.debug('- CWD: '+change_to)
     try:
@@ -176,7 +175,7 @@ def run_command(command, change_to=None, just_raise=False, use_x11=False):
 
 
 def exec_with_retry(cmd, exit_with=None):
-    cmd_str = shlex.join(cmd)
+    cmd_str = GS.pasteable_cmd(cmd)
     logger.debug('Executing: '+cmd_str)
     if GS.debug_level > 2:
         logger.debug('Command line: '+str(cmd))

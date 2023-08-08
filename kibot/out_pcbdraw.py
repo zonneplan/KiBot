@@ -19,7 +19,6 @@ Dependencies:
     role: Automatically adjust SVG margin
 """
 import os
-import shlex
 import subprocess
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
@@ -52,7 +51,7 @@ def _get_tmp_name(ext):
 
 
 def _run_command(cmd):
-    logger.debug('Executing: '+shlex.join(cmd))
+    logger.debug('Executing: '+GS.pasteable_cmd(cmd))
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:

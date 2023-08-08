@@ -34,7 +34,6 @@ import os
 import subprocess
 import importlib
 from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
-import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .error import KiPlotConfigurationError
@@ -73,7 +72,7 @@ def pcbdraw_warnings(tag, msg):
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+shlex.join(cmd))
+    logger.debug('- Executing: '+GS.pasteable_cmd(cmd))
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
