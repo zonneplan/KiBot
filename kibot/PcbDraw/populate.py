@@ -28,7 +28,7 @@ from .plot import find_data_file, get_global_datapaths
 
 PKG_BASE = os.path.dirname(__file__)
 
-def parse_pcbdraw(lexer: Any, m: re.Match[str], state: Any=None) -> Any:
+def parse_pcbdraw(lexer: Any, m: re.Match, state: Any=None) -> Any:
     text = m.group(1)
     side, components = text.split("|")
     components = list(map(lambda x: x.strip(), components.split(",")))
@@ -56,7 +56,7 @@ class PcbDrawInlineLexer(InlineParser): # type: ignore
 
     # This method is invoked by the old mistune API (i.e. v0.8.4)
     # For the new API we register `parse_pcbdraw`
-    def output_pcbdraw(self, m: re.Match[str]) -> Any:
+    def output_pcbdraw(self, m: re.Match) -> Any:
         _, side, components = parse_pcbdraw(self, m)
         return self.renderer.pcbdraw(side, components)
 
