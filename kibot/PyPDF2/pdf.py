@@ -47,15 +47,8 @@ import struct
 import sys
 import uuid
 from sys import version_info
-if version_info < ( 3, 0 ):
-    from cStringIO import StringIO
-else:
-    from io import StringIO
-
-if version_info < ( 3, 0 ):
-    BytesIO = StringIO
-else:
-    from io import BytesIO
+from io import StringIO
+from io import BytesIO
 
 from . import utils
 import warnings
@@ -64,13 +57,7 @@ from .generic import *
 from .utils import readNonWhitespace, readUntilWhitespace, ConvertFunctionsToVirtualList
 from .utils import b_, formatWarning, isString, ord_, str_, u_
 
-if version_info < ( 2, 4 ):
-   from sets import ImmutableSet as frozenset
-
-if version_info < ( 2, 5 ):
-    from md5 import md5
-else:
-    from hashlib import md5
+from hashlib import md5
 import uuid
 
 

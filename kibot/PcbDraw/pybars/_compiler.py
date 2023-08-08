@@ -42,23 +42,6 @@ __all__ = [
     ]
 
 __metaclass__ = type
-
-
-# This allows the code to run on Python 2 and 3 by
-# creating a consistent reference for the appropriate
-# string class
-try:
-    str_class = unicode
-except NameError:
-    # Python 3 support
-    str_class = str
-
-# backward compatibility for basestring for python < 2.3
-try:
-    basestring
-except NameError:
-    basestring = str
-
 # Flag for testing
 debug = False
 
@@ -169,8 +152,8 @@ path ::= [ "path" [<pathseg>:segment]] => ("simple", segment)
  | [ "path" [<pathseg>+:segments] ] => ("complex", u"resolve(context, u'" + u"', u'".join(segments) + u"')" )
 complexarg ::= [ "path" [<pathseg>+:segments] ] => u"resolve(context, u'" + u"', u'".join(segments) + u"')"
     | [ "subexpr" ["path" <pathseg>:name] [<arg>*:arguments] ] => u'resolve_subexpr(helpers, "' + name + '", context' + (u', ' + u', '.join(arguments) if arguments else u'') + u')'
-    | [ "literalparam" <anything>:value ] => {str_class}(value)
-arg ::= [ "kwparam" <anything>:symbol <complexarg>:a ] => {str_class}(symbol) + '=' + a
+    | [ "literalparam" <anything>:value ] => {str}(value)
+arg ::= [ "kwparam" <anything>:symbol <complexarg>:a ] => {str}(symbol) + '=' + a
     | <complexarg>
 pathseg ::= "/" => ''
     | "." => ''
@@ -178,7 +161,7 @@ pathseg ::= "/" => ''
     | "this" => ''
 pathseg ::= <anything>:symbol => u''.join(symbol)
 """  # noqa: E501
-compile_grammar = compile_grammar.format(str_class=str_class.__name__)
+compile_grammar = compile_grammar.format(str=str.__name__)
 
 
 class PybarsError(Exception):
@@ -190,22 +173,13 @@ class strlist(list):
 
     """A quasi-list to let the template code avoid special casing."""
 
-    def __str__(self):  # Python 3
+    def __str__(self):
         return ''.join(self)
-
-    def __unicode__(self):  # Python 2
-        return u''.join(self)
 
     def grow(self, thing):
         """Make the list longer, appending for unicode, extending otherwise."""
-        if type(thing) == str_class:
+        if type(thing) == str:
             self.append(thing)
-
-        # This will only ever match in Python 2 since str_class is str in
-        # Python 3.
-        elif type(thing) == str:
-            self.append(unicode(thing))  # noqa: F821 undefined name 'unicode'
-
         else:
             # Recursively expand to a flat list; may deserve a C accelerator at
             # some point.
@@ -238,15 +212,8 @@ def pick(context, name, default=None):
     try:
         return context[name]
     except (KeyError, TypeError, AttributeError):
-        if isinstance(name, basestring):
-            try:
-                exists = hasattr(context, name)
-            except UnicodeEncodeError:
-                # Python 2 raises UnicodeEncodeError on non-ASCII strings
-                pass
-            else:
-                if exists:
-                    return getattr(context, name)
+        if isinstance(name, str) and hasattr(context, name):
+            return getattr(context, name)
         if hasattr(context, 'get'):
             return context.get(name)
         return default
@@ -291,13 +258,8 @@ class Scope:
     def __len__(self):
         return len(self.context)
 
-    # Added for Python 3
     def __str__(self):
         return str(self.context)
-
-    # Only called in Python 2
-    def __unicode__(self):
-        return unicode(self.context)  # noqa: F821 undefined name 'unicode'
 
 
 def resolve(context, *segments):
@@ -357,11 +319,11 @@ def prepare(value, should_escape):
         return u''
     type_ = type(value)
     if type_ is not strlist:
-        if type_ is not str_class:
+        if type_ is not str:
             if type_ is bool:
                 value = u'true' if value else u'false'
             else:
-                value = str_class(value)
+                value = str(value)
         if should_escape:
             value = escape(value)
     return value
@@ -554,10 +516,10 @@ class CodeBuilder:
         # Ensure the result is a string and not a strlist
         if len(self.stack) == 0:
             self._result.grow(u"    if called:\n")
-            self._result.grow(u"        result = %s(result)\n" % str_class.__name__)
+            self._result.grow(u"        result = %s(result)\n" % str.__name__)
         self._result.grow(u"    return result\n")
 
-        source = str_class(u"".join(lines))
+        source = str(u"".join(lines))
 
         self._result = self.stack and self.stack[-1][0]
         self._locals = self.stack and self.stack[-1][1]
@@ -819,7 +781,7 @@ class Compiler:
             A tuple of (function, source_code)
         """
 
-        if not isinstance(source, str_class):
+        if not isinstance(source, str):
             raise PybarsError("Template source must be a unicode string")
 
         source = self.whitespace_control(source)
