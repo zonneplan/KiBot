@@ -294,7 +294,7 @@ def check_pip():
 
 
 def pip_install(pip_command, dest=None, name='.'):
-    cmd = [pip_command, 'install', '-U', '--user', '--no-warn-script-location']
+    cmd = [pip_command, 'install', '-U', '--no-warn-script-location']
     if name == '.':
         # Applied only when installing a downloaded tarball
         # This is what --user means, but Debian's pip installs to /usr/local when used by root
@@ -364,8 +364,11 @@ def pytool_downloader(dep, system, plat):
     if not pip_install(pip_command, dest=dest):
         return None, None
     rmtree(dest)
+    full_name = os.path.join(site.USER_BASE, 'bin', dep.command)
+    if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
+        full_name = os.path.join(site.USER_BASE, 'local', 'bin', dep.command)
     # Check it was successful
-    return check_tool_binary_version(os.path.join(site.USER_BASE, 'bin', dep.command), dep, no_cache=True)
+    return check_tool_binary_version(full_name, dep, no_cache=True)
 
 
 def python_downloader(dep):
@@ -700,7 +703,11 @@ def check_tool_binary_python(dep):
     logger.debugl(2, '- Looking for tool `{}` at Python user site ({})'.format(dep.command, base))
     full_name = os.path.join(base, dep.command)
     if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
-        return None, None
+        base = os.path.join(site.USER_BASE, 'local', 'bin')
+        full_name = os.path.join(base, dep.command)
+        if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
+            return None, None
+        # WTF! ~/.local/local/bin??!! Looks like a Debian bug
     return check_tool_binary_version(full_name, dep)
 
 

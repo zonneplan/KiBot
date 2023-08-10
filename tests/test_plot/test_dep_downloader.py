@@ -53,7 +53,8 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         logging.debug('Result: {} Version: {}'.format(res, version))
         with open(ctx.get_out_path('caplog.txt'), 'wt') as f:
             f.write(caplog.text)
-        assert res == os.path.join(home, b_dir, dep.command)
+        full_name = os.path.join(home, b_dir, dep.command)
+        assert res == full_name or res == full_name.replace('/bin', '/local/bin')
         # We executed the file
 
 
