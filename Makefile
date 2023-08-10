@@ -43,7 +43,7 @@ test_tmp: lint
 
 # lint
 test:
-	rm -rf output
+	rm -rf output .cache
 	rm -f example.kiplot.yaml
 	rm -f example.kibot.yaml
 	rm -f tests/.local
