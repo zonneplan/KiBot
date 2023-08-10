@@ -60,13 +60,14 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
 def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name):
     # Note: every attempt to install in a chosen dir failed, even when the module was there and in the sys.path the
     # importlib call miserably failed.
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)
     with monkeypatch.context():
         # Refresh the module with actual dependencies
         mod = importlib.reload(downloader)
         mod.register_deps('test', yaml.safe_load(docstring))
         # Get the dependency
         dep = mod.used_deps['test:'+name_dep]
+        logging.info(f"downloader_name: {downloader_name}")
         # Download it
         cov.load()
         cov.start()

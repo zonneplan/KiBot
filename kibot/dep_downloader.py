@@ -294,7 +294,7 @@ def check_pip():
 
 
 def pip_install(pip_command, dest=None, name='.'):
-    cmd = [pip_command, 'install', '-U', '--no-warn-script-location']
+    cmd = [pip_command, 'install', '-U', '--user', '--no-warn-script-location']
     if name == '.':
         # Applied only when installing a downloaded tarball
         # This is what --user means, but Debian's pip installs to /usr/local when used by root
@@ -302,20 +302,28 @@ def pip_install(pip_command, dest=None, name='.'):
                     # If we have an older version installed don't remove it
                     '--ignore-installed'])
     cmd.append(name)
-    logger.debug('- Running: {}'.format(cmd))
-    try:
-        res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
-        logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
-    except subprocess.CalledProcessError as e:
-        logger.debug('- Failed to install `{}` using pip (cmd: {} code: {})'.format(name, e.cmd, e.returncode))
-        if e.output:
-            logger.debug('- Output from command: '+e.output.decode())
-        if e.stderr:
-            logger.debug('- StdErr from command: '+e.stderr.decode())
-        return False
-    except Exception as e:
-        logger.debug('- Failed to install `{}` using pip ({})'.format(name, e))
-        return False
+    retry = True
+    while retry:
+        logger.debug('- Running: {}'.format(cmd))
+        retry = False
+        try:
+            res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
+            logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
+        except subprocess.CalledProcessError as e:
+            logger.debug('- Failed to install `{}` using pip (cmd: {} code: {})'.format(name, e.cmd, e.returncode))
+            if e.output:
+                logger.debug('- Output from command: '+e.output.decode())
+            if e.stderr:
+                logger.debug('- StdErr from command: '+e.stderr.decode())
+            if not retry and b'externally-managed-environment' in e.stderr:
+                # PEP 668 ... and the broken Python packaging concept
+                retry = True
+                cmd.insert(-1, '--break-system-packages')
+            else:
+                return False
+        except Exception as e:
+            logger.debug('- Failed to install `{}` using pip ({})'.format(name, e))
+            return False
     return True
 
 
@@ -365,6 +373,7 @@ def python_downloader(dep):
     # Check if we have pip and wheel
     pip_command = check_pip()
     if pip_command is None:
+        logger.error('No pip command available!')
         return False
     # Try to pip install it
     if not pip_install(pip_command, name=dep.pypi_name.lower()):
@@ -788,7 +797,7 @@ def check_tool_python(dep, reload=False):
             res = importlib.reload(reload)
         return res, ver
     except ModuleNotFoundError:
-        pass
+        logger.error(f'Pip failed for {dep.module_name}')
     return None, None
 
 
