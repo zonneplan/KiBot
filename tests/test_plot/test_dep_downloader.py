@@ -156,7 +156,11 @@ def test_dep_python(test_dir, caplog, monkeypatch):
     try:
         import engineering_notation
         logging.debug('Test module is already installed, using pip to uninstall ...')
-        subprocess.run(['pip', 'uninstall', '-y', 'engineering-notation'])
+        cmd = ['pip', 'uninstall', '-y', 'engineering-notation']
+        res = subprocess.run(cmd, capture_output=True)
+        if res.returncode == 1 and b'externally-managed-environment' in res.stderr:
+            cmd.insert(-1, '--break-system-packages')
+            res = subprocess.run(cmd, capture_output=True)
         # Why pip does this???!!!
         dir_name = os.path.dirname(engineering_notation.__file__)
         if os.path.isdir(dir_name):
