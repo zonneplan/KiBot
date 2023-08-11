@@ -351,15 +351,23 @@ def main():
     # Now enable the plug-in
     addon_utils.enable("pcb2blender_importer")
     # Import the PCB3D file
-    bpy.ops.pcb2blender.import_pcb3d(filepath=PCB3D_file, pcb_material=args.pcb_material,
-                                     import_components=args.no_components,
-                                     add_solder_joints=args.solder_joints,
-                                     center_pcb=args.dont_center,
-                                     merge_materials=args.dont_merge_materials,
-                                     enhance_materials=args.dont_enhance_materials,
-                                     cut_boards=args.dont_cut_boards,
-                                     stack_boards=args.dont_stack_boards,
-                                     texture_dpi=args.texture_dpi)
+    ops = {"filepath": PCB3D_file, "pcb_material": args.pcb_material, "import_components": args.no_components,
+           "add_solder_joints": args.solder_joints, "center_pcb": args.dont_center,
+           "merge_materials": args.dont_merge_materials, "enhance_materials": args.dont_enhance_materials,
+           "cut_boards": args.dont_cut_boards, "stack_boards": args.dont_stack_boards, "texture_dpi": args.texture_dpi}
+    try:
+        bpy.ops.pcb2blender.import_pcb3d(**ops)
+        retry = False
+    except TypeError as e:
+        if "center_pcb" in str(e):
+            retry = True
+        else:
+            raise
+    if retry:
+        # An innocent change in a name and ... we have to do all this mess
+        del ops["center_pcb"]
+        ops["center_boards"] = args.dont_center
+        bpy.ops.pcb2blender.import_pcb3d(**ops)
     # Apply the scene first scene
     c_views = apply_scene(args.scene)
     c_formats = len(args.format)
