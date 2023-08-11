@@ -326,8 +326,8 @@ class BoMXLSX(BoMLinkable):
             """ *Enable Specs worksheet creation. Contains specifications for the components.
                 Works with only some KiCost APIs """
             self.specs_columns = BoMColumns
-            """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
-                'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+            """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+                references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                 Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
                 '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size' """
             self.logo_scale = 2

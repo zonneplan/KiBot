@@ -174,8 +174,8 @@ class PanelizeTabs(PanelOptionsWithPlugin):
             self.spacing = 10
             """ [number|string] The maximum spacing of the tabs. Used for *spacing* """
             self.cutout = 1
-            """ [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
-                ensure that a sharp corner of the pocket can be milled. Used for *full* """
+            """ [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
+                depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full* """
             self.tabfootprints = 'kikit:Tab'
             """ The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma """
             self.tab_footprints = None

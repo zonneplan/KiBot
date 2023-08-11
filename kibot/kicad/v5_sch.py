@@ -769,7 +769,7 @@ class SchematicField(object):
         self.flags = "%04x" % ((int(self.flags) & 0xFFFE) | v)
 
     def is_visible(self):
-        return not(int(self.flags, 16) and 1)
+        return not (int(self.flags, 16) and 1)
 
     def get_height(self):
         """ Font height in mm """

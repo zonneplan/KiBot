@@ -46,8 +46,8 @@ class GerberOptions(AnyLayerOptions):
             """ Disable aperture macros (workaround for buggy CAM software) (KiCad 6) """
         super().__init__()
         # Gerbers are always 1:1
-        del(self.scaling)
-        del(self.individual_page_scaling)
+        del self.scaling
+        del self.individual_page_scaling
         self._plot_format = PLOT_FORMAT_GERBER
         if GS.global_output is not None:
             self.gerber_job_file = GS.global_output

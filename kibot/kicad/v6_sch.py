@@ -1180,7 +1180,7 @@ class SchematicComponentV6(SchematicComponent):
 
     def write(self, exp_hierarchy, cross):
         lib_id = self.lib_id
-        is_crossed = not(self.fitted or not self.included)
+        is_crossed = not (self.fitted or not self.included)
         native_cross = GS.ki7 and GS.global_cross_using_kicad
         dnp = False if native_cross else self.kicad_dnp
         if cross and (self.lib or self.local_name) and is_crossed:

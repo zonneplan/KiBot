@@ -951,7 +951,7 @@ def generate_one_example(dest_dir, types):
             if types and n not in types:
                 logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
-            if ((not(o.is_pcb() and GS.pcb_file) and not(o.is_sch() and GS.sch_file)) or
+            if ((not (o.is_pcb() and GS.pcb_file) and not (o.is_sch() and GS.sch_file)) or
                ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file))):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
