@@ -7,11 +7,11 @@ RUN     dpkg --remove kicost kibot && \
 	apt-get -y install --no-install-recommends curl unzip python3-pip && \
 	curl https://codeload.github.com/INTI-CMNB/KiBot/zip/refs/heads/dev --output pp.zip && \
 	unzip pp.zip && \
-	pip3 install --no-compile KiBot-dev/ && \
+	pip3 install --break-system-packages --no-compile KiBot-dev/ && \
 	rm -rf KiBot-dev pp.zip && \
 	curl https://codeload.github.com/hildogjr/KiCost/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
-	pip3 install KiCost-master/ && \
+	pip3 install --break-system-packages KiCost-master/ && \
 	apt-get -y remove curl unzip python3-pip && \
 	rm -rf KiCost-master pp.zip && \
 	rm -rf /var/lib/apt/lists/*
@@ -20,5 +20,5 @@ RUN     dpkg --remove kicost kibot && \
 # 	dpkg --remove kiauto && \
 # 	curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip && \
 # 	unzip pp.zip && \
-# 	pip3 install KiAuto-master/ && \
+# 	pip3 install --break-system-packages KiAuto-master/ && \
 # 	rm -rf KiAuto-master/ pp.zip && \
