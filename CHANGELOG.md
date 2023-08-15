@@ -17,6 +17,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (#470)
 - Blender export:
   - Support for pcb2blender v2.6 (Blender 3.5.1)
+- Populate:
+  - Basic support for regular list items (#480)
 
 ### Fixed
 - Rotated polygons and text used in the worksheet (#466)

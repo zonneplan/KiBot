@@ -61,15 +61,17 @@ class PcbDrawInlineLexer(InlineParser): # type: ignore
         return self.renderer.pcbdraw(side, components)
 
 
-def Renderer(BaseRenderer, initial_components: List[str]): # type: ignore
+def Renderer(BaseRenderer, initial_components: List[str], format: str): # type: ignore
     class Tmp(BaseRenderer): # type: ignore
-        def __init__(self, initial_components: List[str]) -> None:
+        def __init__(self, initial_components: List[str], format: str) -> None:
             super(Tmp, self).__init__(escape=False)
             self.items: List[Dict[str, Any]]= []
             self.current_item: Optional[Dict[str, Any]] = None
             self.active_side: str = "front"
             self.visited_components: List[str] = initial_components
             self.active_components: List[str] = []
+            self.found_step = False
+            self.format = format
 
         def append_comment(self, html: str) -> None:
             if self.current_item is not None and self.current_item["type"] == "steps":
@@ -103,6 +105,8 @@ def Renderer(BaseRenderer, initial_components: List[str]): # type: ignore
             self.active_side = side
             self.visited_components += components
             self.active_components = components
+            # We found a step, this isn't a regular item
+            self.found_step = True
             return ""
 
         def block_code(self, children: str, info: Optional[str]=None) -> Any:
@@ -120,15 +124,22 @@ def Renderer(BaseRenderer, initial_components: List[str]): # type: ignore
             self.append_comment(retval)
             return retval
 
+        def name_head(self, name: str, code: str):
+            if format != "html":
+                return code
+            # Add a name to this heading so it can be referenced
+            name = name.lower().replace(' ', '-')
+            return f'<a name="{name}">{code}</a>'
+
         def heading(self, children: str, level: int) -> Any:
             retval = super(Tmp, self).heading(children, level)
-            self.append_comment(retval)
+            self.append_comment(self.name_head(children, retval))
             return retval
 
         # Mistune 0.8.4 API
         def header(self, text: str, level: int, raw: Optional[str]=None) -> Any:
             retval = super(Tmp, self).header(text, level, raw)
-            self.append_comment(retval)
+            self.append_comment(self.name_head(text, retval))
             return retval
 
         # Mistune 0.8.4 API
@@ -143,9 +154,19 @@ def Renderer(BaseRenderer, initial_components: List[str]): # type: ignore
             return retval
 
         def list(self, text: Any, ordered: bool, level: Any=None, start: Any=None) -> str:
-            return ""
+            if not text:
+                return ""
+            retval = super(Tmp, self).list(text, ordered, level, start)
+            if level == 1:
+                # Add the result from the list when finished and only if not empty
+                self.append_comment(retval)
+            return retval
 
         def list_item(self, text: str, level: Any=None) -> str:
+            if not self.found_step:
+                # If we don't have an image for this step assume this is a regular list
+                return super(Tmp, self).list_item(text, level)
+            # Add a step
             step = {
                 "side": self.active_side,
                 "components": self.visited_components,
@@ -153,6 +174,8 @@ def Renderer(BaseRenderer, initial_components: List[str]): # type: ignore
                 "comment": text
             }
             self.append_step(deepcopy(step))
+            # Reset the flag
+            self.found_step = False
             return ""
 
         def paragraph(self, text: str) -> Any:
@@ -164,7 +187,7 @@ def Renderer(BaseRenderer, initial_components: List[str]): # type: ignore
             retval = super(Tmp, self).table(header, body)
             self.append_comment(retval)
             return retval
-    return Tmp(initial_components)
+    return Tmp(initial_components, format)
 
 def load_content(filename: str) -> Tuple[Optional[Dict[str, Any]], str]:
     header = None
@@ -263,9 +286,7 @@ def prepare_params(params: List[str]) -> List[str]:
 # Added for Kibot
 # The rendender selection, they are imported here
 def create_renderer(format, initial_components):
-    if format == "html":
-        return Renderer(HTMLRenderer, initial_components) # type: ignore
-    return Renderer(mdrenderer.MdRenderer, initial_components) # type: ignore
+    return Renderer(HTMLRenderer if format == "html" else mdrenderer.MdRenderer, initial_components, format) # type: ignore
 
 
 # The helper to look for a file, to avoid pulling LXML from pcbdraw

@@ -63,6 +63,9 @@ list item is considered as a single step in populating and will generate an
 image. The content of the item is the step description. See
 [example](../tests/data/plain_html.md).
 
+**Note**: list items without an explicit step will be processed as regular list items.
+Avoid mixing regular list items and steps in the same list.
+
 To specify which side of the board and which components to add and highlight start the item with a clause in form:
 
 ```
