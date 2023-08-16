@@ -110,6 +110,9 @@ outputs:
       # [boolean=true] Add a default light when none specified.
       # The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB
       add_default_light: true
+      # [number=1.1] Value to multiply the Z axis coordinate after computing the automatically generated camera.
+      # Used to avoid collision of the camera and the object
+      auto_camera_z_axis_factor: 1.1
       # [dict] Options for the camera.
       # If none specified KiBot will create a suitable camera.
       # If no position is specified for the camera KiBot will look for a suitable position
@@ -124,6 +127,12 @@ outputs:
         pos_z: 0
         # [string='perspective'] [perspective,orthographic,panoramic] Type of camera
         type: 'perspective'
+      # [string=''] Default value for the `file_id` in the `point_of_view` options.
+      # Use something like '_%03d' for animations
+      default_file_id: ''
+      # [boolean=false] When using the automatically generated camera and multiple points of view this option computes the camera
+      # position just once. Suitable for videos
+      fixed_auto_camera: false
       # [dict|list(dict)] Options for the light/s
       light:
         # [number=0] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful
@@ -214,8 +223,8 @@ outputs:
         texture_dpi: 1016.0
       # [dict|list(dict)] How the object is viewed by the camera
       point_of_view:
-        # [string=''] String to diferentiate the name of this view.
-        # When empty we use the `view`
+        # [string=''] String to diferentiate the name of this point of view.
+        # When empty we use the `default_file_id` or the `view`
         - file_id: ''
           # [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees]
           rotate_x: 0
@@ -223,6 +232,11 @@ outputs:
           rotate_y: 0
           # [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees]
           rotate_z: 0
+          # [number=1] [1-1000] Generate this amount of steps using the rotation angles as increments.
+          # Use a value of 1 (default) to interpret the angles as absolute.
+          # Used for animations. You should define the `default_file_id` to something like
+          # '_%03d' to get the animation frames
+          steps: 1
           # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
           # Compatible with `render_3d`
           view: 'top'
@@ -556,8 +570,8 @@ outputs:
         # [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
         # Works with only some KiCost APIs
         specs: false
-        # [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
-        # 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+        # [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+        # references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
         # Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
         # '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'
         specs_columns:
@@ -1882,8 +1896,8 @@ outputs:
             arg: ''
             # [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*
             code: ''
-            # [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
-            # ensure that a sharp corner of the pocket can be milled. Used for *full*
+            # [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
+            # depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full*
             cutout: 1
             # [number=1] Number of tabs in the horizontal direction. Used for *fixed*
             hcount: 1

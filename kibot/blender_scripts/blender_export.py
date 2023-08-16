@@ -20,9 +20,12 @@ import sys       # to get command line args
 import addon_utils
 import bpy
 
-X_AXIS = 0
-Y_AXIS = 1
-Z_AXIS = 2
+# X_AXIS = 0
+# Y_AXIS = 1
+# Z_AXIS = 2
+X_AXIS = 'X'
+Y_AXIS = 'Y'
+Z_AXIS = 'Z'
 VALID_FORMATS = {'fbx': 'Filmbox, proprietary format developed by Kaydara (owned by Autodesk)',
                  'obj': 'geometry definition format developed by Wavefront Technologies. Currently open',
                  'x3d': 'VRML successor. A royalty-free ISO/IEC standard for declaratively representing 3D graphics.',
@@ -70,38 +73,26 @@ def render_export(render_path):
     bpy.ops.render.render(write_still=True)
 
 
-def rot(axis, deg):
-    bpy.context.active_object.rotation_euler[axis] = math.radians(deg)
-
-
-def do_rotate(scene, name, id):
-    rotate = scene.get(name)
-    if rotate:
-        rot(id, rotate)
+def do_rotate(rots):
+    bpy.ops.transform.rotate(value=math.radians(-rots[0]), orient_axis='X', center_override=(0, 0, 0))
+    bpy.ops.transform.rotate(value=math.radians(-rots[1]), orient_axis='Y', center_override=(0, 0, 0))
+    bpy.ops.transform.rotate(value=math.radians(-rots[2]), orient_axis='Z', center_override=(0, 0, 0))
 
 
 def do_point_of_view(scene, name):
     view = scene.get(name)
     if view is None or view == 'z':
-        return
+        return (0, 0, 0)
     if view == 'Z':
-        rot(Y_AXIS, 180)
-        return
+        return (0, 180, 0)
     if view == 'y':
-        rot(X_AXIS, -90)
-        return
+        return (-90, 0, 0)
     if view == 'Y':
-        rot(X_AXIS, 90)
-        rot(Z_AXIS, 180)
-        return
+        return (90, 0, 180)
     if view == 'x':
-        rot(Y_AXIS, 90)
-        rot(Z_AXIS, 90)
-        return
+        return (0, 90, 90)
     if view == 'X':
-        rot(Y_AXIS, -90)
-        rot(Z_AXIS, -90)
-        return
+        return (0, -90, -90)
 
 
 def srgb_to_linearrgb(c):
@@ -191,18 +182,19 @@ def create_background_gradient(color1, color0):
 jscene = None
 auto_camera = False
 cam_ob = None
+cur_rot = None
+location = None
 
 
-def apply_scene(file, n_view=0):
+def apply_start_scene(file):
     # Loads scene
     if not file:
         return 1
     global jscene
-    if jscene is None:
-        with open(file, 'rt') as f:
-            text = f.read()
-            print(text)
-            jscene = json.loads(text)
+    with open(file, 'rt') as f:
+        text = f.read()
+        print(text)
+        jscene = json.loads(text)
     scene = bpy.context.scene
 
     # Select the board
@@ -210,72 +202,77 @@ def apply_scene(file, n_view=0):
     bpy.ops.object.select_all(action='SELECT')
     # Make sure we start rotations from 0
     bpy.context.active_object.rotation_euler = (0, 0, 0)
+    global location
+    location = bpy.context.active_object.location.copy()
     povs = jscene.get('point_of_view')
     if povs:
-        pov = povs[n_view]
+        global cur_rot
+        pov = povs[0]
         # Apply point of view
-        do_point_of_view(pov, 'view')
+        cur_rot = do_point_of_view(pov, 'view')
         # Apply extra rotations
-        do_rotate(pov, 'rotate_x', 0)
-        do_rotate(pov, 'rotate_y', 1)
-        do_rotate(pov, 'rotate_z', 2)
+        cur_rot = (cur_rot[0] + pov.get('rotate_x', 0),
+                   cur_rot[1] + pov.get('rotate_y', 0),
+                   cur_rot[2] + pov.get('rotate_z', 0))
+        print(f'- Initial rotations: {cur_rot}')
+        do_rotate(cur_rot)
 
     # Add a camera
     global auto_camera
-    if not n_view:
-        # First time: create the camera
-        camera = jscene.get('camera')
-        if not camera:
+    # First time: create the camera
+    camera = jscene.get('camera')
+    if not camera:
+        auto_camera = True
+        name = 'kibot_camera'
+        pos = (0.0, 0.0, 10.0)
+        type = 'PERSP'
+    else:
+        name = camera.get('name', 'unknown')
+        pos = camera.get('position', None)
+        type = camera.get('type', 'PERSP')
+        if pos is None:
             auto_camera = True
-            name = 'kibot_camera'
-            pos = (0.0, 0.0, 10.0)
-            type = 'PERSP'
+            pos = (0, 0, 0)
         else:
-            name = camera.get('name', 'unknown')
-            pos = camera.get('position', None)
-            type = camera.get('type', 'PERSP')
-            if pos is None:
-                auto_camera = True
-                pos = (0, 0, 0)
-            else:
-                auto_camera = False
-        print(f"- Creating camera {name} at {pos}")
-        cam_data = bpy.data.cameras.new(name)
-        global cam_ob
-        cam_ob = bpy.data.objects.new(name=name, object_data=cam_data)
-        scene.collection.objects.link(cam_ob)  # instance the camera object in the scene
-        scene.camera = cam_ob       # set the active camera
-        cam_ob.location = pos
-        cam_ob.data.type = type
+            auto_camera = False
+    print(f"- Creating camera {name} at {pos}")
+    cam_data = bpy.data.cameras.new(name)
+    global cam_ob
+    cam_ob = bpy.data.objects.new(name=name, object_data=cam_data)
+    scene.collection.objects.link(cam_ob)  # instance the camera object in the scene
+    scene.camera = cam_ob       # set the active camera
+    cam_ob.location = pos
+    cam_ob.data.type = type
+
     if auto_camera:
         print('- Changing camera to focus the board')
         bpy.ops.view3d.camera_to_view_selected()
-        cam_ob.location = (cam_ob.location[0], cam_ob.location[1], cam_ob.location[2]*1.1)
+        cam_ob.location = (cam_ob.location[0], cam_ob.location[1],
+                           cam_ob.location[2]*jscene.get('auto_camera_z_axis_factor', 1.1))
 
     # Add lights
-    if not n_view:
-        # First time: create the lights
-        lights = jscene.get('lights')
-        if lights:
-            for light in lights:
-                name = light.get('name', 'unknown')
-                pos = light.get('position', (0.0, 0.0, 0.0))
-                typ = light.get('type', 'SUN')
-                energy = light.get('energy', 0.0)
-                print(f"- Creating light {name} at {pos}, type: {typ} energy: {energy}")
-                light_data = bpy.data.lights.new(name, typ)
-                print(f"- Default energy: {light_data.energy}")
-                if energy:
-                    light_data.energy = energy
-                light_ob = bpy.data.objects.new(name=name, object_data=light_data)
-                scene.collection.objects.link(light_ob)
-                light_ob.location = pos
+    # First time: create the lights
+    lights = jscene.get('lights')
+    if lights:
+        for light in lights:
+            name = light.get('name', 'unknown')
+            pos = light.get('position', (0.0, 0.0, 0.0))
+            typ = light.get('type', 'SUN')
+            energy = light.get('energy', 0.0)
+            print(f"- Creating light {name} at {pos}, type: {typ} energy: {energy}")
+            light_data = bpy.data.lights.new(name, typ)
+            print(f"- Default energy: {light_data.energy}")
+            if energy:
+                light_data.energy = energy
+            light_ob = bpy.data.objects.new(name=name, object_data=light_data)
+            scene.collection.objects.link(light_ob)
+            light_ob.location = pos
 
     bpy.context.view_layer.update()
 
     # Setup render options
     render = jscene.get('render')
-    if render and not n_view:
+    if render:
         scene.cycles.samples = render.get('samples', 10)
         r = scene.render
         r.engine = 'CYCLES'
@@ -289,6 +286,43 @@ def apply_scene(file, n_view=0):
         else:
             create_background_gradient(render.get('background1', '#66667F'), render.get('background2', '#CCCCE5'))
     return len(povs)
+
+
+def apply_scene(n_view):
+    global jscene
+    if jscene is None:
+        return
+
+    # Make sure we start rotations from 0
+    povs = jscene.get('point_of_view')
+    if povs:
+        global cur_rot
+        pov = povs[n_view]
+        # Apply point of view
+        new_rot = do_point_of_view(pov, 'view')
+        # Apply extra rotations
+        new_rot = (new_rot[0] + pov.get('rotate_x', 0),
+                   new_rot[1] + pov.get('rotate_y', 0),
+                   new_rot[2] + pov.get('rotate_z', 0))
+        if new_rot != cur_rot:
+            print(f'- Rotations: {new_rot}')
+            # Reset the position
+            bpy.context.active_object.location = location.copy()
+            # Reset the rotation
+            bpy.context.active_object.rotation_euler = (0, 0, 0)
+            # Apply the new rotation
+            do_rotate(new_rot)
+            cur_rot = new_rot
+
+    # Move the camera
+    global auto_camera
+    if auto_camera and not jscene.get('fixed_auto_camera', False):
+        print('- Changing camera to focus the board')
+        bpy.ops.view3d.camera_to_view_selected()
+        cam_ob.location = (cam_ob.location[0], cam_ob.location[1],
+                           cam_ob.location[2]*jscene.get('auto_camera_z_axis_factor', 1.1))
+
+    bpy.context.view_layer.update()
 
 
 EXPORTERS = {'fbx': fbx_export,
@@ -369,7 +403,7 @@ def main():
         ops["center_boards"] = args.dont_center
         bpy.ops.pcb2blender.import_pcb3d(**ops)
     # Apply the scene first scene
-    c_views = apply_scene(args.scene)
+    c_views = apply_start_scene(args.scene)
     c_formats = len(args.format)
     if c_formats % c_views:
         print("The number of outputs must be a multiple of the views (views: {} outputs: {})".format(c_views, c_formats))
@@ -378,7 +412,7 @@ def main():
     for n in range(c_views):
         if n:
             # Apply scene N
-            apply_scene(args.scene, n)
+            apply_scene(n)
         # Get the current slice
         formats = args.format[n*per_pass:(n+1)*per_pass]
         outputs = args.output[n*per_pass:(n+1)*per_pass]

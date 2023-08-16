@@ -13,6 +13,7 @@ Dependencies:
 """
 import json
 import os
+import re
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
@@ -26,6 +27,7 @@ from . import log
 
 logger = log.get_logger()
 bb = None
+RE_FILE_ID = re.compile(r"\%\d*d")
 
 
 def get_board_size():
@@ -207,10 +209,14 @@ class BlenderPointOfViewOptions(Optionable):
             """ *[top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
                 Compatible with `render_3d` """
             self.file_id = ''
-            """ String to diferentiate the name of this view.
-                When empty we use the `view` """
+            """ String to diferentiate the name of this point of view.
+                When empty we use the `default_file_id` or the `view` """
+            self.steps = 1
+            """ [1-1000] Generate this amount of steps using the rotation angles as increments.
+                Use a value of 1 (default) to interpret the angles as absolute.
+                Used for animations. You should define the `default_file_id` to something like
+                '_%03d' to get the animation frames """
         self._unknown_is_error = True
-        self._file_id = ''
 
     def config(self, parent):
         super().config(parent)
@@ -218,9 +224,14 @@ class BlenderPointOfViewOptions(Optionable):
         view = self._views.get(self.view, None)
         if view is not None:
             self.view = view
-        self._file_id = self.file_id
-        if not self._file_id:
-            self._file_id = '_'+self._rviews.get(self.view)
+
+    def get_view(self):
+        return self._rviews.get(self.view, 'no_view')
+
+    def increment(self, inc):
+        self.rotate_x += inc.rotate_x
+        self.rotate_y += inc.rotate_y
+        self.rotate_z += inc.rotate_z
 
 
 class PCB3DExportOptions(Base3DOptionsWithHL):
@@ -304,6 +315,15 @@ class Blender_ExportOptions(BaseOptions):
             """ [dict] Options for the camera.
                 If none specified KiBot will create a suitable camera.
                 If no position is specified for the camera KiBot will look for a suitable position """
+            self.fixed_auto_camera = False
+            """ When using the automatically generated camera and multiple points of view this option computes the camera
+                position just once. Suitable for videos """
+            self.auto_camera_z_axis_factor = 1.1
+            """ Value to multiply the Z axis coordinate after computing the automatically generated camera.
+                Used to avoid collision of the camera and the object """
+            self.default_file_id = ''
+            """ Default value for the `file_id` in the `point_of_view` options.
+                Use something like '_%03d' for animations """
             self.render_options = BlenderRenderOptions
             """ *[dict] Controls how the render is done for the `render` output type """
             self.point_of_view = BlenderPointOfViewOptions
@@ -369,7 +389,7 @@ class Blender_ExportOptions(BaseOptions):
         elif isinstance(self.point_of_view, BlenderPointOfViewOptions):
             self.point_of_view = [self.point_of_view]
 
-    def get_output_filename(self, o, output_dir, pov):
+    def get_output_filename(self, o, output_dir, pov, order):
         if o.type == 'render':
             self._expand_ext = 'png'
         elif o.type == 'blender':
@@ -377,7 +397,15 @@ class Blender_ExportOptions(BaseOptions):
         else:
             self._expand_ext = o.type
         cur_id = self._expand_id
-        self._expand_id += pov._file_id
+        file_id = pov.file_id
+        if not file_id:
+            file_id = self.default_file_id or ('_'+pov.get_view())
+        m = RE_FILE_ID.search(file_id)
+        if m:
+            res = m.group(0)
+            val = res % order
+            file_id = file_id.replace(res, val)
+        self._expand_id += file_id
         name = self._parent.expand_filename(output_dir, o.output)
         self._expand_id = cur_id
         return name
@@ -530,6 +558,8 @@ class Blender_ExportOptions(BaseOptions):
                 if (hasattr(ca, '_pos_x_user_defined') or hasattr(ca, '_pos_y_user_defined') or
                    hasattr(ca, '_pos_z_user_defined')):
                     scene['camera']['position'] = (ca.pos_x, ca.pos_y, ca.pos_z)
+            scene['fixed_auto_camera'] = self.fixed_auto_camera
+            scene['auto_camera_z_axis_factor'] = self.auto_camera_z_axis_factor
             ro = self.render_options
             scene['render'] = {'samples': ro.samples,
                                'resolution_x': ro.resolution_x,
@@ -538,11 +568,21 @@ class Blender_ExportOptions(BaseOptions):
                                'background1': ro.background1,
                                'background2': ro.background2}
             povs = []
+            last_pov = BlenderPointOfViewOptions()
             for pov in self.point_of_view:
-                povs.append({'rotate_x': -pov.rotate_x,
-                             'rotate_y': -pov.rotate_y,
-                             'rotate_z': -pov.rotate_z,
-                             'view': pov.view})
+                if pov.steps > 1:
+                    for _ in range(pov.steps):
+                        last_pov.increment(pov)
+                        povs.append({'rotate_x': -last_pov.rotate_x,
+                                     'rotate_y': -last_pov.rotate_y,
+                                     'rotate_z': -last_pov.rotate_z,
+                                     'view': pov.view})
+                else:
+                    povs.append({'rotate_x': -pov.rotate_x,
+                                 'rotate_y': -pov.rotate_y,
+                                 'rotate_z': -pov.rotate_z,
+                                 'view': pov.view})
+                    last_pov = pov
             scene['point_of_view'] = povs
             text = json.dumps(scene, sort_keys=True, indent=2)
             logger.debug('Scene:\n'+text)
@@ -569,18 +609,22 @@ class Blender_ExportOptions(BaseOptions):
             if not pi.stack_boards:
                 cmd.append('--dont_stack_boards')
             cmd.append('--format')
-            for _ in self.point_of_view:
-                for o in self.outputs:
-                    cmd.append(o.type)
+            for pov in self.point_of_view:
+                for _ in range(pov.steps):
+                    for o in self.outputs:
+                        cmd.append(o.type)
             cmd.append('--output')
             names = set()
+            order = 1
             for pov in self.point_of_view:
-                for o in self.outputs:
-                    name = self.get_output_filename(o, self._parent.output_dir, pov)
-                    if name in names:
-                        raise KiPlotConfigurationError('Repeated name (use `file_id`): '+name)
-                    cmd.append(name)
-                    names.add(name)
+                for _ in range(pov.steps):
+                    for o in self.outputs:
+                        name = self.get_output_filename(o, self._parent.output_dir, pov, order)
+                        if name in names:
+                            raise KiPlotConfigurationError('Repeated name (use `file_id`): '+name)
+                        cmd.append(name)
+                        names.add(name)
+                    order += 1
             cmd.extend(['--scene', f.name])
             cmd.append(pcb3d_file)
             # Execute the command

@@ -1736,11 +1736,15 @@ Notes:
           * Valid keys:
             - **`view`**: [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
                           Compatible with `render_3d`.
-            - `file_id`: [string=''] String to diferentiate the name of this view.
-                         When empty we use the `view`.
+            - `file_id`: [string=''] String to diferentiate the name of this point of view.
+                         When empty we use the `default_file_id` or the `view`.
             - `rotate_x`: [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees].
             - `rotate_y`: [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees].
             - `rotate_z`: [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees].
+            - `steps`: [number=1] [1-1000] Generate this amount of steps using the rotation angles as increments.
+                       Use a value of 1 (default) to interpret the angles as absolute.
+                       Used for animations. You should define the `default_file_id` to something like
+                       '_%03d' to get the animation frames.
         - **`render_options`**: [dict] Controls how the render is done for the `render` output type.
           * Valid keys:
             - **`samples`**: [number=10] How many samples we create. Each sample is a raytracing render.
@@ -1756,6 +1760,8 @@ Notes:
             - *width*: Alias for resolution_x.
         - `add_default_light`: [boolean=true] Add a default light when none specified.
                                The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB.
+        - `auto_camera_z_axis_factor`: [number=1.1] Value to multiply the Z axis coordinate after computing the automatically generated camera.
+                                       Used to avoid collision of the camera and the object.
         - `camera`: [dict] Options for the camera.
                     If none specified KiBot will create a suitable camera.
                     If no position is specified for the camera KiBot will look for a suitable position.
@@ -1765,6 +1771,10 @@ Notes:
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_z`: [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `type`: [string='perspective'] [perspective,orthographic,panoramic] Type of camera.
+        - `default_file_id`: [string=''] Default value for the `file_id` in the `point_of_view` options.
+                             Use something like '_%03d' for animations.
+        - `fixed_auto_camera`: [boolean=false] When using the automatically generated camera and multiple points of view this option computes the camera
+                               position just once. Suitable for videos.
         - `light`: [dict|list(dict)] Options for the light/s.
           * Valid keys:
             - `energy`: [number=0] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful.
@@ -1959,8 +1969,8 @@ Notes:
             - `logo_scale`: [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             - `max_col_width`: [number=60] [20,999] Maximum column width (characters).
             - `mouser_link`: [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
-            - `specs_columns`: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
-                               'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+            - `specs_columns`: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+                               references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                                Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
                                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
               * Valid keys:
@@ -3370,8 +3380,8 @@ Notes:
                               Plugin: Uses an external python function, only `code` and `arg` are relevant.
                 - `arg`: [string=''] Argument to pass to the plugin. Used for *plugin*.
                 - `code`: [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
-                - `cutout`: [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
-                            ensure that a sharp corner of the pocket can be milled. Used for *full*.
+                - `cutout`: [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
+                            depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full*.
                 - `hcount`: [number=1] Number of tabs in the horizontal direction. Used for *fixed*.
                 - `hwidth`: [number|string] The width of tabs in the horizontal direction. Used for *fixed* and *spacing*.
                 - *min_distance*: Alias for mindistance.

@@ -17,6 +17,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (#470)
 - Blender export:
   - Support for pcb2blender v2.6 (Blender 3.5.1)
+  - `auto_camera_z_axis_factor`: used to control the default camera distance
+  - Options to create simple animations:
+    - PoV `steps`: to create rotation angle increments
+    - `default_file_id`: can be used to create numbered PNGs
+    - `fixed_auto_camera`: to avoid adjusting the automatic camera on each frame
 - Populate:
   - Basic support for regular list items (#480)
 
@@ -26,6 +31,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems when trying to aggregate the datasheet field (#472)
 - kibot-check:
   - Show 7.x as supported (#469)
+- Blender export:
+  - Rotations are now applied to the current view, not just the top view
 
 
 ## [1.6.3] - 2023-06-26
