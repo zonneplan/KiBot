@@ -414,9 +414,11 @@ class Blender_ExportOptions(BaseOptions):
         files = []
         if isinstance(self.pcb3d, PCB3DExportOptions):
             files.append(self.pcb3d.get_output_name(out_dir))
+        order = 1
         for pov in self.point_of_view:
-            for o in self.outputs:
-                files.append(self.get_output_filename(o, out_dir, pov))
+            for _ in range(pov.steps):
+                for o in self.outputs:
+                    files.append(self.get_output_filename(o, out_dir, pov, order))
         return files
 
     def create_vrml(self, dest_dir):
