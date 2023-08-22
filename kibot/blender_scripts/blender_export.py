@@ -226,10 +226,12 @@ def apply_start_scene(file):
         name = 'kibot_camera'
         pos = (0.0, 0.0, 10.0)
         type = 'PERSP'
+        clip_start = None
     else:
         name = camera.get('name', 'unknown')
         pos = camera.get('position', None)
         type = camera.get('type', 'PERSP')
+        clip_start = camera.get('clip_start', None)
         if pos is None:
             auto_camera = True
             pos = (0, 0, 0)
@@ -243,12 +245,16 @@ def apply_start_scene(file):
     scene.camera = cam_ob       # set the active camera
     cam_ob.location = pos
     cam_ob.data.type = type
+    if clip_start is not None:
+        cam_ob.data.clip_start = clip_start
 
     if auto_camera:
         print('- Changing camera to focus the board')
         bpy.ops.view3d.camera_to_view_selected()
-        cam_ob.location = (cam_ob.location[0], cam_ob.location[1],
-                           cam_ob.location[2]*jscene.get('auto_camera_z_axis_factor', 1.1))
+        z_pos = cam_ob.location[2]*jscene.get('auto_camera_z_axis_factor', 1.1)
+        cam_ob.location = (cam_ob.location[0], cam_ob.location[1], z_pos)
+        if clip_start is None:
+            cam_ob.data.clip_start = min(0.1, z_pos/10)
 
     # Add lights
     # First time: create the lights

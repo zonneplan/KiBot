@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - PoV `steps`: to create rotation angle increments
     - `default_file_id`: can be used to create numbered PNGs
     - `fixed_auto_camera`: to avoid adjusting the automatic camera on each frame
+  - Camera option to set the clip start (#484)
 - Populate:
   - Basic support for regular list items (#480)
 
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Show 7.x as supported (#469)
 - Blender export:
   - Rotations are now applied to the current view, not just the top view
+  - Board/components not visible for small boards (See #484)
 
 
 ## [1.6.3] - 2023-06-26

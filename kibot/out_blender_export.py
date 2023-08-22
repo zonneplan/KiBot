@@ -156,6 +156,12 @@ class BlenderCameraOptions(BlenderObjOptions):
         with document:
             self.type = "perspective"
             """ [perspective,orthographic,panoramic] Type of camera """
+            self.clip_start = -1
+            """ Minimum distance for objects to the camera. Any object closer than this distance won't be visible.
+                Only positive values have effect. A negative value has a special meaning.
+                For a camera with defined position, a negative value means to use Blender defaults (i.e. 0.1 m).
+                For cameras without position KiBot will ask Blender to compute its position and the use a clip
+                distance that is 1/10th of the Z distance """
         self.add_to_doc('name', ' camera', with_nl=False)
 
     def config(self, parent):
@@ -560,6 +566,8 @@ class Blender_ExportOptions(BaseOptions):
                 if (hasattr(ca, '_pos_x_user_defined') or hasattr(ca, '_pos_y_user_defined') or
                    hasattr(ca, '_pos_z_user_defined')):
                     scene['camera']['position'] = (ca.pos_x, ca.pos_y, ca.pos_z)
+                if ca.clip_start >= 0:
+                    scene['camera']['clip_start'] = ca.clip_start
             scene['fixed_auto_camera'] = self.fixed_auto_camera
             scene['auto_camera_z_axis_factor'] = self.auto_camera_z_axis_factor
             ro = self.render_options

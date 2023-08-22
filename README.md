@@ -940,14 +940,14 @@ filters:
 
 #### Supported filters:
 
-- expand_text_vars: Expand_Text_Vars
+- **expand_text_vars**: (**Expand Text Vars**)
         This filter expands KiCad 6 text variables (${VARIABLE}).
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `include_kicad_env`: [boolean=true] Also expand KiCad environment variables.
     - `include_os_env`: [boolean=false] Also expand system environment variables.
     - `name`: [string=''] Used to identify this particular filter definition.
-- field_modify: Field_Modify
+- **field_modify**: (**Field_Modify**)
         Changes the content of one or more fields.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
@@ -961,7 +961,7 @@ filters:
                The example matches an HTTP URL.
     - `replace`: [string='<a href="\1">\1</a>'] Text to replace, can contain references to sub-expressions.
                  The example converts an HTTP URL into an HTML link, like the URLify filter.
-- field_rename: Field_Rename
+- **field_rename**: (**Field_Rename**)
         This filter implements a field renamer.
         The internal `_kicost_rename` filter emulates the KiCost behavior.
   * Valid keys:
@@ -971,7 +971,7 @@ filters:
       * Valid keys:
         - `field`: [string=''] Name of the field to rename.
         - `name`: [string=''] New name.
-- generic: Generic filter
+- **generic**: (**Generic filter**)
         This filter is based on regular expressions.
         It also provides some shortcuts for common situations.
         Note that matches aren't case sensitive and spaces at the beginning and the end are removed.
@@ -1029,7 +1029,7 @@ filters:
               Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
               Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
     - `name`: [string=''] Used to identify this particular filter definition.
-- rot_footprint: Rot_Footprint
+- **rot_footprint**: (**Rot_Footprint**)
         This filter can rotate footprints, used for the positions file generation.
         Some manufacturers use a different rotation than KiCad.
         The internal `_rot_footprint` filter implements the simplest case.
@@ -1045,7 +1045,7 @@ filters:
                    Components matching the regular expression will be rotated the indicated angle.
     - `skip_bottom`: [boolean=false] Do not rotate components on the bottom.
     - `skip_top`: [boolean=false] Do not rotate components on the top.
-- spec_to_field: Spec_to_Field
+- **spec_to_field**: (**Spec_to_Field**)
         This filter extracts information from the specs obtained from component distributors
         and fills fields.
         I.e. create a field with the RoHS status of a component.
@@ -1055,25 +1055,25 @@ filters:
   * Valid keys:
     - **`from_output`**: [string=''] Name of the output used to collect the specs.
                          Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs.
-    - `check_dist_coherence`: [boolean=true] Check that the data we got from different distributors is equivalent.
-    - `check_dist_fields`: [string|list(string)=''] List of fields to include in the check.
-                           For a full list of fields consult the `specs` option.
-    - `comment`: [string=''] A comment for documentation purposes.
-    - `name`: [string=''] Used to identify this particular filter definition.
-    - `specs`: [list(dict)|dict] *One or more specs to be copied.
+    - **`specs`**: [list(dict)|dict] One or more specs to be copied.
       * Valid keys:
         - **`field`**: [string=''] Name of the destination field.
+        - **`spec`**: [string|list(string)=''] Name/s of the source spec/s.
+                      The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
+                      '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size'.
         - `collision`: [string='warning'] [warning,error,ignore] How to report a collision between the current value and the new value.
         - `policy`: [string='overwrite'] [overwrite,update,new] Controls the behavior of the copy mechanism.
                     `overwrite` always copy the spec value,
                     `update` copy only if the field already exist,
                     `new` copy only if the field doesn't exist..
-        - `spec`: [string|list(string)=''] *Name/s of the source spec/s.
-                  The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
-                  '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size'.
         - `type`: [string='string'] [percent,voltage,power,current,value,string] How we compare the current value to determine a collision.
                   `value` is the component value i.e. resistance for R*.
-- subparts: Subparts
+    - `check_dist_coherence`: [boolean=true] Check that the data we got from different distributors is equivalent.
+    - `check_dist_fields`: [string|list(string)=''] List of fields to include in the check.
+                           For a full list of fields consult the `specs` option.
+    - `comment`: [string=''] A comment for documentation purposes.
+    - `name`: [string=''] Used to identify this particular filter definition.
+- **subparts**: (**Subparts**)
         This filter implements the KiCost subparts mechanism.
   * Valid keys:
     - `check_multiplier`: [list(string)] List of fields to include for multiplier computation.
@@ -1092,13 +1092,13 @@ filters:
     - `split_fields_expand`: [boolean=false] When `true` the fields in `split_fields` are added to the internal names.
     - `use_ref_sep_for_first`: [boolean=true] Force the reference separator use even for the first component in the list (KiCost behavior).
     - `value_alt_field`: [string='value_subparts'] Field containing replacements for the `Value` field. So we get real values for split parts.
-- urlify: URLify
+- **urlify**: (**URLify**)
         Converts URL text in fields to HTML URLs.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
     - `fields`: [string|list(string)='Datasheet'] Fields to convert.
     - `name`: [string=''] Used to identify this particular filter definition.
-- value_split: Value_Split
+- **value_split**: (**Value_Split**)
         This filter extracts information from the value and fills other fields.
         I.e. extracts the tolerance and puts it in the `tolerance` field.
         Usage [example](https://inti-cmnb.github.io/kibot-examples-1/value_split/).
@@ -1120,7 +1120,7 @@ filters:
     - `visible`: [boolean=false] Make visible the modified fields.
     - `voltage`: [string='yes'] [yes,no,soft] Policy for the voltage rating.
                  yes = overwrite existing value, no = don't touch, soft = copy if not defined.
-- var_rename: Var_Rename
+- **var_rename**: (**Var_Rename**)
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
   * Valid keys:
     - `comment`: [string=''] A comment for documentation purposes.
@@ -1128,7 +1128,7 @@ filters:
     - `name`: [string=''] Used to identify this particular filter definition.
     - `separator`: [string=':'] Separator used between the variant and the field name.
     - `variant_to_value`: [boolean=false] Rename fields matching the variant to the value of the component.
-- var_rename_kicost: Var_Rename_KiCost
+- **var_rename_kicost**: (**Var_Rename_KiCost**)
         This filter implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
         It applies the KiCost concept of variants (a regex to match the VARIANT).
         The internal `_var_rename_kicost` filter emulates the KiCost behavior.
@@ -1766,6 +1766,11 @@ Notes:
                     If none specified KiBot will create a suitable camera.
                     If no position is specified for the camera KiBot will look for a suitable position.
           * Valid keys:
+            - `clip_start`: [number=-1] Minimum distance for objects to the camera. Any object closer than this distance won't be visible.
+                            Only positive values have effect. A negative value has a special meaning.
+                            For a camera with defined position, a negative value means to use Blender defaults (i.e. 0.1 m).
+                            For cameras without position KiBot will ask Blender to compute its position and the use a clip
+                            distance that is 1/10th of the Z distance.
             - `name`: [string=''] Name for the camera.
             - `pos_x`: [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             - `pos_y`: [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
@@ -5798,9 +5803,9 @@ Usage:
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
-  kibot [-v...] --help-filters
+  kibot [-v...] [--rst] --help-filters
   kibot [-v...] [--markdown|--json] --help-dependencies
-  kibot [-v...] --help-global-options
+  kibot [-v...] [--rst] --help-global-options
   kibot [-v...] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] --help-outputs
