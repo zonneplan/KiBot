@@ -29,7 +29,7 @@ class SpecOptions(Optionable):
         self._unknown_is_error = True
         with document:
             self.spec = Optionable
-            """ [string|list(string)=''] *Name/s of the source spec/s.
+            """ *[string|list(string)=''] Name/s of the source spec/s.
                 The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
                 '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size' """
             self.field = ''
@@ -73,7 +73,7 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
             """ *Name of the output used to collect the specs.
                 Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs """
             self.specs = SpecOptions
-            """ [list(dict)|dict] *One or more specs to be copied """
+            """ *[list(dict)|dict] One or more specs to be copied """
             self.check_dist_coherence = True
             """ Check that the data we got from different distributors is equivalent """
             self.check_dist_fields = Optionable
