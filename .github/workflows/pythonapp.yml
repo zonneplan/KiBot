@@ -227,7 +227,7 @@ jobs:
 
     - name: Combine coverage
       run: |
-        pip3 install --upgrade coverage==5.1
+        pip3 install --upgrade --break-system-packages coverage==5.1
         ln -s /usr/local/bin/coverage3 /usr/local/bin/python3-coverage || true
         python3-coverage combine
         python3-coverage report
