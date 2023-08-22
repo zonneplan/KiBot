@@ -15,7 +15,7 @@ logger = log.get_logger()
 
 @filter_class
 class Expand_Text_Vars(BaseFilter):  # noqa: F821
-    """ Expand_Text_Vars
+    """ Expand Text Variables
         This filter expands KiCad 6 text variables (${VARIABLE}) """
     def __init__(self):
         super().__init__()

@@ -58,7 +58,7 @@ class SpecOptions(Optionable):
 
 @filter_class
 class Spec_to_Field(BaseFilter):  # noqa: F821
-    """ Spec_to_Field
+    """ Spec to Field
         This filter extracts information from the specs obtained from component distributors
         and fills fields.
         I.e. create a field with the RoHS status of a component.

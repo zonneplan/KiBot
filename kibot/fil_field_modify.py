@@ -17,7 +17,7 @@ logger = log.get_logger()
 
 @filter_class
 class Field_Modify(BaseFilter):  # noqa: F821
-    """ Field_Modify
+    """ Field Modifier
         Changes the content of one or more fields """
     def __init__(self):
         super().__init__()

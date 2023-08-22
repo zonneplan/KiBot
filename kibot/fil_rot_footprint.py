@@ -47,7 +47,7 @@ DEFAULT_ROTATIONS = [["^R_Array_Convex_", 90.0],
 
 @filter_class
 class Rot_Footprint(BaseFilter):  # noqa: F821
-    """ Rot_Footprint
+    """ Footprint Rotator
         This filter can rotate footprints, used for the positions file generation.
         Some manufacturers use a different rotation than KiCad.
         The internal `_rot_footprint` filter implements the simplest case """
