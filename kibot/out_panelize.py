@@ -430,6 +430,8 @@ class PanelizePost(PanelOptions):
             """ [tl,tr,bl,br,mt,mb,ml,mr,c] Specify if the auxiliary origin an grid origin should be placed.
                 Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr (middle of sides), c (center).
                 Empty string does not changes the origin """
+            self.dimensions = False
+            """ Draw dimensions with the panel size. """
         super().__init__()
 
     def config(self, parent):
