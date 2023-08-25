@@ -1853,6 +1853,8 @@ outputs:
             scriptarg: ''
             # [string='auto'] [auto] Currently fixed
             type: 'auto'
+            # [boolean=false] Draw dimensions with the panel size.
+            dimensions: false
           # [dict] Used to adjust details of which part of the PCB is panelized
           source:
             # [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*
