@@ -26,6 +26,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Populate:
   - Basic support for regular list items (#480)
 
+### Changed
+- Documentation:
+  - Now you can search in the docs
+  - Indexed so you can search by topic
+  - With a navigation side bar
+
 ### Fixed
 - Rotated polygons and text used in the worksheet (#466)
 - BoM:
