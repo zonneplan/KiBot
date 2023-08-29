@@ -1,9 +1,12 @@
 #!/usr/bin/make
+SPHINXOPTS    ?=
+SPHINXBUILD   ?= sphinx-build
+SOURCEDIR     = source
+BUILDDIR      = build
+SPHINXTARGETS = html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf latexpdfja text man texinfo info gettext changes xml pseudoxml linkcheck doctest coverage clean
 
-all: ../README.md  samples/generic_plot.kibot.yaml ../kibot/resources/report_templates/report_full_svg.txt ../src/kibot-check
 
-../README.md: README.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/fil_*.py ../kibot/__main__.py ../kibot/config_reader.py ../kibot/globals.py ../kibot/dep_downloader.py
-	cat README.in | perl replace_tags.pl > ../README.md
+all: html samples/generic_plot.kibot.yaml ../kibot/resources/report_templates/report_full_svg.txt ../src/kibot-check
 
 ../src/kibot-check: ../src/kibot-check.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/registrable.py ../kibot/misc.py ../kibot/config_reader.py ../kibot/dep_downloader.py
 	cat ../src/kibot-check.in | perl replace_tags.pl > ../src/kibot-check
@@ -15,3 +18,38 @@ samples/generic_plot.kibot.yaml: ../kibot/out_*.py ../kibot/pre_*.py ../kibot/co
 
 ../kibot/resources/report_templates/report_full_svg.txt: ../kibot/resources/report_templates/report_full.txt
 	sed -e 's/layer_pdfs/layer_svgs/' $< > $@
+
+
+source/configuration/sup_outputs.rst: ../kibot/out_*.py ../kibot/config_reader.py
+	../src/kibot --rst --help-outputs -d source/configuration/outputs/ > $@
+
+source/dependencies.rst: ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/registrable.py ../kibot/misc.py ../kibot/config_reader.py ../kibot/dep_downloader.py
+	../src/kibot --rst --help-dependencies > $@
+
+source/usage.txt: ../kibot/__main__.py
+	../src/kibot --help > $@
+
+source/configuration/sup_preflights.rst: ../kibot/pre_*.py ../kibot/config_reader.py
+	../src/kibot --rst --help-preflights > $@
+
+source/configuration/sup_filters.rst: ../kibot/fil_*.py ../kibot/config_reader.py
+	../src/kibot --rst --help-filters > $@
+
+source/configuration/sup_variants.rst: ../kibot/var_*.py ../kibot/config_reader.py
+	../src/kibot --rst --help-variants > $@
+
+source/configuration/sup_globals.rst: ../kibot/globals.py ../kibot/config_reader.py
+	../src/kibot --rst --help-global-options > $@
+
+
+help:
+	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+# Catch-all target: route all unknown targets to Sphinx using the new
+# "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
+$(SPHINXTARGETS): Makefile source/configuration/sup_outputs.rst source/dependencies.rst source/usage.txt source/configuration/sup_preflights.rst \
+	source/configuration/sup_filters.rst source/configuration/sup_variants.rst source/configuration/sup_globals.rst
+	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
+
+
+.PHONY: help Makefile $(SPHINXTARGETS)

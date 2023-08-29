@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Doing YAML substitution or preprocessing &mdash; KiBot 1.6.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Usage" href="../usage.html" />
+    <link rel="prev" title="VRML (Virtual Reality Modeling Language)" href="outputs/vrml.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            KiBot
+              <img src="../_static/kibot_370x200.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../configuration.html">Configuration</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="section_order.html">Section order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="header.html">The header</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preflight.html">The <em>preflight</em> section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="global.html">Default global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filters.html">Filters and variants</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outputs.html">The <em>outputs</em> section</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Doing YAML substitution or preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#default-definitions">Default definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#definitions-during-import">Definitions during import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recursive-definitions-expansion">Recursive definitions expansion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage_with_ci_cd.html">Usage for CI/CD</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes and extra information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes_gerber.html">Notes about Gerber format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes_position.html">Notes about the position file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes_3d.html">Notes about 3D models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../propose.html">Proposed advanced KiCad usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../KiPlotYAML.html">KiPlot YAML</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Final notes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../credits.html">Credits</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Indices and tables:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">KiBot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../configuration.html">Configuration</a></li>
+      <li class="breadcrumb-item active">Doing YAML substitution or preprocessing</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="doing-yaml-substitution-or-preprocessing">
+<span id="yaml-substitution"></span><span id="index-0"></span><h1>Doing YAML substitution or preprocessing<a class="headerlink" href="#doing-yaml-substitution-or-preprocessing" title="Permalink to this heading"></a></h1>
+<p>Sometimes you could want to change values in the YAML depending on
+external stuff, or just want to be able to change something for each
+variant run.</p>
+<p>In this case you can use external tools to create various YAML files
+using a template, but you can also use KiBot’s definitions.</p>
+<p>The definitions allows you to replace tags like <code class="docutils literal notranslate"><span class="pre">&#64;VARIABLE&#64;</span></code> by some
+specified value. These definitions can be specified at the command line
+using the <code class="docutils literal notranslate"><span class="pre">-E</span></code> option. As an example: <code class="docutils literal notranslate"><span class="pre">-E</span> <span class="pre">UNITS=millimeters</span></code> will
+replace all <code class="docutils literal notranslate"><span class="pre">&#64;UNITS&#64;</span></code> markers by <code class="docutils literal notranslate"><span class="pre">millimeters</span></code>. This is applied to
+all YAML files loaded, so this propagates to all the imported YAML
+files.</p>
+<p>You can use <code class="docutils literal notranslate"><span class="pre">-E</span></code> as many times as you need.</p>
+<section id="default-definitions">
+<span id="index-1"></span><h2>Default definitions<a class="headerlink" href="#default-definitions" title="Permalink to this heading"></a></h2>
+<p>A configuration file using the <code class="docutils literal notranslate"><span class="pre">&#64;VARIABLE&#64;</span></code> tags won’t be usable
+unless you provide proper values for <strong>all</strong> de used variables. When
+using various tags this could be annoying. KiBot supports defining
+default values for the tags. Here is an example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gerbers_@ID@&#39;</span>
+<span class="w">    </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Gerbers</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">definitions&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gerber</span>
+<span class="w">    </span><span class="nt">output_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;_@ID@&#39;</span>
+<span class="w">    </span><span class="nt">layers</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;@LAYERS@&#39;</span>
+<span class="nn">...</span>
+<span class="nt">definitions</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">def_id</span>
+<span class="w">  </span><span class="nt">LAYERS</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">F.Cu</span>
+</pre></div>
+</div>
+<p>Note that from the YAML point this is two documents in the same file.
+The second document is used to provide default values for the
+definitions. As defaults they have the lowest precedence.</p>
+</section>
+<section id="definitions-during-import">
+<span id="index-2"></span><span id="id1"></span><h2>Definitions during import<a class="headerlink" href="#definitions-during-import" title="Permalink to this heading"></a></h2>
+<p>When importing a configuration you can specify values for the
+<code class="docutils literal notranslate"><span class="pre">&#64;VARIABLE&#64;</span></code> tags. This enables the creation of parametrizable
+imports. Using the example depicted in <a class="reference external" href="#default-definitions">Default
+definitions</a> saved to a file named
+<em>simple.kibot.yaml</em> you can use:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">simple.kibot.yaml</span>
+<span class="w">    </span><span class="nt">definitions</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">ID</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">external_copper</span>
+<span class="w">      </span><span class="nt">LAYERS</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;[F.Cu,</span><span class="nv"> </span><span class="s">B.Cu]&quot;</span>
+</pre></div>
+</div>
+<p>This will import <em>simple.kibot.yaml</em> and use these particular values.
+Note that they have more precedence than the definitions found in
+<em>simple.kibot.yaml</em>, but less precedence than any value passed from the
+command line.</p>
+</section>
+<section id="recursive-definitions-expansion">
+<span id="index-3"></span><h2>Recursive definitions expansion<a class="headerlink" href="#recursive-definitions-expansion" title="Permalink to this heading"></a></h2>
+<p>When KiBot expands the <code class="docutils literal notranslate"><span class="pre">&#64;VARIABLE&#64;</span></code> tags it first applies all the
+replacements defined in the command line, and then all the values
+collected from the <code class="docutils literal notranslate"><span class="pre">definitions</span></code>. After doing a round of replacements
+KiBot tries to do another. This process is repeated until nothing is
+replaced or we reach 20 iterations. So you can define a tag that
+contains another tag.</p>
+<p>As an example, if the configuration shown in <a class="reference external" href="#definitions-during-import">Definitions during
+import</a> is stored in a file named
+<em>top.kibot.yaml</em> you could use:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>kibot<span class="w"> </span>-v<span class="w"> </span>-c<span class="w"> </span>top.kibot.yaml<span class="w"> </span>-E<span class="w"> </span><span class="nv">ID</span><span class="o">=</span>@LAYERS@
+</pre></div>
+</div>
+<p>This will generate gerbers for the front/top and bottom layers using
+<em>[F.Cu, B.Cu]</em> as output id. So you’ll get <em>light_control-B_Cu_[F.Cu,
+B.Cu].gbr</em> and <em>light_control-F_Cu_[F.Cu, B.Cu].gbr</em>.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="outputs/vrml.html" class="btn btn-neutral float-left" title="VRML (Virtual Reality Modeling Language)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../usage.html" class="btn btn-neutral float-right" title="Usage" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2023, Salvador E. Tropea/INTI/John Beard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

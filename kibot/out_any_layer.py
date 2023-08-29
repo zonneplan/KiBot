@@ -76,7 +76,7 @@ class AnyLayerOptions(VariantOptions):
             self.custom_reports = CustomReport
             """ [list(dict)] A list of customized reports for the manufacturer """
             self.sketch_pads_on_fab_layers = False
-            """ Draw only the outline of the pads on the *.Fab layers (KiCad 6+) """
+            r""" Draw only the outline of the pads on the \*.Fab layers (KiCad 6+) """
             self.sketch_pad_line_width = 0.1
             """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                 Note that this value is currently ignored by KiCad (6.0.9) """

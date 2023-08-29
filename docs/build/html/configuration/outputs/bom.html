@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BoM (Bill of Materials) &mdash; KiBot 1.6.4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="Archiver (files compressor)" href="compress.html" />
+    <link rel="prev" title="BoardView" href="boardview.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            KiBot
+              <img src="../../_static/kibot_370x200.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../configuration.html">Configuration</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../section_order.html">Section order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../header.html">The header</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../preflight.html">The <em>preflight</em> section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../global.html">Default global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filters.html">Filters and variants</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../outputs.html">The <em>outputs</em> section</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#specifying-the-layers">Specifying the layers</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../outputs.html#supported-outputs">Supported outputs</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="blender_export.html">Blender Export <strong>Experimental</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="boardview.html">BoardView</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">BoM (Bill of Materials)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compress.html">Archiver (files compressor)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="copy_files.html">Files copier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="diff.html">Diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="download_datasheets.html">Datasheets downloader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dxf.html">DXF (Drawing Exchange Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dxf_sch_print.html">DXF Schematic Print (Drawing Exchange Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="excellon.html">Excellon drill format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gencad.html">GenCAD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gerb_drill.html">Gerber drill format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gerber.html">Gerber format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hpgl.html">HPGL (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hpgl_sch_print.html">HPGL Schematic Print (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibom.html">IBoM (Interactive HTML BoM)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="info.html">Info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="kibom.html">KiBoM (KiCad Bill of Materials)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="kicost.html">KiCost (KiCad Cost calculator)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="kikit_present.html">KiKit’s Present - Project Presentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="navigate_results.html">Navigate Results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="netlist.html">Netlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="panelize.html">Panelize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcb2blender_tools.html">PCB2Blender Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcb_print.html">PCB Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcb_variant.html">PCB with variant generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcbdraw.html">PcbDraw - Beautiful 2D PCB render</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdf.html">PDF (Portable Document Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdf_pcb_print.html">PDF PCB Print (Portable Document Format) <em>Deprecated</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdf_sch_print.html">PDF Schematic Print (Portable Document Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdfunite.html">PDF joiner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="populate.html">Populate - Assembly instructions builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="position.html">Pick &amp; place</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ps.html">PS (Postscript)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ps_sch_print.html">PS Schematic Print (Postscript)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qr_lib.html">QR_Lib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="render_3d.html">3D render of the PCB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="report.html">Design report</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sch_variant.html">Schematic with variant generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stencil_3d.html">3D Printed Stencils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stencil_for_jig.html">Steel Stencils for Alignment Jig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="step.html">STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="svg.html">SVG (Scalable Vector Graphics)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="svg_pcb_print.html">SVG PCB Print (Scalable Vector Graphics) <em>Deprecated</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="svg_sch_print.html">SVG Schematic Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vrml.html">VRML (Virtual Reality Modeling Language)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#consolidating-boms">Consolidating BoMs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#importing-outputs-from-another-file">Importing outputs from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#importing-other-stuff-from-another-file">Importing other stuff from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#parametrizable-imports">Parametrizable imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#importing-internal-templates">Importing internal templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#using-other-output-as-base-for-a-new-one">Using other output as base for a new one</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#grouping-outputs">Grouping outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../substitution.html">Doing YAML substitution or preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage_with_ci_cd.html">Usage for CI/CD</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes and extra information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notes_gerber.html">Notes about Gerber format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes_position.html">Notes about the position file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes_3d.html">Notes about 3D models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../propose.html">Proposed advanced KiCad usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../KiPlotYAML.html">KiPlot YAML</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Final notes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../credits.html">Credits</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Indices and tables:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">KiBot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../configuration.html">Configuration</a></li>
+          <li class="breadcrumb-item"><a href="../outputs.html">The <em>outputs</em> section</a></li>
+      <li class="breadcrumb-item active">BoM (Bill of Materials)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="bom-bill-of-materials">
+<span id="index-0"></span><h1>BoM (Bill of Materials)<a class="headerlink" href="#bom-bill-of-materials" title="Permalink to this heading"></a></h1>
+<p>Used to generate the BoM in CSV, HTML, TSV, TXT, XML or XLSX format using the internal BoM.
+This output can generate XYRS files (pick and place files). <br/>
+Is compatible with KiBoM, but doesn’t need to update the XML netlist because the components
+are loaded from the schematic. <br/>
+Important differences with KiBoM output:</p>
+<ul class="simple">
+<li><p>All options are in the main <cite>options</cite> section, not in <cite>conf</cite> subsection.</p></li>
+<li><p>The <cite>Component</cite> column is named <cite>Row</cite> and works just like any other column.</p></li>
+</ul>
+<p>This output is what you get from the ‘Tools/Generate Bill of Materials’ menu in eeschema. <br/></p>
+<p>Type: <code class="docutils literal notranslate"><span class="pre">bom</span></code></p>
+<p>Category: <strong>Schematic/BoM</strong></p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><strong>comment</strong> <span class="target" id="index-1"></span>: [string=’’] A comment for documentation purposes. It helps to identify the output.</p></li>
+<li><p><strong>dir</strong> <span class="target" id="index-2"></span>: [string=’./’] Output directory for the generated files.
+If it starts with <cite>+</cite> the rest is concatenated to the default dir.</p></li>
+<li><p><strong>name</strong> <span class="target" id="index-3"></span>: [string=’’] Used to identify this particular output definition.
+Avoid using <cite>_</cite> as first character. These names are reserved for KiBot.</p></li>
+<li><p><strong>options</strong> <span class="target" id="index-4"></span>: [dict] Options for the <cite>bom</cite> output.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>columns</strong> <span class="target" id="index-5"></span>: [list(dict)|list(string)] List of columns to display.
+Can be just the name of the field.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>field</strong> <span class="target" id="index-6"></span>: [string=’’] Name of the field to use for this column.
+Use <cite>_field_lcsc_part</cite> to get the value defined in the global options.</p></li>
+<li><p><strong>name</strong> <span class="target" id="index-7"></span>: [string=’’] Name to display in the header. The field is used when empty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comment</span></code> <span class="target" id="index-8"></span>: [string=’’] Used as explanation for this column. The XLSX output uses it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">join</span></code> <span class="target" id="index-9"></span>: [list(dict)|list(string)|string=’’] List of fields to join to this column.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>field</strong> <span class="target" id="index-10"></span>: [string=’’] Name of the field.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code> <span class="target" id="index-11"></span>: [string=’’] Text to use instead of a field. This option is incompatible with the <cite>field</cite> option.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text_after</span></code> <span class="target" id="index-12"></span>: [string=’’] Text to add after the field content. Will be added only if the field isn’t empty.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text_before</span></code> <span class="target" id="index-13"></span>: [string=’’] Text to add before the field content. Will be added only if the field isn’t empty.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">level</span></code> <span class="target" id="index-14"></span>: [number=0] Used to group columns. The XLSX output uses it to collapse columns.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>csv</strong> <span class="target" id="index-15"></span>: [dict] Options for the CSV, TXT and TSV formats.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>quote_all</strong> <span class="target" id="index-16"></span>: [boolean=false] Enclose all values using double quotes.</p></li>
+<li><p><strong>separator</strong> <span class="target" id="index-17"></span>: [string=’,’] CSV Separator. TXT and TSV always use tab as delimiter.
+Only one character can be specified.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_header</span></code> <span class="target" id="index-18"></span>: [boolean=false] Hide the header line (names of the columns).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_pcb_info</span></code> <span class="target" id="index-19"></span>: [boolean=false] Hide project information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_stats_info</span></code> <span class="target" id="index-20"></span>: [boolean=false] Hide statistics information.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>format</strong> <span class="target" id="index-21"></span>: [string=’’] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
+Defaults to CSV or a guess according to the options.
+HRTXT stands for Human Readable TeXT.</p></li>
+<li><p><strong>group_fields</strong> <span class="target" id="index-22"></span>: [list(string)] List of fields used for sorting individual components into groups.
+Components which match (comparing <em>all</em> fields) will be grouped together.
+Field names are case-insensitive.
+If empty: [‘Part’, ‘Part Lib’, ‘Value’, ‘Footprint’, ‘Footprint Lib’,
+‘Voltage’, ‘Tolerance’, ‘Current’, ‘Power’] is used.</p></li>
+<li><p><strong>hrtxt</strong> <span class="target" id="index-23"></span>: [dict] Options for the HRTXT formats.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>separator</strong> <span class="target" id="index-24"></span>: [string=’I’] Column Separator.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">header_sep</span></code> <span class="target" id="index-25"></span>: [string=’-’] Separator between the header and the data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_header</span></code> <span class="target" id="index-26"></span>: [boolean=false] Hide the header line (names of the columns).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_pcb_info</span></code> <span class="target" id="index-27"></span>: [boolean=false] Hide project information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_stats_info</span></code> <span class="target" id="index-28"></span>: [boolean=false] Hide statistics information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">justify</span></code> <span class="target" id="index-29"></span>: [string=’left’] [left,right,center] Text justification.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>html</strong> <span class="target" id="index-30"></span>: [dict] Options for the HTML format.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>datasheet_as_link</strong> <span class="target" id="index-31"></span>: [string=’’] Column with links to the datasheet.</p></li>
+<li><p><strong>generate_dnf</strong> <span class="target" id="index-32"></span>: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.</p></li>
+<li><p><strong>logo</strong> <span class="target" id="index-33"></span>: [string|boolean=’’] PNG file to use as logo, use false to remove.</p></li>
+<li><p><strong>title</strong> <span class="target" id="index-34"></span>: [string=’KiBot Bill of Materials’] BoM title.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">col_colors</span></code> <span class="target" id="index-35"></span>: [boolean=true] Use colors to show the field type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">digikey_link</span></code> <span class="target" id="index-36"></span>: [string|list(string)=’’] Column/s containing Digi-Key part numbers, will be linked to web page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extra_info</span></code> <span class="target" id="index-37"></span>: [string|list(string)=’’] Information to put after the title and before the pcb and stats info.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_pcb_info</span></code> <span class="target" id="index-38"></span>: [boolean=false] Hide project information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_stats_info</span></code> <span class="target" id="index-39"></span>: [boolean=false] Hide statistics information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">highlight_empty</span></code> <span class="target" id="index-40"></span>: [boolean=true] Use a color for empty cells. Applies only when <cite>col_colors</cite> is <cite>true</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mouser_link</span></code> <span class="target" id="index-41"></span>: [string|list(string)=’’] Column/s containing Mouser part numbers, will be linked to web page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">style</span></code> <span class="target" id="index-42"></span>: [string=’modern-blue’] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
+Or you can provide a CSS file name. Please use .css as file extension..</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>ignore_dnf</strong> <span class="target" id="index-43"></span>: [boolean=true] Exclude DNF (Do Not Fit) components.</p></li>
+<li><p><strong>normalize_values</strong> <span class="target" id="index-44"></span>: [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.</p></li>
+<li><p><strong>number</strong> <span class="target" id="index-45"></span>: [number=1] Number of boards to build (components multiplier).</p></li>
+<li><p><strong>output</strong> <span class="target" id="index-46"></span>: [string=’%f-%i%I%v.%x’] filename for the output (%i=bom). Affected by global options.</p></li>
+<li><p><strong>sort_style</strong> <span class="target" id="index-47"></span>: [string=’type_value’] [type_value,type_value_ref,ref] Sorting criteria.</p></li>
+<li><p><strong>units</strong> <span class="target" id="index-48"></span>: [string=’millimeters’] [millimeters,inches,mils] Units used for the positions (‘Footprint X’ and ‘Footprint Y’ columns).
+Affected by global options.</p></li>
+<li><p><strong>xlsx</strong> <span class="target" id="index-49"></span>: [dict] Options for the XLSX format.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>datasheet_as_link</strong> <span class="target" id="index-50"></span>: [string=’’] Column with links to the datasheet.</p></li>
+<li><p><strong>generate_dnf</strong> <span class="target" id="index-51"></span>: [boolean=true] Generate a separated section for DNF (Do Not Fit) components.</p></li>
+<li><p><strong>kicost</strong> <span class="target" id="index-52"></span>: [boolean=false] Enable KiCost worksheet creation.
+Note: an example of how to use it on CI/CD can be found <a class="reference external" href="https://github.com/set-soft/kicost_ci_test">here</a>.</p></li>
+<li><p><strong>logo</strong> <span class="target" id="index-53"></span>: [string|boolean=’’] PNG file to use as logo, use false to remove.</p></li>
+<li><p><strong>specs</strong> <span class="target" id="index-54"></span>: [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
+Works with only some KiCost APIs.</p></li>
+<li><p><strong>title</strong> <span class="target" id="index-55"></span>: [string=’KiBot Bill of Materials’] BoM title.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">col_colors</span></code> <span class="target" id="index-56"></span>: [boolean=true] Use colors to show the field type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">digikey_link</span></code> <span class="target" id="index-57"></span>: [string|list(string)=’’] Column/s containing Digi-Key part numbers, will be linked to web page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extra_info</span></code> <span class="target" id="index-58"></span>: [string|list(string)=’’] Information to put after the title and before the pcb and stats info.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_pcb_info</span></code> <span class="target" id="index-59"></span>: [boolean=false] Hide project information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hide_stats_info</span></code> <span class="target" id="index-60"></span>: [boolean=false] Hide statistics information.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">highlight_empty</span></code> <span class="target" id="index-61"></span>: [boolean=true] Use a color for empty cells. Applies only when <cite>col_colors</cite> is <cite>true</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kicost_api_disable</span></code> <span class="target" id="index-62"></span>: [string|list(string)=’’] List of KiCost APIs to disable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kicost_api_enable</span></code> <span class="target" id="index-63"></span>: [string|list(string)=’’] List of KiCost APIs to enable.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kicost_config</span></code> <span class="target" id="index-64"></span>: [string=’’] KiCost configuration file. It contains the keys for the different distributors APIs.
+The regular KiCost config is used when empty.
+Important for CI/CD environments: avoid exposing your API secrets!
+To understand how to achieve this, and also how to make use of the cache please visit the
+<a class="reference external" href="https://github.com/set-soft/kicost_ci_test">kicost_ci_test</a> repo.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kicost_dist_desc</span></code> <span class="target" id="index-65"></span>: [boolean=false] Used to add a column with the distributor’s description. So you can check this is the right component.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">logo_scale</span></code> <span class="target" id="index-66"></span>: [number=2] Scaling factor for the logo. Note that this value isn’t honored by all spreadsheet software.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">max_col_width</span></code> <span class="target" id="index-67"></span>: [number=60] [20,999] Maximum column width (characters).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">mouser_link</span></code> <span class="target" id="index-68"></span>: [string|list(string)=’’] Column/s containing Mouser part numbers, will be linked to web page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">specs_columns</span></code> <span class="target" id="index-69"></span>: [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use <cite>References</cite> for the
+references, ‘Row’ for the order and ‘Sep’ to separate groups at the same level. By default all are included.
+Column names are distributor specific, the following aren’t: ‘_desc’, ‘_value’, ‘_tolerance’, ‘_footprint’,
+‘_power’, ‘_current’, ‘_voltage’, ‘_frequency’, ‘_temp_coeff’, ‘_manf’, ‘_size’.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>field</strong> <span class="target" id="index-70"></span>: [string=’’] Name of the field to use for this column.
+Use <cite>_field_lcsc_part</cite> to get the value defined in the global options.</p></li>
+<li><p><strong>name</strong> <span class="target" id="index-71"></span>: [string=’’] Name to display in the header. The field is used when empty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comment</span></code> <span class="target" id="index-72"></span>: [string=’’] Used as explanation for this column. The XLSX output uses it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">join</span></code> <span class="target" id="index-73"></span>: [list(dict)|list(string)|string=’’] List of fields to join to this column.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>field</strong> <span class="target" id="index-74"></span>: [string=’’] Name of the field.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code> <span class="target" id="index-75"></span>: [string=’’] Text to use instead of a field. This option is incompatible with the <cite>field</cite> option.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text_after</span></code> <span class="target" id="index-76"></span>: [string=’’] Text to add after the field content. Will be added only if the field isn’t empty.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text_before</span></code> <span class="target" id="index-77"></span>: [string=’’] Text to add before the field content. Will be added only if the field isn’t empty.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">level</span></code> <span class="target" id="index-78"></span>: [number=0] Used to group columns. The XLSX output uses it to collapse columns.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">style</span></code> <span class="target" id="index-79"></span>: [string=’modern-blue’] Head style: modern-blue, modern-green, modern-red and classic.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aggregate</span></code> <span class="target" id="index-80"></span>: [list(dict)] Add components from other projects.
+You can use CSV files, the first row must contain the names of the fields.
+The <cite>Reference</cite> and <cite>Value</cite> are mandatory, in most cases <cite>Part</cite> is also needed.
+The <cite>Part</cite> column should contain the name/type of the component. This is important for
+passive components (R, L, C, etc.). If this information isn’t available consider
+configuring the grouping to exclude the <cite>Part</cite>..</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">delimiter</span></code> <span class="target" id="index-81"></span>: [string=’,’] Delimiter used for CSV files.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">file</span></code> <span class="target" id="index-82"></span>: [string=’’] Name of the schematic to aggregate.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> <span class="target" id="index-83"></span>: [string=’’] Name to identify this source. If empty we use the name of the schematic.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">number</span></code> <span class="target" id="index-84"></span>: [number=1] Number of boards to build (components multiplier). Use negative to subtract.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_id</span></code> <span class="target" id="index-85"></span>: [string=’’] A prefix to add to all the references from this project.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle_positive</span></code> <span class="target" id="index-86"></span>: [boolean=true] Always use positive values for the footprint rotation.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">bottom_negative_x</span></code> <span class="target" id="index-87"></span>: [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">component_aliases</span></code> <span class="target" id="index-88"></span>: [list(list(string))] A series of values which are considered to be equivalent for the part name.
+Each entry is a list of equivalen names. Example: [‘c’, ‘c_small’, ‘cap’ ]
+will ensure the equivalent capacitor symbols can be grouped together.
+If empty the following aliases are used:</p>
+<ul>
+<li><p>[‘r’, ‘r_small’, ‘res’, ‘resistor’]</p></li>
+<li><p>[‘l’, ‘l_small’, ‘inductor’]</p></li>
+<li><p>[‘c’, ‘c_small’, ‘cap’, ‘capacitor’]</p></li>
+<li><p>[‘sw’, ‘switch’]</p></li>
+<li><p>[‘zener’, ‘zenersmall’]</p></li>
+<li><p>[‘d’, ‘diode’, ‘d_small’].</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">cost_extra_columns</span></code> <span class="target" id="index-89"></span>: [list(dict)|list(string)] List of columns to add to the global section of the cost.
+Can be just the name of the field.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>field</strong> <span class="target" id="index-90"></span>: [string=’’] Name of the field to use for this column.
+Use <cite>_field_lcsc_part</cite> to get the value defined in the global options.</p></li>
+<li><p><strong>name</strong> <span class="target" id="index-91"></span>: [string=’’] Name to display in the header. The field is used when empty.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comment</span></code> <span class="target" id="index-92"></span>: [string=’’] Used as explanation for this column. The XLSX output uses it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">join</span></code> <span class="target" id="index-93"></span>: [list(dict)|list(string)|string=’’] List of fields to join to this column.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><strong>field</strong> <span class="target" id="index-94"></span>: [string=’’] Name of the field.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text</span></code> <span class="target" id="index-95"></span>: [string=’’] Text to use instead of a field. This option is incompatible with the <cite>field</cite> option.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text_after</span></code> <span class="target" id="index-96"></span>: [string=’’] Text to add after the field content. Will be added only if the field isn’t empty.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">text_before</span></code> <span class="target" id="index-97"></span>: [string=’’] Text to add before the field content. Will be added only if the field isn’t empty.
+Any space to separate it should be added in the text.
+Use \n for newline and \t for tab.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">level</span></code> <span class="target" id="index-98"></span>: [number=0] Used to group columns. The XLSX output uses it to collapse columns.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">count_smd_tht</span></code> <span class="target" id="index-99"></span>: [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">distributors</span></code> <span class="target" id="index-100"></span>: [string|list(string)] Include this distributors list. Default is all the available.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dnc_filter</span></code> <span class="target" id="index-101"></span>: [string|list(string)=’_kibom_dnc’] Name of the filter to mark components as ‘Do Not Change’.
+The default filter marks components with a DNC value or DNC in the Config field.
+This option is for simple cases, consider using a full variant for complex cases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dnf_filter</span></code> <span class="target" id="index-102"></span>: [string|list(string)=’_kibom_dnf’] Name of the filter to mark components as ‘Do Not Fit’.
+The default filter marks components with a DNF value or DNF in the Config field.
+This option is for simple cases, consider using a full variant for complex cases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_filter</span></code> <span class="target" id="index-103"></span>: [string|list(string)=’_mechanical’] Name of the filter to exclude components from BoM processing.
+The default filter excludes test points, fiducial marks, mounting holes, etc.
+This option is for simple cases, consider using a full variant for complex cases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_marked_in_pcb</span></code> <span class="target" id="index-104"></span>: [boolean=false] Exclude components marked with <em>Exclude from BOM</em> in the PCB.
+This is a KiCad 6 option.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">exclude_marked_in_sch</span></code> <span class="target" id="index-105"></span>: [boolean=true] Exclude components marked with <em>Exclude from bill of materials</em> in the schematic.
+This is a KiCad 6 option.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">expand_text_vars</span></code> <span class="target" id="index-106"></span>: [boolean=true] Expand KiCad 6 text variables after applying all filters and variants.
+This is done using a <strong>_expand_text_vars</strong> filter.
+If you need to customize the filter, or apply it before, you can disable this option and
+add a custom filter to the filter chain.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">fit_field</span></code> <span class="target" id="index-107"></span>: [string=’Config’] Field name used for internal filters (not for variants).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">footprint_populate_values</span></code> <span class="target" id="index-108"></span>: [string|list(string)=’no,yes’] Values for the <cite>Footprint Populate</cite> column.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">footprint_type_values</span></code> <span class="target" id="index-109"></span>: [string|list(string)=’SMD,THT,VIRTUAL’] Values for the <cite>Footprint Type</cite> column.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group_connectors</span></code> <span class="target" id="index-110"></span>: [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">group_fields_fallbacks</span></code> <span class="target" id="index-111"></span>: [list(string)] List of fields to be used when the fields in <cite>group_fields</cite> are empty.
+The first field in this list is the fallback for the first in <cite>group_fields</cite>, and so on.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">int_qtys</span></code> <span class="target" id="index-112"></span>: [boolean=true] Component quantities are always expressed as integers. Using the ceil() function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">merge_blank_fields</span></code> <span class="target" id="index-113"></span>: [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">merge_both_blank</span></code> <span class="target" id="index-114"></span>: [boolean=true] When creating groups two components with empty/missing field will be interpreted as with the same value.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">no_conflict</span></code> <span class="target" id="index-115"></span>: [list(string)] List of fields where we tolerate conflicts.
+Use it to avoid undesired warnings.
+By default the field indicated in <cite>fit_field</cite>, the field used for variants and
+the field <cite>part</cite> are excluded.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">no_distributors</span></code> <span class="target" id="index-116"></span>: [string|list(string)] Exclude this distributors list. They are removed after computing <cite>distributors</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">normalize_locale</span></code> <span class="target" id="index-117"></span>: [boolean=false] When normalizing values use the locale decimal point.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre_transform</span></code> <span class="target" id="index-118"></span>: [string|list(string)=’_none’] Name of the filter to transform fields before applying other filters.
+This option is for simple cases, consider using a full variant for complex cases.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_id</span></code> <span class="target" id="index-119"></span>: [string=’’] A prefix to add to all the references from this project. Used for multiple projects.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ref_separator</span></code> <span class="target" id="index-120"></span>: [string=’ ‘] Separator used for the list of references.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">source_by_id</span></code> <span class="target" id="index-121"></span>: [boolean=false] Generate the <cite>Source BoM</cite> column using the reference ID instead of the project name.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_alt</span></code> <span class="target" id="index-122"></span>: [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_aux_axis_as_origin</span></code> <span class="target" id="index-123"></span>: [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">variant</span></code> <span class="target" id="index-124"></span>: [string=’’] Board variant, used to determine which components
+are output to the BoM..</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>type</strong> <span class="target" id="index-125"></span>: [string=’’] Type of output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">category</span></code> <span class="target" id="index-126"></span>: [string|list(string)=’’] The category for this output. If not specified an internally defined category is used.
+Categories looks like file system paths, i.e. <strong>PCB/fabrication/gerber</strong>.
+The categories are currently used for <cite>navigate_results</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disable_run_by_default</span></code> <span class="target" id="index-127"></span>: [string|boolean] Use it to disable the <cite>run_by_default</cite> status of other output.
+Useful when this output extends another and you don’t want to generate the original.
+Use the boolean true value to disable the output you are extending.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extends</span></code> <span class="target" id="index-128"></span>: [string=’’] Copy the <cite>options</cite> section from the indicated output.
+Used to inherit options from another output of the same type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code> <span class="target" id="index-129"></span>: [string|list(string)=’’] One or more groups to add this output. In order to catch typos
+we recommend to add outputs only to existing groups. You can create an empty group if
+needed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_id</span></code> <span class="target" id="index-130"></span>: [string=’’] Text to use for the %I expansion content. To differentiate variations of this output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority</span></code> <span class="target" id="index-131"></span>: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_by_default</span></code> <span class="target" id="index-132"></span>: [boolean=true] When enabled this output will be created when no specific outputs are requested.</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="boardview.html" class="btn btn-neutral float-left" title="BoardView" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="compress.html" class="btn btn-neutral float-right" title="Archiver (files compressor)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2023, Salvador E. Tropea/INTI/John Beard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

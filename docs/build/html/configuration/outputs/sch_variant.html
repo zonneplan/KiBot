@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Schematic with variant generator &mdash; KiBot 1.6.4 documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../../_static/doctools.js"></script>
+        <script src="../../_static/sphinx_highlight.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+    <link rel="next" title="3D Printed Stencils" href="stencil_3d.html" />
+    <link rel="prev" title="Design report" href="report.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            KiBot
+              <img src="../../_static/kibot_370x200.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../configuration.html">Configuration</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../quick_start.html">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../section_order.html">Section order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../header.html">The header</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../preflight.html">The <em>preflight</em> section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../global.html">Default global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../filters.html">Filters and variants</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../outputs.html">The <em>outputs</em> section</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#specifying-the-layers">Specifying the layers</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="../outputs.html#supported-outputs">Supported outputs</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="blender_export.html">Blender Export <strong>Experimental</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="boardview.html">BoardView</a></li>
+<li class="toctree-l4"><a class="reference internal" href="bom.html">BoM (Bill of Materials)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="compress.html">Archiver (files compressor)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="copy_files.html">Files copier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="diff.html">Diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="download_datasheets.html">Datasheets downloader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dxf.html">DXF (Drawing Exchange Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dxf_sch_print.html">DXF Schematic Print (Drawing Exchange Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="excellon.html">Excellon drill format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gencad.html">GenCAD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gerb_drill.html">Gerber drill format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="gerber.html">Gerber format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hpgl.html">HPGL (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="hpgl_sch_print.html">HPGL Schematic Print (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ibom.html">IBoM (Interactive HTML BoM)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="info.html">Info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="kibom.html">KiBoM (KiCad Bill of Materials)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="kicost.html">KiCost (KiCad Cost calculator)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="kikit_present.html">KiKit’s Present - Project Presentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="navigate_results.html">Navigate Results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="netlist.html">Netlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="panelize.html">Panelize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcb2blender_tools.html">PCB2Blender Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcb_print.html">PCB Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcb_variant.html">PCB with variant generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pcbdraw.html">PcbDraw - Beautiful 2D PCB render</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdf.html">PDF (Portable Document Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdf_pcb_print.html">PDF PCB Print (Portable Document Format) <em>Deprecated</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdf_sch_print.html">PDF Schematic Print (Portable Document Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="pdfunite.html">PDF joiner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="populate.html">Populate - Assembly instructions builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="position.html">Pick &amp; place</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ps.html">PS (Postscript)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="ps_sch_print.html">PS Schematic Print (Postscript)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="qr_lib.html">QR_Lib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="render_3d.html">3D render of the PCB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="report.html">Design report</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Schematic with variant generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stencil_3d.html">3D Printed Stencils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="stencil_for_jig.html">Steel Stencils for Alignment Jig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="step.html">STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="svg.html">SVG (Scalable Vector Graphics)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="svg_pcb_print.html">SVG PCB Print (Scalable Vector Graphics) <em>Deprecated</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="svg_sch_print.html">SVG Schematic Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="vrml.html">VRML (Virtual Reality Modeling Language)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#consolidating-boms">Consolidating BoMs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#importing-outputs-from-another-file">Importing outputs from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#importing-other-stuff-from-another-file">Importing other stuff from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#parametrizable-imports">Parametrizable imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#importing-internal-templates">Importing internal templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#using-other-output-as-base-for-a-new-one">Using other output as base for a new one</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../outputs.html#grouping-outputs">Grouping outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../substitution.html">Doing YAML substitution or preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../usage_with_ci_cd.html">Usage for CI/CD</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes and extra information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../notes_gerber.html">Notes about Gerber format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes_position.html">Notes about the position file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../notes_3d.html">Notes about 3D models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../propose.html">Proposed advanced KiCad usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../KiPlotYAML.html">KiPlot YAML</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Final notes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../credits.html">Credits</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Indices and tables:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">KiBot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../configuration.html">Configuration</a></li>
+          <li class="breadcrumb-item"><a href="../outputs.html">The <em>outputs</em> section</a></li>
+      <li class="breadcrumb-item active">Schematic with variant generator</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="schematic-with-variant-generator">
+<span id="index-0"></span><h1>Schematic with variant generator<a class="headerlink" href="#schematic-with-variant-generator" title="Permalink to this heading"></a></h1>
+<p>Creates a copy of the schematic with all the filters and variants applied.
+This copy isn’t intended for development. <br/>
+Is just a tweaked version of the original where you can look at the results. <br/></p>
+<p>Type: <code class="docutils literal notranslate"><span class="pre">sch_variant</span></code></p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><strong>comment</strong> <span class="target" id="index-1"></span>: [string=’’] A comment for documentation purposes. It helps to identify the output.</p></li>
+<li><p><strong>dir</strong> <span class="target" id="index-2"></span>: [string=’./’] Output directory for the generated files.
+If it starts with <cite>+</cite> the rest is concatenated to the default dir.</p></li>
+<li><p><strong>name</strong> <span class="target" id="index-3"></span>: [string=’’] Used to identify this particular output definition.
+Avoid using <cite>_</cite> as first character. These names are reserved for KiBot.</p></li>
+<li><p><strong>options</strong> <span class="target" id="index-4"></span>: [dict] Options for the <cite>sch_variant</cite> output.</p>
+<ul>
+<li><p>Valid keys:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy_project</span></code> <span class="target" id="index-5"></span>: [boolean=false] Copy the KiCad project to the destination directory.
+Disabled by default for compatibility with older versions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dnf_filter</span></code> <span class="target" id="index-6"></span>: [string|list(string)=’_none’] Name of the filter to mark components as not fitted.
+A short-cut to use for simple cases where a variant is an overkill.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pre_transform</span></code> <span class="target" id="index-7"></span>: [string|list(string)=’_none’] Name of the filter to transform fields before applying other filters.
+A short-cut to use for simple cases where a variant is an overkill.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">title</span></code> <span class="target" id="index-8"></span>: [string=’’] Text used to replace the sheet title. %VALUE expansions are allowed.
+If it starts with <cite>+</cite> the text is concatenated.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">variant</span></code> <span class="target" id="index-9"></span>: [string=’’] Board variant to apply.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><strong>type</strong> <span class="target" id="index-10"></span>: [string=’’] Type of output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">category</span></code> <span class="target" id="index-11"></span>: [string|list(string)=’’] The category for this output. If not specified an internally defined category is used.
+Categories looks like file system paths, i.e. <strong>PCB/fabrication/gerber</strong>.
+The categories are currently used for <cite>navigate_results</cite>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disable_run_by_default</span></code> <span class="target" id="index-12"></span>: [string|boolean] Use it to disable the <cite>run_by_default</cite> status of other output.
+Useful when this output extends another and you don’t want to generate the original.
+Use the boolean true value to disable the output you are extending.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extends</span></code> <span class="target" id="index-13"></span>: [string=’’] Copy the <cite>options</cite> section from the indicated output.
+Used to inherit options from another output of the same type.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">groups</span></code> <span class="target" id="index-14"></span>: [string|list(string)=’’] One or more groups to add this output. In order to catch typos
+we recommend to add outputs only to existing groups. You can create an empty group if
+needed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_id</span></code> <span class="target" id="index-15"></span>: [string=’’] Text to use for the %I expansion content. To differentiate variations of this output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">priority</span></code> <span class="target" id="index-16"></span>: [number=50] [0,100] Priority for this output. High priority outputs are created first.
+Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_by_default</span></code> <span class="target" id="index-17"></span>: [boolean=true] When enabled this output will be created when no specific outputs are requested.</p></li>
+</ul>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="report.html" class="btn btn-neutral float-left" title="Design report" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="stencil_3d.html" class="btn btn-neutral float-right" title="3D Printed Stencils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2023, Salvador E. Tropea/INTI/John Beard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

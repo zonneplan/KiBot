@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KiBot (formerly KiPlot) &mdash; KiBot 1.6.4 documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Introduction" href="introduction.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="#" class="icon icon-home">
+            KiBot
+              <img src="_static/kibot_370x200.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="usage_with_ci_cd.html">Usage for CI/CD</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes and extra information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notes_gerber.html">Notes about Gerber format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes_position.html">Notes about the position file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes_3d.html">Notes about 3D models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="propose.html">Proposed advanced KiCad usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="KiPlotYAML.html">KiPlot YAML</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Final notes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Indices and tables:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">KiBot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="#" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">KiBot (formerly KiPlot)</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="kibot-formerly-kiplot">
+<h1>KiBot (formerly KiPlot)<a class="headerlink" href="#kibot-formerly-kiplot" title="Permalink to this heading"></a></h1>
+<figure class="align-default">
+<img alt="KiBot Logo" src="https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png" />
+</figure>
+<p><a class="reference external" href="https://github.com/INTI-CMNB/KiBot/actions"><img alt="Python application" src="https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=dev&amp;style=plastic" /></a> <a class="reference external" href="https://coveralls.io/github/INTI-CMNB/KiBot?branch=master"><img alt="Coverage Status" src="https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic" /></a> <a class="reference external" href="https://pypi.org/project/kibot/"><img alt="PyPI version" src="https://img.shields.io/pypi/v/kibot?style=plastic" /></a> <a class="reference external" href="https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL"><img alt="Donate" src="https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic" /></a></p>
+<p><strong>This is the documentation for the current development KiBot, not yet released. To know what changed see the</strong>  <a class="reference external" href="CHANGELOG.md">changelog</a></p>
+<p><strong>Important for CI/CD</strong>:</p>
+<ul class="simple">
+<li><p>The GitHub actions now use the full/test docker images. So now they include PanDoc and also Blender.</p></li>
+<li><p>If you are looking for the GitHub Actions documentation, and you already know how
+to use KiBot, or want a quick start, read: <a class="reference internal" href="usage_with_ci_cd.html#usage-of-github-actions"><span class="std std-ref">Usage for CI/CD</span></a></p></li>
+</ul>
+<p><strong>New on v1.6.3</strong></p>
+<ul class="simple">
+<li><p>Parametrizable imports</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">value_split</span></code> and <code class="docutils literal notranslate"><span class="pre">spec_to_field</span></code> filters</p></li>
+</ul>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#dependencies">Dependencies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-on-ubuntu-or-debian">Installation on Ubuntu or Debian</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-on-arch-linux">Installation on Arch Linux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-using-pip">Installation using pip</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#notes-about-virtualenv">Notes about virtualenv</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html#installation-on-other-targets">Installation on other targets</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="configuration.html">Configuration</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="configuration/quick_start.html">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration/section_order.html">Section order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration/header.html">The header</a></li>
+<li class="toctree-l2"><a class="reference internal" href="configuration/preflight.html">The <em>preflight</em> section</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configuration/preflight.html#supported-preflights">Supported preflights</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/preflight.html#more-about-pcb-replace-and-sch-replace">More about <em>pcb_replace</em> and <em>sch_replace</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/preflight.html#filtering-drc-and-erc-errors">Filtering DRC and ERC errors</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configuration/global.html">Default global options</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#default-output-option">Default <em>output</em> option</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#default-dir-option">Default <em>dir</em> option</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#default-variant-option">Default <em>variant</em> option</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#default-units-option">Default <em>units</em> option</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#output-directory-option">Output directory option</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#date-format-option">Date format option</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#pcb-details-options">PCB details options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#filtering-kibot-warnings">Filtering KiBot warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/global.html#all-available-global-options">All available global options</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configuration/filters.html">Filters and variants</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configuration/filters.html#supported-filters">Supported filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/filters.html#examples-for-filters">Examples for filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/filters.html#built-in-filters">Built-in filters</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/filters.html#supported-variants">Supported variants</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/filters.html#changing-the-3d-model-simple-mechanism">Changing the 3D model, simple mechanism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/filters.html#changing-the-3d-model-complex-mechanism">Changing the 3D model, complex mechanism</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/filters.html#dnf-and-dnc-internal-keys">DNF and DNC internal keys</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configuration/outputs.html">The <em>outputs</em> section</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#specifying-the-layers">Specifying the layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#supported-outputs">Supported outputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#consolidating-boms">Consolidating BoMs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#importing-outputs-from-another-file">Importing outputs from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#importing-other-stuff-from-another-file">Importing other stuff from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#parametrizable-imports">Parametrizable imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#importing-internal-templates">Importing internal templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#using-other-output-as-base-for-a-new-one">Using other output as base for a new one</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/outputs.html#grouping-outputs">Grouping outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="configuration/substitution.html">Doing YAML substitution or preprocessing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="configuration/substitution.html#default-definitions">Default definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/substitution.html#definitions-during-import">Definitions during import</a></li>
+<li class="toctree-l3"><a class="reference internal" href="configuration/substitution.html#recursive-definitions-expansion">Recursive definitions expansion</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage.html">Usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage.html#command-line-help">Command line help</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="usage_with_ci_cd.html">Usage for CI/CD</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="usage_with_ci_cd.html#index-2">Usage of GitHub Actions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="usage_with_ci_cd.html#github-actions-tags">GitHub Actions tags</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="usage_with_ci_cd.html#github-cache">GitHub Cache</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Notes and extra information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="notes_gerber.html">Notes about Gerber format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="notes_position.html">Notes about the position file</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notes_position.html#xyrs-files">XYRS files</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="notes_3d.html">Notes about 3D models</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="notes_3d.html#d-models-and-docker-images">3D models and docker images</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes_3d.html#caching-downloaded-3d-models">Caching downloaded 3D models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes_3d.html#self-contained-projects">Self contained projects</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes_3d.html#lcsc-jlcpcb-easyeda-3d-models">LCSC/JLCPCB/EasyEDA 3D models</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes_3d.html#d-models-aliases">3D models aliases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes_3d.html#how-to-handle-addons">How to handle addons</a></li>
+<li class="toctree-l2"><a class="reference internal" href="notes_3d.html#getting-a-self-contained-pcb">Getting a self contained PCB</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="propose.html">Proposed advanced KiCad usage</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="propose.html#one-circuit-and-more-than-one-pcb-implementation">One circuit and more than one PCB implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="propose.html#system-with-more-than-one-pcb">System with more than one PCB</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="KiPlotYAML.html">KiPlot YAML</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="KiPlotYAML.html#the-basic-idea">The basic idea</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KiPlotYAML.html#basic-data-types">Basic data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KiPlotYAML.html#compound-data-types">Compound data types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KiPlotYAML.html#indentation">Indentation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KiPlotYAML.html#compact-notation">Compact notation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KiPlotYAML.html#putting-all-together">Putting all together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="KiPlotYAML.html#advanced-tricks">Advanced tricks</a></li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Final notes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
+</ul>
+</div>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Indices and tables:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="genindex.html">Index</a></li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="introduction.html" class="btn btn-neutral float-right" title="Introduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2023, Salvador E. Tropea/INTI/John Beard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -117,6 +117,12 @@ outputs:
       # If none specified KiBot will create a suitable camera.
       # If no position is specified for the camera KiBot will look for a suitable position
       camera:
+        # [number=-1] Minimum distance for objects to the camera. Any object closer than this distance won't be visible.
+        # Only positive values have effect. A negative value has a special meaning.
+        # For a camera with defined position, a negative value means to use Blender defaults (i.e. 0.1 m).
+        # For cameras without position KiBot will ask Blender to compute its position and the use a clip
+        # distance that is 1/10th of the Z distance
+        clip_start: -1
         # [string=''] Name for the camera
         name: ''
         # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
@@ -800,7 +806,7 @@ outputs:
       variant: ''
   # DXF (Drawing Exchange Format):
   # This output is what you get from the File/Plot menu in pcbnew.
-  #     If you use custom fonts and/or colors please consult the `resources_dir` global variable.
+  # If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   - name: 'dxf_example'
     comment: 'Exports the PCB to 2D mechanical EDA tools (like AutoCAD).'
     type: 'dxf'
@@ -1435,7 +1441,7 @@ outputs:
         number_rows: true
         # [string=' '] Separator used for the list of references
         ref_separator: ' '
-        # [boolean=true] Each component group will be tested against a number of regular-expressions (see ``).
+        # [boolean=true] Each component group will be tested against a number of regular-expressions
         test_regex: true
         # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
         use_alt: false

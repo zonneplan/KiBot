@@ -1,0 +1,1605 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The outputs section &mdash; KiBot 1.6.4 documentation</title>
+      <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/sphinx_highlight.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Blender Export Experimental" href="outputs/blender_export.html" />
+    <link rel="prev" title="Filters and variants" href="filters.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            KiBot
+              <img src="../_static/kibot_370x200.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../installation.html">Installation</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../configuration.html">Configuration</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="quick_start.html">Quick start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="section_order.html">Section order</a></li>
+<li class="toctree-l2"><a class="reference internal" href="header.html">The header</a></li>
+<li class="toctree-l2"><a class="reference internal" href="preflight.html">The <em>preflight</em> section</a></li>
+<li class="toctree-l2"><a class="reference internal" href="global.html">Default global options</a></li>
+<li class="toctree-l2"><a class="reference internal" href="filters.html">Filters and variants</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">The <em>outputs</em> section</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#specifying-the-layers">Specifying the layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supported-outputs">Supported outputs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="outputs/blender_export.html">Blender Export <strong>Experimental</strong></a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/boardview.html">BoardView</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/bom.html">BoM (Bill of Materials)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/compress.html">Archiver (files compressor)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/copy_files.html">Files copier</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/diff.html">Diff</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/download_datasheets.html">Datasheets downloader</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/dxf.html">DXF (Drawing Exchange Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/dxf_sch_print.html">DXF Schematic Print (Drawing Exchange Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/excellon.html">Excellon drill format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/gencad.html">GenCAD</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/gerb_drill.html">Gerber drill format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/gerber.html">Gerber format</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/hpgl.html">HPGL (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/hpgl_sch_print.html">HPGL Schematic Print (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/ibom.html">IBoM (Interactive HTML BoM)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/info.html">Info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/kibom.html">KiBoM (KiCad Bill of Materials)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/kicost.html">KiCost (KiCad Cost calculator)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/kikit_present.html">KiKit’s Present - Project Presentation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/navigate_results.html">Navigate Results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/netlist.html">Netlist</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/panelize.html">Panelize</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pcb2blender_tools.html">PCB2Blender Tools</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pcb_print.html">PCB Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pcb_variant.html">PCB with variant generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pcbdraw.html">PcbDraw - Beautiful 2D PCB render</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pdf.html">PDF (Portable Document Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pdf_pcb_print.html">PDF PCB Print (Portable Document Format) <em>Deprecated</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pdf_sch_print.html">PDF Schematic Print (Portable Document Format)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/pdfunite.html">PDF joiner</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/populate.html">Populate - Assembly instructions builder</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/position.html">Pick &amp; place</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/ps.html">PS (Postscript)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/ps_sch_print.html">PS Schematic Print (Postscript)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/qr_lib.html">QR_Lib</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/render_3d.html">3D render of the PCB</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/report.html">Design report</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/sch_variant.html">Schematic with variant generator</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/stencil_3d.html">3D Printed Stencils</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/stencil_for_jig.html">Steel Stencils for Alignment Jig</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/step.html">STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/svg.html">SVG (Scalable Vector Graphics)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/svg_pcb_print.html">SVG PCB Print (Scalable Vector Graphics) <em>Deprecated</em></a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/svg_sch_print.html">SVG Schematic Print</a></li>
+<li class="toctree-l4"><a class="reference internal" href="outputs/vrml.html">VRML (Virtual Reality Modeling Language)</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#consolidating-boms">Consolidating BoMs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#importing-outputs-from-another-file">Importing outputs from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#importing-other-stuff-from-another-file">Importing other stuff from another file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#parametrizable-imports">Parametrizable imports</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#importing-internal-templates">Importing internal templates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#using-other-output-as-base-for-a-new-one">Using other output as base for a new one</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#grouping-outputs">Grouping outputs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="substitution.html">Doing YAML substitution or preprocessing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../usage.html">Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../usage_with_ci_cd.html">Usage for CI/CD</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Notes and extra information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../notes_gerber.html">Notes about Gerber format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes_position.html">Notes about the position file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../notes_3d.html">Notes about 3D models</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../propose.html">Proposed advanced KiCad usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../KiPlotYAML.html">KiPlot YAML</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Final notes:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../credits.html">Credits</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Indices and tables:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../genindex.html">Index</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">KiBot</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../configuration.html">Configuration</a></li>
+      <li class="breadcrumb-item active">The <em>outputs</em> section</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="the-outputs-section">
+<span id="index-0"></span><h1>The <em>outputs</em> section<a class="headerlink" href="#the-outputs-section" title="Permalink to this heading"></a></h1>
+<p>In this section you put all the things that you want to generate. This
+section contains one or more <strong>outputs</strong>. Each output contain the
+following data:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">name</span></code> a name so you can easily identify it.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">comment</span></code> a short description of this output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">type</span></code> selects which type of output will be generated. Examples are
+<em>gerbers</em>, <em>drill files</em> and <em>pick &amp; place files</em></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dir</span></code> is the directory where this output will be stored.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">extends</span></code> used to use another output’s <code class="docutils literal notranslate"><span class="pre">options</span></code> as base.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">run_by_default</span></code> indicates this output will be created when no
+specific outputs are requested.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">disable_run_by_default</span></code> can be used to disable the
+<code class="docutils literal notranslate"><span class="pre">run_by_default</span></code> status of other output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">output_id</span></code> text to use for the %I expansion content.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options</span></code> contains one or more options to configure this output.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layers</span></code> a list of layers used for this output. Not all outputs
+needs this subsection.</p></li>
+</ul>
+<p><strong>Important note about the layers</strong>: In the original
+<a class="reference external" href="https://github.com/johnbeard/kiplot">kiplot</a> (from <a class="reference external" href="https://github.com/johnbeard">John
+Beard</a>) the name of the inner layers
+was <em>Inner.N</em> where <em>N</em> is the number of the layer, i.e. <em>Inner.1</em> is
+the first inner layer. This format is supported for compatibility. Note
+that this generated a lot of confusion because the default KiCad name
+for the first inner layer is <em>In1.Cu</em>. People filled issues and
+submitted pull-requests to fix it, thinking that inner layers weren’t
+supported. Currently KiCad allows renaming these layers, so this version
+of kiplot supports the name used in KiCad. Just use the same name you
+see in the user interface.</p>
+<p>The available values for <em>type</em> are:</p>
+<ul class="simple" id="index-1">
+<li><p>Plot formats:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">gerber</span></code> the gerbers for fabrication.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ps</span></code> postscript plot</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hpgl</span></code> format for laser printers</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">svg</span></code> scalable vector graphics</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pdf</span></code> portable document format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dxf</span></code> mechanical CAD format</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-2">
+<li><p>Drill formats:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">excellon</span></code> data for the drilling machine</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gerb_drill</span></code> drilling positions in a gerber file</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-3">
+<li><p>Pick &amp; place</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">position</span></code> of the components for the pick &amp; place machine</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-4">
+<li><p>Documentation</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">pdf_sch_print</span></code> schematic in PDF format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">svg_sch_print</span></code> schematic in SVG format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ps_sch_print</span></code> schematic in PS format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dxf_sch_print</span></code> schematic in DXF format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">hpgl_sch_print</span></code> schematic in HPGL format</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pdf_pcb_print</span></code> PDF file containing one or more layer and the
+page frame</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">svg_pcb_print</span></code> SVG file containing one or more layer and the
+page frame</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pcb_print</span></code> PDF/SVG/PNG/EPS/PS, similar to <code class="docutils literal notranslate"><span class="pre">pdf_pcb_print</span></code> and
+<code class="docutils literal notranslate"><span class="pre">svg_pcb_print</span></code>, with more flexibility</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">report</span></code> generates a report about the PDF. Can include images
+from the above outputs.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">diff</span></code> creates PDF files showing schematic or PCB changes.</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-5">
+<li><p>Bill of Materials</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">bom</span></code> The internal BoM generator.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kibom</span></code> BoM in HTML or CSV format generated by
+<a class="reference external" href="https://github.com/INTI-CMNB/KiBoM">KiBoM</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ibom</span></code> Interactive HTML BoM generated by
+<a class="reference external" href="https://github.com/INTI-CMNB/InteractiveHtmlBom">InteractiveHtmlBom</a></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kicost</span></code> BoM in XLSX format with costs generated by
+<a class="reference external" href="https://github.com/INTI-CMNB/KiCost">KiCost</a></p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-6">
+<li><p>3D model:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">step</span></code> <em>Standard for the Exchange of Product Data</em> for the PCB</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">vrml</span></code> <em>Virtual Reality Modeling Language</em> for the PCB</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">render_3d</span></code> PCB render, from the KiCad’s 3D Viewer</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">blender_export</span></code> PCB export to Blender and high quality 3D
+render. Including export to: <code class="docutils literal notranslate"><span class="pre">fbx</span></code> (Kaydara’s Filmbox), ‘obj’
+(Wavefront), ‘x3d’ (ISO/IEC standard), <code class="docutils literal notranslate"><span class="pre">gltf</span></code> (GL format),
+<code class="docutils literal notranslate"><span class="pre">stl</span></code> (3D printing) and ‘ply’ (Stanford).</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-7">
+<li><p>Web pages:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">populate</span></code> To create step-by-step assembly instructions.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">kikit_present</span></code> To create a project presentation web page.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">navigate_results</span></code> generates web pages to navigate the generated
+outputs.</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-8">
+<li><p>Fabrication helpers:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">panelize</span></code> creates a PCB panel containing N copies of the PCB.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stencil_3d</span></code> creates a 3D self-registering printable stencil.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">stencil_for_jig</span></code> creates steel stencils and 3D register.</p></li>
+</ul>
+</li>
+</ul>
+<ul class="simple" id="index-9">
+<li><p>Others:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">boardview</span></code> creates a file useful to repair the board, but
+without disclosing the full layout.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">gencad</span></code> exports the PCB in GENCAD format.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">compress</span></code> creates an archive containing generated data.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">download_datasheets</span></code> downloads the datasheets for all the
+components.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pcbdraw</span></code> nice images of the PCB in customized colors.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pdfunite</span></code> joins various PDF files into one.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">qr_lib</span></code> generates symbol and footprints for QR codes.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sch_variant</span></code> the schematic after applying all filters and
+variants, including crossed components.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pcb_variant</span></code> the PCB after applying all filters and variants,
+including modified 3D models.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">copy_files</span></code> used to copy generated files and source material.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">info</span></code> creates a report about the tools used during the KiBot
+run.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">netlist</span></code> generates the list of connections for the project
+(classic and IPC-D-356 formats).</p></li>
+</ul>
+</li>
+</ul>
+<p>Here is an example of a configuration file to generate the gerbers for
+the top and bottom layers:</p>
+<div class="highlight-yaml notranslate" id="index-10"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">preflight</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">run_drc</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">outputs</span><span class="p">:</span>
+
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;gerbers&#39;</span>
+<span class="w">    </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Gerbers</span><span class="nv"> </span><span class="s">for</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">board</span><span class="nv"> </span><span class="s">house&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gerber</span>
+<span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gerberdir</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">      </span><span class="c1"># generic layer options</span>
+<span class="w">      </span><span class="nt">exclude_edge_layer</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">exclude_pads_from_silkscreen</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">plot_sheet_reference</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">plot_footprint_refs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">plot_footprint_values</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">force_plot_invisible_refs_vals</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">tent_vias</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">line_width</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.15</span>
+
+<span class="w">      </span><span class="c1"># gerber options</span>
+<span class="w">      </span><span class="nt">use_aux_axis_as_origin</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">subtract_mask_from_silk</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">use_protel_extensions</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">      </span><span class="nt">gerber_precision</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">4.5</span>
+<span class="w">      </span><span class="nt">create_gerber_job_file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">use_gerber_x2_attributes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">use_gerber_net_attributes</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+
+<span class="w">    </span><span class="nt">layers</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;F.Cu&#39;</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;B.Cu&#39;</span>
+</pre></div>
+</div>
+<p>Most options are the same you’ll find in the KiCad dialogs.</p>
+<p>Outputs are generated in the order they are declared in the YAML file.
+To create them in an arbitrary order use the <code class="docutils literal notranslate"><span class="pre">--cli-order</span></code> command
+line option and they will be created in the order specified in the
+command line.</p>
+<section id="specifying-the-layers">
+<span id="index-11"></span><h2>Specifying the layers<a class="headerlink" href="#specifying-the-layers" title="Permalink to this heading"></a></h2>
+<p>You have various ways to specify the layers. If you need to specify just
+one layer you can just use its name:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;F.Cu&#39;</span>
+</pre></div>
+</div>
+<p>If you want to specify all the available layers:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;all&#39;</span>
+</pre></div>
+</div>
+<p>You can also select the layers you want in KiCad (using File, Plot
+dialog) and save your PCB. Then you just need to use:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;selected&#39;</span>
+</pre></div>
+</div>
+<p>You can also use any of the following grup of layers:</p>
+<ul class="simple">
+<li><p><strong>copper</strong> all the copper layers</p></li>
+<li><p><strong>technical</strong> all the technical layers (silk sreen, solder mask,
+paste, adhesive, etc.)</p></li>
+<li><p><strong>user</strong> all the user layers (draw, comments, eco, margin, edge cuts,
+etc.)</p></li>
+</ul>
+<p>You can also mix the above definitions using a list:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;copper&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;Dwgs.User&#39;</span>
+</pre></div>
+</div>
+<p>This will select all the copper layers and the user drawings. Note that
+the above mentioned options will use file name suffixes and descriptions
+selected automatically. If you want to use a particular suffix and
+provide better descriptions you can use the following format:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;F.Cu&#39;</span>
+<span class="w">    </span><span class="nt">suffix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;F_Cu&#39;</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Front</span><span class="nv"> </span><span class="s">copper&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;B.Cu&#39;</span>
+<span class="w">    </span><span class="nt">suffix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;B_Cu&#39;</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Bottom</span><span class="nv"> </span><span class="s">copper&#39;</span>
+</pre></div>
+</div>
+<p>You can also mix the styles:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;copper&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">layer</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Cmts.User&#39;</span>
+<span class="w">    </span><span class="nt">suffix</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;Cmts_User&#39;</span>
+<span class="w">    </span><span class="nt">description</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;User</span><span class="nv"> </span><span class="s">comments&#39;</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;Dwgs.User&#39;</span>
+</pre></div>
+</div>
+<p>If you need to use the same list of layers for various outputs you can
+use YAML anchors. The first time you define the list of layers just
+assign an anchor, here is an example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span><span class="w"> </span><span class="nl">&amp;copper_and_cmts</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">copper</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&#39;Cmts.User&#39;</span>
+</pre></div>
+</div>
+<p>Next time you need this list just use an alias, like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">layers</span><span class="p">:</span><span class="w"> </span><span class="nv">*copper_and_cmts</span>
+</pre></div>
+</div>
+<span class="target" id="index-12"></span></section>
+<section id="supported-outputs">
+<h2>Supported outputs<a class="headerlink" href="#supported-outputs" title="Permalink to this heading"></a></h2>
+<p>Notes:</p>
+<ol class="arabic simple">
+<li><p>Most relevant options are listed first and in <strong>bold</strong>. Which ones are more relevant is quite arbitrary, comments are welcome.</p></li>
+<li><p>Aliases are listed in <em>italics</em>.</p></li>
+</ol>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="outputs/blender_export.html">Blender Export <strong>Experimental</strong></a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/boardview.html">BoardView</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/bom.html">BoM (Bill of Materials)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/compress.html">Archiver (files compressor)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/copy_files.html">Files copier</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/diff.html">Diff</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/download_datasheets.html">Datasheets downloader</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/dxf.html">DXF (Drawing Exchange Format)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/dxf_sch_print.html">DXF Schematic Print (Drawing Exchange Format)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/excellon.html">Excellon drill format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/gencad.html">GenCAD</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/gerb_drill.html">Gerber drill format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/gerber.html">Gerber format</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/hpgl.html">HPGL (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/hpgl_sch_print.html">HPGL Schematic Print (Hewlett &amp; Packard Graphics Language)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/ibom.html">IBoM (Interactive HTML BoM)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/info.html">Info</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/kibom.html">KiBoM (KiCad Bill of Materials)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/kicost.html">KiCost (KiCad Cost calculator)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/kikit_present.html">KiKit’s Present - Project Presentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/navigate_results.html">Navigate Results</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/netlist.html">Netlist</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/panelize.html">Panelize</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pcb2blender_tools.html">PCB2Blender Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pcb_print.html">PCB Print</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pcb_variant.html">PCB with variant generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pcbdraw.html">PcbDraw - Beautiful 2D PCB render</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pdf.html">PDF (Portable Document Format)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pdf_pcb_print.html">PDF PCB Print (Portable Document Format) <em>Deprecated</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pdf_sch_print.html">PDF Schematic Print (Portable Document Format)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/pdfunite.html">PDF joiner</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/populate.html">Populate - Assembly instructions builder</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/position.html">Pick &amp; place</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/ps.html">PS (Postscript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/ps_sch_print.html">PS Schematic Print (Postscript)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/qr_lib.html">QR_Lib</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/render_3d.html">3D render of the PCB</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/report.html">Design report</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/sch_variant.html">Schematic with variant generator</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/stencil_3d.html">3D Printed Stencils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/stencil_for_jig.html">Steel Stencils for Alignment Jig</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/step.html">STEP (ISO 10303-21 Clear Text Encoding of the Exchange Structure)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/svg.html">SVG (Scalable Vector Graphics)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/svg_pcb_print.html">SVG PCB Print (Scalable Vector Graphics) <em>Deprecated</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/svg_sch_print.html">SVG Schematic Print</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outputs/vrml.html">VRML (Virtual Reality Modeling Language)</a></li>
+</ul>
+</div>
+</section>
+<section id="consolidating-boms">
+<span id="index-13"></span><h2>Consolidating BoMs<a class="headerlink" href="#consolidating-boms" title="Permalink to this heading"></a></h2>
+<p>Some times your project is composed by various boards, other times you
+are producing various products at the same time. In both cases you would
+want to consolidate the components acquisition in one operation. Of
+course you can create individual BoMs for each project in CSV format and
+then consolidate them using a spreadsheet editor. But KiBot offers
+another option: you create a BoM for your main project and then
+aggregate the components from the other projects.</p>
+<p>Here is a simple example. Suppose you have three projects: <em>merge_1</em>,
+<em>merge_2</em> and <em>merge_3</em>. For the <em>merge_1</em> project you could use the
+following output:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;bom_csv&#39;</span>
+<span class="w">    </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bill</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Materials</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">CSV</span><span class="nv"> </span><span class="s">format&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bom</span>
+<span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BoM</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">use_alt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+<p>Using the <code class="docutils literal notranslate"><span class="pre">tests/board_samples/kicad_5/merge_1.sch</span></code> from the git repo
+and storing the above example in <code class="docutils literal notranslate"><span class="pre">m1.kibot.yaml</span></code> you could run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>src/kibot<span class="w"> </span>-c<span class="w"> </span>m1.kibot.yaml<span class="w"> </span>-e<span class="w"> </span>tests/board_samples/kicad_5/merge_1.sch<span class="w"> </span>-d<span class="w"> </span>test_merge
+</pre></div>
+</div>
+<p>And get <code class="docutils literal notranslate"><span class="pre">test_merge/BoM/merge_1-bom.csv</span></code>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Row</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>References</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Footprint</p></th>
+<th class="head"><p>Quantity
+Per PCB</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Datasheet</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>C1</p></td>
+<td><p>1nF</p></td>
+<td></td>
+<td><p>1</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>C2</p></td>
+<td><p>10nF</p></td>
+<td></td>
+<td><p>1</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>R1-R3</p></td>
+<td><p>1k</p></td>
+<td></td>
+<td><p>3</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Project info:</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Schematic:</p></td>
+<td><p>merge_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Variant:</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-even"><td><p>Revision:</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Date:</p></td>
+<td><p>2021-02-02_12-12-27</p></td>
+</tr>
+<tr class="row-even"><td><p>KiCad Version:</p></td>
+<td><p>5.1.9-73d0e3b20d~88~ubuntu21.04.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Statistics:</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Component Groups:</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Component Count:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Fitted Components:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Number of PCBs:</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Total Components:</p></td>
+<td><p>5</p></td>
+</tr>
+</tbody>
+</table>
+<p>This CSV says you have five components groped in three different types.
+They are one 1 nF capacitor, one 10 nF capacitor and three 1 k
+resistors. Now lets generate BoMs for the <em>merge_2</em> example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>src/kibot<span class="w"> </span>-c<span class="w"> </span>m1.kibot.yaml<span class="w"> </span>-e<span class="w"> </span>tests/board_samples/kicad_5/merge_2.sch<span class="w"> </span>-d<span class="w"> </span>test_merge
+</pre></div>
+</div>
+<p>We’ll get <code class="docutils literal notranslate"><span class="pre">test_merge/BoM/merge_2-bom.csv</span></code>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Row</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>References</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Footprint</p></th>
+<th class="head"><p>Quantity
+Per PCB</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Datasheet</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>C2</p></td>
+<td><p>1nF</p></td>
+<td></td>
+<td><p>1</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>C1</p></td>
+<td><p>10nF</p></td>
+<td></td>
+<td><p>1</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>R2-R4</p></td>
+<td><p>1000</p></td>
+<td></td>
+<td><p>3</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>R1</p></td>
+<td><p>10k</p></td>
+<td></td>
+<td><p>1</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Project info:</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Schematic:</p></td>
+<td><p>merge_2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Variant:</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-even"><td><p>Revision:</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Date:</p></td>
+<td><p>2021-01-27_10-19-46</p></td>
+</tr>
+<tr class="row-even"><td><p>KiCad Version:</p></td>
+<td><p>5.1.9-73d0e3b20d~88~ubuntu21.04.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Statistics:</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Component Groups:</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Component Count:</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Fitted Components:</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Number of PCBs:</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Total Components:</p></td>
+<td><p>6</p></td>
+</tr>
+</tbody>
+</table>
+<p>In this project we have six components from four different types. They
+are similar to <em>merge_1</em> but now we also have a 10 k resistor. We don’t
+need to generate this BoM to consolidate our projects, but is good to
+know what we have. And now lets generate BoMs for the <em>merge_3</em> example:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>src/kibot<span class="w"> </span>-c<span class="w"> </span>m1.kibot.yaml<span class="w"> </span>-e<span class="w"> </span>tests/board_samples/kicad_5/merge_3.sch<span class="w"> </span>-d<span class="w"> </span>test_merge
+</pre></div>
+</div>
+<p>We’ll get <code class="docutils literal notranslate"><span class="pre">test_merge/BoM/merge_3-bom.csv</span></code>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Row</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>References</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Footprint</p></th>
+<th class="head"><p>Quantity
+Per PCB</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Datasheet</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>R5</p></td>
+<td><p>1k</p></td>
+<td></td>
+<td><p>1</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>R1-R4</p></td>
+<td><p>10k</p></td>
+<td></td>
+<td><p>4</p></td>
+<td></td>
+<td><p>~</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Project info:</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Schematic:</p></td>
+<td><p>merge_3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Variant:</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-even"><td><p>Revision:</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Date:</p></td>
+<td><p>2021-01-27_10-21-29</p></td>
+</tr>
+<tr class="row-even"><td><p>KiCad Version:</p></td>
+<td><p>5.1.9-73d0e3b20d~88~ubuntu21.04.1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Statistics:</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Component Groups:</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Component Count:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Fitted Components:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Number of PCBs:</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>Total Components:</p></td>
+<td><p>5</p></td>
+</tr>
+</tbody>
+</table>
+<p>This time we also have five components, but from two different types.
+They are one 1 k resistor and four 10 k resistors. Now suppose we want
+to create 10 boards for <em>merge_1</em>, 20 for <em>merge_2</em> and 30 for
+<em>merge_3</em>. We could use the following configuration:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;bom_csv&#39;</span>
+<span class="w">    </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bill</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Materials</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">CSV</span><span class="nv"> </span><span class="s">format&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bom</span>
+<span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BoM</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">use_alt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">aggregate</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests/board_samples/kicad_5/merge_2.sch</span>
+<span class="w">          </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests/board_samples/kicad_5/merge_3.sch</span>
+<span class="w">          </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+</pre></div>
+</div>
+<p>Save it as <code class="docutils literal notranslate"><span class="pre">m2.kibot.yaml</span></code> and run:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>src/kibot<span class="w"> </span>-c<span class="w"> </span>m2.kibot.yaml<span class="w"> </span>-e<span class="w"> </span>tests/board_samples/kicad_5/merge_1.sch<span class="w"> </span>-d<span class="w"> </span>test_merge_consolidate
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">test_merge_consolidate/BoM/merge_1-bom.csv</span></code> file will be
+generated containing:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Row</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>References</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Footprint</p></th>
+<th class="head"><p>Quantity
+Per PCB</p></th>
+<th class="head"><p>Build
+quantity</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Datasheet</p></th>
+<th class="head"><p>Source BoM</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>C1 C2</p></td>
+<td><p>1nF</p></td>
+<td></td>
+<td><p>2</p></td>
+<td><p>30</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_1(1)
+merge_2(1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>C2 C1</p></td>
+<td><p>10nF</p></td>
+<td></td>
+<td><p>2</p></td>
+<td><p>30</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_1(1)
+merge_2(1)</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>R1-R3
+R2-R4
+R5</p></td>
+<td><p>1k</p></td>
+<td></td>
+<td><p>7</p></td>
+<td><p>120</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_1(3)
+merge_2(3)
+merge_3(1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>R1 R1-R4</p></td>
+<td><p>10k</p></td>
+<td></td>
+<td><p>5</p></td>
+<td><p>140</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_2(1)
+merge_3(4)</p></td>
+</tr>
+</tbody>
+</table>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Project info:</p></th>
+<th class="head"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Variant:</p></td>
+<td><p>default</p></td>
+</tr>
+<tr class="row-odd"><td><p>KiCad Version:</p></td>
+<td><p>5.1.9-73d0e3b20d~88~ubuntu21.04.1</p></td>
+</tr>
+<tr class="row-even"><td><p>Global statistics:</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Component Groups:</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-even"><td><p>Component Count:</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-odd"><td><p>Fitted Components:</p></td>
+<td><p>16</p></td>
+</tr>
+<tr class="row-even"><td><p>Number of PCBs:</p></td>
+<td><p>60</p></td>
+</tr>
+<tr class="row-odd"><td><p>Total Components:</p></td>
+<td><p>320</p></td>
+</tr>
+<tr class="row-even"><td><p>Project info:</p></td>
+<td><p>merge_1</p></td>
+</tr>
+<tr class="row-odd"><td><p>Schematic:</p></td>
+<td><p>merge_1</p></td>
+</tr>
+<tr class="row-even"><td><p>Revision:</p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p>Date:</p></td>
+<td><p>2021-02-02_12-12-27</p></td>
+</tr>
+<tr class="row-even"><td><p>Company:</p></td>
+<td><p>Test company</p></td>
+</tr>
+<tr class="row-odd"><td><p>Statistics:</p></td>
+<td><p>merge_1</p></td>
+</tr>
+<tr class="row-even"><td><p>Component Groups:</p></td>
+<td><p>3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Component Count:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Fitted Components:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Number of PCBs:</p></td>
+<td><p>10</p></td>
+</tr>
+<tr class="row-even"><td><p>Total Components:</p></td>
+<td><p>50</p></td>
+</tr>
+<tr class="row-odd"><td><p>Project info:</p></td>
+<td><p>merge_2</p></td>
+</tr>
+<tr class="row-even"><td><p>Schematic:</p></td>
+<td><p>merge_2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Revision:</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Date:</p></td>
+<td><p>2021-01-27_10-19-46</p></td>
+</tr>
+<tr class="row-odd"><td><p>Statistics:</p></td>
+<td><p>merge_2</p></td>
+</tr>
+<tr class="row-even"><td><p>Component Groups:</p></td>
+<td><p>4</p></td>
+</tr>
+<tr class="row-odd"><td><p>Component Count:</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-even"><td><p>Fitted Components:</p></td>
+<td><p>6</p></td>
+</tr>
+<tr class="row-odd"><td><p>Number of PCBs:</p></td>
+<td><p>20</p></td>
+</tr>
+<tr class="row-even"><td><p>Total Components:</p></td>
+<td><p>120</p></td>
+</tr>
+<tr class="row-odd"><td><p>Project info:</p></td>
+<td><p>merge_3</p></td>
+</tr>
+<tr class="row-even"><td><p>Schematic:</p></td>
+<td><p>merge_3</p></td>
+</tr>
+<tr class="row-odd"><td><p>Revision:</p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p>Date:</p></td>
+<td><p>2021-01-27_10-21-29</p></td>
+</tr>
+<tr class="row-odd"><td><p>Statistics:</p></td>
+<td><p>merge_3</p></td>
+</tr>
+<tr class="row-even"><td><p>Component Groups:</p></td>
+<td><p>2</p></td>
+</tr>
+<tr class="row-odd"><td><p>Component Count:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-even"><td><p>Fitted Components:</p></td>
+<td><p>5</p></td>
+</tr>
+<tr class="row-odd"><td><p>Number of PCBs:</p></td>
+<td><p>30</p></td>
+</tr>
+<tr class="row-even"><td><p>Total Components:</p></td>
+<td><p>150</p></td>
+</tr>
+</tbody>
+</table>
+<p>You can see that now we have much more stats. They say we have four
+different types, thirteen for board sets, a total of 60 boards and 250
+components. Then we have individual stats for each project. The
+capacitors are easy to interpret, we have 30 1 nF capacitors <em>merge_1</em>
+project has one and <em>merge_2</em> another. As we have 10 <em>merge_1</em> and 20
+<em>merge_2</em> boards this is clear. But looking at the 1 k resistors is
+harder. We have 80, three from <em>merge_1</em>, one from <em>merge_2</em> and another
+from <em>merge_3</em>. So we have 10<em>3+20</em>3+30=120, this is clear, but the
+BoM says they are R1-R3 R2-R4 R5, which is a little bit confusing. In
+this simple example is easy to correlate R1-R3 to <em>merge_1</em>, R2-R4 to
+<em>merge_2</em> and R5 to <em>merge_1</em>. For bigger projects this gets harder.
+Lets assign an <em>id</em> to each project, we’ll use ‘A’ for <em>merge_1</em>, ‘B’
+for <em>merge_2</em> and ‘C’ for <em>merge_3</em>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;bom_csv&#39;</span>
+<span class="w">    </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bill</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Materials</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">CSV</span><span class="nv"> </span><span class="s">format&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bom</span>
+<span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BoM</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">use_alt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">ref_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;A:&#39;</span>
+<span class="w">      </span><span class="nt">aggregate</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests/board_samples/kicad_5/merge_2.sch</span>
+<span class="w">          </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">          </span><span class="nt">ref_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;B:&#39;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests/board_samples/kicad_5/merge_3.sch</span>
+<span class="w">          </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">          </span><span class="nt">ref_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;C:&#39;</span>
+</pre></div>
+</div>
+<p>Now <code class="docutils literal notranslate"><span class="pre">test_merge_consolidate/BoM/merge_1-bom.csv</span></code> will have the
+following information:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Row</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>References</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Footprint</p></th>
+<th class="head"><p>Quantity
+Per PCB</p></th>
+<th class="head"><p>Build
+quantity</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Datasheet</p></th>
+<th class="head"><p>Source BoM</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>A:C1 B:C2</p></td>
+<td><p>1nF</p></td>
+<td></td>
+<td><p>2</p></td>
+<td><p>30</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_1(1)
+merge_2(1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>A:C2 B:C1</p></td>
+<td><p>10nF</p></td>
+<td></td>
+<td><p>2</p></td>
+<td><p>30</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_1(1)
+merge_2(1)</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>A:R1-A:R3
+B:R2-B:R4
+C:R5</p></td>
+<td><p>1k</p></td>
+<td></td>
+<td><p>7</p></td>
+<td><p>120</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_1(3)
+merge_2(3)
+merge_3(1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>B:R1
+C:R1-C:R4</p></td>
+<td><p>10k</p></td>
+<td></td>
+<td><p>5</p></td>
+<td><p>140</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>merge_2(1)
+merge_3(4)</p></td>
+</tr>
+</tbody>
+</table>
+<p>As you can see now we know <code class="docutils literal notranslate"><span class="pre">A</span></code> has R1-R3, <code class="docutils literal notranslate"><span class="pre">B</span></code> R2-R4 and for <code class="docutils literal notranslate"><span class="pre">C</span></code> R5
+is the 1k resistor. If we want to compact the <code class="docutils literal notranslate"><span class="pre">Source</span> <span class="pre">BoM</span></code> column we
+just need to enable the <code class="docutils literal notranslate"><span class="pre">source_by_id</span></code> option:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+
+<span class="nt">outputs</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;bom_csv&#39;</span>
+<span class="w">    </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Bill</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Materials</span><span class="nv"> </span><span class="s">in</span><span class="nv"> </span><span class="s">CSV</span><span class="nv"> </span><span class="s">format&quot;</span>
+<span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">bom</span>
+<span class="w">    </span><span class="nt">dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">BoM</span>
+<span class="w">    </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">      </span><span class="nt">use_alt</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">10</span>
+<span class="w">      </span><span class="nt">ref_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;A:&#39;</span>
+<span class="w">      </span><span class="nt">source_by_id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="w">      </span><span class="nt">aggregate</span><span class="p">:</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests/board_samples/kicad_5/merge_2.sch</span>
+<span class="w">          </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">20</span>
+<span class="w">          </span><span class="nt">ref_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;B:&#39;</span>
+<span class="w">        </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">tests/board_samples/kicad_5/merge_3.sch</span>
+<span class="w">          </span><span class="nt">number</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">30</span>
+<span class="w">          </span><span class="nt">ref_id</span><span class="p">:</span><span class="w"> </span><span class="s">&#39;C:&#39;</span>
+</pre></div>
+</div>
+<p>And we’ll get:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Row</p></th>
+<th class="head"><p>Description</p></th>
+<th class="head"><p>Part</p></th>
+<th class="head"><p>References</p></th>
+<th class="head"><p>Value</p></th>
+<th class="head"><p>Footprint</p></th>
+<th class="head"><p>Quantity
+Per PCB</p></th>
+<th class="head"><p>Build
+quantity</p></th>
+<th class="head"><p>Status</p></th>
+<th class="head"><p>Datasheet</p></th>
+<th class="head"><p>Source BoM</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>1</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>A:C1 B:C2</p></td>
+<td><p>1nF</p></td>
+<td></td>
+<td><p>2</p></td>
+<td><p>30</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>A:(1)
+B:(1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>2</p></td>
+<td><p>Unpolarized
+capacitor</p></td>
+<td><p>C</p></td>
+<td><p>A:C2 B:C1</p></td>
+<td><p>10nF</p></td>
+<td></td>
+<td><p>2</p></td>
+<td><p>30</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>A:(1)
+B:(1)</p></td>
+</tr>
+<tr class="row-even"><td><p>3</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>A:R1-A:R3
+B:R2-B:R4
+C:R5</p></td>
+<td><p>1k</p></td>
+<td></td>
+<td><p>7</p></td>
+<td><p>120</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>A:(3)
+B:(3)
+C:(1)</p></td>
+</tr>
+<tr class="row-odd"><td><p>4</p></td>
+<td><p>Resistor</p></td>
+<td><p>R</p></td>
+<td><p>B:R1
+C:R1-C:R4</p></td>
+<td><p>10k</p></td>
+<td></td>
+<td><p>5</p></td>
+<td><p>140</p></td>
+<td></td>
+<td><p>~</p></td>
+<td><p>B:(1)
+C:(4)</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="importing-outputs-from-another-file">
+<span id="import-from-another"></span><span id="index-14"></span><h2>Importing outputs from another file<a class="headerlink" href="#importing-outputs-from-another-file" title="Permalink to this heading"></a></h2>
+<p>In some cases you may want to reuse configuration files. An example of
+this are the example files that generate gerbers and drill files for
+various manufacturers
+(<a class="reference external" href="https://github.com/INTI-CMNB/KiBot/tree/master/docs/samples">see</a>).</p>
+<p>In this case you can create a section named <code class="docutils literal notranslate"><span class="pre">import</span></code> containing a list
+of configuration files. Here is an example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">configs/Elecrow.kibot.yaml</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">configs/FusionPCB.kibot.yaml</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">configs/JLCPCB.kibot.yaml</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">configs/P-Ban.kibot.yaml</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">configs/PCBWay.kibot.yaml</span>
+</pre></div>
+</div>
+<p>This will import all the outputs from the listed files.</p>
+</section>
+<section id="importing-other-stuff-from-another-file">
+<span id="import-other-stuff"></span><span id="index-15"></span><h2>Importing other stuff from another file<a class="headerlink" href="#importing-other-stuff-from-another-file" title="Permalink to this heading"></a></h2>
+<p>This is a more complex case of the previous <cite>Importing outputs from
+another file :ref:`import-from-another</cite>. In this case you
+must use the more general syntax:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FILE_CONTAINING_THE_YAML_DEFINITIONS</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LIST_OF_OUTPUTS</span>
+<span class="w">    </span><span class="nt">preflights</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LIST_OF_PREFLIGHTS</span>
+<span class="w">    </span><span class="nt">filters</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LIST_OF_FILTERS</span>
+<span class="w">    </span><span class="nt">variants</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LIST_OF_VARIANTS</span>
+<span class="w">    </span><span class="nt">global</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LIST_OF_GLOBALS</span>
+<span class="w">    </span><span class="nt">groups</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">LIST_OF_GROUPS</span>
+</pre></div>
+</div>
+<p>This syntax is flexible. If you don’t define which <code class="docutils literal notranslate"><span class="pre">outputs</span></code>,
+<code class="docutils literal notranslate"><span class="pre">preflights</span></code>, <code class="docutils literal notranslate"><span class="pre">filters</span></code>, <code class="docutils literal notranslate"><span class="pre">variants</span></code>, <code class="docutils literal notranslate"><span class="pre">global</span></code> and/or <code class="docutils literal notranslate"><span class="pre">groups</span></code>
+all will be imported. So you can just omit them, like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FILE_CONTAINING_THE_YAML_DEFINITIONS</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">LIST_OF_items</span></code> can be a YAML list or just one string. Here is an
+example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FILE_CONTAINING_THE_YAML_DEFINITIONS</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">one_name</span>
+<span class="w">    </span><span class="nt">filters</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="s">&#39;name1&#39;</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="s">&#39;name2&#39;</span><span class="p p-Indicator">]</span>
+</pre></div>
+</div>
+<p>This will import the <code class="docutils literal notranslate"><span class="pre">one_name</span></code> output and the <code class="docutils literal notranslate"><span class="pre">name1</span></code> and <code class="docutils literal notranslate"><span class="pre">name2</span></code>
+filters. As <code class="docutils literal notranslate"><span class="pre">variants</span></code> is omitted, all variants will be imported. The
+same applies to other things like globals and groups. You can also use
+the <code class="docutils literal notranslate"><span class="pre">all</span></code> and <code class="docutils literal notranslate"><span class="pre">none</span></code> special names, like this:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">FILE_CONTAINING_THE_YAML_DEFINITIONS</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all</span>
+<span class="w">    </span><span class="nt">filters</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">all</span>
+<span class="w">    </span><span class="nt">variants</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+<span class="w">    </span><span class="nt">global</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">none</span>
+</pre></div>
+</div>
+<p>This will import all outputs and filters, but not variants or globals.
+Also note that imported globals has more precedence than the ones
+defined in the same file. If you want to give more priority to the local
+values use:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">kibot</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">version</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">1</span>
+<span class="w">  </span><span class="nt">imported_global_has_less_priority</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+
+<span class="nt">import</span><span class="p">:</span>
+<span class="nn">...</span>
+</pre></div>
+</div>
+<p>Another important detail is that global options that are lists gets the
+values merged. The last set of values found is inserted at the beginning
+of the list. You can collect filters for all the imported global
+sections.</p>
+<p>Imports are processed recursively: An <code class="docutils literal notranslate"><span class="pre">import</span></code> section in an imported
+file is also processed (so importing <code class="docutils literal notranslate"><span class="pre">A.yaml</span></code> that imports <code class="docutils literal notranslate"><span class="pre">B.yaml</span></code>
+effectively imports both).</p>
+<p>If an import filename is a relative path, it is resolved relative to the
+config file that contains the import (so it works regardless of the
+working directory and, in case of recursive imports, of where top-level
+config lives).</p>
+<p>It’s recommended to always use some file extension in the
+<em>FILE_CONTAINING_THE_YAML_DEFINITIONS</em> name. If you don’t use any file
+extension and you use a relative path this name could be confused with
+an internal template. See <cite>Importing internal
+templates :ref:`import-templates</cite>. If you need to use a name
+without any extension and a relative path, and this name is the same
+used for a KiBot template use the <code class="docutils literal notranslate"><span class="pre">is_external</span></code> option:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Elecrow</span>
+<span class="w">    </span><span class="nt">is_external</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+<section id="parametrizable-imports">
+<span id="index-16"></span><h2>Parametrizable imports<a class="headerlink" href="#parametrizable-imports" title="Permalink to this heading"></a></h2>
+<p>You can create imports that are parametrizable. For this you must use
+the mechanism explained in the <a class="reference internal" href="substitution.html#yaml-substitution"><span class="std std-ref">Doing YAML substitution or preprocessing</span></a> section.</p>
+</section>
+<section id="importing-internal-templates">
+<span id="import-templates"></span><span id="index-17"></span><h2>Importing internal templates<a class="headerlink" href="#importing-internal-templates" title="Permalink to this heading"></a></h2>
+<p>KiBot has some internally defined outputs, groups and filters. You can
+easily use them with the <code class="docutils literal notranslate"><span class="pre">import</span></code> mechanism. Use the <code class="docutils literal notranslate"><span class="pre">file</span></code>
+mechanism and don’t include the extension for the file. When importing
+an internal template you don’t need to specify its location. Here is an
+example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">import</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">file</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Elecrow</span>
+</pre></div>
+</div>
+<p>This will import the definitions for the internal Elecrow configuration.
+Here is a list of currently defined templates:</p>
+<p>They include support for:</p>
+<ul class="simple">
+<li><p>CheckZoneFill: enables the <code class="docutils literal notranslate"><span class="pre">check_zone_fills</span></code> preflight and checks
+the refilled PCB doesn’t changed too much.</p>
+<ul>
+<li><p>_diff_cur_pcb_show: Makes a diff between the PCB in memory and
+the one on disk</p></li>
+<li><p>_diff_cur_pcb_check: Computes the difference between PCB in
+memory and the one on disk. Aborts if more than 100 pixels
+changed.</p></li>
+<li><p>Note: The *_KIBOT_CHKZONE_THRESHOLD* parameter can be used to
+adjust the number of changed pixels that we tolerate. Consult the
+<a class="reference internal" href="substitution.html#definitions-during-import"><span class="std std-ref">Definitions during import</span></a> section to know about parameters.</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.elecrow.com/">Elecrow</a>: contain fabrication outputs
+compatible with Elecrow</p>
+<ul>
+<li><p>_Elecrow_gerbers: Gerbers</p></li>
+<li><p>_Elecrow_drill: Drill files</p></li>
+<li><p>_Elecrow_compress: Gerbers and drill files compressed in a ZIP</p></li>
+<li><p>_Elecrow: _Elecrow_gerbers+_Elecrow_drill</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.elecrow.com/">Elecrow_stencil</a>: same as <strong>Elecrow</strong>,
+but also generates gerbers for F.Paste and B.Paste layers.</p></li>
+<li><p><a class="reference external" href="https://www.seeedstudio.io/fusion.html">FusionPCB</a>: contain
+fabrication outputs compatible with FusionPCB</p>
+<ul>
+<li><p>_FusionPCB_gerbers: Gerbers</p></li>
+<li><p>_FusionPCB_drill: Drill files</p></li>
+<li><p>_FusionPCB_compress: Gerbers and drill files compressed in a ZIP</p></li>
+<li><p>_FusionPCB: _FusionPCB_gerbers+_FusionPCB_drill</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.seeedstudio.io/fusion.html">FusionPCB_stencil</a>: same
+as <strong>FusionPCB</strong>, but also generates gerbers for F.Paste and B.Paste
+layers.</p></li>
+<li><p><a class="reference external" href="https://jlcpcb.com/">JLCPCB</a>: contain fabrication outputs
+compatible with JLC PCB. Only SMD components. Use the
+<code class="docutils literal notranslate"><span class="pre">field_lcsc_part</span></code> global option to specify the LCSC part number
+field if KiBot fails to detect it.</p>
+<ul>
+<li><p>_JLCPCB_gerbers: Gerbers.</p></li>
+<li><p>_JLCPCB_drill: Drill files</p></li>
+<li><p>_JLCPCB_position: Pick and place, applies the <code class="docutils literal notranslate"><span class="pre">_rot_footprint</span></code>
+filter. You can change this filter.</p></li>
+<li><p>_JLCPCB_bom: List of LCSC parts, assumes a field named <code class="docutils literal notranslate"><span class="pre">LCSC#</span></code>
+contains the LCSC codes. You can change this filter.</p></li>
+<li><p>_JLCPCB_compress: Gerbers, drill, position and BoM files
+compressed in a ZIP</p></li>
+<li><p>_JLCPCB_fab: _JLCPCB_gerbers+_JLCPCB_drill</p></li>
+<li><p>_JLCPCB_assembly: _JLCPCB_position+_JLCPCB_bom</p></li>
+<li><p>_JLCPCB: _JLCPCB_fab+_JLCPCB_assembly</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://jlcpcb.com/">JLCPCB_stencil</a>: same as <strong>JLCPCB</strong>, but
+also generates gerbers for F.Paste and B.Paste layers.</p></li>
+<li><p><a class="reference external" href="https://jlcpcb.com/">JLCPCB_with_THT</a>: same as <strong>JLCPCB</strong>, but
+also including THT components.</p></li>
+<li><p><a class="reference external" href="https://jlcpcb.com/">JLCPCB_stencil_with_THT</a>: same as
+<strong>JLCPCB_stencil</strong>, but also including THT components.</p></li>
+<li><p><a class="reference external" href="https://help.macrofab.com/knowledge/macrofab-required-design-files">MacroFab_XYRS</a>:
+XYRS position file in MacroFab format</p>
+<ul>
+<li><p>_macrofab_xyrs: Position file in XYRS format compatible with
+MacroFab.</p></li>
+</ul>
+</li>
+<li><p>PanelDemo_4x4: creates a 4x4 panel of the board, showing some of the
+panelize options</p>
+<ul>
+<li><p>_PanelDemo_4x4: The panel</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.p-ban.com/">P-Ban</a>: contain fabrication outputs
+compatible with P-Ban</p>
+<ul>
+<li><p>_P-Ban_gerbers: Gerbers. You need to define the layers for more
+than 8.</p></li>
+<li><p>_P-Ban_drill: Drill files</p></li>
+<li><p>_P-Ban: _P-Ban_gerbers+_P-Ban_drill</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.p-ban.com/">P-Ban_stencil</a>: same as <strong>P-Ban</strong>, but
+also generates gerbers for F.Paste and B.Paste layers.</p></li>
+<li><p><a class="reference external" href="https://github.com/30350n/pcb2blender">PCB2Blender_2_1</a></p>
+<ul>
+<li><p>_PCB2Blender_layers_2_1: The layers in SVG format. Disabled by
+default.</p></li>
+<li><p>_PCB2Blender_vrml_2_1: The VRML for the board. Disabled by
+default.</p></li>
+<li><p>_PCB2Blender_tools_2_1: Pads and bounds information. Disabled by
+default.</p></li>
+<li><p>_PCB2Blender_2_1: The PCB3D file. Is enabled and creates the
+other files.</p></li>
+<li><p>_PCB2Blender_elements_2_1:
+_PCB2Blender_tools_2_1+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://github.com/haschtl/pcb2blender">PCB2Blender_2_1_haschtl</a></p>
+<ul>
+<li><p>Imports <code class="docutils literal notranslate"><span class="pre">PCB2Blender_2_1</span></code> and disables <code class="docutils literal notranslate"><span class="pre">_PCB2Blender_2_1</span></code></p></li>
+<li><p>_PCB2Blender_tools_2_1_haschtl: Pads, bounds and stack-up
+information. Disabled by default.</p></li>
+<li><p>_PCB2Blender_2_1_haschtl: The PCB3D file. Is enabled and creates
+the other files.</p></li>
+<li><p>_PCB2Blender_elements_2_1_haschtl:
+_PCB2Blender_tools_2_1_haschtl+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.pcbway.com">PCBWay</a>: contain fabrication outputs
+compatible with PCBWay</p>
+<ul>
+<li><p>_PCBWay_gerbers: Gerbers</p></li>
+<li><p>_PCBWay_drill: Drill files</p></li>
+<li><p>_PCBWay_compress: Gerbers and drill files compressed in a ZIP</p></li>
+<li><p>_PCBWay: _PCBWay_gerbers+_PCBWay_drill</p></li>
+</ul>
+</li>
+<li><p><a class="reference external" href="https://www.pcbway.com">PCBWay_stencil</a>: same as <strong>PCBWay</strong>, but
+also generates gerbers for F.Paste and B.Paste layers.</p></li>
+</ul>
+</section>
+<section id="using-other-output-as-base-for-a-new-one">
+<span id="index-18"></span><h2>Using other output as base for a new one<a class="headerlink" href="#using-other-output-as-base-for-a-new-one" title="Permalink to this heading"></a></h2>
+<p>If you need to define an output that is similar to another, and you want
+to avoid copying the options from the former, you can <em>extend</em> an
+output. To achieve it just specify the name of the base output in the
+<code class="docutils literal notranslate"><span class="pre">extends</span></code> value. Note that this will use the <code class="docutils literal notranslate"><span class="pre">options</span></code> of the other
+output as base, not other data as the comment.</p>
+<p>Also note that you can use <a class="reference external" href="https://www.educative.io/blog/advanced-yaml-syntax-cheatsheet#anchors">YAML
+anchors</a>,
+but this won’t work if you are importing the base output from other
+file.</p>
+<p>Additionally you must be aware that extending an output doesn’t disable
+the base output. If you need to disable the original output use
+<code class="docutils literal notranslate"><span class="pre">disable_run_by_default</span></code> option.</p>
+</section>
+<section id="grouping-outputs">
+<span id="index-19"></span><span id="id1"></span><h2>Grouping outputs<a class="headerlink" href="#grouping-outputs" title="Permalink to this heading"></a></h2>
+<p>Sometimes you want to generate various outputs together. An example
+could be the fabrication files, or the documentation for the project.</p>
+<p>To explain it we will use an example where you have six outputs. Three
+are used for fabrication: <code class="docutils literal notranslate"><span class="pre">gerbers</span></code>, <code class="docutils literal notranslate"><span class="pre">excellon_drill</span></code> and
+<code class="docutils literal notranslate"><span class="pre">position</span></code>. Another three are used for documentation: <code class="docutils literal notranslate"><span class="pre">SVG</span></code>,
+<code class="docutils literal notranslate"><span class="pre">PcbDraw</span></code> and <code class="docutils literal notranslate"><span class="pre">PcbDraw2</span></code>. The YAML config containing this example
+can be found <a class="reference external" href="tests/yaml_samples/groups_1.kibot.yaml">here</a>. If you
+need to generate the fabrication outputs you must run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kibot</span> <span class="n">gerbers</span> <span class="n">excellon_drill</span> <span class="n">position</span>
+</pre></div>
+</div>
+<p>One mechanism to group the outputs is to create a <code class="docutils literal notranslate"><span class="pre">compress</span></code> output
+that just includes the outputs you want to group. Here is one example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compress_fab</span>
+<span class="w">  </span><span class="nt">comment</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Generates</span><span class="nv"> </span><span class="s">a</span><span class="nv"> </span><span class="s">ZIP</span><span class="nv"> </span><span class="s">file</span><span class="nv"> </span><span class="s">with</span><span class="nv"> </span><span class="s">all</span><span class="nv"> </span><span class="s">the</span><span class="nv"> </span><span class="s">fab</span><span class="nv"> </span><span class="s">outputs&quot;</span>
+<span class="w">  </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">compress</span>
+<span class="w">  </span><span class="nt">run_by_default</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
+<span class="w">  </span><span class="nt">options</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">files</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from_output</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gerbers</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from_output</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">excellon_drill</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">from_output</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">position</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">compress_fab</span></code> output will generate the <code class="docutils literal notranslate"><span class="pre">gerbers</span></code>,
+<code class="docutils literal notranslate"><span class="pre">excellon_drill</span></code> and <code class="docutils literal notranslate"><span class="pre">position</span></code> outputs. Then it will create a ZIP
+file containing the files generated by these outputs. The command line
+invocation for this is:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kibot</span> <span class="n">compress_fab</span>
+</pre></div>
+</div>
+<p>Using this mechanism you are forced to create a compressed output. To
+avoid it you can use <code class="docutils literal notranslate"><span class="pre">groups</span></code>. The <code class="docutils literal notranslate"><span class="pre">groups</span></code> section is used to
+create groups of outputs. Here is the example for fabrication files:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">groups</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fab</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gerbers</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">excellon_drill</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">position</span>
+</pre></div>
+</div>
+<p>So now you can just run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">kibot</span> <span class="n">fab</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">gerbers</span></code>, <code class="docutils literal notranslate"><span class="pre">excellon_drill</span></code> and <code class="docutils literal notranslate"><span class="pre">position</span></code> outputs will be
+generated without the need to generate an extra file. Groups can be
+nested, here is an example:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">groups</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fab</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gerbers</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">excellon_drill</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">position</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">plot</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SVG</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PcbDraw</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">PcbDraw2</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fab_svg</span>
+<span class="w">    </span><span class="nt">outputs</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">fab</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">SVG</span>
+</pre></div>
+</div>
+<p>Here the <code class="docutils literal notranslate"><span class="pre">fab_svg</span></code> group will contain <code class="docutils literal notranslate"><span class="pre">gerbers</span></code>, <code class="docutils literal notranslate"><span class="pre">excellon_drill</span></code>,
+<code class="docutils literal notranslate"><span class="pre">position</span></code> and <code class="docutils literal notranslate"><span class="pre">SVG</span></code>.</p>
+<p>Groups can be imported from another YAML file.</p>
+<p>Avoid naming groups using <code class="docutils literal notranslate"><span class="pre">_</span></code> as first character. These names are
+reserved for KiBot.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="filters.html" class="btn btn-neutral float-left" title="Filters and variants" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="outputs/blender_export.html" class="btn btn-neutral float-right" title="Blender Export Experimental" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2018-2023, Salvador E. Tropea/INTI/John Beard.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

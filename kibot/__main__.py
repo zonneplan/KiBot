@@ -19,14 +19,14 @@ Usage:
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
-  kibot [-v...] --help-filters
-  kibot [-v...] [--markdown|--json] --help-dependencies
-  kibot [-v...] --help-global-options
-  kibot [-v...] --help-list-outputs
+  kibot [-v...] [--rst] --help-filters
+  kibot [-v...] [--markdown|--json|--rst] --help-dependencies
+  kibot [-v...] [--rst] --help-global-options
+  kibot [-v...] [--rst] --help-list-outputs
   kibot [-v...] --help-output=HELP_OUTPUT
-  kibot [-v...] --help-outputs
-  kibot [-v...] --help-preflights
-  kibot [-v...] --help-variants
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-outputs
+  kibot [-v...] [--rst] --help-preflights
+  kibot [-v...] [--rst] --help-variants
   kibot [-v...] --help-banners
   kibot -h | --help
   kibot --version
@@ -433,25 +433,25 @@ def main():
         logger.info(get_banner(id))
 
     if args.help_outputs or args.help_list_outputs:
-        print_outputs_help(details=args.help_outputs)
+        print_outputs_help(args.rst, details=args.help_outputs)
         sys.exit(0)
     if args.help_output:
         print_output_help(args.help_output)
         sys.exit(0)
     if args.help_preflights:
-        print_preflights_help()
+        print_preflights_help(args.rst)
         sys.exit(0)
     if args.help_variants:
-        print_variants_help()
+        print_variants_help(args.rst)
         sys.exit(0)
     if args.help_filters:
-        print_filters_help()
+        print_filters_help(args.rst)
         sys.exit(0)
     if args.help_global_options:
-        print_global_options_help()
+        print_global_options_help(args.rst)
         sys.exit(0)
     if args.help_dependencies:
-        print_dependencies(args.markdown, args.json)
+        print_dependencies(args.markdown, args.json, args.rst)
         sys.exit(0)
     if args.help_banners:
         for c, b in enumerate(BANNERS):
