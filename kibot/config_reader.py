@@ -1019,7 +1019,6 @@ def adapt_text(text):
                 t.append(ln)
             text = '\n'.join(t)
         return adapt_to_rst_urls(text)
-    logger.error('SI')
     text = text.replace('\\*', '*')
     return text
 
