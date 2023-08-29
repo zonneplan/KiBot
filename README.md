@@ -3436,6 +3436,7 @@ Notes:
                 - *script_arg*: Alias for scriptarg.
                 - `scriptarg`: [string=''] An arbitrary string passed to the user post-processing script specified in script.
                 - `type`: [string='auto'] [auto] Currently fixed.
+                - `dimensions`: [boolean=false] Draw dimensions with the panel size.
             - `source`: [dict] Used to adjust details of which part of the PCB is panelized.
               * Valid keys:
                 - **`type`**: [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
