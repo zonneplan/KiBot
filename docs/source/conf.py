@@ -72,6 +72,9 @@ html_show_sourcelink = False
 
 import subprocess
 branch = subprocess.check_output(['git', 'rev-parse', '--abbrev-ref', 'HEAD']).decode().strip()
+if branch == 'HEAD':
+    ver = os.environ.get('READTHEDOCS_VERSION', 'latest')
+    branch = 'dev' if ver == 'latest' else 'master'
 
 if branch != "master":
     doc_id = ("**This is the documentation for the current development KiBot, not yet released. "
