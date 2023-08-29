@@ -974,7 +974,8 @@ def print_preflights_help(rst):
             help, rest = reformat_text(help, ind_size)
             if rest:
                 help += '\n'+rest
-        print(f'- {extra}**{n}**: :index:`: <pair: preflights; {n}>` {help}.')
+        index = ':index:`: <pair: preflights; {n}>` ' if rst else ''
+        print(f'- {extra}**{n}**: {index}{help}.')
         if options:
             print_output_options(n, options, ind_size, 'preflight - '+n)
 
@@ -1045,13 +1046,15 @@ def print_filters_help(rst):
     for n, o in OrderedDict(sorted(filters.items())).items():
         help = o.__doc__
         if help is None:
-            help = 'Undocumented'
-            title = ''
+            help = ''
+            title = 'Undocumented'
         else:
             title, help = reformat_text(help, ind_size)
             title = f'(**{title}**)'
 
-        print(f'- {extra}**{n}**: {title}\n{help}.')
+        print(f'- {extra}**{n}**: {title}')
+        if help:
+            print(f'{help}.')
         print_output_options(n, o, ind_size, 'filter - '+n)
 
 

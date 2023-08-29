@@ -296,7 +296,7 @@ def test_help(test_dir):
 def test_help_list_outputs(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-list-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('Supported outputs:')
+    assert ctx.search_out('Supported outputs')
     assert ctx.search_out('Gerber format')
     ctx.clean_up()
 
@@ -331,7 +331,7 @@ def test_help_output_plugin_1(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out(r'\* Undocumented')
+    assert ctx.search_out(r'- Undocumented')
     assert ctx.search_out('Description: No description')
     assert ctx.search_out('Type: .?test.?')
     assert ctx.search_out('nothing')
@@ -361,7 +361,7 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('- `pre_test`: Undocumented')
+    assert ctx.search_out(r'- \*\*pre_test\*\*: Undocumented')
     ctx.clean_up()
 
 
@@ -372,7 +372,7 @@ def test_help_output_plugin_4(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('- filter_test: Undocumented')
+    assert ctx.search_out(r'- \*\*filter_test\*\*: Undocumented')
     ctx.clean_up()
 
 
@@ -387,7 +387,7 @@ def test_help_outputs(test_dir):
 def test_help_preflights(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('Supported preflight options')
+    assert ctx.search_out('Supported preflights')
     ctx.clean_up()
 
 
