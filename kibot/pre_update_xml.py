@@ -37,7 +37,7 @@ class Update_XMLOptions(Optionable):
             self.check_pcb_parity = False
             """ *Check if the PCB and Schematic are synchronized.
                 This is equivalent to the *Test for parity between PCB and schematic* of the DRC dialog.
-                Only available for KiCad 6 """
+                Only available for KiCad 6+ """
             self.as_warnings = False
             """ Inform the problems as warnings and don't stop """
 
