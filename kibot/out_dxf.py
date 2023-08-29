@@ -50,10 +50,9 @@ class DXFOptions(DrillMarks):
 
 @output_class
 class DXF(AnyLayer):
-    """
-    DXF (Drawing Exchange Format)
-    Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
-    This output is what you get from the File/Plot menu in pcbnew. """
+    """ DXF (Drawing Exchange Format)
+        Exports the PCB to 2D mechanical EDA tools (like AutoCAD).
+        This output is what you get from the File/Plot menu in pcbnew. """
     __doc__ += FONT_HELP_TEXT
 
     def __init__(self):
