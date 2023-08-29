@@ -16,9 +16,10 @@ build:
     # golang: "1.19"
   jobs:
     post_checkout:
+      # Get information about the repo
+      - git fetch --unshallow || true
       # Avoid creating KiCost docs
       - rm -rf submodules
-
 # Build documentation in the "docs/" directory with Sphinx
 sphinx:
    configuration: docs/source/conf.py
