@@ -18,6 +18,7 @@ build:
     post_checkout:
       # Get information about the repo
       - git fetch --unshallow || true
+      - export
       # Avoid creating KiCost docs
       - rm -rf submodules
 # Build documentation in the "docs/" directory with Sphinx
