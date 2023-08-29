@@ -89,6 +89,6 @@ rst_prolog = f"""
    <br/>
 .. |branch| replace:: {branch} {release}
 .. |doc_id| replace:: {doc_id}
-.. |Python application| image:: https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch={branch}&style=plastic
+.. |Python application| image:: https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch={branch}&style=plastic&logo=github
    :target: https://github.com/INTI-CMNB/KiBot/actions
 """  # noqa: E501

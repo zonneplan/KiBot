@@ -54,12 +54,12 @@ KiBot (formerly KiPlot)
    genindex
 
 
-.. |Coverage Status| image:: https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic
+.. |Coverage Status| image:: https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic&logo=coveralls
    :target: https://coveralls.io/github/INTI-CMNB/KiBot?branch=master
-.. |PyPI version| image:: https://img.shields.io/pypi/v/kibot?style=plastic
+.. |PyPI version| image:: https://img.shields.io/pypi/v/kibot?style=plastic&logo=pypi
    :target: https://pypi.org/project/kibot/
-.. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic
+.. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic&logo=paypal
    :target: https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL
-.. |DOCs status| image:: https://readthedocs.org/projects/kibot/badge/?version=latest
+.. |DOCs status| image:: https://img.shields.io/readthedocs/kibot?style=plastic&logo=readthedocs
    :target: https://kibot.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
