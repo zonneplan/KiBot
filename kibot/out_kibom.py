@@ -118,7 +118,7 @@ class KiBoMConfig(Optionable):
             self.group_connectors = True
             """ Connectors with the same footprints will be grouped together, independent of the name of the connector """
             self.test_regex = True
-            """ Each component group will be tested against a number of regular-expressions (see ``). """
+            """ Each component group will be tested against a number of regular-expressions """
             self.merge_blank_fields = True
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
             self.fit_field = 'Config'
