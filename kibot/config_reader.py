@@ -974,7 +974,7 @@ def print_preflights_help(rst):
             help, rest = reformat_text(help, ind_size)
             if rest:
                 help += '\n'+rest
-        index = ':index:`: <pair: preflights; {n}>` ' if rst else ''
+        index = f':index:`: <pair: preflights; {n}>` ' if rst else ''
         print(f'- {extra}**{n}**: {index}{help}.')
         if options:
             print_output_options(n, options, ind_size, 'preflight - '+n)
