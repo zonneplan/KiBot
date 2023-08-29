@@ -4,7 +4,7 @@ KiBot (formerly KiPlot)
 .. figure:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png
    :alt: KiBot Logo
 
-|Python application| |Coverage Status| |PyPI version| |Donate|
+|Python application| |Coverage Status| |PyPI version| |DOCs status| |Donate|
 
 |doc_id|
 
@@ -60,3 +60,6 @@ KiBot (formerly KiPlot)
    :target: https://pypi.org/project/kibot/
 .. |Donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic
    :target: https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL
+.. |DOCs status| image:: https://readthedocs.org/projects/kibot/badge/?version=latest
+   :target: https://kibot.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
