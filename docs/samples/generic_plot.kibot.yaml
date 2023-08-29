@@ -1848,6 +1848,8 @@ outputs:
           post:
             # [boolean=false] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels)
             copperfill: false
+            # [boolean=false] Draw dimensions with the panel size.
+            dimensions: false
             # `mill_radius` is an alias for `millradius`
             # [number|string] Simulate the milling operation (add fillets to the internal corners).
             # Specify mill radius (usually 1 mm). 0 radius disables the functionality
@@ -1876,8 +1878,6 @@ outputs:
             scriptarg: ''
             # [string='auto'] [auto] Currently fixed
             type: 'auto'
-            # [boolean=false] Draw dimensions with the panel size.
-            dimensions: false
           # [dict] Used to adjust details of which part of the PCB is panelized
           source:
             # [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*

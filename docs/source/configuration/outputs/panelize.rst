@@ -225,6 +225,7 @@ Parameters:
                -  Valid keys:
 
                   -  ``copperfill`` :index:`: <pair: output - panelize - options - configs - post; copperfill>` [boolean=false] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels).
+                  -  ``dimensions`` :index:`: <pair: output - panelize - options - configs - post; dimensions>` [boolean=false] Draw dimensions with the panel size..
                   -  *mill_radius* :index:`: <pair: output - panelize - options - configs - post; mill_radius>` Alias for millradius.
                   -  ``millradius`` :index:`: <pair: output - panelize - options - configs - post; millradius>` [number|string] Simulate the milling operation (add fillets to the internal corners).
                      Specify mill radius (usually 1 mm). 0 radius disables the functionality.
