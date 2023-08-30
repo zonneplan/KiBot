@@ -23,7 +23,7 @@ import textwrap
 
 from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP)
+                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP, error_level_to_name)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -948,7 +948,7 @@ def print_output_help(name):
     print_one_out_help(True, name, RegOutput.get_class_for(name))
 
 
-def make_title(rst, tp, n):
+def make_title(rst, tp, n, sub='^'):
     global rst_mode
     rst_mode = rst
     logger.debug('{} supported {}'.format(n, tp))
@@ -957,7 +957,7 @@ def make_title(rst, tp, n):
     title = 'Supported '+tp
     print(title)
     if rst_mode:
-        print((len(title)*'^')+'\n')
+        print((len(title)*sub)+'\n')
         return 3, ' '
     print()
     return 2, ''
@@ -1348,3 +1348,9 @@ def print_dependencies(markdown=True, jsn=False, rst=False):
         for c, rst_img in enumerate(rst_images):
             print(f'.. |image{c+1}| image:: {rst_img[0]}\n   :target: {rst_img[1]}')
         print()
+
+
+def print_errors(rst):
+    make_title(rst, 'error levels', len(error_level_to_name), '~')
+    for c, n in enumerate(error_level_to_name):
+        print(f'- {c}: {n}')

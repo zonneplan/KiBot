@@ -13,7 +13,7 @@ from contextlib import contextmanager
 # Error levels
 INTERNAL_ERROR = 1    # Unhandled exceptions
 WRONG_ARGUMENTS = 2   # This is what argsparse uses
-USUPPORTED_OPTION = 3
+UNSUPPORTED_OPTION = 3
 MISSING_TOOL = 4
 DRC_ERROR = 5
 EXIT_BAD_ARGS = 6
@@ -48,7 +48,7 @@ CORRUPTED_PRO = 34
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
-                       'USUPPORTED_OPTION',
+                       'UNSUPPORTED_OPTION',
                        'MISSING_TOOL',
                        'DRC_ERROR',
                        'EXIT_BAD_ARGS',

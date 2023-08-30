@@ -114,3 +114,6 @@ Command line help
 
 .. literalinclude:: usage.txt
 
+
+.. include:: errors.rst
+

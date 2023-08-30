@@ -21,6 +21,7 @@ Usage:
   kibot [-v...] [--rst] --help-preflights
   kibot [-v...] [--rst] --help-variants
   kibot [-v...] --help-banners
+  kibot [-v...] [--rst] --help-errors
   kibot -h | --help
   kibot --version
 
@@ -74,6 +75,7 @@ Help options:
   -h, --help                       Show this help message and exit
   --help-banners                   Show all available banners
   --help-dependencies              List dependencies in human readable format
+  --help-errors                    List of error levels
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
   --help-list-outputs              List supported outputs

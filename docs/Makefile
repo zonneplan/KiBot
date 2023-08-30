@@ -26,6 +26,9 @@ source/configuration/sup_outputs.rst: ../kibot/out_*.py ../kibot/config_reader.p
 source/dependencies.rst: ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/registrable.py ../kibot/misc.py ../kibot/config_reader.py ../kibot/dep_downloader.py
 	../src/kibot --rst --help-dependencies > $@
 
+source/errors.rst: ../kibot/misc.py ../kibot/config_reader.py
+	../src/kibot --rst --help-errors > $@
+
 source/usage.txt: ../kibot/__main__.py
 	../src/kibot --help > $@
 
@@ -48,7 +51,7 @@ help:
 # Catch-all target: route all unknown targets to Sphinx using the new
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 $(SPHINXTARGETS): Makefile source/configuration/sup_outputs.rst source/dependencies.rst source/usage.txt source/configuration/sup_preflights.rst \
-	source/configuration/sup_filters.rst source/configuration/sup_variants.rst source/configuration/sup_globals.rst
+	source/configuration/sup_filters.rst source/configuration/sup_variants.rst source/configuration/sup_globals.rst source/errors.rst
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 

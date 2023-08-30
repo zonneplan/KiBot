@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Camera option to set the clip start (#484)
 - Populate:
   - Basic support for regular list items (#480)
+- Help for the error levels
 
 ### Changed
 - Documentation:

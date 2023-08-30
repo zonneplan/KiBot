@@ -28,6 +28,7 @@ Usage:
   kibot [-v...] [--rst] --help-preflights
   kibot [-v...] [--rst] --help-variants
   kibot [-v...] --help-banners
+  kibot [-v...] [--rst] --help-errors
   kibot -h | --help
   kibot --version
 
@@ -81,6 +82,7 @@ Help options:
   -h, --help                       Show this help message and exit
   --help-banners                   Show all available banners
   --help-dependencies              List dependencies in human readable format
+  --help-errors                    List of error levels
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
   --help-list-outputs              List supported outputs
@@ -125,7 +127,8 @@ from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_std
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
-                            print_filters_help, print_global_options_help, print_dependencies, print_variants_help)
+                            print_filters_help, print_global_options_help, print_dependencies, print_variants_help,
+                            print_errors)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
                      solve_board_file, solve_project_file, check_board_file)
 from .registrable import RegOutput
@@ -457,6 +460,9 @@ def main():
         for c, b in enumerate(BANNERS):
             logger.info('Banner '+str(c))
             logger.info(b)
+        sys.exit(0)
+    if args.help_errors:
+        print_errors(args.rst)
         sys.exit(0)
     if args.example:
         check_board_file(args.board_file)
