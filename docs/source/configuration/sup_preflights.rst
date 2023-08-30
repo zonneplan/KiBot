@@ -146,7 +146,8 @@ Supported preflights
 
       -  **check_pcb_parity** :index:`: <pair: preflight - update_xml; check_pcb_parity>` [boolean=false] Check if the PCB and Schematic are synchronized.
          This is equivalent to the *Test for parity between PCB and schematic* of the DRC dialog.
-         Only available for KiCad 6+.
+         Not available for KiCad 5. **Important**: when using KiCad 6 and the *Exclude from BoM* attribute
+         these components won't be included in the generated XML, so we can't check its parity.
       -  ``as_warnings`` :index:`: <pair: preflight - update_xml; as_warnings>` [boolean=false] Inform the problems as warnings and don't stop.
       -  ``enabled`` :index:`: <pair: preflight - update_xml; enabled>` [boolean=true] Enable the update. This is the replacement for the boolean value.
 

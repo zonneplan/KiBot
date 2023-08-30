@@ -219,6 +219,24 @@ def test_update_xml_2(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
+@pytest.mark.skipif(context.ki5() or context.ki8(), reason="KiCad 6+ implementation")
+def test_update_xml_not_in_bom(test_dir):
+    prj = 'parity_not_in_bom'
+    ctx = context.TestContext(test_dir, prj, 'update_xml_2', '')
+    # The XML should be created where the schematic is located
+    xml = os.path.abspath(os.path.join(ctx.get_board_dir(), prj+'.xml'))
+    ctx.run()
+    # Check all outputs are there
+    assert os.path.isfile(xml)
+    assert os.path.getsize(xml) > 0
+    logging.debug(os.path.basename(xml)+' OK')
+    if context.ki6() and not context.ki7():
+        ctx.search_err("R2 excluded from BoM")
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.eeschema
 def test_update_xml_fail(test_dir):
     """ Using a dummy SCH """
     prj = '3Rs'

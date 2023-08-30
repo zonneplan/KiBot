@@ -41,6 +41,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Blender export:
   - Rotations are now applied to the current view, not just the top view
   - Board/components not visible for small boards (See #484)
+- update_xml with check_pcb_parity enabled:
+  - Avoid errors for KiCad 6 using "Exclude from BoM" components.
+    This limitation isn't found on KiCad 7. (#486)
+  - *exclude_from_bom* mismatch on KiCad 7
+  - *Sheetfile* mismatch on KiCad 7 when testing from different directory
 
 
 ## [1.6.3] - 2023-06-26
