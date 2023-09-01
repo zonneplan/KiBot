@@ -88,7 +88,8 @@ KIBOM_STATS = [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
                len(KIBOM_TEST_COMPONENTS)]
 LINKS_STATS = [3, '4 (2 SMD/ 2 THT)', '3 (1 SMD/ 2 THT)', 1, 3]
 VARIANTE_PRJ_INFO = ['kibom-variante', 'default', 'A', '2020-03-12', None]
-LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'digikey_alt#', 'mouser#', 'mouser_alt#', 'manf#']
+LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'digikey_alt#', 'mouser#', 'mouser_alt#', 'LCSC#',
+             'manf#']
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
 LINKS_GROUPS = 2
@@ -576,6 +577,7 @@ def test_int_bom_digikey_link(test_dir):
     ref_column = headers[0].index(REF_COLUMN_NAME)
     dk_column = headers[0].index('digikey#')
     mo_column = headers[0].index('mouser#')
+    lcsc_column = headers[0].index('LCSC#')
     # Check the normal table
     check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     # Check the DNF table
@@ -590,6 +592,11 @@ def test_int_bom_digikey_link(test_dir):
     for c in parts:
         assert c.strip().startswith('<a href')
         assert 'mouser' in c
+        logging.debug(c + ' OK')
+    parts = get_column(rows[0]+rows[1], lcsc_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'lcsc.com' in c
         logging.debug(c + ' OK')
     ctx.clean_up()
 
@@ -1211,6 +1218,16 @@ def test_int_bom_digikey_link_xlsx(test_dir):
     for c in parts:
         assert c.strip().startswith('<a href')
         assert 'digikey' in c
+        logging.debug(c + ' OK')
+    parts = get_column(rows+rows2, headers.index('LCSC#'), False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'lcsc.com' in c
+        logging.debug(c + ' OK')
+    parts = get_column(rows+rows2, headers.index('mouser#'), False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'mouser' in c
         logging.debug(c + ' OK')
     ctx.clean_up()
 

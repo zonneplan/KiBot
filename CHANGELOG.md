@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     applied to the solder mask apertures. (#476)
 - BoM:
   - Support for ${field} expansion. (#471)
+  - LCSC links (SchrodingersGat/KiBoM#190)
 - iBoM:
   - `forced_name` option to force the name displayed at the top left corner
     (#470)

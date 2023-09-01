@@ -24,4 +24,5 @@ outputs:
           comment: "Alternative code in case digikey# isn't available"
         - mouser#
         - mouser_alt#
+        - LCSC#
         - manf#

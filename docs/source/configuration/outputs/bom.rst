@@ -106,6 +106,9 @@ Parameters:
             -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - html; hide_pcb_info>` [boolean=false] Hide project information.
             -  ``hide_stats_info`` :index:`: <pair: output - bom - options - html; hide_stats_info>` [boolean=false] Hide statistics information.
             -  ``highlight_empty`` :index:`: <pair: output - bom - options - html; highlight_empty>` [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            -  ``lcsc_link`` :index:`: <pair: output - bom - options - html; lcsc_link>` [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+               Use **true** to copy the value indicated by the `field_lcsc_part` global option.
+
             -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
 
             -  ``style`` :index:`: <pair: output - bom - options - html; style>` [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
@@ -149,6 +152,9 @@ Parameters:
                To understand how to achieve this, and also how to make use of the cache please visit the
                `kicost_ci_test <https://github.com/set-soft/kicost_ci_test>`__ repo.
             -  ``kicost_dist_desc`` :index:`: <pair: output - bom - options - xlsx; kicost_dist_desc>` [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
+            -  ``lcsc_link`` :index:`: <pair: output - bom - options - xlsx; lcsc_link>` [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+               Use **true** to copy the value indicated by the `field_lcsc_part` global option.
+
             -  ``logo_scale`` :index:`: <pair: output - bom - options - xlsx; logo_scale>` [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [number=60] [20,999] Maximum column width (characters).
             -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.

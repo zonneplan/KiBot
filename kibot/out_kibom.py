@@ -135,6 +135,10 @@ class KiBoMConfig(Optionable):
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
             self.mouser_link = Optionable
             """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page (HTML only) """
+            # Upcoming release
+            #  self.lcsc_link = Optionable
+            #  """ [string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page (HTML only) """
+            #   ???   Use **true** to copy the value indicated by the `field_lcsc_part` global option """
             self.group_fields = GroupFields
             """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
@@ -238,6 +242,11 @@ class KiBoMConfig(Optionable):
             self.mouser_link = None
         elif isinstance(self.mouser_link, list):
             self.mouser_link = '\t'.join(self.mouser_link)
+        # lcsc_link
+        # if isinstance(self.lcsc_link, type):
+        #     self.lcsc_link = None
+        # elif isinstance(self.lcsc_link, list):
+        #     self.lcsc_link = '\t'.join(self.lcsc_link)
         # group_fields
         if isinstance(self.group_fields, type):
             self.group_fields = None
@@ -335,6 +344,7 @@ class KiBoMConfig(Optionable):
             self.write_str('ref_separator')
             self.write_str('digikey_link')
             self.write_str('mouser_link')
+            # self.write_str('lcsc_link')
             # Ask to keep the output name
             f.write('output_file_name = %O\n')
             self.write_vector(self.group_fields, 'GROUP_FIELDS')

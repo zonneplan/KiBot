@@ -188,6 +188,9 @@ class BoMLinkable(Optionable):
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
             self.mouser_link = Optionable
             """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page """
+            self.lcsc_link = Optionable
+            """ [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+                Use **true** to copy the value indicated by the `field_lcsc_part` global option """
             self.generate_dnf = True
             """ *Generate a separated section for DNF (Do Not Fit) components """
             self.hide_pcb_info = False
@@ -208,6 +211,9 @@ class BoMLinkable(Optionable):
         # *_link
         self.digikey_link = self.force_list(self.digikey_link, comma_sep=False, lower_case=True)
         self.mouser_link = self.force_list(self.mouser_link, comma_sep=False, lower_case=True)
+        if isinstance(self.lcsc_link, bool):
+            self.lcsc_link = self.field_lcsc_part if self.lcsc_link else ''
+        self.lcsc_link = self.force_list(self.lcsc_link, comma_sep=False, lower_case=True)
         # Logo
         if isinstance(self.logo, type):
             self.logo = ''

@@ -73,10 +73,11 @@ preflight:
         command: 'git log -1 --format="%h" "$KIBOT_SCH_NAME"'
         before: 'Git hash: <'
         after: '>'
-  # [dict|list(dict)] Defines KiCad 6 variables.
+  # [dict|list(dict)] Defines KiCad 6+ variables.
   # They are expanded using ${VARIABLE}, and stored in the project file.
   # This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
   # The KiCad project file is modified.
+  # Warning: don't use `-s all` or this preflight will be skipped.
   set_text_variables:
     - name: 'git_hash'
       command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
@@ -479,6 +480,9 @@ outputs:
         hide_stats_info: false
         # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
         highlight_empty: true
+        # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+        # Use **true** to copy the value indicated by the `field_lcsc_part` global option
+        lcsc_link: ''
         # [string|boolean=''] PNG file to use as logo, use false to remove
         logo: ''
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
@@ -565,6 +569,9 @@ outputs:
         kicost_config: ''
         # [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component
         kicost_dist_desc: false
+        # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+        # Use **true** to copy the value indicated by the `field_lcsc_part` global option
+        lcsc_link: ''
         # [string|boolean=''] PNG file to use as logo, use false to remove
         logo: ''
         # [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software

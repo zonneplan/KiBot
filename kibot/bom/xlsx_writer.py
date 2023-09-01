@@ -730,6 +730,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         link_datasheet = col_fields.index(cfg.xlsx.datasheet_as_link)
     link_digikey = cfg.xlsx.digikey_link
     link_mouser = cfg.xlsx.mouser_link
+    link_lcsc = cfg.xlsx.lcsc_link
     hl_empty = cfg.xlsx.highlight_empty
 
     workbook = Workbook(filename)
@@ -812,6 +813,10 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 # A link to Mouser?
                 elif link_mouser and col_fields[i] in link_mouser:
                     url = 'https://www.mouser.com/ProductDetail/' + cell
+                    worksheet.write_url(row_count, i, url, fmt, cell)
+                # A link to LCSC?
+                elif link_lcsc and col_fields[i] in link_lcsc:
+                    url = 'https://www.lcsc.com/product-detail/' + cell
                     worksheet.write_url(row_count, i, url, fmt, cell)
                 else:
                     worksheet.write_string(row_count, i, cell, fmt)
