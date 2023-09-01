@@ -115,10 +115,14 @@ Supported preflights
             -  ``text`` :index:`: <pair: preflight - sch_replace - replace_tags; text>` [string=''] Text to insert instead of the tag.
 
 
--  **set_text_variables**: :index:`: <pair: preflights; set_text_variables>` [dict|list(dict)] Defines KiCad 6 variables.
+-  **set_text_variables**: :index:`: <pair: preflights; set_text_variables>` [dict|list(dict)] Defines KiCad 6+ variables.
    They are expanded using ${VARIABLE}, and stored in the project file. |br|
    This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6. |br|
-   The KiCad project file is modified.
+   The KiCad project file is modified. |br|
+
+.. warning::
+   don't use `-s all` or this preflight will be skipped
+.. .
 
    -  Valid keys:
 

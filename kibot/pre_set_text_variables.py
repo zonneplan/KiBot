@@ -76,10 +76,11 @@ class Set_Text_VariablesOptions(Optionable):
 
 @pre_class
 class Set_Text_Variables(BasePreFlight):  # noqa: F821
-    """ [dict|list(dict)] Defines KiCad 6 variables.
+    """ [dict|list(dict)] Defines KiCad 6+ variables.
         They are expanded using ${VARIABLE}, and stored in the project file.
         This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
-        The KiCad project file is modified """
+        The KiCad project file is modified.
+        Warning: don't use `-s all` or this preflight will be skipped """
     def __init__(self, name, value):
         f = Set_Text_VariablesOptions()
         f.set_tree({'variables': value})

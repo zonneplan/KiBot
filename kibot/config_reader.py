@@ -1006,6 +1006,7 @@ def adapt_text(text):
         if len(lines) > 1:
             t = []
             in_list = False
+            in_warning = False
             for ln in lines:
                 if ln[0] == '-':
                     if not in_list:
@@ -1017,7 +1018,15 @@ def adapt_text(text):
                         t.append('')
                 if ln[-1] == '.' and not in_list:
                     ln += ' |br|'
+                if 'Warning: ' in ln:
+                    indent = ln.index('Warning: ')
+                    t.append('')
+                    t.append('.. warning::')
+                    in_warning = True
+                    ln = ln[:indent]+ln[indent+9:]
                 t.append(ln)
+            if in_warning:
+                t.append('.. ')
             text = '\n'.join(t)
         return adapt_to_rst_urls(text)
     text = text.replace('\\*', '*')
