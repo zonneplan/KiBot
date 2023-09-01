@@ -115,5 +115,8 @@ Command line help
 .. literalinclude:: usage.txt
 
 
+.. index::
+   pair: usage; error levels
+
 .. include:: errors.rst
 
