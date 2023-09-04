@@ -720,8 +720,10 @@ def guess_ki6_sch(schematics):
     return None
 
 
-def avoid_mixing_5_and_6():
-    logger.error('Found KiCad 5 and KiCad 6 files, make sure the whole project uses one version')
+def avoid_mixing_5_and_6(sch, kicad_sch):
+    logger.error('Found KiCad 5 and KiCad 6+ files, make sure the whole project uses one version')
+    logger.error('KiCad 5:  '+os.path.basename(sch))
+    logger.error('KiCad 6+: '+os.path.basename(kicad_sch))
     exit(EXIT_BAD_CONFIG)
 
 
@@ -734,7 +736,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
         found_sch = os.path.isfile(sch)
         found_kicad_sch = os.path.isfile(kicad_sch)
         if found_sch and found_kicad_sch:
-            avoid_mixing_5_and_6()
+            avoid_mixing_5_and_6(sch, kicad_sch)
         if found_sch:
             schematic = sch
         elif GS.ki6 and found_kicad_sch:
@@ -764,7 +766,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
                 kicad_sch = os.path.join(base_dir, config+'.kicad_sch')
                 found_kicad_sch = os.path.isfile(kicad_sch)
                 if found_sch and found_kicad_sch:
-                    avoid_mixing_5_and_6()
+                    avoid_mixing_5_and_6(sch, kicad_sch)
                 if found_sch:
                     schematic = sch
                 elif GS.ki6 and found_kicad_sch:
