@@ -716,6 +716,7 @@ def try_download_tool_binary(dep):
         return None, None
     logger.info('- Trying to download {} ({})'.format(dep.name, dep.url_down))
     res = None
+    ver = None
     # Determine the platform
     system = platform.system()
     plat = platform.platform()
@@ -729,7 +730,7 @@ def try_download_tool_binary(dep):
         plat = 'unk'
     logger.debug('- System: {} platform: {}'.format(system, plat))
     # res = dep.downloader(dep, system, plat)
-    # return res
+    # return res, ver
     try:
         res, ver = dep.downloader(dep, system, plat)
         if res:

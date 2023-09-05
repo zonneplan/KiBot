@@ -48,6 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     This limitation isn't found on KiCad 7. (#486)
   - *exclude_from_bom* mismatch on KiCad 7
   - *Sheetfile* mismatch on KiCad 7 when testing from different directory
+- Dependencies downloader:
+  - Problems when connection timed-out
 
 
 ## [1.6.3] - 2023-06-26
