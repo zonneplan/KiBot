@@ -184,7 +184,7 @@ class AnyLayerOptions(VariantOptions):
             desc = la.description
             id = la.id
             if not GS.board.IsLayerEnabled(id):
-                logger.warning(W_NOLAYER+'Layer "{}" isn\'t used'.format(desc))
+                logger.warning(W_NOLAYER+f'Layer "{desc}" ({la.suffix}) isn\'t used')
                 continue
             if self._plot_format != PLOT_FORMAT_GERBER and self.individual_page_scaling:
                 # Only this layer is visible
