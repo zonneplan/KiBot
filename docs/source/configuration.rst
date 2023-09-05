@@ -26,8 +26,9 @@ Note that the explanation could be useful even if you know YAML.
    configuration/quick_start
    configuration/section_order
    configuration/header
+   configuration/outputs
    configuration/preflight
    configuration/global
    configuration/filters
-   configuration/outputs
+   configuration/imports
    configuration/substitution
