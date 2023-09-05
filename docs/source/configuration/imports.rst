@@ -11,7 +11,7 @@ In the :ref:`import-from-another` you can find how to import *outputs* from othe
 The :ref:`import-other-stuff` explains how to import *preflights*, *filters*, *variants*, *global*
 options and output *groups*.
 
-The imported files can be parameterized for better reuse, consult :ref:`yaml-substitution`.
+The imported files can be parameterized for better reuse, consult :ref:`definitions-during-import`.
 
 Furthermore, KiBot has some handful templates that you can import, explained in :ref:`import-templates`.
 
@@ -177,118 +177,159 @@ example:
      - file: Elecrow
 
 This will import the definitions for the internal Elecrow configuration.
-Here is a list of currently defined templates:
+Note that most templates can be customized using parameters, for more
+information consult the :ref:`templates-parameters` section.
 
-They include support for:
+Here is a list of currently defined templates and their outputs / groups:
 
--  CheckZoneFill: enables the ``check_zone_fills`` preflight and checks
+-  **CheckZoneFill**: enables the ``check_zone_fills`` preflight and checks
    the refilled PCB doesn’t changed too much.
 
-   -  \_diff_cur_pcb_show: Makes a diff between the PCB in memory and
-      the one on disk
-   -  \_diff_cur_pcb_check: Computes the difference between PCB in
+   -  **_diff_cur_pcb_show**: Makes a diff between the PCB in memory and the one on disk
+   -  **_diff_cur_pcb_check**: Computes the difference between PCB in
       memory and the one on disk. Aborts if more than 100 pixels
-      changed.
-   -  Note: The \*_KIBOT_CHKZONE_THRESHOLD\* parameter can be used to
-      adjust the number of changed pixels that we tolerate. Consult the
-      :ref:`definitions-during-import` section to know about parameters.
+      changed. Use the *_KIBOT_CHKZONE_THRESHOLD* parameter to change this amount.
 
 -  `Elecrow <https://www.elecrow.com/>`__: contain fabrication outputs
    compatible with Elecrow
 
-   -  \_Elecrow_gerbers: Gerbers
-   -  \_Elecrow_drill: Drill files
-   -  \_Elecrow_compress: Gerbers and drill files compressed in a ZIP
-   -  \_Elecrow: \_Elecrow_gerbers+_Elecrow_drill
+   -  **_Elecrow_gerbers**: Gerbers
+   -  **_Elecrow_drill**: Drill files
+   -  **_Elecrow_compress**: Gerbers and drill files compressed in a ZIP
+   -  **_Elecrow**: **_Elecrow_gerbers** + **_Elecrow_drill**
 
 -  `Elecrow_stencil <https://www.elecrow.com/>`__: same as **Elecrow**,
-   but also generates gerbers for F.Paste and B.Paste layers.
+   but also generates gerbers for *F.Paste* and *B.Paste* layers.
+
 -  `FusionPCB <https://www.seeedstudio.io/fusion.html>`__: contain
    fabrication outputs compatible with FusionPCB
 
-   -  \_FusionPCB_gerbers: Gerbers
-   -  \_FusionPCB_drill: Drill files
-   -  \_FusionPCB_compress: Gerbers and drill files compressed in a ZIP
-   -  \_FusionPCB: \_FusionPCB_gerbers+_FusionPCB_drill
+   -  **_FusionPCB_gerbers**: Gerbers
+   -  **_FusionPCB_drill**: Drill files
+   -  **_FusionPCB_compress**: Gerbers and drill files compressed in a ZIP
+   -  **_FusionPCB**: **_FusionPCB_gerbers** + **_FusionPCB_drill**
 
 -  `FusionPCB_stencil <https://www.seeedstudio.io/fusion.html>`__: same
-   as **FusionPCB**, but also generates gerbers for F.Paste and B.Paste
+   as **FusionPCB**, but also generates gerbers for *F.Paste* and *B.Paste*
    layers.
--  `JLCPCB <https://jlcpcb.com/>`__: contain fabrication outputs
-   compatible with JLC PCB. Only SMD components. Use the
-   ``field_lcsc_part`` global option to specify the LCSC part number
-   field if KiBot fails to detect it.
 
-   -  \_JLCPCB_gerbers: Gerbers.
-   -  \_JLCPCB_drill: Drill files
-   -  \_JLCPCB_position: Pick and place, applies the ``_rot_footprint``
-      filter. You can change this filter.
-   -  \_JLCPCB_bom: List of LCSC parts, assumes a field named ``LCSC#``
-      contains the LCSC codes. You can change this filter.
-   -  \_JLCPCB_compress: Gerbers, drill, position and BoM files
-      compressed in a ZIP
-   -  \_JLCPCB_fab: \_JLCPCB_gerbers+_JLCPCB_drill
-   -  \_JLCPCB_assembly: \_JLCPCB_position+_JLCPCB_bom
-   -  \_JLCPCB: \_JLCPCB_fab+_JLCPCB_assembly
+-  `JLCPCB <https://jlcpcb.com/>`__: contain fabrication outputs
+   compatible with JLC PCB. Only SMD components.
+
+   -  **_JLCPCB_gerbers**: Gerbers.
+   -  **_JLCPCB_drill**: Drill files
+   -  **_JLCPCB_position**: Pick and place, applies the ``_rot_footprint``
+      filter. You can change this filter using the *_KIBOT_POS_PRE_TRANSFORM*
+      parameter.
+   -  **_JLCPCB_bom**: List of LCSC parts. Use the ``field_lcsc_part`` global
+      option to specify the LCSC part number field if KiBot fails to detect it.
+   -  **_JLCPCB_compress**: Gerbers, drill, position and BoM files compressed in a ZIP
+   -  **_JLCPCB_fab**: **_JLCPCB_gerbers** + **_JLCPCB_drill**
+   -  **_JLCPCB_assembly**: **_JLCPCB_position** + **_JLCPCB_bom**
+   -  **_JLCPCB**: **_JLCPCB_fab** + **_JLCPCB_assembly**
 
 -  `JLCPCB_stencil <https://jlcpcb.com/>`__: same as **JLCPCB**, but
-   also generates gerbers for F.Paste and B.Paste layers.
+   also generates gerbers for *F.Paste* and *B.Paste* layers.
+
 -  `JLCPCB_with_THT <https://jlcpcb.com/>`__: same as **JLCPCB**, but
    also including THT components.
+
 -  `JLCPCB_stencil_with_THT <https://jlcpcb.com/>`__: same as
    **JLCPCB_stencil**, but also including THT components.
+
 -  `MacroFab_XYRS <https://help.macrofab.com/knowledge/macrofab-required-design-files>`__:
    XYRS position file in MacroFab format
 
-   -  \_macrofab_xyrs: Position file in XYRS format compatible with
-      MacroFab.
+   -  **_macrofab_xyrs**: Position file in XYRS format compatible with MacroFab.
 
--  PanelDemo_4x4: creates a 4x4 panel of the board, showing some of the
-   panelize options
+-  PanelDemo_4x4: creates a 4x4 panel of the board, showing some of the panelize options
 
-   -  \_PanelDemo_4x4: The panel
+   -  **_PanelDemo_4x4**: The panel
 
 -  `P-Ban <https://www.p-ban.com/>`__: contain fabrication outputs
    compatible with P-Ban
 
-   -  \_P-Ban_gerbers: Gerbers. You need to define the layers for more
-      than 8.
-   -  \_P-Ban_drill: Drill files
-   -  \_P-Ban: \_P-Ban_gerbers+_P-Ban_drill
+   -  **_P-Ban_gerbers**: Gerbers. You need to define the layers for more than 8 (**_KIBOT_GERBER_LAYERS** parameter).
+   -  **_P-Ban_drill**: Drill files
+   -  **_P-Ban**: **_P-Ban_gerbers** + **_P-Ban_drill**
 
 -  `P-Ban_stencil <https://www.p-ban.com/>`__: same as **P-Ban**, but
-   also generates gerbers for F.Paste and B.Paste layers.
+   also generates gerbers for *F.Paste* and *B.Paste* layers.
+
 -  `PCB2Blender_2_1 <https://github.com/30350n/pcb2blender>`__
 
-   -  \_PCB2Blender_layers_2_1: The layers in SVG format. Disabled by
-      default.
-   -  \_PCB2Blender_vrml_2_1: The VRML for the board. Disabled by
-      default.
-   -  \_PCB2Blender_tools_2_1: Pads and bounds information. Disabled by
-      default.
-   -  \_PCB2Blender_2_1: The PCB3D file. Is enabled and creates the
-      other files.
-   -  \_PCB2Blender_elements_2_1:
-      \_PCB2Blender_tools_2_1+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1
+   -  **_PCB2Blender_layers_2_1**: The layers in SVG format. Disabled by default.
+   -  **_PCB2Blender_vrml_2_1**: The VRML for the board. Disabled by default.
+   -  **_PCB2Blender_tools_2_1**: Pads and bounds information. Disabled by default.
+   -  **_PCB2Blender_2_1**: The PCB3D file. Is enabled and creates the other files.
+   -  **_PCB2Blender_elements_2_1**: **_PCB2Blender_tools_2_1** + **_PCB2Blender_layers_2_1** + **_PCB2Blender_vrml_2_1**
 
 -  `PCB2Blender_2_1_haschtl <https://github.com/haschtl/pcb2blender>`__
 
-   -  Imports ``PCB2Blender_2_1`` and disables ``_PCB2Blender_2_1``
-   -  \_PCB2Blender_tools_2_1_haschtl: Pads, bounds and stack-up
-      information. Disabled by default.
-   -  \_PCB2Blender_2_1_haschtl: The PCB3D file. Is enabled and creates
-      the other files.
-   -  \_PCB2Blender_elements_2_1_haschtl:
-      \_PCB2Blender_tools_2_1_haschtl+_PCB2Blender_layers_2_1+_PCB2Blender_vrml_2_1
+   -  Imports **PCB2Blender_2_1** and disables **_PCB2Blender_2_1**
+   -  **_PCB2Blender_tools_2_1_haschtl**: Pads, bounds and stack-up information. Disabled by default.
+   -  **_PCB2Blender_2_1_haschtl**: The PCB3D file. Is enabled and creates the other files.
+   -  **_PCB2Blender_elements_2_1_haschtl**: **_PCB2Blender_tools_2_1_haschtl** + **_PCB2Blender_layers_2_1** + **_PCB2Blender_vrml_2_1**
 
--  `PCBWay <https://www.pcbway.com>`__: contain fabrication outputs
-   compatible with PCBWay
+-  `PCBWay <https://www.pcbway.com>`__: contain fabrication outputs compatible with PCBWay
 
-   -  \_PCBWay_gerbers: Gerbers
-   -  \_PCBWay_drill: Drill files
-   -  \_PCBWay_compress: Gerbers and drill files compressed in a ZIP
-   -  \_PCBWay: \_PCBWay_gerbers+_PCBWay_drill
+   -  **_PCBWay_gerbers**: Gerbers
+   -  **_PCBWay_drill**: Drill files
+   -  **_PCBWay_compress**: Gerbers and drill files compressed in a ZIP
+   -  **_PCBWay**: **_PCBWay_gerbers** + **_PCBWay_drill**
 
 -  `PCBWay_stencil <https://www.pcbway.com>`__: same as **PCBWay**, but
-   also generates gerbers for F.Paste and B.Paste layers.
+   also generates gerbers for *F.Paste* and *B.Paste* layers.
 
+
+.. _templates-parameters:
+
+Internal templates parameters
++++++++++++++++++++++++++++++
+
+The internal templates makes use of the :ref:`definitions during import <definitions-during-import>` mechanism to achieve
+some degree of customization.
+
+The manufacturer templates (Elecrow, FusionPCB, JLCPCB, P-Ban and PCBWay) support:
+
+-  **_KIBOT_F_PASTE**: Layer for the front paste mask (default: '')
+-  **_KIBOT_B_PASTE**: Layer for the back paste mask (default: '')
+-  **_KIBOT_IMPORT_ID**: Suffix used for all outputs and groups. This can be used to import the same template more than
+   once, which is useful when using different parameters (default: '')
+-  **_KIBOT_IMPORT_DIR**: Target directory for the outputs (default: depends on the manufacturer)
+-  **_KIBOT_MANF_DIR**: Target directory for the manufacturer outputs (default: **_KIBOT_IMPORT_DIR**)
+-  **_KIBOT_MANF_DIR_COMP**: Target directory for the compressed manufacturer outputs (default: **_KIBOT_IMPORT_DIR**)
+-  **_KIBOT_GERBER_LAYERS**: List of layers to use for the gerbers (default: a specially crafted list of layers)
+
+
+The JLCPCB case is a little bit more complex and also supports:
+
+-  **_KIBOT_POS_PRE_TRANSFORM**: Name of the filer used for pretransform, needed to rotate components (default: _rot_footprint)
+-  **_KIBOT_POS_ENABLED**: Generate position files (default: true)
+-  **_KIBOT_BOM_ENABLED**: Generate BoM (default: true)
+-  **_KIBOT_POS_ONLY_SMD**: Use only SMD components for the position files (default: true)
+
+
+MacroFab_XYRS:
+
+-  **_KIBOT_MPN_FIELD**: Manufacturer field definition (default: '- field: MPN')
+-  **_KIBOT_IMPORT_ID**: Suffix used for all outputs and groups (default: '')
+-  **_KIBOT_IMPORT_DIR**: Target directory for the outputs (default: '.')
+
+
+CheckZoneFill:
+
+- **_KIBOT_CHKZONE_THRESHOLD**: Maximum pixels difference (default: 100)
+
+
+Note that manufacturer templates named *\*_stencil* are created using parameters.
+As an example: *Elecrow_stencil* is just *Elecrow* customized like this:
+
+
+.. code:: yaml
+
+   import:
+     - file: Elecrow
+       definitions:
+         _KIBOT_F_PASTE: '- F.Paste'
+         _KIBOT_B_PASTE: '- B.Paste'
