@@ -9,7 +9,7 @@ documentation files for your KiCad projects easily, repeatable, and most
 of all, scriptably. This means you can use a Makefile to export your
 KiCad PCBs just as needed, or do it in a CI/CD environment.
 
-For example, it’s common that you might want for each board rev:
+For example, it’s common that you might want for each board rev to create/do:
 
 -  Check ERC/DRC one last time (using `KiCad Automation
    Scripts <https://github.com/INTI-CMNB/kicad-automation-scripts/>`__)
@@ -32,7 +32,7 @@ KiBot lets you do this. The following picture depicts the data flow:
 .. figure:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Esquema.png
    :alt: KiBot workflow
 
-   KiBot Logo
+   KiBot workflow example
 
 If you want to see this concept applied to a real world project visit
 the `Spora CI/CD <https://github.com/INTI-CMNB/kicad-ci-test-spora>`__
