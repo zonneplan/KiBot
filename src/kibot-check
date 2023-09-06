@@ -692,7 +692,9 @@ deps = '{\
     "KiKit": {\
         "arch": null,\
         "command": "kikit",\
-        "comments": [],\
+        "comments": [\
+            "Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest"\
+        ],\
         "deb_package": "kikit",\
         "downloader": {},\
         "downloader_str": "pytool",\
@@ -760,8 +762,8 @@ deps = '{\
             }\
         ],\
         "tests": [],\
-        "url": "https://github.com/yaqwsx/KiKit",\
-        "url_down": "https://github.com/yaqwsx/KiKit/releases"\
+        "url": "https://github.com/INTI-CMNB/KiKit",\
+        "url_down": "https://github.com/INTI-CMNB/KiKit/releases"\
     },\
     "LXML": {\
         "arch": "python-lxml",\

@@ -70,10 +70,11 @@ Dependencies:
     arch: python-lxml
     downloader: python
   - name: KiKit
-    github: yaqwsx/KiKit
+    github: INTI-CMNB/KiKit
     pypi: KiKit
     downloader: pytool
     version: 1.3.0.4
+    comments: Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest
   - from: KiKit
     role: Separate multiboard projects
   - name: Xvfbwrapper
