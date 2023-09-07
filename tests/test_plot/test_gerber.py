@@ -185,7 +185,7 @@ def test_gerber_protel_2(test_dir):
         file = prj+'_'+suf+'.'+ext.upper()
         ctx.expect_out_file_d(file)
         files.append(file)
-    assert ctx.search_err('Layer "Inner layer 6" isn\'t used')
+    assert ctx.search_err('Layer "Inner layer 6" (.*)isn\'t used')
     ctx.search_in_file_d('Report.txt', ['Top layer: good-project_F_Cu.GTL', 'Basename: good-project'])
     ctx.test_compress_d(prj+'-result.tar.gz', files)
     ctx.clean_up()
@@ -198,7 +198,7 @@ def test_gerber_sub_pcb_bp(test_dir):
     ctx = context.TestContext(test_dir, prj, 'gerber_sub_pcb', GERBER_DIR)
     ctx.run()
     # Check all outputs are there
-    fname = prj+'-F_Cu_connector.gbr'
+    fname = f'{prj}-F_Cu_connector.gbr'
     ctx.search_in_file_d(fname, [r'%ADD10C,4.000000\*%'])
     ctx.search_not_in_file_d(fname, [r'%ADD10R,1.300000X0.450000\*%'])
     ctx.clean_up(keep_project=True)
