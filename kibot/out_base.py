@@ -11,7 +11,7 @@ from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kiplot import load_sch, get_board_comps_data
-from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD, MOD_ALLOW_MISSING_COURTYARD
+from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD, MOD_ALLOW_MISSING_COURTYARD, W_MISSDIR
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
@@ -194,7 +194,14 @@ class BaseOutput(RegOutput):
     def run(self, output_dir):
         self.output_dir = output_dir
         output = self.options.output if hasattr(self.options, 'output') else ''
-        self.options.run(self.expand_filename(output_dir, output))
+        target = self.expand_filename(output_dir, output)
+        # Ensure the destination dir already exists
+        target_dir = os.path.dirname(os.path.abspath(target))
+        if not os.path.isdir(target_dir):
+            logger.warning(W_MISSDIR+f'Missing target directory `{target_dir}`, creating it')
+            logger.warning(W_MISSDIR+'Note: use the `dir` option properly or just create the dir before running KiBot')
+            os.makedirs(target_dir)
+        self.options.run(target)
 
 
 class BoMRegex(Optionable):
