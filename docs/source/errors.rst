@@ -38,3 +38,4 @@ Supported error levels
 - 32: DXF_SCH_PRINT
 - 33: HPGL_SCH_PRINT
 - 34: CORRUPTED_PRO
+- 35: BLENDER_ERROR
