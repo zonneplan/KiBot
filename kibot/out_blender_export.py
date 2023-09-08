@@ -14,11 +14,12 @@ Dependencies:
 import json
 import os
 import re
+import sys
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
 from .gs import GS
-from .misc import MISSING_TOOL
+from .misc import MISSING_TOOL, BLENDER_ERROR
 from .optionable import Optionable, BaseOptions
 from .out_base_3d import Base3D, Base3DOptionsWithHL
 from .registrable import RegOutput
@@ -535,6 +536,11 @@ class Blender_ExportOptions(BaseOptions):
             raise KiPlotConfigurationError('Missing '+pcb3d_file)
         return pcb3d_file
 
+    def analyze_errors(self, msg):
+        if 'Traceback ' in msg:
+            logger.error('Error from Blender run:\n'+msg[msg.index('Traceback '):])
+            sys.exit(BLENDER_ERROR)
+
     def run(self, output):
         if GS.ki5:
             logger.error("`blender_export` needs KiCad 6+")
@@ -638,7 +644,7 @@ class Blender_ExportOptions(BaseOptions):
             cmd.extend(['--scene', f.name])
             cmd.append(pcb3d_file)
             # Execute the command
-            run_command(cmd)
+            self.analyze_errors(run_command(cmd))
         if self.render_options.auto_crop:
             for pov in self.point_of_view:
                 for o in self.outputs:

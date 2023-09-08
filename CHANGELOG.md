@@ -24,6 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `default_file_id`: can be used to create numbered PNGs
     - `fixed_auto_camera`: to avoid adjusting the automatic camera on each frame
   - Camera option to set the clip start (#484)
+  - Traceback dump when Blender output contains it
 - Populate:
   - Basic support for regular list items (#480)
 - Help for the error levels
