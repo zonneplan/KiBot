@@ -1,0 +1,11 @@
+# Blender 3D render
+kibot:
+  version: 1
+
+import:
+  - file: 3DRender
+    definitions:
+      _KIBOT_IMPORT_ID: '_bottom'
+      _KIBOT_3D_VIEW: bottom
+      _KIBOT_ROT_Z: -20
+      _KIBOT_ROT_X: -30

@@ -182,6 +182,22 @@ information consult the :ref:`templates-parameters` section.
 
 Here is a list of currently defined templates and their outputs / groups:
 
+-  **3DRender_top**: Creates a top view render using Blender. The PCB is rotated to show it better.
+
+   - **_blender_3d_top**: Generates a PNG rotating (30, 0, -20) degrees the PCB.
+
+-  **3DRender_top_straight**: Creates a top view render using Blender.
+
+   - **_blender_3d_top_straight**: Generates a PNG with the stright top view.
+
+-  **3DRender_bottom**: Creates a bottom view render using Blender. The PCB is rotated to show it better.
+
+   - **_blender_3d_bottom**: Generates a PNG rotating (-30, 0, -20) degrees the PCB.
+
+-  **3DRender_bottom_straight**: Creates a bottom view render using Blender.
+
+   - **_blender_3d_bottom_straight**: Generates a PNG with the stright bottom view.
+
 -  **CheckZoneFill**: enables the ``check_zone_fills`` preflight and checks
    the refilled PCB doesn’t changed too much.
 
@@ -320,6 +336,17 @@ MacroFab_XYRS:
 CheckZoneFill:
 
 - **_KIBOT_CHKZONE_THRESHOLD**: Maximum pixels difference (default: 100)
+
+
+3DRender: Is the base for **3DRender_top**, **3DRender_top_straight**, **3DRender_bottom** and **3DRender_bottom_straight**
+
+-  **_KIBOT_IMPORT_ID**: Suffix used for the output (default: '')
+-  **_KIBOT_IMPORT_DIR**: Target directory for the output (default: 'Render_3D')
+-  **_KIBOT_3D_VIEW**: View point (default: 'top')
+-  **_KIBOT_3D_FILE_ID**: Text used to differentiate this view from others (default: **_KIBOT_IMPORT_ID**)
+-  **_KIBOT_ROT_X**: X axis rotation (default: 0)
+-  **_KIBOT_ROT_Y**: Y axis rotation (default: 0)
+-  **_KIBOT_ROT_Z**: Z axis rotation (default: 0)
 
 
 Note that manufacturer templates named *\*_stencil* are created using parameters.
