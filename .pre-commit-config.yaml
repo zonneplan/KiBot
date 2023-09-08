@@ -97,5 +97,5 @@ repos:
     hooks:
       - id: vermin
         # specify your target version here, OR in a Vermin config file as usual:
-        args: ['-t=3.7-', '--violations']
+        args: ['-t=2.7', '-t=3.7-', '--violations']
         # (if your target is specified in a Vermin config, you may omit the 'args' entry entirely)
