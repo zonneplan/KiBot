@@ -250,7 +250,7 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
             if link_mouser and headings[n] in link_mouser:
                 r = '<a href="https://www.mouser.com/ProductDetail/' + r + '">' + r + '</a>'
             if link_lcsc and headings[n] in link_lcsc:
-                r = '<a href="https://www.lcsc.com/product-detail/' + r + '">' + r + '</a>'
+                r = '<a href="https://www.lcsc.com/product-detail/' + r + '.html">' + r + '</a>'
             # Link this column to the datasheet?
             if link_datasheet == n and datasheet.startswith('http'):
                 r = '<a href="' + datasheet + '">' + r + '</a>'

@@ -816,7 +816,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                     worksheet.write_url(row_count, i, url, fmt, cell)
                 # A link to LCSC?
                 elif link_lcsc and col_fields[i] in link_lcsc:
-                    url = 'https://www.lcsc.com/product-detail/' + cell
+                    url = 'https://www.lcsc.com/product-detail/' + cell + '.html'
                     worksheet.write_url(row_count, i, url, fmt, cell)
                 else:
                     worksheet.write_string(row_count, i, cell, fmt)
