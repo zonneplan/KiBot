@@ -402,7 +402,7 @@ def main():
         else:
             os.makedirs(os.path.dirname(os.path.abspath(args.log)), exist_ok=True)
         log.set_file_log(args.log)
-        GS.debug_level = 10
+        log.debug_level = GS.debug_level = 10
     # The log setup finished, this is our first log message
     logger.debug('KiBot {} verbose level: {} started on {}'.format(__version__, args.verbose, datetime.now()))
     apply_warning_filter(args)
