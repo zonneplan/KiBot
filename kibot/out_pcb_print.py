@@ -29,6 +29,7 @@ Dependencies:
 #     version: '2.40'
 #     id: rsvg2
 from copy import deepcopy
+import datetime
 import re
 import os
 import subprocess
@@ -479,6 +480,7 @@ class PCB_PrintOptions(VariantOptions):
         GS.load_pcb_title_block()
         for num in range(9):
             vars['COMMENT'+str(num+1)] = GS.pcb_com[num]
+        vars['CURRENT_DATE'] = datetime.datetime.now().strftime('%Y-%m-%d')
         vars['COMPANY'] = GS.pcb_comp
         vars['ISSUE_DATE'] = GS.pcb_date
         vars['REVISION'] = GS.pcb_rev

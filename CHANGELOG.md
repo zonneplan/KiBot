@@ -30,6 +30,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Traceback dump when Blender output contains it
 - KiKit
   - Expand text variables and KiBot %X markers in text objects (see #497)
+- PCB Print:
+  - Support for CURRENT_DATE text variable
 - Populate:
   - Basic support for regular list items (#480)
 - Help for the error levels
