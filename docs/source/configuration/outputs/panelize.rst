@@ -217,6 +217,7 @@ Parameters:
                   -  ``drawtabfail`` :index:`: <pair: output - panelize - options - configs - debug; drawtabfail>` [boolean=false] Draw tab fail.
                   -  ``trace`` :index:`: <pair: output - panelize - options - configs - debug; trace>` [boolean=false] Trace.
 
+            -  ``expand_text`` :index:`: <pair: output - panelize - options - configs; expand_text>` [boolean=true] Expand text variables and KiBot %X markers in text objects.
             -  ``extends`` :index:`: <pair: output - panelize - options - configs; extends>` [string=''] A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`.
             -  ``name`` :index:`: <pair: output - panelize - options - configs; name>` [string=''] A name to identify this configuration. If empty will be the order in the list, starting with 1.
                Don't use just a number or it will be confused as an index.

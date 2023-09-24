@@ -1720,6 +1720,8 @@ outputs:
             drawtabfail: false
             # [boolean=false] Trace
             trace: false
+          # [boolean=true] Expand text variables and KiBot %X markers in text objects
+          expand_text: true
           # [string=''] A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`
           extends: ''
           # [dict] Used to add fiducial marks to the (rail/frame of) the panel

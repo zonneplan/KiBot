@@ -361,6 +361,8 @@ class PanelizeText(PanelOptions):
         res = Layer.solve(self.layer)
         if len(res) > 1:
             raise KiPlotConfigurationError('Must select only one layer for the text ({})'.format(self.layer))
+        if parent.expand_text:
+            self.text = parent.expand_filename_both(self.text, is_sch=False, make_safe=False)
 
 
 class PanelizeCopperfill(PanelOptions):
@@ -523,6 +525,8 @@ class PanelizeConfig(PanelOptions):
             """ [dict] Debug options """
             self.source = PanelizeSource
             """ [dict] Used to adjust details of which part of the PCB is panelized """
+            self.expand_text = True
+            """ Expand text variables and KiBot %X markers in text objects """
         super().__init__()
 
     def config(self, parent):
