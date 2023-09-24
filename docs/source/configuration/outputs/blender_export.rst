@@ -49,6 +49,10 @@ Parameters:
             -  ``dnf_filter`` :index:`: <pair: output - blender_export - options - pcb3d; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
                A short-cut to use for simple cases where a variant is an overkill.
 
+            -  ``download_lcsc`` :index:`: <pair: output - blender_export - options - pcb3d; download_lcsc>` [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+               them from LCSC database. In order to work you'll need to provide the LCSC
+               part number. The field containing the LCSC part number is defined by the
+               `field_lcsc_part` global variable.
             -  ``highlight`` :index:`: <pair: output - blender_export - options - pcb3d; highlight>` [list(string)=[]] List of components to highlight.
 
             -  ``highlight_on_top`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_on_top>` [boolean=false] Highlight over the component (not under).

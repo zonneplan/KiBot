@@ -133,6 +133,11 @@ class Base3DOptions(VariantOptions):
                 They are downloaded to a temporal directory and discarded.
                 If you want to cache the downloaded files specify a directory using the
                 KIBOT_3D_MODELS environment variable """
+            self.download_lcsc = True
+            """ In addition to try to download the 3D models from KiCad git also try to get
+                them from LCSC database. In order to work you'll need to provide the LCSC
+                part number. The field containing the LCSC part number is defined by the
+                `field_lcsc_part` global variable """
             self.kicad_3d_url = 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
             """ Base URL for the KiCad 3D models """
             self.kicad_3d_url_suffix = ''
@@ -147,6 +152,7 @@ class Base3DOptions(VariantOptions):
         super().copy_options(ref)
         self.no_virtual = ref.no_virtual
         self.download = ref.download
+        self.download_lcsc = ref.download_lcsc
         self.kicad_3d_url = ref.kicad_3d_url
         self.kicad_3d_url_suffix = ref.kicad_3d_url_suffix
 
@@ -494,7 +500,7 @@ class Base3DOptions(VariantOptions):
                     # Missing 3D model
                     if self.download:
                         replace = self.try_download_kicad(m3d.m_Filename, full_name, downloaded, rel_dirs, force_wrl)
-                        if replace is None:
+                        if replace is None and self.download_lcsc:
                             replace = self.try_download_easyeda(m3d.m_Filename, full_name, downloaded, sch_comp, lcsc_field)
                         if replace:
                             replace = self.do_colored_tht_resistor(replace, sch_comp, used_extra)

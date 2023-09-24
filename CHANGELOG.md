@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal templates:
   - 3DRender_top, 3DRender_top_straight, 3DRender_bottom and
     3DRender_bottom_straight: to generate simple and quick 3D renders.
+- 3D outputs:
+  - `download_lcsc` option to disable LCSC 3D model download (See #415)
 - BoM:
   - Support for ${field} expansion. (#471)
   - LCSC links (SchrodingersGat/KiBoM#190)

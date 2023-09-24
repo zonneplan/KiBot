@@ -54,6 +54,10 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - copy_files - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
+      -  ``download_lcsc`` :index:`: <pair: output - copy_files - options; download_lcsc>` [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+         them from LCSC database. In order to work you'll need to provide the LCSC
+         part number. The field containing the LCSC part number is defined by the
+         `field_lcsc_part` global variable.
       -  ``follow_links`` :index:`: <pair: output - copy_files - options; follow_links>` [boolean=true] Store the file pointed by symlinks, not the symlink.
       -  ``kicad_3d_url`` :index:`: <pair: output - copy_files - options; kicad_3d_url>` [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
       -  ``kicad_3d_url_suffix`` :index:`: <pair: output - copy_files - options; kicad_3d_url_suffix>` [string=''] Text added to the end of the download URL.
