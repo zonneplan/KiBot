@@ -75,6 +75,11 @@ Parameters:
       -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [list(string)] List of fields used for sorting individual components into groups.
          Components which match (comparing *all* fields) will be grouped together.
          Field names are case-insensitive.
+         For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
+         `merge_both_blank` options.
+         Note that for resistors, capacitors and inductors the _Value_ field is parsed and qualifiers, like
+         tolerance, are discarded. Please use a separated field and disable `merge_blank_fields` if this
+         information is important. You can also disable `parse_value`.
          If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
          'Voltage', 'Tolerance', 'Current', 'Power'] is used.
 
@@ -287,6 +292,10 @@ Parameters:
       -  ``no_distributors`` :index:`: <pair: output - bom - options; no_distributors>` [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
 
       -  ``normalize_locale`` :index:`: <pair: output - bom - options; normalize_locale>` [boolean=false] When normalizing values use the locale decimal point.
+      -  ``parse_value`` :index:`: <pair: output - bom - options; parse_value>` [boolean=true] Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
+         Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
+         extra information split it in separated fields, add the fields to `group_fields` and disable
+         `merge_blank_fields`.
       -  ``pre_transform`` :index:`: <pair: output - bom - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
          This option is for simple cases, consider using a full variant for complex cases.
 

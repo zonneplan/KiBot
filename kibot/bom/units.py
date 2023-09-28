@@ -18,7 +18,7 @@ import re
 import locale
 from math import log10
 from .. import log
-from ..misc import W_BADVAL1, W_BADVAL2, W_BADVAL3, W_BADVAL4
+from ..misc import W_BADVAL1, W_BADVAL2, W_BADVAL3, W_BADVAL4, W_EXTRAINVAL
 from .electro_grammar import parse
 
 logger = log.get_logger()
@@ -53,6 +53,8 @@ match = None
 decimal_point = None
 # Parser cache
 parser_cache = {}
+# Flag to indicate we already warned about extra data
+warn_extra_issued = False
 
 
 def get_decima_point():
@@ -163,7 +165,16 @@ def value_from_grammar(r):
     return parsed
 
 
-def comp_match(component, ref_prefix, ref=None, relax_severity=False, stronger=False):
+def check_extra_data(r, v):
+    global warn_extra_issued
+    if warn_extra_issued:
+        return
+    if 'tolerance' in r or 'characteristic' in r or 'voltage_rating' in r or 'power_rating' in r or 'size' in r:
+        logger.warning(W_EXTRAINVAL+f'Avoid adding extra information in the component value, use separated fields ({v})')
+        warn_extra_issued = True
+
+
+def comp_match(component, ref_prefix, ref=None, relax_severity=False, stronger=False, warn_extra=False):
     """
     Return a normalized value and units for a given component value string
     Also tries to separate extra data, i.e. tolerance, using a complex parser
@@ -216,6 +227,8 @@ def comp_match(component, ref_prefix, ref=None, relax_severity=False, stronger=F
         # Failed with the regex, try with the parser
         result = parse(ref_prefix[0]+' '+with_commas, with_extra=True, stronger=stronger)
         if result:
+            if warn_extra:
+                check_extra_data(result, original)
             result = value_from_grammar(result)
             if result and result.get_extra('discarded'):
                 discarded = " ".join(list(map(lambda x: '`'+x+'`', result.get_extra('discarded'))))

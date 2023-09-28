@@ -507,6 +507,11 @@ class BoMOptions(BaseOptions):
             """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
+                For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
+                `merge_both_blank` options.
+                Note that for resistors, capacitors and inductors the _Value_ field is parsed and qualifiers, like
+                tolerance, are discarded. Please use a separated field and disable `merge_blank_fields` if this
+                information is important. You can also disable `parse_value`.
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
                 .          'Voltage', 'Tolerance', 'Current', 'Power'] is used """
             self.group_fields_fallbacks = Optionable
@@ -523,6 +528,11 @@ class BoMOptions(BaseOptions):
                 - ['sw', 'switch']
                 - ['zener', 'zenersmall']
                 - ['d', 'diode', 'd_small'] """
+            self.parse_value = True
+            """ Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
+                Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
+                extra information split it in separated fields, add the fields to `group_fields` and disable
+                `merge_blank_fields` """
             self.no_conflict = NoConflict
             """ [list(string)] List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.

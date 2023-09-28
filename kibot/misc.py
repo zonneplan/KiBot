@@ -285,6 +285,7 @@ W_FLDCOLLISION = '(W129) '
 W_NEWGROUP = '(W130) '
 W_NOTINBOM = '(W131) '
 W_MISSDIR = '(W132) '
+W_EXTRAINVAL = '(W133) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",

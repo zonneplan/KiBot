@@ -431,8 +431,8 @@ def group_components(cfg, components):
         if not c.included:  # Skip components marked as excluded from BoM
             continue
         # Cache the value used to sort
-        if c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
-            c.value_sort = comp_match(c.value, c.ref_prefix, c.ref)
+        if cfg.parse_value and c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
+            c.value_sort = comp_match(c.value, c.ref_prefix, c.ref, warn_extra=True)
         else:
             c.value_sort = None
         # Try to add the component to an existing group
