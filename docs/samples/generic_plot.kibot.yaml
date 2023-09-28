@@ -2924,7 +2924,8 @@ outputs:
     options:
       # [string='QR'] Short name for the library
       lib: 'QR'
-      # [string='%f-%i%I%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options
+      # [string='%f-%i%I%v.%x'] Filename/dirname for the output (%i=qr, %x=lib/kicad_sym/pretty).
+      # You must use %x in the name to get a symbols lib and a footprint. Affected by global options
       output: '%f-%i%I%v.%x'
       # [list(dict)] QR codes to include in the library
       qrs:

@@ -102,7 +102,8 @@ class QR_LibOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ *Filename for the output (%i=qr, %x=lib) """
+            """ *Filename/dirname for the output (%i=qr, %x=lib/kicad_sym/pretty).
+                You must use %x in the name to get a symbols lib and a footprint """
             self.lib = 'QR'
             """ *Short name for the library """
             self.reference = 'QR'
@@ -249,9 +250,7 @@ class QR_LibOptions(BaseOptions):
             f.write(dumps(mod))
             f.write('\n')
 
-    def symbol_lib_k5(self):
-        self._expand_ext = 'lib'
-        output = os.path.join(self._odir_sch, self.expand_filename_sch(self.output))
+    def symbol_lib_k5(self, output):
         logger.debug('Creating KiCad 5 symbols library: '+output)
         with open(output, 'wt') as f:
             f.write("EESchema-LIBRARY Version 2.4\n")
@@ -272,9 +271,7 @@ class QR_LibOptions(BaseOptions):
             f.effects.hide = True
         return f.write()+[Sep()]
 
-    def symbol_lib_k6(self):
-        self._expand_ext = 'kicad_sym'
-        output = os.path.join(self._odir_sch, self.expand_filename_sch(self.output))
+    def symbol_lib_k6(self, output):
         logger.debug('Creating KiCad 6 symbols library: '+output)
         # Lib header
         lib = [Symbol('kicad_symbol_lib')]
@@ -507,6 +504,12 @@ class QR_LibOptions(BaseOptions):
             self._odir_pcb = GS.pcb_dir
         else:
             self._odir_pcb = self._odir_sch = self._parent.output_dir
+        self._expand_ext = 'pretty'
+        dir_pretty = os.path.join(self._odir_pcb, self.expand_filename_pcb(self.output))
+        self._expand_ext = 'lib' if GS.ki5 else 'kicad_sym'
+        sch_output = os.path.join(self._odir_sch, self.expand_filename_sch(self.output))
+        if sch_output == dir_pretty:
+            raise KiPlotConfigurationError(f'The symbol and footprint outputs are the same, use %x to solve it ({sch_output})')
         # Create the QR codes
         for qr in self.qrs:
             qr._text_sch = self.expand_filename_both(qr.text, make_safe=False)
@@ -515,12 +518,10 @@ class QR_LibOptions(BaseOptions):
             qr._code_pcb = qrcodegen.QrCode.encode_text(qr._text_pcb, QR_ECCS[qr.correction_level])
         # Create the symbols
         if GS.ki5:
-            self.symbol_lib_k5()
+            self.symbol_lib_k5(sch_output)
         else:
-            self.symbol_lib_k6()
+            self.symbol_lib_k6(sch_output)
         # Create the footprints
-        self._expand_ext = 'pretty'
-        dir_pretty = os.path.join(self._odir_pcb, self.expand_filename_pcb(self.output))
         logger.debug('Creating footprints library: '+dir_pretty)
         os.makedirs(dir_pretty, exist_ok=True)
         for qr in self.qrs:
