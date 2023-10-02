@@ -615,16 +615,22 @@ class GS(object):
         return g.GetShape() != pcbnew.S_SEGMENT or g.GetLength() > 0
 
     @staticmethod
+    def v2p(v):
+        if GS.ki7:
+            return pcbnew.wxPoint(v.x, v.y)
+        return v
+
+    @staticmethod
     def get_start_point(g):
         shape = g.GetShape()
         if GS.ki6:
             if shape == pcbnew.S_CIRCLE:
                 # Circle start is circle center
-                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
-            return g.GetStart()
+                return GS.v2p(g.GetStart())+pcbnew.wxPoint(g.GetRadius(), 0)
+            return GS.v2p(g.GetStart())
         if shape in [pcbnew.S_ARC, pcbnew.S_CIRCLE]:
-            return g.GetArcStart()
-        return g.GetStart()
+            return GS.v2p(g.GetArcStart())
+        return GS.v2p(g.GetStart())
 
     @staticmethod
     def get_end_point(g):
@@ -632,16 +638,16 @@ class GS(object):
         if GS.ki6:
             if shape == pcbnew.S_CIRCLE:
                 # This is closed start == end
-                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
+                return GS.v2p(g.GetStart())+pcbnew.wxPoint(g.GetRadius(), 0)
             if shape == pcbnew.S_RECT:
                 # Also closed start == end
-                return g.GetStart()
-            return g.GetEnd()
+                return GS.v2p(g.GetStart())
+            return GS.v2p(g.GetEnd())
         if shape == pcbnew.S_ARC:
-            return g.GetArcEnd()
+            return GS.v2p(g.GetArcEnd())
         if shape == pcbnew.S_CIRCLE:
-            return g.GetArcStart()
-        return g.GetEnd()
+            return GS.v2p(g.GetArcStart())
+        return GS.v2p(g.GetEnd())
 
     @staticmethod
     def get_shape_bbox(s):
@@ -743,3 +749,9 @@ class GS(object):
         else:
             logger.error(msg)
         exit(level)
+
+    @staticmethod
+    def get_shape(shape):
+        if GS.ki6:
+            return shape.ShowShape()
+        return shape.ShowShape(shape.GetShape())

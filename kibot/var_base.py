@@ -43,7 +43,7 @@ class Edge(object):
         self.end = GS.get_end_point(shape)
         self.r_end = round_point(self.end)
         self.shape = shape
-        self.cls = shape.ShowShape()
+        self.cls = GS.get_shape(shape)
         self.used = False
 
     def get_other_end(self, point):

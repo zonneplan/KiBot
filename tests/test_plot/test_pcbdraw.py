@@ -192,3 +192,16 @@ def test_pcbdraw_sub_pcb_bp(test_dir):
     ctx.expect_out_file(fname_b+'connector.svg')
     ctx.compare_image(fname_b+'connector.svg', height='100%', tol=10)
     ctx.clean_up(keep_project=True)
+
+
+def test_pcbdraw_sub_pcb_2(test_dir):
+    """ Test a multiboard example """
+    prj = 'multiboard'
+    ctx = context.TestContext(test_dir, prj, 'pcbdraw_sub_pcb_2', '')
+    ctx.run()
+    # Check all outputs are there
+    fname_b = prj+'-top_'
+    ctx.expect_out_file(fname_b+'battery.svg')
+    ctx.expect_out_file(fname_b+'charger.svg')
+    ctx.expect_out_file(fname_b+'connector.svg')
+    ctx.clean_up(keep_project=True)
