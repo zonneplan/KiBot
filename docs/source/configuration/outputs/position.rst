@@ -24,9 +24,11 @@ Parameters:
 
    -  Valid keys:
 
-      -  **format** :index:`: <pair: output - position - options; format>` [string='ASCII'] [ASCII,CSV] Format for the position file.
+      -  **format** :index:`: <pair: output - position - options; format>` [string='ASCII'] [ASCII,CSV,GBR] Format for the position file.
+         Note that the gerber format (GBR) needs KiCad 7+ and doesn't support most of the options.
+         Only the options that explicitly say the format is supported.
       -  **only_smd** :index:`: <pair: output - position - options; only_smd>` [boolean=true] Only include the surface mount components.
-      -  **output** :index:`: <pair: output - position - options; output>` [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
+      -  **output** :index:`: <pair: output - position - options; output>` [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
          Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
       -  **separate_files_for_front_and_back** :index:`: <pair: output - position - options; separate_files_for_front_and_back>` [boolean=true] Generate two separated files, one for the top and another for the bottom.
       -  **units** :index:`: <pair: output - position - options; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
@@ -41,6 +43,7 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - position - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
+      -  ``gerber_board_edge`` :index:`: <pair: output - position - options; gerber_board_edge>` [boolean=false] Include the board edge in the gerber output.
       -  ``include_virtual`` :index:`: <pair: output - position - options; include_virtual>` [boolean=false] Include virtual components. For special purposes, not pick & place.
          Note that virtual components is a KiCad 5 concept.
          For KiCad 6+ we replace this concept by the option to exclude from position file.
@@ -50,6 +53,7 @@ Parameters:
       -  ``quote_all`` :index:`: <pair: output - position - options; quote_all>` [boolean=false] When generating the CSV quote all values, even numbers.
       -  ``right_digits`` :index:`: <pair: output - position - options; right_digits>` [number=4] number of digits for mantissa part of coordinates (0 is auto).
       -  ``use_aux_axis_as_origin`` :index:`: <pair: output - position - options; use_aux_axis_as_origin>` [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
+         Supported by the gerber format.
       -  ``variant`` :index:`: <pair: output - position - options; variant>` [string=''] Board variant to apply.
 
 -  **type** :index:`: <pair: output - position; type>` [string=''] Type of output.

@@ -339,3 +339,13 @@ def test_position_flags_3(test_dir):
     ctx.run()
     check_comp_list(ctx.load_csv(prj+'-both_pos.csv')[0], {'R1', 'R2', 'R3'})
     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="needs kicad-cli")
+def test_position_gerber_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'simple_position_gbr', POS_DIR)
+    ctx.run()
+    ctx.expect_out_file_d(prj+'-top_pos.gbr')
+    ctx.expect_out_file_d(prj+'-bottom_pos.gbr')
+    ctx.clean_up(keep_project=True)

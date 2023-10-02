@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2019 Romain Deterre (@rdeterre)
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -10,6 +10,7 @@ from re import compile
 from datetime import datetime
 from collections import OrderedDict
 from .gs import GS
+from .kiplot import run_command
 from .misc import UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
 from .optionable import Optionable
 from .out_base import VariantOptions
@@ -60,13 +61,15 @@ class PositionOptions(VariantOptions):
     def __init__(self):
         with document:
             self.format = 'ASCII'
-            """ *[ASCII,CSV] Format for the position file """
+            """ *[ASCII,CSV,GBR] Format for the position file.
+                Note that the gerber format (GBR) needs KiCad 7+ and doesn't support most of the options.
+                Only the options that explicitly say the format is supported """
             self.separate_files_for_front_and_back = True
             """ *Generate two separated files, one for the top and another for the bottom """
             self.only_smd = True
             """ *Only include the surface mount components """
             self.output = GS.def_global_output
-            """ *Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
+            """ *Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
                 Important: when using separate files you must use `%i` to differentiate them """
             self.units = 'millimeters'
             """ *[millimeters,inches,mils] Units used for the positions. Affected by global options """
@@ -78,13 +81,16 @@ class PositionOptions(VariantOptions):
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer """
             self.use_aux_axis_as_origin = True
-            """ Use the auxiliary axis as origin for coordinates (KiCad default) """
+            """ Use the auxiliary axis as origin for coordinates (KiCad default).
+                Supported by the gerber format """
             self.include_virtual = False
             """ Include virtual components. For special purposes, not pick & place.
                 Note that virtual components is a KiCad 5 concept.
                 For KiCad 6+ we replace this concept by the option to exclude from position file """
             self.quote_all = False
             """ When generating the CSV quote all values, even numbers """
+            self.gerber_board_edge = False
+            """ Include the board edge in the gerber output """
         super().__init__()
         self._expand_id = 'position'
 
@@ -105,7 +111,7 @@ class PositionOptions(VariantOptions):
                     new_name = col.name if col.name else new_col
                 new_columns[new_col] = new_name
             self.columns = new_columns
-        self._expand_ext = 'pos' if self.format == 'ASCII' else 'csv'
+        self._expand_ext = 'pos' if self.format == 'ASCII' else self.format.lower()
 
     def _do_position_plot_ascii(self, output_dir, columns, modulesStr, maxSizes, modules_side):
         topf = None
@@ -224,10 +230,31 @@ class PositionOptions(VariantOptions):
                     self.expand_filename(out_dir, self.output, 'bottom_pos', ext)]
         return [self.expand_filename(out_dir, self.output, 'both_pos', ext)]
 
+    def run_gerber(self, output_dir):
+        if not GS.ki7:
+            raise KiPlotConfigurationError("Gerber position needs KiCad 7+")
+
+        pcb_name = self.save_tmp_board_if_variant()
+        cmd_base = ['kicad-cli', 'pcb', 'export', 'pos', '--format', 'gerber']
+        if self.use_aux_axis_as_origin:
+            cmd_base.append('--use-drill-file-origin')
+        if self.gerber_board_edge:
+            cmd_base.append('--gerber-board-edge')
+        cmd_base.append('--side')
+
+        fname = self.expand_filename(output_dir, self.output, 'top_pos', self._expand_ext)
+        run_command(cmd_base+['front', '-o', fname, pcb_name])
+
+        fname = self.expand_filename(output_dir, self.output, 'bottom_pos', self._expand_ext)
+        run_command(cmd_base+['back', '-o', fname, pcb_name])
+
     def run(self, fname):
         super().run(fname)
-        self.filter_pcb_components()
         output_dir = os.path.dirname(fname)
+        if self.format == 'GBR':
+            self.run_gerber(output_dir)
+            return
+        self.filter_pcb_components()
         columns = self.columns.values()
         conv = GS.unit_name_to_scale_factor(self.units)
         # Format all strings

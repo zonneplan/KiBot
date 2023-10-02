@@ -30,8 +30,8 @@ Parameters:
    -  Valid keys:
 
       -  **lib** :index:`: <pair: output - qr_lib - options; lib>` [string='QR'] Short name for the library.
-      -  **output** :index:`: <pair: output - qr_lib - options; output>` [string='%f-%i%I%v.%x'] Filename/dirname for the output (%i=qr, %x=lib/kicad_sym/pretty).
-         You must use %x in the name to get a symbols lib and a footprint. Affected by global options.
+      -  **output** :index:`: <pair: output - qr_lib - options; output>` [string='%f-%i%I%v.%x'] Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
+         You must use %x in the name to get a symbols lib and a footprints lib. Affected by global options.
       -  **qrs** :index:`: <pair: output - qr_lib - options; qrs>` [list(dict)] QR codes to include in the library.
 
          -  Valid keys:

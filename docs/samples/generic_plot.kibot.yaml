@@ -2769,15 +2769,19 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
-      # [string='ASCII'] [ASCII,CSV] Format for the position file
+      # [string='ASCII'] [ASCII,CSV,GBR] Format for the position file.
+      # Note that the gerber format (GBR) needs KiCad 7+ and doesn't support most of the options.
+      # Only the options that explicitly say the format is supported
       format: 'ASCII'
+      # [boolean=false] Include the board edge in the gerber output
+      gerber_board_edge: false
       # [boolean=false] Include virtual components. For special purposes, not pick & place.
       # Note that virtual components is a KiCad 5 concept.
       # For KiCad 6+ we replace this concept by the option to exclude from position file
       include_virtual: false
       # [boolean=true] Only include the surface mount components
       only_smd: true
-      # [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
+      # [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
       # Important: when using separate files you must use `%i` to differentiate them. Affected by global options
       output: '%f-%i%I%v.%x'
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
@@ -2791,7 +2795,8 @@ outputs:
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options
       units: 'millimeters'
-      # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default)
+      # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
+      # Supported by the gerber format
       use_aux_axis_as_origin: true
       # [string=''] Board variant to apply
       variant: ''
@@ -2924,8 +2929,8 @@ outputs:
     options:
       # [string='QR'] Short name for the library
       lib: 'QR'
-      # [string='%f-%i%I%v.%x'] Filename/dirname for the output (%i=qr, %x=lib/kicad_sym/pretty).
-      # You must use %x in the name to get a symbols lib and a footprint. Affected by global options
+      # [string='%f-%i%I%v.%x'] Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
+      # You must use %x in the name to get a symbols lib and a footprints lib. Affected by global options
       output: '%f-%i%I%v.%x'
       # [list(dict)] QR codes to include in the library
       qrs:
