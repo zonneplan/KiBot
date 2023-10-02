@@ -102,8 +102,8 @@ class QR_LibOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ *Filename/dirname for the output (%i=qr, %x=lib/kicad_sym/pretty).
-                You must use %x in the name to get a symbols lib and a footprint """
+            """ *Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
+                You must use %x in the name to get a symbols lib and a footprints lib """
             self.lib = 'QR'
             """ *Short name for the library """
             self.reference = 'QR'
