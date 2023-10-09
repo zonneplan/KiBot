@@ -268,14 +268,14 @@ class Layer(Optionable):
         Layer._pcb_layers = {GS.board.GetLayerName(id): id for id in GS.board.GetEnabledLayers().Seq()}
 
     def get_default_suffix(self):
-        if not isinstance(GS.global_layer_defaults, type):
+        if GS.global_layer_defaults and not isinstance(GS.global_layer_defaults, type):
             layer = next(filter(lambda x: x.layer == self.layer, GS.global_layer_defaults), None)
             if layer and layer.suffix:
                 return layer.suffix
         return self.layer.replace('.', '_')
 
     def get_default_description(self):
-        if not isinstance(GS.global_layer_defaults, type):
+        if GS.global_layer_defaults and not isinstance(GS.global_layer_defaults, type):
             layer = next(filter(lambda x: x.layer == self.layer, GS.global_layer_defaults), None)
             if layer and layer.description:
                 return layer.description
