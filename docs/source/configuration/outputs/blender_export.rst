@@ -135,7 +135,7 @@ Parameters:
             -  ``pos_x`` :index:`: <pair: output - blender_export - options - light; pos_x>` [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``pos_y`` :index:`: <pair: output - blender_export - options - light; pos_y>` [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``pos_z`` :index:`: <pair: output - blender_export - options - light; pos_z>` [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``type`` :index:`: <pair: output - blender_export - options - light; type>` [string='POINT'] [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly.
+            -  ``type`` :index:`: <pair: output - blender_export - options - light; type>` [string='POINT'] [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly.
 
       -  ``outputs`` :index:`: <pair: output - blender_export - options; outputs>` [dict|list(dict)] Outputs to generate in the same run.
 

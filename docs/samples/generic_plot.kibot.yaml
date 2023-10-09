@@ -152,7 +152,7 @@ outputs:
           pos_y: 0
           # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_z: 0
-          # [string='POINT'] [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly
+          # [string='POINT'] [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly
           type: 'POINT'
       # [dict|list(dict)] Outputs to generate in the same run
       outputs:

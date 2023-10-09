@@ -124,7 +124,7 @@ class BlenderLightOptions(BlenderObjOptions):
         super().__init__()
         with document:
             self.type = "POINT"
-            """ [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly """
+            """ [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly """
             self.energy = 0
             """ How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful """
         self.add_to_doc('name', ' light', with_nl=False)
