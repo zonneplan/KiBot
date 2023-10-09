@@ -144,9 +144,11 @@ class Layer(Optionable):
             self.layer = ''
             """ Name of the layer. As you see it in KiCad """
             self.suffix = ''
-            """ Suffix used in file names related to this layer. Derived from the name if not specified """
+            """ Suffix used in file names related to this layer. Derived from the name if not specified.
+                A default can be specified using the `layer_defaults` global option """
             self.description = ''
-            """ A description for the layer, for documentation purposes """
+            """ A description for the layer, for documentation purposes.
+                A default can be specified using the `layer_defaults` global option """
         self._unknown_is_error = True
         self._protel_extension = None
 
@@ -155,12 +157,9 @@ class Layer(Optionable):
         if not self.layer:
             raise KiPlotConfigurationError("Missing or empty `layer` attribute for layer entry ({})".format(self._tree))
         if not self.description:
-            if self.layer in Layer.DEFAULT_LAYER_DESC:
-                self.description = Layer.DEFAULT_LAYER_DESC[self.layer]
-            else:
-                self.description = 'No description'
+            self.description = self.get_default_description()
         if not self.suffix:
-            self.suffix = self.layer.replace('.', '_')
+            self.suffix = self.get_default_suffix()
         self.clean_suffix()
 
     @staticmethod
@@ -268,6 +267,20 @@ class Layer(Optionable):
     def _set_pcb_layers():
         Layer._pcb_layers = {GS.board.GetLayerName(id): id for id in GS.board.GetEnabledLayers().Seq()}
 
+    def get_default_suffix(self):
+        if GS.global_layer_defaults:
+            layer = next(filter(lambda x: x.layer == self.layer, GS.global_layer_defaults), None)
+            if layer and layer.suffix:
+                return layer.suffix
+        return self.layer.replace('.', '_')
+
+    def get_default_description(self):
+        if GS.global_layer_defaults:
+            layer = next(filter(lambda x: x.layer == self.layer, GS.global_layer_defaults), None)
+            if layer and layer.description:
+                return layer.description
+        return Layer.DEFAULT_LAYER_DESC.get(self.layer, 'No description')
+
     @classmethod
     def create_layer(cls, name):
         layer = cls()
@@ -279,8 +292,8 @@ class Layer(Optionable):
             layer._is_inner = name > pcbnew.F_Cu and name < pcbnew.B_Cu
             name = GS.board.GetLayerName(name)
             layer.layer = name
-        layer.suffix = name.replace('.', '_')
-        layer.description = Layer.DEFAULT_LAYER_DESC.get(name, '')
+        layer.suffix = layer.get_default_suffix()
+        layer.description = layer.get_default_description()
         layer.fix_protel_ext()
         layer.clean_suffix()
         return layer

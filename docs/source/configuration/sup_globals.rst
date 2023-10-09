@@ -140,6 +140,17 @@
       -  ``kicad_dnp_applies_to_3D`` :index:`: <pair: global options; kicad_dnp_applies_to_3D>` [boolean=true] The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
          even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
          this flag.
+      -  ``layer_defaults`` :index:`: <pair: global options; layer_defaults>` [list(dict)] Used to indicate the default suffix and description for the layers.
+         Note that the name for the layer must match exactly, no aliases.
+
+         -  Valid keys:
+
+            -  ``description`` :index:`: <pair: global options - layer_defaults; description>` [string=''] A description for the layer, for documentation purposes.
+               A default can be specified using the `layer_defaults` global option.
+            -  ``layer`` :index:`: <pair: global options - layer_defaults; layer>` [string=''] Name of the layer. As you see it in KiCad.
+            -  ``suffix`` :index:`: <pair: global options - layer_defaults; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+               A default can be specified using the `layer_defaults` global option.
+
       -  ``out_dir`` :index:`: <pair: global options; out_dir>` [string=''] Base output dir, same as command line `--out-dir`.
       -  ``output`` :index:`: <pair: global options; output>` [string='%f-%i%I%v.%x'] Default pattern for output file names. Affected by global options.
       -  ``pcb_finish`` :index:`: <pair: global options; pcb_finish>` [string='HAL'] Finishing used to protect pads. Currently used for documentation and to choose default colors.

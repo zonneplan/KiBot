@@ -2282,7 +2282,8 @@ outputs:
           layers:
             # [string=''] Color used for this layer
             - color: ''
-              # [string=''] A description for the layer, for documentation purposes
+              # [string=''] A description for the layer, for documentation purposes.
+              # A default can be specified using the `layer_defaults` global option
               description: ''
               # [boolean=false] Include references and values even when they are marked as invisible
               force_plot_invisible_refs_vals: false
@@ -2292,7 +2293,8 @@ outputs:
               plot_footprint_refs: true
               # [boolean=true] Include the footprint values
               plot_footprint_values: true
-              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified
+              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+              # A default can be specified using the `layer_defaults` global option
               suffix: ''
           # [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5)
           line_width: 0.1
@@ -2317,7 +2319,8 @@ outputs:
           repeat_layers:
             # [string=''] Color used for this layer
             - color: ''
-              # [string=''] A description for the layer, for documentation purposes
+              # [string=''] A description for the layer, for documentation purposes.
+              # A default can be specified using the `layer_defaults` global option
               description: ''
               # [boolean=false] Include references and values even when they are marked as invisible
               force_plot_invisible_refs_vals: false
@@ -2327,7 +2330,8 @@ outputs:
               plot_footprint_refs: true
               # [boolean=true] Include the footprint values
               plot_footprint_values: true
-              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified
+              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+              # A default can be specified using the `layer_defaults` global option
               suffix: ''
           # [number=1.0] Scale factor (0 means autoscaling)
           scaling: 1.0

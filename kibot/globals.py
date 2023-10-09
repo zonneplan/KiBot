@@ -8,6 +8,7 @@ from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
 from .kicad.config import expand_env
+from .layer import Layer
 from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions, FilterOptionsKiBot
 from .log import get_logger, set_filters
@@ -350,6 +351,9 @@ class Globals(FiltersOptions):
                 working state. The *worktree* mechanism creates a separated worktree, that then is just removed.
                 The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
                 is the preferred mechanism """
+            self.layer_defaults = Layer
+            """ [list(dict)] Used to indicate the default suffix and description for the layers.
+                Note that the name for the layer must match exactly, no aliases """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

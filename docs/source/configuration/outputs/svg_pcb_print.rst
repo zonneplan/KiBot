@@ -26,8 +26,10 @@ Parameters:
    -  Valid keys:
 
       -  ``description`` :index:`: <pair: output - svg_pcb_print - layers; description>` [string=''] A description for the layer, for documentation purposes.
+         A default can be specified using the `layer_defaults` global option.
       -  ``layer`` :index:`: <pair: output - svg_pcb_print - layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
       -  ``suffix`` :index:`: <pair: output - svg_pcb_print - layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+         A default can be specified using the `layer_defaults` global option.
 
 -  **name** :index:`: <pair: output - svg_pcb_print; name>` [string=''] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.

@@ -47,11 +47,13 @@ Parameters:
 
                   -  ``color`` :index:`: <pair: output - pcb_print - options - pages - layers; color>` [string=''] Color used for this layer.
                   -  ``description`` :index:`: <pair: output - pcb_print - options - pages - layers; description>` [string=''] A description for the layer, for documentation purposes.
+                     A default can be specified using the `layer_defaults` global option.
                   -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - layers; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.
                   -  ``layer`` :index:`: <pair: output - pcb_print - options - pages - layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
                   -  ``plot_footprint_refs`` :index:`: <pair: output - pcb_print - options - pages - layers; plot_footprint_refs>` [boolean=true] Include the footprint references.
                   -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - layers; plot_footprint_values>` [boolean=true] Include the footprint values.
                   -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+                     A default can be specified using the `layer_defaults` global option.
 
             -  **scaling** :index:`: <pair: output - pcb_print - options - pages; scaling>` [number=1.0] Scale factor (0 means autoscaling).
             -  **sort_layers** :index:`: <pair: output - pcb_print - options - pages; sort_layers>` [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
@@ -78,11 +80,13 @@ Parameters:
 
                   -  ``color`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; color>` [string=''] Color used for this layer.
                   -  ``description`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; description>` [string=''] A description for the layer, for documentation purposes.
+                     A default can be specified using the `layer_defaults` global option.
                   -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.
                   -  ``layer`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
                   -  ``plot_footprint_refs`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; plot_footprint_refs>` [boolean=true] Include the footprint references.
                   -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; plot_footprint_values>` [boolean=true] Include the footprint values.
                   -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+                     A default can be specified using the `layer_defaults` global option.
 
             -  ``sheet`` :index:`: <pair: output - pcb_print - options - pages; sheet>` [string='Assembly'] Text to use for the `sheet` in the title block.
                Pattern (%*) and text variables are expanded.

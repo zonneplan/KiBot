@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Global options:
   - `remove_solder_mask_for_dnp` similar to `remove_solder_paste_for_dnp` but
     applied to the solder mask apertures. (#476)
+  - `layer_defaults` to specify the default suffix and description. (#504)
 - Internal templates:
   - 3DRender_top, 3DRender_top_straight, 3DRender_bottom and
     3DRender_bottom_straight: to generate simple and quick 3D renders.
