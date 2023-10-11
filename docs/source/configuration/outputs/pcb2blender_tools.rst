@@ -45,9 +45,10 @@ Parameters:
       -  ``pre_transform`` :index:`: <pair: output - pcb2blender_tools - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``stackup_create`` :index:`: <pair: output - pcb2blender_tools - options; stackup_create>` [boolean=false] Create a JSON file containing the board stackup.
-      -  ``stackup_dir`` :index:`: <pair: output - pcb2blender_tools - options; stackup_dir>` [string='.'] Directory for the stackup file.
-      -  ``stackup_file`` :index:`: <pair: output - pcb2blender_tools - options; stackup_file>` [string='board.yaml'] Name for the stackup file.
+      -  ``stackup_create`` :index:`: <pair: output - pcb2blender_tools - options; stackup_create>` [boolean=false] Create a file containing the board stackup.
+      -  ``stackup_dir`` :index:`: <pair: output - pcb2blender_tools - options; stackup_dir>` [string='.'] Directory for the stackup file. Use 'layers' for 2.7+.
+      -  ``stackup_file`` :index:`: <pair: output - pcb2blender_tools - options; stackup_file>` [string='board.yaml'] Name for the stackup file. Use 'stackup' for 2.7+.
+      -  ``stackup_format`` :index:`: <pair: output - pcb2blender_tools - options; stackup_format>` [string='JSON'] [JSON,BIN] Format for the stackup file. Use 'BIN' for 2.7+.
       -  ``sub_boards_bounds_file`` :index:`: <pair: output - pcb2blender_tools - options; sub_boards_bounds_file>` [string='bounds'] File name for the sub-PCBs bounds.
       -  ``sub_boards_create`` :index:`: <pair: output - pcb2blender_tools - options; sub_boards_create>` [boolean=true] Extract sub-PCBs and their Z axis position.
       -  ``sub_boards_dir`` :index:`: <pair: output - pcb2blender_tools - options; sub_boards_dir>` [string='boards'] Directory for the boards definitions.

@@ -33,7 +33,7 @@ Parameters:
 
       -  **pcb3d** :index:`: <pair: output - blender_export - options; pcb3d>` [string|dict] Options to export the PCB to Blender.
          You can also specify the name of the output that generates the PCB3D file.
-         See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates.
+         See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates.
 
          -  Valid keys:
 
@@ -67,7 +67,7 @@ Parameters:
             -  ``solder_paste_for_populated`` :index:`: <pair: output - blender_export - options - pcb3d; solder_paste_for_populated>` [boolean=true] Add solder paste only for the populated components.
                Populated components are the ones listed in `show_components`.
             -  ``variant`` :index:`: <pair: output - blender_export - options - pcb3d; variant>` [string=''] Board variant to apply.
-            -  ``version`` :index:`: <pair: output - blender_export - options - pcb3d; version>` [string='2.1'] [2.1,2.1_haschtl] Variant of the format used.
+            -  ``version`` :index:`: <pair: output - blender_export - options - pcb3d; version>` [string='2.7'] [2.1,2.1_haschtl,2.7] Variant of the format used.
 
       -  **point_of_view** :index:`: <pair: output - blender_export - options; point_of_view>` [dict|list(dict)] How the object is viewed by the camera.
 

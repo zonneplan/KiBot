@@ -169,7 +169,7 @@ outputs:
           type: 'render'
       # [string|dict] Options to export the PCB to Blender.
       # You can also specify the name of the output that generates the PCB3D file.
-      # See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates
+      # See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates
       pcb3d:
         # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
         # A short-cut to use for simple cases where a variant is an overkill
@@ -211,8 +211,8 @@ outputs:
         solder_paste_for_populated: true
         # [string=''] Board variant to apply
         variant: ''
-        # [string='2.1'] [2.1,2.1_haschtl] Variant of the format used
-        version: '2.1'
+        # [string='2.7'] [2.1,2.1_haschtl,2.7] Variant of the format used
+        version: '2.7'
       # Options to configure how Blender imports the PCB.
       # The default values are good for most cases
       pcb_import:
@@ -2176,12 +2176,14 @@ outputs:
       # [list(string)|string=all] [none,all] List of components to include in the pads list,
       # can be also a string for `none` or `all`. The default is `all`
       show_components: all
-      # [boolean=false] Create a JSON file containing the board stackup
+      # [boolean=false] Create a file containing the board stackup
       stackup_create: false
-      # [string='.'] Directory for the stackup file
+      # [string='.'] Directory for the stackup file. Use 'layers' for 2.7+
       stackup_dir: '.'
-      # [string='board.yaml'] Name for the stackup file
+      # [string='board.yaml'] Name for the stackup file. Use 'stackup' for 2.7+
       stackup_file: 'board.yaml'
+      # [string='JSON'] [JSON,BIN] Format for the stackup file. Use 'BIN' for 2.7+
+      stackup_format: 'JSON'
       # [string='bounds'] File name for the sub-PCBs bounds
       sub_boards_bounds_file: 'bounds'
       # [boolean=true] Extract sub-PCBs and their Z axis position

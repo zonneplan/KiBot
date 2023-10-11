@@ -248,8 +248,8 @@ class PCB3DExportOptions(Base3DOptionsWithHL):
         with document:
             self.output = GS.def_global_output
             """ Name for the generated PCB3D file (%i='blender_export' %x='pcb3d') """
-            self.version = '2.1'
-            """ [2.1,2.1_haschtl] Variant of the format used """
+            self.version = '2.7'
+            """ [2.1,2.1_haschtl,2.7] Variant of the format used """
             self.solder_paste_for_populated = True
             """ Add solder paste only for the populated components.
                 Populated components are the ones listed in `show_components` """
@@ -307,7 +307,7 @@ class Blender_ExportOptions(BaseOptions):
             self.pcb3d = PCB3DExportOptions
             """ *[string|dict] Options to export the PCB to Blender.
                 You can also specify the name of the output that generates the PCB3D file.
-                See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates """
+                See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates """
             self.pcb_import = PCB2BlenderOptions
             """ Options to configure how Blender imports the PCB.
                 The default values are good for most cases """
@@ -461,11 +461,19 @@ class Blender_ExportOptions(BaseOptions):
         configure_and_run(tree, out_dir, ' - Creating SVG for layers ...')
 
     def create_pads(self, dest_dir):
+        options = {'stackup_create': False}
+        if self.pcb3d.version == '2.1_haschtl':
+            options['stackup_create'] = True
+        elif self.pcb3d.version == '2.7':
+            options['stackup_create'] = True
+            options['stackup_file'] = 'stackup'
+            options['stackup_dir'] = 'layers'
+            options['stackup_format'] = 'BIN'
         tree = {'name': '_temporal_pcb3d_tools',
                 'type': 'pcb2blender_tools',
                 'comment': 'Internally created for the PCB3D',
                 'dir': dest_dir,
-                'options': {'stackup_create': self.pcb3d.version == '2.1_haschtl'}}
+                'options': options}
         if self.pcb3d.solder_paste_for_populated:
             sc = 'all'
             if not self.pcb3d._show_all_components:

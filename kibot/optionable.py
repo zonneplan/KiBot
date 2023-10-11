@@ -451,12 +451,12 @@ class Optionable(object):
         for color in names:
             self.validate_color(color)
 
-    def parse_one_color(self, color):
+    def parse_one_color(self, color, scale=1/255.0):
         res = self._color_re_component.findall(color)
         alpha = 1.0
         if len(res) > 3:
-            alpha = int(res[3], 16)/255.0
-        return (int(res[0], 16)/255.0, int(res[1], 16)/255.0, int(res[2], 16)/255.0, alpha)
+            alpha = int(res[3], 16)*scale
+        return (int(res[0], 16)*scale, int(res[1], 16)*scale, int(res[2], 16)*scale, alpha)
 
     def color_to_rgb(self, color):
         index = 4 if len(color) > 4 else 0

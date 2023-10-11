@@ -272,7 +272,8 @@ Here is a list of currently defined templates and their outputs / groups:
 -  `P-Ban_stencil <https://www.p-ban.com/>`__: same as **P-Ban**, but
    also generates gerbers for *F.Paste* and *B.Paste* layers.
 
--  `PCB2Blender_2_1 <https://github.com/30350n/pcb2blender>`__
+-  `PCB2Blender_2_1 <https://github.com/30350n/pcb2blender>`__: Exports the PCB in a format that can be imported by the
+   pcb2blender tool v2.1 or newer.
 
    -  **_PCB2Blender_layers_2_1**: The layers in SVG format. Disabled by default.
    -  **_PCB2Blender_vrml_2_1**: The VRML for the board. Disabled by default.
@@ -280,7 +281,11 @@ Here is a list of currently defined templates and their outputs / groups:
    -  **_PCB2Blender_2_1**: The PCB3D file. Is enabled and creates the other files.
    -  **_PCB2Blender_elements_2_1**: **_PCB2Blender_tools_2_1** + **_PCB2Blender_layers_2_1** + **_PCB2Blender_vrml_2_1**
 
--  `PCB2Blender_2_1_haschtl <https://github.com/haschtl/pcb2blender>`__
+-  `PCB2Blender_2_7 <https://github.com/30350n/pcb2blender>`__: Similar to **PCB2Blender_2_1**, but for v2.7 or newer.
+   The content is the same, just using *2_1* instead of *2_7*
+
+-  `PCB2Blender_2_1_haschtl <https://github.com/haschtl/pcb2blender>`__: Similar to **PCB2Blender_2_1**, but for the
+   experimental **haschtl** fork.
 
    -  Imports **PCB2Blender_2_1** and disables **_PCB2Blender_2_1**
    -  **_PCB2Blender_tools_2_1_haschtl**: Pads, bounds and stack-up information. Disabled by default.

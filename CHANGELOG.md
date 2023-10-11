@@ -25,7 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `forced_name` option to force the name displayed at the top left corner
     (#470)
 - Blender export:
-  - Support for pcb2blender v2.6 (Blender 3.5.1)
+  - Support for pcb2blender v2.6/2.7 (Blender 3.5.1/3.6)
   - `auto_camera_z_axis_factor`: used to control the default camera distance
   - Options to create simple animations:
     - PoV `steps`: to create rotation angle increments
