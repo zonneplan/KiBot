@@ -220,7 +220,6 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             thickness_mm = GS.to_mm(ds.GetBoardThickness())
             mask_color, mask_color_custom = self.parse_kicad_color(GS.global_solder_mask_color.upper())
             silks_color, silks_color_custom = self.parse_kicad_color(GS.global_silk_screen_color.upper())
-            logger.error(f"{mask_color} {mask_color_custom}")
             with open(fname, 'wb') as f:
                 f.write(struct.pack("!fbBBBbBBBb", thickness_mm, mask_color, *mask_color_custom, silks_color,
                                     *silks_color_custom, surface_finish))
