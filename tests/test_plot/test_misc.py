@@ -1307,7 +1307,7 @@ def test_dont_stop_1(test_dir):
 def test_diff_file_1(test_dir):
     """ Difference between the current PCB and a reference file """
     prj = 'light_control_diff'
-    yaml = 'diff_file_'+('k5' if context.ki5() else 'k6')
+    yaml = f'diff_file_k{context.kicad_major}'
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
     ctx.compare_pdf(prj+'-diff_pcb.pdf', reference='light_control-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
