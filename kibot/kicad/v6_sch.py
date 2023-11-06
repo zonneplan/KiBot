@@ -788,7 +788,6 @@ class LibComponent(object):
             if parent is None:
                 logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
         comp.units = []
-        comp.unit_name = ''
         comp.pins = []
         comp.all_pins = []
         comp.unit_count = 1
@@ -869,10 +868,10 @@ class LibComponent(object):
                 comp.unit_count = max(unit, comp.unit_count)
             # UNIT_NAMES...
             elif i_type == 'unit_name':
-                # Units can have custom labels 
-                # The format is not documented but as of V7 is: 
+                # Units can have custom labels
+                # The format is not documented but as of V7 is:
                 # (unit_name "<NAME>")
-                comp.unit_name = i[1] 
+                comp.unit_name = i[1]
             else:
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
             if vis_obj:
@@ -941,6 +940,9 @@ class LibComponent(object):
             sdata.append(_symbol('in_bom', [Symbol(NO_YES[s.in_bom])]))
             sdata.append(_symbol('on_board', [Symbol(NO_YES[s.on_board])]))
         sdata.append(Sep())
+        if s.unit_name is not None:
+            sdata.append(_symbol('unit_name', [s.unit_name]))
+            sdata.append(Sep())
         # Properties
         for f in s.fields:
             fdata = f.write()
