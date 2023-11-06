@@ -744,6 +744,7 @@ class LibComponent(object):
         self.on_board = True
         self.is_power = False
         self.unit = 0
+        self.unit_name = None
         self.draw = []
         self.fields = []
         self.dfields = {}
@@ -787,6 +788,7 @@ class LibComponent(object):
             if parent is None:
                 logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
         comp.units = []
+        comp.unit_name = ''
         comp.pins = []
         comp.all_pins = []
         comp.unit_count = 1
@@ -865,6 +867,12 @@ class LibComponent(object):
                     raise SchError('Malformed unit id `{}`'.format(vis_obj.lib_id))
                 unit = int(m.group(2))
                 comp.unit_count = max(unit, comp.unit_count)
+            # UNIT_NAMES...
+            elif i_type == 'unit_name':
+                # Units can have custom labels 
+                # The format is not documented but as of V7 is: 
+                # (unit_name "<NAME>")
+                comp.unit_name = i[1] 
             else:
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
             if vis_obj:
