@@ -233,7 +233,11 @@ class Base3DOptions(VariantOptions):
             logger.debug('Using cached model `{}`'.format(cache_name))
             return cache_name
         logger.debug('- Trying to download {} component as {}/{}'.format(lcsc_id, self._tmp_dir, fname))
-        replace = download_easyeda_3d_model(lcsc_id, self._tmp_dir, fname)
+        try:
+            replace = download_easyeda_3d_model(lcsc_id, self._tmp_dir, fname)
+        except Exception as e:
+            logger.error(f'Error downloading 3D model for LCSC part {lcsc_id} (model: {model} problem: {e})')
+            replace = None
         if not replace:
             return None
         # Successfully downloaded
