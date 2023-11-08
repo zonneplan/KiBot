@@ -73,6 +73,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems when connection timed-out
 - Sub PCB separation using annotation method for some edeges and KiCad
   versions (#496)
+- Problems when using NET_NAME(n) for a value (#511)
 
 
 ## [1.6.3] - 2023-06-26

@@ -24,7 +24,7 @@ from .registrable import RegOutput
 from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, version_str2tuple,
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
-                   NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE,
+                   NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH)
 from .error import PlotError, KiPlotConfigurationError, config_error
 from .config_reader import CfgYamlReader
@@ -296,6 +296,10 @@ def get_board_comps_data(comps):
                 logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
             continue
         for c in comps_hash[ref]:
+            new_value = m.GetValue()
+            if new_value != c.value and '${' not in c.value:
+                logger.warning(f"{W_VALMISMATCH}Value field mismatch for `{ref}` (SCH: `{c.value}` PCB: `{new_value}`)")
+            c.value = new_value
             c.bottom = m.IsFlipped()
             c.footprint_rot = m.GetOrientationDegrees()
             center = GS.get_center(m)

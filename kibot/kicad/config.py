@@ -108,7 +108,8 @@ def expand_env(val, env, extra_env, used_extra=None):
                 replaced = True
             else:
                 success = False
-                if var not in reported:
+                # Note: We can't expand NET_NAME(n)
+                if var not in reported and not var.startswith('NET_NAME('):
                     logger.error('Unable to expand `{}` in `{}`'.format(var, val))
                     reported.add(var)
     return val
