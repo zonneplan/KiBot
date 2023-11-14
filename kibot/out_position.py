@@ -288,6 +288,10 @@ class PositionOptions(VariantOptions):
                     center = GS.get_center(m)
                     center_x = center.x
                     center_y = center.y
+                    if c.pos_offset_x is not None:
+                        # Offset from the rotation filter
+                        center_x += c.pos_offset_x
+                        center_y += c.pos_offset_y
             if value is None:
                 value = m.GetValue()
                 footprint = str(m.GetFPID().GetLibItemName())  # pcbnew.UTF8 type

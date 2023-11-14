@@ -132,6 +132,7 @@ Built-in filters
 -  **_only_tht** is used to get only THT parts
 -  **_only_virtual** is used to get only virtual parts
 -  **_rot_footprint** is a default ``rot_footprint`` filter
+-  **_rot_footprint_jlcpcb** is a ``rot_footprint`` filter with option specific for JLCPCB
 -  **_value_split** splits the Value field but the field remains and
    the extra data is not visible
 -  **_value_split_replace** splits the Value field and replaces it

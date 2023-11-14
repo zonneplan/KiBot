@@ -120,17 +120,32 @@ Supported filters
 -  **rot_footprint**: (**Footprint Rotator**)
    This filter can rotate footprints, used for the positions file generation. |br|
    Some manufacturers use a different rotation than KiCad. |br|
+   The `JLCPCB Rotation Offset` and `JLCPCB Position Offset` fields can be used to adjust special cases. |br|
    The internal `_rot_footprint` filter implements the simplest case.
 
    -  Valid keys:
 
+      -  ``bennymeg_mode`` :index:`: <pair: filter - rot_footprint; bennymeg_mode>` [boolean=true] Implements the `rot_fields` and `offset_fields` in the same way that the bennymeg/JLC-Plugin-for-KiCad tool.
+         Note that the computation for bottom rotations is wrong, forcing the user to uses arbitrary rotations.
+         The correct computation is `(180 - component rot) + angle` but the plugin does `180 - (component rot + angle)`.
+         This option forces the wrong computation for compatibility.
       -  ``comment`` :index:`: <pair: filter - rot_footprint; comment>` [string=''] A comment for documentation purposes.
       -  ``extend`` :index:`: <pair: filter - rot_footprint; extend>` [boolean=true] Extends the internal list of rotations with the one provided.
          Otherwise just use the provided list.
       -  ``invert_bottom`` :index:`: <pair: filter - rot_footprint; invert_bottom>` [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)`
          or when combined with `negative_bottom`, `(angle - component rot)`.
+      -  ``mirror_bottom`` :index:`: <pair: filter - rot_footprint; mirror_bottom>` [boolean=false] The original component rotation for components in the bottom is mirrored before applying
+         the adjust so you get `(180 - component rot + angle)`. This is used by JLCPCB.
       -  ``name`` :index:`: <pair: filter - rot_footprint; name>` [string=''] Used to identify this particular filter definition.
       -  ``negative_bottom`` :index:`: <pair: filter - rot_footprint; negative_bottom>` [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
+      -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [string|list(string)='JLCPCB Position Offset,JLCPosOffset'] List of fields that can contain a position offset.
+         The optional fields can contain a comma seperated x,y position offset.
+         This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
+
+      -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [string|list(string)='JLCPCB Rotation Offset,JLCRotOffset'] List of fields that can contain a rotation offset.
+         The optional fields can contain a counter-clockwise orientation offset in degrees.
+         This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
+
       -  ``rotations`` :index:`: <pair: filter - rot_footprint; rotations>` [list(list(string))] A list of pairs regular expression/rotation.
          Components matching the regular expression will be rotated the indicated angle.
 

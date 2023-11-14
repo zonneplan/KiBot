@@ -16,6 +16,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal templates:
   - 3DRender_top, 3DRender_top_straight, 3DRender_bottom and
     3DRender_bottom_straight: to generate simple and quick 3D renders.
+- Filters:
+  - New `_rot_footprint_jlcpcb` internal filter to fix the JLCPCB bottom
+    rotations.
+  - New options for the `rot_footprint` filters: (See #510)
+    - `mirror_bottom`: used to undo the KiCad mirroring of the bottom.
+    - `rot_fields`: list of fields to indicate arbitrary rotations.
+    - `offset_fields`: list of fields to indicate arbitrary offsets.
+    - `bennymeg_mode`: used to provide compatibility with the
+      bennymeg/JLC-Plugin-for-KiCad tool.
 - 3D outputs:
   - `download_lcsc` option to disable LCSC 3D model download (See #415)
 - BoM:
@@ -74,6 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sub PCB separation using annotation method for some edeges and KiCad
   versions (#496)
 - Problems when using NET_NAME(n) for a value (#511)
+- JLCPCB rotations for bottom components
 
 
 ## [1.6.3] - 2023-06-26
