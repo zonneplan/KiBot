@@ -292,7 +292,7 @@ def get_board_comps_data(comps):
         ref = m.GetReference()
         attrs = m.GetAttributes()
         if ref not in comps_hash:
-            if not (attrs & MOD_BOARD_ONLY):
+            if not (attrs & MOD_BOARD_ONLY) and not ref.startswith('KiKit_'):
                 logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
             continue
         for c in comps_hash[ref]:
