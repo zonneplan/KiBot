@@ -139,8 +139,12 @@ Supported filters
       -  ``name`` :index:`: <pair: filter - rot_footprint; name>` [string=''] Used to identify this particular filter definition.
       -  ``negative_bottom`` :index:`: <pair: filter - rot_footprint; negative_bottom>` [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
       -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [string|list(string)='JLCPCB Position Offset,JLCPosOffset'] List of fields that can contain a position offset.
-         The optional fields can contain a comma seperated x,y position offset.
+         The optional fields can contain a comma separated x,y position offset.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
+
+      -  ``offsets`` :index:`: <pair: filter - rot_footprint; offsets>` [list(list(string))] A list of pairs regular expression/offset.
+         Components matching the regular expression will be moved the specified offset.
+         The offset must be two numbers separated by a comma. The first is the X offset.
 
       -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [string|list(string)='JLCPCB Rotation Offset,JLCRotOffset'] List of fields that can contain a rotation offset.
          The optional fields can contain a counter-clockwise orientation offset in degrees.

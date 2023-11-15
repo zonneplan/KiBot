@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `mirror_bottom`: used to undo the KiCad mirroring of the bottom.
     - `rot_fields`: list of fields to indicate arbitrary rotations.
     - `offset_fields`: list of fields to indicate arbitrary offsets.
+    - `offsets`: a list of pairs containing regex and offset ("x, y")
     - `bennymeg_mode`: used to provide compatibility with the
       bennymeg/JLC-Plugin-for-KiCad tool.
 - 3D outputs:

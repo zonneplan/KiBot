@@ -290,6 +290,7 @@ class PositionOptions(VariantOptions):
                     center_y = center.y
                     if c.pos_offset_x is not None:
                         # Offset from the rotation filter
+                        # logger.error(f"{center_x},{center_y} -> {center_x+c.pos_offset_x},{center_y+c.pos_offset_y}")
                         center_x += c.pos_offset_x
                         center_y += c.pos_offset_y
             if value is None:

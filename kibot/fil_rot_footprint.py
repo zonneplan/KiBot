@@ -29,6 +29,7 @@ logger = log.get_logger()
 #   On KiCad this is not the case, diodes follows it, but capacitors don't. So they get 180.
 # - There are exceptions, like SOP-18 or SOP-4 which doesn't follow the JLC rules.
 # - KiCad mirrors components on the bottom layer, but JLC doesn't. So you need to "un-mirror" them.
+# - The JLC mechanism to interpret rotations changed with time
 DEFAULT_ROTATIONS = [["^R_Array_Convex_", 90.0],
                      ["^R_Array_Concave_", 90.0],
                      # *SOT* seems to need 180
@@ -88,8 +89,13 @@ DEFAULT_ROTATIONS = [["^R_Array_Convex_", 90.0],
                      ["^Quectel_L80-R", 270.0],
                      ["^SC-74-6", 180.0],
                      [r"^PinHeader_2x05_P1\.27mm_Vertical", 90.0],
+                     [r"^PinHeader_2x03_P1\.27mm_Vertical", 90.0],
                      ]
 DEFAULT_ROT_FIELDS = ['JLCPCB Rotation Offset', 'JLCRotOffset']
+DEFAULT_OFFSETS = [["^USB_C_Receptacle_XKB_U262-16XN-4BVC11", (0.0, -1.44)],
+                   [r"^PinHeader_2x05_P1\.27mm_Vertical", (2.54, 0.635)],
+                   [r"^PinHeader_2x03_P1\.27mm_Vertical", (1.27, 0.635)],
+                   ]
 DEFAULT_OFFSET_FIELDS = ['JLCPCB Position Offset', 'JLCPosOffset']
 
 
@@ -118,6 +124,10 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             self.rotations = Optionable
             """ [list(list(string))] A list of pairs regular expression/rotation.
                 Components matching the regular expression will be rotated the indicated angle """
+            self.offsets = Optionable
+            """ [list(list(string))] A list of pairs regular expression/offset.
+                Components matching the regular expression will be moved the specified offset.
+                The offset must be two numbers separated by a comma. The first is the X offset """
             self.skip_bottom = False
             """ Do not rotate components on the bottom """
             self.skip_top = False
@@ -138,6 +148,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
 
     def config(self, parent):
         super().config(parent)
+        # List of rotations
         self._rot = []
         if isinstance(self.rotations, list):
             for r in self.rotations:
@@ -151,9 +162,25 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                     raise KiPlotConfigurationError("The second value in the regex/angle pairs must be a number, not {}".
                                                    format(r[1]))
                 self._rot.append([regex, angle])
+        # List of offsets
+        self._offset = []
+        if isinstance(self.offsets, list):
+            for r in self.offsets:
+                if len(r) != 2:
+                    raise KiPlotConfigurationError("Each regex/offset pair must contain exactly two values, not {} ({})".
+                                                   format(len(r), r))
+                regex = compile(r[0])
+                try:
+                    offset = (float(r[1].split(",")[0]), float(r[1].split(",")[1]))
+                except ValueError:
+                    raise KiPlotConfigurationError("The second value in the regex/offset pairs must be two numbers "
+                                                   f"separated by a comma, not {r[1]}")
+                self._offset.append([regex, offset])
         if self.extend:
             for regex_str, angle in DEFAULT_ROTATIONS:
                 self._rot.append([compile(regex_str), angle])
+            for regex_str, offset in DEFAULT_OFFSETS:
+                self._offset.append([compile(regex_str), offset])
         if not self._rot:
             raise KiPlotConfigurationError("No rotations provided")
         self.rot_fields = self.force_list(self.rot_fields, default=DEFAULT_ROT_FIELDS)
@@ -165,8 +192,8 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             # Apply adjusts for bottom components
             if bennymeg_mode and self.bennymeg_mode:
                 # Compatible with https://github.com/bennymeg/JLC-Plugin-for-KiCad/
-                # Wrong! The real value is (180-comp.footprint_rot)+angle and not
-                #                           180-(comp.footprint_rot+angle)
+                # Currently wrong! The real value is (180-comp.footprint_rot)+angle and not
+                #                                     180-(comp.footprint_rot+angle)
                 comp.footprint_rot = (comp.footprint_rot + angle) % 360.0
                 comp.offset_footprint_rot = old_footprint_rot
                 comp.footprint_rot = (540.0 - comp.footprint_rot) % 360.0
@@ -211,6 +238,17 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         # No rotation, apply 0 to apply bottom adjusts
         self.apply_rotation_angle(comp, 0)
 
+    def apply_offset_value(self, comp, angle, pos_offset_x, pos_offset_y):
+        rotation = radians(angle)
+        rsin = sin(rotation)
+        rcos = cos(rotation)
+        comp.pos_offset_x = pos_offset_x * rcos - pos_offset_y * rsin
+        comp.pos_offset_y = pos_offset_x * rsin + pos_offset_y * rcos
+        # logger.error(f"Ang: {angle} DB offset: {pos_offset_x},{pos_offset_y} "
+        #              f"Offset: {comp.pos_offset_x},{comp.pos_offset_y}")
+        comp.pos_offset_x = -GS.from_mm(comp.pos_offset_x)
+        comp.pos_offset_y = GS.from_mm(comp.pos_offset_y)
+
     def apply_field_offset(self, comp):
         for f in self.offset_fields:
             value = comp.get_field_value(f)
@@ -221,11 +259,16 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 except ValueError:
                     logger.warning(f'{W_BADOFFSET}Wrong offset `{value}` in {f} field of {comp.ref}')
                     return
-                rotation = radians(comp.offset_footprint_rot)
-                rsin = sin(rotation)
-                rcos = cos(rotation)
-                comp.pos_offset_x = pos_offset_x * rcos - pos_offset_y * rsin
-                comp.pos_offset_y = pos_offset_x * rsin + pos_offset_y * rcos
+                self.apply_offset_value(comp, comp.offset_footprint_rot, pos_offset_x, pos_offset_y)
+                return
+
+    def apply_offset(self, comp):
+        if self.apply_field_offset(comp):
+            return
+        # Try with the regex
+        for regex, offset in self._offset:
+            if regex.search(comp.footprint):
+                self.apply_offset_value(comp, comp.footprint_rot, offset[0], offset[1])
                 return
 
     def filter(self, comp):
@@ -234,4 +277,4 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             # Component should be excluded
             return
         self.apply_rotation(comp)
-        self.apply_field_offset(comp)
+        self.apply_offset(comp)
