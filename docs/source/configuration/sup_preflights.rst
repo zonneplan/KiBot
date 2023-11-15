@@ -116,7 +116,7 @@ Supported preflights
 
 
 -  **set_text_variables**: :index:`: <pair: preflights; set_text_variables>` [dict|list(dict)] Defines KiCad 6+ variables.
-   They are expanded using ${VARIABLE}, and stored in the project file. |br|
+   They are expanded using `${VARIABLE}`, and stored in the project file. |br|
    This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6. |br|
    The KiCad project file is modified. |br|
 

@@ -53,8 +53,8 @@ Parameters:
 
          -  Valid keys:
 
-            -  ``content`` :index:`: <pair: output - gerber - options - custom_reports; content>` [string=''] Content for the report. Use ${basename} for the project name without extension.
-               Use ${filename(LAYER)} for the file corresponding to LAYER.
+            -  ``content`` :index:`: <pair: output - gerber - options - custom_reports; content>` [string=''] Content for the report. Use `${basename}` for the project name without extension.
+               Use `${filename(LAYER)}` for the file corresponding to LAYER.
             -  ``output`` :index:`: <pair: output - gerber - options - custom_reports; output>` [string='Custom_report.txt'] File name for the custom report.
 
       -  ``disable_aperture_macros`` :index:`: <pair: output - gerber - options; disable_aperture_macros>` [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).

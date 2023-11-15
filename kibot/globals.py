@@ -282,7 +282,7 @@ class Globals(FiltersOptions):
             """ [dict] Used to define environment variables used by KiCad.
                 The values defined here are exported as environment variables and has
                 more precedence than KiCad paths defined in the GUI.
-                You can make reference to any OS environment variable using ${VARIABLE}.
+                You can make reference to any OS environment variable using `${VARIABLE}`.
                 The KIPRJMOD is also available for expansion """
             self.field_lcsc_part = ''
             """ The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
@@ -324,7 +324,7 @@ class Globals(FiltersOptions):
                 Also note that the fonts are installed using a mechanism known to work on Debian,
                 which is used by the KiBot docker images, on other OSs *your mileage may vary* """
             self.use_os_env_for_expand = True
-            """ In addition to KiCad text variables also use the OS environment variables when expanding ${VARIABLE} """
+            """ In addition to KiCad text variables also use the OS environment variables when expanding `${VARIABLE}` """
             self.field_voltage = Optionable
             """ [string|list(string)] Name/s of the field/s used for the voltage raiting.
                 Used for the value split filter.

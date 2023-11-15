@@ -48,8 +48,8 @@ Parameters:
 
          -  Valid keys:
 
-            -  ``content`` :index:`: <pair: output - dxf - options - custom_reports; content>` [string=''] Content for the report. Use ${basename} for the project name without extension.
-               Use ${filename(LAYER)} for the file corresponding to LAYER.
+            -  ``content`` :index:`: <pair: output - dxf - options - custom_reports; content>` [string=''] Content for the report. Use `${basename}` for the project name without extension.
+               Use `${filename(LAYER)}` for the file corresponding to LAYER.
             -  ``output`` :index:`: <pair: output - dxf - options - custom_reports; output>` [string='Custom_report.txt'] File name for the custom report.
 
       -  ``dnf_filter`` :index:`: <pair: output - dxf - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.

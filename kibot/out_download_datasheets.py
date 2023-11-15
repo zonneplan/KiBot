@@ -30,7 +30,7 @@ class Download_Datasheets_Options(VariantOptions):
             """ *Name of the field containing the URL """
             self.output = '${VALUE}.pdf'
             """ Name used for the downloaded datasheet.
-                ${FIELD} will be replaced by the FIELD content """
+                `${FIELD}` will be replaced by the FIELD content """
             self.dnf = False
             """ Include the DNF components """
             self.repeated = False
@@ -92,7 +92,7 @@ class Download_Datasheets_Options(VariantOptions):
 
     def out_name(self, c):
         """ Compute the name of the output file.
-            Replaces ${FIELD} and %X. """
+            Replaces `${FIELD}` and %X. """
         out = ''
         last = 0
         pattern = self.output

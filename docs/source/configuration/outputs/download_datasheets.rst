@@ -31,7 +31,7 @@ Parameters:
 
       -  ``link_repeated`` :index:`: <pair: output - download_datasheets - options; link_repeated>` [boolean=true] Instead of download things we already downloaded use symlinks.
       -  ``output`` :index:`: <pair: output - download_datasheets - options; output>` [string='${VALUE}.pdf'] Name used for the downloaded datasheet.
-         ${FIELD} will be replaced by the FIELD content.
+         `${FIELD}` will be replaced by the FIELD content.
       -  ``pre_transform`` :index:`: <pair: output - download_datasheets - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 

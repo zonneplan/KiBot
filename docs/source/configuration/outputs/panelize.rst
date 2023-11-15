@@ -253,7 +253,7 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **type** :index:`: <pair: output - panelize - options - configs - source; type>` [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
+                  -  **type** :index:`: <pair: output - panelize - options - configs - source; type>` [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB used for the panelization.
                      *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
                      *annotation* selects a contour marked by a kikit:Board footprint.
                   -  ``brx`` :index:`: <pair: output - panelize - options - configs - source; brx>` [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*.

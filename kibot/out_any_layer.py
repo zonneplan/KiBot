@@ -36,8 +36,8 @@ class CustomReport(Optionable):
             self.output = 'Custom_report.txt'
             """ File name for the custom report """
             self.content = ''
-            """ Content for the report. Use ${basename} for the project name without extension.
-                Use ${filename(LAYER)} for the file corresponding to LAYER """
+            """ Content for the report. Use `${basename}` for the project name without extension.
+                Use `${filename(LAYER)}` for the file corresponding to LAYER """
 
 
 class AnyLayerOptions(VariantOptions):
