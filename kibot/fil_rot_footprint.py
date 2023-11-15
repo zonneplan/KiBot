@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 # Description: Implements a filter to rotate footprints.
 #              This is inspired in JLCKicadTools by Matthew Lai.
+#              See: https://github.com/matthewlai/JLCKicadTools/blob/master/jlc_kicad_tools/cpl_rotations_db.csv
 #              I latter added more information from bennymeg/JLC-Plugin-for-KiCad
 from math import sin, cos, radians
 from re import compile
@@ -19,6 +20,15 @@ logger = log.get_logger()
 
 
 # Known rotations for JLC
+# Notes:
+# - Rotations are CC (counter clock)
+# - Most components has pin 1 at the top-right angle, while KiCad uses the top-left
+#   This is why most of the ICs has a rotation of 270 (-90)
+# - The same applies to things like SOT-23-3, so here you get 180.
+# - Most polarized components has pin 1 on the positive pin, becoming it the right one.
+#   On KiCad this is not the case, diodes follows it, but capacitors don't. So they get 180.
+# - There are exceptions, like SOP-18 or SOP-4 which doesn't follow the JLC rules.
+# - KiCad mirrors components on the bottom layer, but JLC doesn't. So you need to "un-mirror" them.
 DEFAULT_ROTATIONS = [["^R_Array_Convex_", 90.0],
                      ["^R_Array_Concave_", 90.0],
                      # *SOT* seems to need 180
