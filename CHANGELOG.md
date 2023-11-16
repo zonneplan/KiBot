@@ -16,6 +16,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal templates:
   - 3DRender_top, 3DRender_top_straight, 3DRender_bottom and
     3DRender_bottom_straight: to generate simple and quick 3D renders.
+  - _KIBOT_POS_DNF_FILTER option to JLCPCB. It now excludes components added
+    by KiKit to create panels and can be customized.
 - Filters:
   - New `_rot_footprint_jlcpcb` internal filter to fix the JLCPCB bottom
     rotations.

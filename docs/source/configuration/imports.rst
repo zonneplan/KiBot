@@ -329,6 +329,8 @@ The JLCPCB case is a little bit more complex and also supports:
 -  **_KIBOT_POS_ENABLED**: Generate position files (default: true)
 -  **_KIBOT_BOM_ENABLED**: Generate BoM (default: true)
 -  **_KIBOT_POS_ONLY_SMD**: Use only SMD components for the position files (default: true)
+-  **_KIBOT_POS_DNF_FILTER**: Filter used to exclude components from the position file (default: _remove_extra). It currently
+   excludes components used by KiKit to create panels.
 
 
 MacroFab_XYRS:
