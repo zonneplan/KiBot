@@ -278,6 +278,9 @@ def load_sch():
 def create_component_from_footprint(m, ref):
     c = SchematicComponentV6()
     c.f_ref = c.ref = ref
+    c.name = m.GetValue()
+    c.sheet_path_h = c.lib = ''
+    c.project = GS.sch_basename
     # Basic fields
     # Reference
     f = SchematicField()
@@ -288,7 +291,7 @@ def create_component_from_footprint(m, ref):
     # Value
     f = SchematicField()
     f.name = 'Value'
-    f.value = m.GetValue()
+    f.value = c.name
     f.number = 1
     c.add_field(f)
     # Footprint
@@ -313,6 +316,7 @@ def create_component_from_footprint(m, ref):
         f.visible(False)
         c.add_field(f)
     c._solve_fields(None)
+    c.split_ref()
     return c
 
 
