@@ -1411,13 +1411,13 @@ def test_int_bom_variant_t2if(test_dir):
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    check_kibom_test_netlist(rows, ref_column, 2, ['C1', 'C2'], ['R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_[2].csv')
     check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
     rows, header, info = ctx.load_csv(prj+'-bom_(production).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['C1'], ['R1', 'R2', 'C2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['R2'], ['R1', 'C1', 'C2', 'R3'])
     ctx.clean_up(keep_project=True)
 
 
@@ -1429,13 +1429,13 @@ def test_int_bom_variant_t2it(test_dir):
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    check_kibom_test_netlist(rows, ref_column, 2, ['C1', 'C2'], ['R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_[2].csv')
     check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
     rows, header, info = ctx.load_csv(prj+'-bom_(production).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['C1'], ['R1', 'R2', 'C2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['R2'], ['R1', 'C1', 'C2', 'R3'])
     ctx.clean_up(keep_project=True)
 
 
@@ -1446,7 +1446,7 @@ def test_int_bom_variant_t2is(test_dir):
     ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv('filter_R1.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R1'], ['C1', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 2, ['R2', 'R1'], ['C1', 'C2', 'R3'])
     ctx.clean_up(keep_project=True)
 
 

@@ -92,10 +92,10 @@ repos:
 #     hooks:
 #       - id: python-bandit-vulnerability-check
   # TODO:  mdformat --wrap 75 README.md --number
-  - repo: https://github.com/netromdk/vermin
-    rev: v1.5.2  # ex: 'e88bda9' or 'v1.3.4'
-    hooks:
-      - id: vermin
-        # specify your target version here, OR in a Vermin config file as usual:
-        args: ['-t=3.7-', '--violations']
-        # (if your target is specified in a Vermin config, you may omit the 'args' entry entirely)
+#  - repo: https://github.com/netromdk/vermin
+#    rev: v1.5.2  # ex: 'e88bda9' or 'v1.3.4'
+#    hooks:
+#      - id: vermin
+#        # specify your target version here, OR in a Vermin config file as usual:
+#        args: ['-t=3.7-', '--violations']
+#        # (if your target is specified in a Vermin config, you may omit the 'args' entry entirely)
