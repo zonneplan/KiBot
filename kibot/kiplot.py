@@ -31,8 +31,8 @@ from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
 from .dep_downloader import register_deps
 import kibot.dep_downloader as dep_downloader
-from .kicad.v5_sch import Schematic, SchFileError, SchError
-from .kicad.v6_sch import SchematicV6
+from .kicad.v5_sch import Schematic, SchFileError, SchError, SchematicField
+from .kicad.v6_sch import SchematicV6, SchematicComponentV6
 from .kicad.config import KiConfError, KiConf, expand_env
 from . import log
 
@@ -275,6 +275,47 @@ def load_sch():
     GS.sch = load_any_sch(GS.sch_file, GS.sch_basename)
 
 
+def create_component_from_footprint(m, ref):
+    c = SchematicComponentV6()
+    c.f_ref = c.ref = ref
+    # Basic fields
+    # Reference
+    f = SchematicField()
+    f.name = 'Reference'
+    f.value = ref
+    f.number = 0
+    c.add_field(f)
+    # Value
+    f = SchematicField()
+    f.name = 'Value'
+    f.value = m.GetValue()
+    f.number = 1
+    c.add_field(f)
+    # Footprint
+    f = SchematicField()
+    f.name = 'Footprint'
+    lib = m.GetFPID()
+    f.value = lib.GetUniStringLibId()
+    f.number = 2
+    c.add_field(f)
+    # Datasheet
+    f = SchematicField()
+    f.name = 'Datasheet'
+    f.value = '~'
+    f.number = 3
+    c.add_field(f)
+    # Other fields
+    for name, val in m.GetProperties().items():
+        f = SchematicField()
+        f.name = name
+        f.value = val
+        f.number = -1
+        f.visible(False)
+        c.add_field(f)
+    c._solve_fields(None)
+    return c
+
+
 def get_board_comps_data(comps):
     """ Add information from the PCB to the list of components from the schematic.
         Note that we do it every time the function is called to reset transformation filters like rot_footprint. """
@@ -294,7 +335,10 @@ def get_board_comps_data(comps):
         if ref not in comps_hash:
             if not (attrs & MOD_BOARD_ONLY) and not ref.startswith('KiKit_'):
                 logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
-            continue
+            # Create a component for this so we can include/exclude it using filters
+            c = create_component_from_footprint(m, ref)
+            comps_hash[ref] = [c]
+            comps.append(c)
         for c in comps_hash[ref]:
             new_value = m.GetValue()
             if new_value != c.value and '${' not in c.value:
