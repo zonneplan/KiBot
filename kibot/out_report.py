@@ -237,7 +237,7 @@ class ReportOptions(BaseOptions):
         self._ec_drl = ord(m.group(2))-ord('A')
 
     def do_replacements(self, line, defined):
-        """ Replace ${VAR} patterns """
+        """ Replace `${VAR}` patterns """
         for var in re.findall(r'\$\{([^\s\}]+)\}', line):
             if var[0] == '_':
                 # Prevent access to internal data
