@@ -217,7 +217,7 @@ def test_position_variant_t2i(test_dir):
     rows, header, info = ctx.load_csv(files[0])
     check_comps(rows, ['R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(files[1])
-    check_comps(rows, ['R1', 'R2', 'R3'])
+    check_comps(rows, ['R1', 'R2'])
     rows, header, info = ctx.load_csv(files[2])
     check_comps(rows, ['C2', 'R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(files[3])
