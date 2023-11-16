@@ -79,9 +79,6 @@
     )
   )
 
-  (property "VAL_C2" "1000 pF")
-  (property "text" "Test")
-
   (net 0 "")
   (net 1 "unconnected-(C1-Pad1)")
   (net 2 "unconnected-(C1-Pad2)")
@@ -305,6 +302,14 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
-  )
+    (model "${KIPRJMOD}/../../data/R_0805_2012Metric.wrl"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
+ )
+
+  (gr_rect (start 126.7 71.3) (end 140.9 87.9)
+    (stroke (width 0.05) (type default)) (fill none) (layer "Edge.Cuts") (tstamp d645f00e-19f1-43e7-8c43-ee0954e655cf))
 
 )
