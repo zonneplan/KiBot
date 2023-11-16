@@ -53,7 +53,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Basic support for regular list items (#480)
 - Position:
   - Experimental support for gerber position files (#500)
-  - KiKit auxiliary footprints used for panels excluded (#516)
 - Help for the error levels
 - Warnings:
   - Explain about wrong dir/output separation (#493)
