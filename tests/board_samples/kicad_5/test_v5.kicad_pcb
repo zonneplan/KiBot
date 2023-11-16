@@ -218,6 +218,11 @@
       (scale (xyz 1 1 1))
       (rotate (xyz 0 0 0))
     )
+    (model "${KIPRJMOD}/../../data/R_0805_2012Metric.wrl"
+      (offset (xyz 0 0 0))
+      (scale (xyz 1 1 1))
+      (rotate (xyz 0 0 0))
+    )
   )
 
   (gr_line (start 124.46 85.09) (end 124.46 101.6) (layer Edge.Cuts) (width 0.1) (tstamp 5F53B433))
