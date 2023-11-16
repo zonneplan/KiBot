@@ -62,6 +62,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Now you can search in the docs
   - Indexed so you can search by topic
   - With a navigation side bar
+- Variants and filters:
+  - Components only in the PCB are now processed
 
 ### Fixed
 - Rotated polygons and text used in the worksheet (#466)
