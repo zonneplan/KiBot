@@ -308,13 +308,14 @@ def create_component_from_footprint(m, ref):
     f.number = 3
     c.add_field(f)
     # Other fields
-    for name, val in m.GetProperties().items():
-        f = SchematicField()
-        f.name = name
-        f.value = val
-        f.number = -1
-        f.visible(False)
-        c.add_field(f)
+    if GS.ki6:
+        for name, val in m.GetProperties().items():
+            f = SchematicField()
+            f.name = name
+            f.value = val
+            f.number = -1
+            f.visible(False)
+            c.add_field(f)
     c._solve_fields(None)
     c.split_ref()
     return c
