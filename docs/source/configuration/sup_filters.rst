@@ -129,6 +129,8 @@ Supported filters
          Note that the computation for bottom rotations is wrong, forcing the user to uses arbitrary rotations.
          The correct computation is `(180 - component rot) + angle` but the plugin does `180 - (component rot + angle)`.
          This option forces the wrong computation for compatibility.
+         This option also controls the way offset signs are interpreted. When enabled the offsets matches this plugin,
+         when disabled matches the interpretation used by the matthewlai/JLCKicadTools plugin.
       -  ``comment`` :index:`: <pair: filter - rot_footprint; comment>` [string=''] A comment for documentation purposes.
       -  ``extend`` :index:`: <pair: filter - rot_footprint; extend>` [boolean=true] Extends the internal list of rotations with the one provided.
          Otherwise just use the provided list.
@@ -143,15 +145,17 @@ Supported filters
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
       -  ``offsets`` :index:`: <pair: filter - rot_footprint; offsets>` [list(list(string))] A list of pairs regular expression/offset.
-         Components matching the regular expression will be moved the specified offset.
+         Footprints matching the regular expression will be moved the specified offset.
          The offset must be two numbers separated by a comma. The first is the X offset.
+         The signs matches the matthewlai/JLCKicadTools plugin specs.
 
       -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [string|list(string)='JLCPCB Rotation Offset,JLCRotOffset'] List of fields that can contain a rotation offset.
          The optional fields can contain a counter-clockwise orientation offset in degrees.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
       -  ``rotations`` :index:`: <pair: filter - rot_footprint; rotations>` [list(list(string))] A list of pairs regular expression/rotation.
-         Components matching the regular expression will be rotated the indicated angle.
+         Footprints matching the regular expression will be rotated the indicated angle.
+         The angle matches the matthewlai/JLCKicadTools plugin specs.
 
       -  ``skip_bottom`` :index:`: <pair: filter - rot_footprint; skip_bottom>` [boolean=false] Do not rotate components on the bottom.
       -  ``skip_top`` :index:`: <pair: filter - rot_footprint; skip_top>` [boolean=false] Do not rotate components on the top.

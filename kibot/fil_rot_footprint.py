@@ -123,11 +123,13 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 the adjust so you get `(180 - component rot + angle)`. This is used by JLCPCB """
             self.rotations = Optionable
             """ [list(list(string))] A list of pairs regular expression/rotation.
-                Components matching the regular expression will be rotated the indicated angle """
+                Footprints matching the regular expression will be rotated the indicated angle.
+                The angle matches the matthewlai/JLCKicadTools plugin specs """
             self.offsets = Optionable
             """ [list(list(string))] A list of pairs regular expression/offset.
-                Components matching the regular expression will be moved the specified offset.
-                The offset must be two numbers separated by a comma. The first is the X offset """
+                Footprints matching the regular expression will be moved the specified offset.
+                The offset must be two numbers separated by a comma. The first is the X offset.
+                The signs matches the matthewlai/JLCKicadTools plugin specs """
             self.skip_bottom = False
             """ Do not rotate components on the bottom """
             self.skip_top = False
@@ -144,7 +146,9 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             """ Implements the `rot_fields` and `offset_fields` in the same way that the bennymeg/JLC-Plugin-for-KiCad tool.
                 Note that the computation for bottom rotations is wrong, forcing the user to uses arbitrary rotations.
                 The correct computation is `(180 - component rot) + angle` but the plugin does `180 - (component rot + angle)`.
-                This option forces the wrong computation for compatibility """
+                This option forces the wrong computation for compatibility.
+                This option also controls the way offset signs are interpreted. When enabled the offsets matches this plugin,
+                when disabled matches the interpretation used by the matthewlai/JLCKicadTools plugin """
 
     def config(self, parent):
         super().config(parent)
@@ -244,6 +248,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         rcos = cos(rotation)
         comp.pos_offset_x = pos_offset_x * rcos - pos_offset_y * rsin
         comp.pos_offset_y = pos_offset_x * rsin + pos_offset_y * rcos
+        # The signs here matches matthewlai/JLCKicadTools offsets because the database comes from this plugin
         comp.pos_offset_x = -GS.from_mm(comp.pos_offset_x)
         comp.pos_offset_y = GS.from_mm(comp.pos_offset_y)
         # logger.error(f"{comp.ref} Ang: {angle} DB offset: {pos_offset_x},{pos_offset_y} "
@@ -260,6 +265,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                     logger.warning(f'{W_BADOFFSET}Wrong offset `{value}` in {f} field of {comp.ref}')
                     return False
                 if self.bennymeg_mode:
+                    # Signs here matches bennymeg/JLC-Plugin-for-KiCad because the fields usage comes from it
                     pos_offset_x = -pos_offset_x
                     pos_offset_y = -pos_offset_y
                 self.apply_offset_value(comp, comp.offset_footprint_rot, pos_offset_x, pos_offset_y)
