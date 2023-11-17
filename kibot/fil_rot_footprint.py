@@ -244,10 +244,10 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         rcos = cos(rotation)
         comp.pos_offset_x = pos_offset_x * rcos - pos_offset_y * rsin
         comp.pos_offset_y = pos_offset_x * rsin + pos_offset_y * rcos
-        # logger.error(f"Ang: {angle} DB offset: {pos_offset_x},{pos_offset_y} "
-        #              f"Offset: {comp.pos_offset_x},{comp.pos_offset_y}")
         comp.pos_offset_x = -GS.from_mm(comp.pos_offset_x)
         comp.pos_offset_y = GS.from_mm(comp.pos_offset_y)
+        # logger.error(f"{comp.ref} Ang: {angle} DB offset: {pos_offset_x},{pos_offset_y} "
+        #              f"Offset: {comp.pos_offset_x},{comp.pos_offset_y}")
 
     def apply_field_offset(self, comp):
         for f in self.offset_fields:
@@ -258,9 +258,13 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                     pos_offset_y = float(value.split(",")[1])
                 except ValueError:
                     logger.warning(f'{W_BADOFFSET}Wrong offset `{value}` in {f} field of {comp.ref}')
-                    return
+                    return False
+                if self.bennymeg_mode:
+                    pos_offset_x = -pos_offset_x
+                    pos_offset_y = -pos_offset_y
                 self.apply_offset_value(comp, comp.offset_footprint_rot, pos_offset_x, pos_offset_y)
-                return
+                return True
+        return False
 
     def apply_offset(self, comp):
         if self.apply_field_offset(comp):
