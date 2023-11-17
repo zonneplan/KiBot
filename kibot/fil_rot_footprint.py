@@ -216,8 +216,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             comp.offset_footprint_rot = old_footprint_rot
         comp.footprint_rot = comp.footprint_rot % 360
         if GS.debug_level > 2:
-            logger.debug('Rotating ref: {} {}: {} -> {}'.
-                         format(comp.ref, comp.footprint, old_footprint_rot, comp.footprint_rot))
+            logger.debug(f'- rotating {comp.ref} from {old_footprint_rot} to {comp.footprint_rot}')
 
     def apply_field_rotation(self, comp):
         for f in self.rot_fields:
@@ -228,8 +227,10 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 except ValueError:
                     logger.warning(f'{W_BADANGLE}Wrong angle `{value}` in {f} field of {comp.ref}')
                     angle = 0
+                logger.debugl(2, f'- rotation from field `{f}`: {angle}')
                 self.apply_rotation_angle(comp, angle, bennymeg_mode=True)
-                return
+                return True
+        return False
 
     def apply_rotation(self, comp):
         if self.apply_field_rotation(comp):
@@ -237,22 +238,27 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         # Try with the regex
         for regex, angle in self._rot:
             if regex.search(comp.footprint):
+                logger.debugl(2, f'- matched {regex} with {angle} degrees')
                 self.apply_rotation_angle(comp, angle)
                 return
         # No rotation, apply 0 to apply bottom adjusts
         self.apply_rotation_angle(comp, 0)
 
     def apply_offset_value(self, comp, angle, pos_offset_x, pos_offset_y):
-        rotation = radians(angle)
-        rsin = sin(rotation)
-        rcos = cos(rotation)
-        comp.pos_offset_x = pos_offset_x * rcos - pos_offset_y * rsin
-        comp.pos_offset_y = pos_offset_x * rsin + pos_offset_y * rcos
+        if angle:
+            rotation = radians(angle)
+            rsin = sin(rotation)
+            rcos = cos(rotation)
+            comp.pos_offset_x = pos_offset_x * rcos - pos_offset_y * rsin
+            comp.pos_offset_y = pos_offset_x * rsin + pos_offset_y * rcos
+            logger.debugl(2, f'- rotating offset {angle} degrees: {comp.pos_offset_x}, {comp.pos_offset_y} mm')
+        else:
+            comp.pos_offset_x = pos_offset_x
+            comp.pos_offset_y = pos_offset_y
         # The signs here matches matthewlai/JLCKicadTools offsets because the database comes from this plugin
         comp.pos_offset_x = -GS.from_mm(comp.pos_offset_x)
         comp.pos_offset_y = GS.from_mm(comp.pos_offset_y)
-        # logger.error(f"{comp.ref} Ang: {angle} DB offset: {pos_offset_x},{pos_offset_y} "
-        #              f"Offset: {comp.pos_offset_x},{comp.pos_offset_y}")
+        logger.debugl(2, f'- final offset {comp.pos_offset_x}, {comp.pos_offset_y} KiCad IUs')
 
     def apply_field_offset(self, comp):
         for f in self.offset_fields:
@@ -264,10 +270,12 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 except ValueError:
                     logger.warning(f'{W_BADOFFSET}Wrong offset `{value}` in {f} field of {comp.ref}')
                     return False
+                logger.debugl(2, f'- offset from field `{f}`: {pos_offset_x}, {pos_offset_y} mm')
                 if self.bennymeg_mode:
                     # Signs here matches bennymeg/JLC-Plugin-for-KiCad because the fields usage comes from it
                     pos_offset_x = -pos_offset_x
                     pos_offset_y = -pos_offset_y
+                    logger.debugl(2, f'- changing to {pos_offset_x}, {pos_offset_y} mm to match signs')
                 self.apply_offset_value(comp, comp.offset_footprint_rot, pos_offset_x, pos_offset_y)
                 return True
         return False
@@ -278,6 +286,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         # Try with the regex
         for regex, offset in self._offset:
             if regex.search(comp.footprint):
+                logger.debugl(2, f'- matched {regex} with offset {offset[0]}, {offset[1]} mm')
                 self.apply_offset_value(comp, comp.footprint_rot, offset[0], offset[1])
                 return
 
@@ -286,5 +295,6 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         if (self.skip_top and not comp.bottom) or (self.skip_bottom and comp.bottom):
             # Component should be excluded
             return
+        logger.debugl(2, f'{comp.ref} ({comp.footprint}):')
         self.apply_rotation(comp)
         self.apply_offset(comp)
