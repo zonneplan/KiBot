@@ -694,7 +694,7 @@ def test_error_rot_not_number(test_dir):
 def test_error_rot_no_rotations(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_rot_no_rotations')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("No rotations provided")
+    assert ctx.search_err("No rotations and/or offsets provided")
     ctx.clean_up()
 
 
