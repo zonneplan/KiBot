@@ -340,6 +340,9 @@ def get_board_comps_data(comps):
         if ref not in comps_hash:
             if not (attrs & MOD_BOARD_ONLY) and not ref.startswith('KiKit_'):
                 logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
+            if not GS.global_include_components_from_pcb:
+                # v1.6.3 behavior
+                continue
             # Create a component for this so we can include/exclude it using filters
             c = create_component_from_footprint(m, ref)
             comps_hash[ref] = [c]
