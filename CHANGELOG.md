@@ -30,6 +30,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `offsets`: a list of pairs containing regex and offset ("x, y")
     - `bennymeg_mode`: used to provide compatibility with the
       bennymeg/JLC-Plugin-for-KiCad tool.
+    - `rotations_and_offsets`: a more flexible mechanism to select
+      rotations and offsets. So you can have two different rotations
+      applied to the same footprint, i.e. different components with
+      the same footprint but different orientation in the reel.
 - 3D outputs:
   - `download_lcsc` option to disable LCSC 3D model download (See #415)
 - BoM:

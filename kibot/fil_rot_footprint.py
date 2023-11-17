@@ -99,6 +99,64 @@ DEFAULT_OFFSETS = [["^USB_C_Receptacle_XKB_U262-16XN-4BVC11", (0.0, -1.44)],
 DEFAULT_OFFSET_FIELDS = ['JLCPCB Position Offset', 'JLCPosOffset']
 
 
+def get_field_value(comp, field):
+    """ Helper to process the footprint field in a special way """
+    field = field.lower()
+    if field == 'footprint':
+        # The databases are created just for the name of the footprint
+        return comp.footprint
+    if field == 'full footprint':
+        # The real 'footprint' field has it
+        field = 'footprint'
+    return comp.get_field_value(field)
+
+
+class Regex(Optionable):
+    """ Implements the pair column/regex """
+    def __init__(self, regex=None, angle=None, offset_x=None, offset_y=None):
+        super().__init__()
+        self._unknown_is_error = True
+        with document:
+            self.field = 'footprint'
+            """ Name of field to apply the regular expression.
+                Use `_field_lcsc_part` to get the value defined in the global options.
+                Use `Footprint` for the name of the footprint without a library.
+                Use `Full Footprint` for the name of the footprint including the library """
+            self.regex = ''
+            """ Regular expression to match """
+            self.regexp = None
+            """ {regex} """
+            self.angle = 0.0
+            """ Rotation offset to apply to the matched component """
+            self.offset_x = 0.0
+            """ X position offset to apply to the matched component """
+            self.offset_y = 0.0
+            """ Y position offset to apply to the matched component """
+            self.apply_angle = True
+            """ Apply the angle offset """
+            self.apply_offset = True
+            """ Apply the position offset """
+        if regex is not None:
+            self.regex = regex
+        if angle is not None:
+            self.angle = angle
+        if offset_x is not None:
+            self.offset_x = offset_x
+        if offset_y is not None:
+            self.offset_y = offset_y
+
+    def config(self, parent):
+        super().config(parent)
+        if not self.field:
+            raise KiPlotConfigurationError(f"Missing or empty `field` name ({str(self._tree)})")
+        if not self.regex:
+            raise KiPlotConfigurationError(f"Missing or empty `regex` for `{self.field}` field")
+        # We could be wanting to add a rule to avoid a default change
+        # if self.angle == 0.0 and self.offset_x == 0.0 and self.offset_y == 0.0:
+        #    raise KiPlotConfigurationError(f"Rule for `{self.field}` field without any adjust")
+        self.field = self.solve_field_name(self.field).lower()
+
+
 @filter_class
 class Rot_Footprint(BaseFilter):  # noqa: F821
     """ Footprint Rotator
@@ -112,7 +170,8 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         with document:
             self.extend = True
             """ Extends the internal list of rotations with the one provided.
-                Otherwise just use the provided list """
+                Otherwise just use the provided list.
+                Note that the provided list has more precedence than the internal list """
             self.negative_bottom = True
             """ Rotation for bottom components is computed via subtraction as `(component rot - angle)` """
             self.invert_bottom = False
@@ -130,6 +189,10 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 Footprints matching the regular expression will be moved the specified offset.
                 The offset must be two numbers separated by a comma. The first is the X offset.
                 The signs matches the matthewlai/JLCKicadTools plugin specs """
+            self.rotations_and_offsets = Regex
+            """ [list(dict)] A list of rules to match components and specify the rotation and offsets.
+                This is a more flexible version of the `rotations` and `offsets` options.
+                Note that this list has more precedence """
             self.skip_bottom = False
             """ Do not rotate components on the bottom """
             self.skip_top = False
@@ -152,41 +215,48 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
 
     def config(self, parent):
         super().config(parent)
-        # List of rotations
         self._rot = []
+        self._offset = []
+        # The main list first
+        if isinstance(self.rotations_and_offsets, list):
+            for v in self.rotations_and_offsets:
+                v.regex = compile(v.regex)
+                if v.apply_angle:
+                    self._rot.append(v)
+                if v.apply_offset:
+                    self._offset.append(v)
+        # List of rotations
         if isinstance(self.rotations, list):
             for r in self.rotations:
                 if len(r) != 2:
                     raise KiPlotConfigurationError("Each regex/angle pair must contain exactly two values, not {} ({})".
                                                    format(len(r), r))
-                regex = compile(r[0])
                 try:
                     angle = float(r[1])
                 except ValueError:
                     raise KiPlotConfigurationError("The second value in the regex/angle pairs must be a number, not {}".
                                                    format(r[1]))
-                self._rot.append([regex, angle])
+                self._rot.append(Regex(regex=compile(r[0]), angle=angle))
         # List of offsets
-        self._offset = []
         if isinstance(self.offsets, list):
             for r in self.offsets:
                 if len(r) != 2:
                     raise KiPlotConfigurationError("Each regex/offset pair must contain exactly two values, not {} ({})".
                                                    format(len(r), r))
-                regex = compile(r[0])
                 try:
-                    offset = (float(r[1].split(",")[0]), float(r[1].split(",")[1]))
+                    offset_x = float(r[1].split(",")[0])
+                    offset_y = float(r[1].split(",")[1])
                 except ValueError:
                     raise KiPlotConfigurationError("The second value in the regex/offset pairs must be two numbers "
                                                    f"separated by a comma, not {r[1]}")
-                self._offset.append([regex, offset])
+                self._offset.append(Regex(regex=compile(r[0]), offset_x=offset_x, offset_y=offset_y))
         if self.extend:
             for regex_str, angle in DEFAULT_ROTATIONS:
-                self._rot.append([compile(regex_str), angle])
+                self._rot.append(Regex(regex=compile(regex_str), angle=angle))
             for regex_str, offset in DEFAULT_OFFSETS:
-                self._offset.append([compile(regex_str), offset])
-        if not self._rot:
-            raise KiPlotConfigurationError("No rotations provided")
+                self._offset.append(Regex(regex=compile(regex_str), offset_x=offset[0], offset_y=offset[1]))
+        if not self._rot and not self._offset:
+            raise KiPlotConfigurationError("No rotations and/or offsets provided")
         self.rot_fields = self.force_list(self.rot_fields, default=DEFAULT_ROT_FIELDS)
         self.offset_fields = self.force_list(self.offset_fields, default=DEFAULT_OFFSET_FIELDS)
 
@@ -220,7 +290,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
 
     def apply_field_rotation(self, comp):
         for f in self.rot_fields:
-            value = comp.get_field_value(f)
+            value = get_field_value(comp, f)
             if value:
                 try:
                     angle = float(value)
@@ -236,10 +306,11 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         if self.apply_field_rotation(comp):
             return
         # Try with the regex
-        for regex, angle in self._rot:
-            if regex.search(comp.footprint):
-                logger.debugl(2, f'- matched {regex} with {angle} degrees')
-                self.apply_rotation_angle(comp, angle)
+        for v in self._rot:
+            value = get_field_value(comp, v.field)
+            if value and v.regex.search(value):
+                logger.debugl(2, f'- matched {v.regex} on field {v.field} with {v.angle} degrees')
+                self.apply_rotation_angle(comp, v.angle)
                 return
         # No rotation, apply 0 to apply bottom adjusts
         self.apply_rotation_angle(comp, 0)
@@ -262,7 +333,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
 
     def apply_field_offset(self, comp):
         for f in self.offset_fields:
-            value = comp.get_field_value(f)
+            value = get_field_value(comp, f)
             if value:
                 try:
                     pos_offset_x = float(value.split(",")[0])
@@ -284,10 +355,11 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         if self.apply_field_offset(comp):
             return
         # Try with the regex
-        for regex, offset in self._offset:
-            if regex.search(comp.footprint):
-                logger.debugl(2, f'- matched {regex} with offset {offset[0]}, {offset[1]} mm')
-                self.apply_offset_value(comp, comp.footprint_rot, offset[0], offset[1])
+        for v in self._offset:
+            value = get_field_value(comp, v.field)
+            if value and v.regex.search(value):
+                logger.debugl(2, f'- matched {v.regex} on field {v.field} with offset {v.offset_x}, {v.offset_y} mm')
+                self.apply_offset_value(comp, comp.footprint_rot, v.offset_x, v.offset_y)
                 return
 
     def filter(self, comp):

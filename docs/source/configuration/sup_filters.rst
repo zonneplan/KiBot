@@ -134,6 +134,7 @@ Supported filters
       -  ``comment`` :index:`: <pair: filter - rot_footprint; comment>` [string=''] A comment for documentation purposes.
       -  ``extend`` :index:`: <pair: filter - rot_footprint; extend>` [boolean=true] Extends the internal list of rotations with the one provided.
          Otherwise just use the provided list.
+         Note that the provided list has more precendence than the internal list.
       -  ``invert_bottom`` :index:`: <pair: filter - rot_footprint; invert_bottom>` [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)`
          or when combined with `negative_bottom`, `(angle - component rot)`.
       -  ``mirror_bottom`` :index:`: <pair: filter - rot_footprint; mirror_bottom>` [boolean=false] The original component rotation for components in the bottom is mirrored before applying
@@ -156,6 +157,24 @@ Supported filters
       -  ``rotations`` :index:`: <pair: filter - rot_footprint; rotations>` [list(list(string))] A list of pairs regular expression/rotation.
          Footprints matching the regular expression will be rotated the indicated angle.
          The angle matches the matthewlai/JLCKicadTools plugin specs.
+
+      -  ``rotations_and_offsets`` :index:`: <pair: filter - rot_footprint; rotations_and_offsets>` [list(dict)] A list of rules to match components and specify the rotation and offsets.
+         This is a more flexible version of the `rotations` and `offsets` options.
+         Note that this list has more precedence.
+
+         -  Valid keys:
+
+            -  ``angle`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; angle>` [number=0.0] Rotation offset to apply to the matched component.
+            -  ``apply_angle`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; apply_angle>` [boolean=true] Apply the angle offset.
+            -  ``apply_offset`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; apply_offset>` [boolean=true] Apply the position offset.
+            -  ``field`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; field>` [string='footprint'] Name of field to apply the regular expression.
+               Use `_field_lcsc_part` to get the value defined in the global options.
+               Use `Footprint` for the name of the footprint without a library.
+               Use `Full Footprint` for the name of the footprint including the library.
+            -  ``offset_x`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; offset_x>` [number=0.0] X position offset to apply to the matched component.
+            -  ``offset_y`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; offset_y>` [number=0.0] Y position offset to apply to the matched component.
+            -  ``regex`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; regex>` [string=''] Regular expression to match.
+            -  *regexp* :index:`: <pair: filter - rot_footprint - rotations_and_offsets; regexp>` Alias for regex.
 
       -  ``skip_bottom`` :index:`: <pair: filter - rot_footprint; skip_bottom>` [boolean=false] Do not rotate components on the bottom.
       -  ``skip_top`` :index:`: <pair: filter - rot_footprint; skip_top>` [boolean=false] Do not rotate components on the top.
