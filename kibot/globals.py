@@ -354,6 +354,9 @@ class Globals(FiltersOptions):
             self.layer_defaults = Layer
             """ [list(dict)] Used to indicate the default suffix and description for the layers.
                 Note that the name for the layer must match exactly, no aliases """
+            self.include_components_from_pcb = True
+            """ Include components that are only in the PCB, not in the schematic, for filter and variants processing.
+                Note that version 1.6.3 and older ignored them """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

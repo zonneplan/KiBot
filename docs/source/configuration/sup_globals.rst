@@ -130,6 +130,8 @@
       -  ``hide_excluded`` :index:`: <pair: global options; hide_excluded>` [boolean=false] Default value for the `hide_excluded` option of various PCB outputs.
       -  ``impedance_controlled`` :index:`: <pair: global options; impedance_controlled>` [boolean=false] The PCB needs specific dielectric characteristics.
          KiCad 6: you should set this in the Board Setup -> Physical Stackup.
+      -  ``include_components_from_pcb`` :index:`: <pair: global options; include_components_from_pcb>` [boolean=true] Include components that are only in the PCB, not in the schematic, for filter and variants processing.
+         Note that version 1.6.3 and older ignored them.
       -  ``invalidate_pcb_text_cache`` :index:`: <pair: global options; invalidate_pcb_text_cache>` [string='auto'] [auto,yes,no] Remove any cached text variable in the PCB. This is needed in order to force a text
          variables update when using `set_text_variables`. You might want to disable it when applying some
          changes to the PCB and create a new copy to send to somebody without changing the cached values.
