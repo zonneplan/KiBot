@@ -23,7 +23,8 @@ import textwrap
 
 from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
-                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP, error_level_to_name)
+                   W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP, error_level_to_name,
+                   DEFAULT_ROTATIONS, DEFAULT_OFFSETS)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -1363,3 +1364,31 @@ def print_errors(rst):
     make_title(rst, 'error levels', len(error_level_to_name), '~')
     for c, n in enumerate(error_level_to_name):
         print(f'- {c}: {n}')
+
+
+def print_list_rotations():
+    rots = sorted(DEFAULT_ROTATIONS, key=lambda x: x[0])
+    w = len(max(rots, key=lambda x: len(x[0]))[0])+4
+    sep = '='*w + ' ========'
+    f1 = f'%-{w}s'
+    print(sep)
+    print((f1+' Rotation') % 'Footprint')
+    print(sep)
+    fmt = f'{f1} %6d'
+    for v in rots:
+        print(fmt % ('``'+v[0]+'``', v[1]))
+    print(sep)
+
+
+def print_list_offsets():
+    offs = sorted(DEFAULT_OFFSETS, key=lambda x: x[0])
+    w = len(max(offs, key=lambda x: len(x[0]))[0])+4
+    sep = '='*w + ' ======== ========'
+    f1 = f'%-{w}s'
+    print(sep)
+    print((f1+' Offset X Offset Y') % 'Footprint')
+    print(sep)
+    fmt = f'{f1} %8.2f %8.2f'
+    for v in offs:
+        print(fmt % ('``'+v[0]+'``', v[1][0], v[1][1]))
+    print(sep)

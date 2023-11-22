@@ -15,7 +15,9 @@ Usage:
   kibot [-v...] [--rst] --help-filters
   kibot [-v...] [--markdown|--json|--rst] --help-dependencies
   kibot [-v...] [--rst] --help-global-options
+  kibot [-v...] --help-list-offsets
   kibot [-v...] [--rst] --help-list-outputs
+  kibot [-v...] --help-list-rotations
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] [--rst] [-d OUT_DIR] --help-outputs
   kibot [-v...] [--rst] --help-preflights
@@ -79,6 +81,7 @@ Help options:
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
   --help-list-outputs              List supported outputs
+  --help-list-rotations            List footprint rotations (JLCPCB)
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
   --help-preflights                List supported preflights and details

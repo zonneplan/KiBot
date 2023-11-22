@@ -22,7 +22,9 @@ Usage:
   kibot [-v...] [--rst] --help-filters
   kibot [-v...] [--markdown|--json|--rst] --help-dependencies
   kibot [-v...] [--rst] --help-global-options
+  kibot [-v...] --help-list-offsets
   kibot [-v...] [--rst] --help-list-outputs
+  kibot [-v...] --help-list-rotations
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] [--rst] [-d OUT_DIR] --help-outputs
   kibot [-v...] [--rst] --help-preflights
@@ -85,7 +87,9 @@ Help options:
   --help-errors                    List of error levels
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
+  --help-list-offsets              List footprint offsets (JLCPCB)
   --help-list-outputs              List supported outputs
+  --help-list-rotations            List footprint rotations (JLCPCB)
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
   --help-preflights                List supported preflights and details
@@ -128,7 +132,7 @@ from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help, print_global_options_help, print_dependencies, print_variants_help,
-                            print_errors)
+                            print_errors, print_list_rotations, print_list_offsets)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
                      solve_board_file, solve_project_file, check_board_file)
 from .registrable import RegOutput
@@ -455,6 +459,12 @@ def main():
         sys.exit(0)
     if args.help_dependencies:
         print_dependencies(args.markdown, args.json, args.rst)
+        sys.exit(0)
+    if args.help_list_rotations:
+        print_list_rotations()
+        sys.exit(0)
+    if args.help_list_offsets:
+        print_list_offsets()
         sys.exit(0)
     if args.help_banners:
         for c, b in enumerate(BANNERS):

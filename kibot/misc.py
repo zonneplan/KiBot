@@ -314,6 +314,86 @@ KIKIT_UNIT_ALIASES = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
 FONT_HELP_TEXT = '\n        If you use custom fonts and/or colors please consult the `resources_dir` global variable.'
 
 
+# Known rotations for JLC
+# Notes:
+# - Rotations are CC (counter clock)
+# - Most components has pin 1 at the top-right angle, while KiCad uses the top-left
+#   This is why most of the ICs has a rotation of 270 (-90)
+# - The same applies to things like SOT-23-3, so here you get 180.
+# - Most polarized components has pin 1 on the positive pin, becoming it the right one.
+#   On KiCad this is not the case, diodes follows it, but capacitors don't. So they get 180.
+# - There are exceptions, like SOP-18 or SOP-4 which doesn't follow the JLC rules.
+# - KiCad mirrors components on the bottom layer, but JLC doesn't. So you need to "un-mirror" them.
+# - The JLC mechanism to interpret rotations changed with time
+DEFAULT_ROTATIONS = [["^R_Array_Convex_", 90.0],
+                     ["^R_Array_Concave_", 90.0],
+                     # *SOT* seems to need 180
+                     ["^SOT-143", 180.0],
+                     ["^SOT-223", 180.0],
+                     ["^SOT-23", 180.0],
+                     ["^SOT-353", 180.0],
+                     ["^SOT-363", 180.0],
+                     ["^SOT-89", 180.0],
+                     ["^D_SOT-23", 180.0],
+                     ["^TSOT-23", 180.0],
+                     # Polarized capacitors
+                     ["^CP_EIA-", 180.0],
+                     ["^CP_Elec_", 180.0],
+                     ["^C_Elec_", 180.0],
+                     # Most four side components needs -90 (270)
+                     ["^QFN-", 270.0],
+                     ["^(.*?_|V)?QFN-(16|20|24|28|40)(-|_|$)", 270.0],
+                     ["^DFN-", 270.0],
+                     ["^LQFP-", 270.0],
+                     ["^TQFP-", 270.0],
+                     # SMD DIL packages mostly needs -90 (270)
+                     ["^SOP-(?!(18_|4_))", 270.0],  # SOP 18 and 4 excluded, wrong at JLCPCB
+                     ["^MSOP-", 270.0],
+                     ["^TSSOP-", 270.0],
+                     ["^HTSSOP-", 270.0],
+                     ["^SSOP-", 270.0],
+                     ["^SOIC-", 270.0],
+                     ["^SO-", 270.0],
+                     ["^SOIC127P798X216-8N", 270.0],
+                     ["^VSSOP-8_3.0x3.0mm_P0.65mm", 270.0],
+                     ["^VSSOP-8_", 180.0],
+                     ["^VSSOP-10_", 270.0],
+                     ["^VSON-8_", 270.0],
+                     ["^TSOP-6", 270.0],
+                     ["^UDFN-10", 270.0],
+                     ["^USON-10", 270.0],
+                     ["^TDSON-8-1", 270.0],
+                     # Misc.
+                     ["^LED_WS2812B_PLCC4", 180.0],
+                     ["^LED_WS2812B-2020_PLCC4_2.0x2.0mm", 90.0],
+                     ["^Bosch_LGA-", 90.0],
+                     ["^PowerPAK_SO-8_Single", 270.0],
+                     ["^PUIAudio_SMT_0825_S_4_R*", 270.0],
+                     ["^USB_C_Receptacle_HRO_TYPE-C-31-M-12*", 180.0],
+                     ["^ESP32-W", 270.0],
+                     ["^SW_DIP_SPSTx01_Slide_Copal_CHS-01B_W7.62mm_P1.27mm", -180.0],
+                     ["^BatteryHolder_Keystone_1060_1x2032", -180.0],
+                     ["^Relay_DPDT_Omron_G6K-2F-Y", 270.0],
+                     ["^RP2040-QFN-56", 270.0],
+                     ["^TO-277", 90.0],
+                     ["^SW_SPST_B3", 90.0],
+                     ["^Transformer_Ethernet_Pulse_HX0068ANL", 270.0],
+                     ["^JST_GH_SM", 180.0],
+                     ["^JST_PH_S", 180.0],
+                     ["^Diodes_PowerDI3333-8", 270.0],
+                     ["^Quectel_L80-R", 270.0],
+                     ["^SC-74-6", 180.0],
+                     [r"^PinHeader_2x05_P1\.27mm_Vertical", 90.0],
+                     [r"^PinHeader_2x03_P1\.27mm_Vertical", 90.0],
+                     ]
+DEFAULT_ROT_FIELDS = ['JLCPCB Rotation Offset', 'JLCRotOffset']
+DEFAULT_OFFSETS = [["^USB_C_Receptacle_XKB_U262-16XN-4BVC11", (0.0, -1.44)],
+                   [r"^PinHeader_2x05_P1\.27mm_Vertical", (2.54, 0.635)],
+                   [r"^PinHeader_2x03_P1\.27mm_Vertical", (1.27, 0.635)],
+                   ]
+DEFAULT_OFFSET_FIELDS = ['JLCPCB Position Offset', 'JLCPosOffset']
+
+
 class Rect(object):
     """ What KiCad returns isn't a real wxWidget's wxRect.
         Here I add what I really need """
