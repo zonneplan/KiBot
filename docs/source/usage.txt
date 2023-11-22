@@ -80,6 +80,7 @@ Help options:
   --help-errors                    List of error levels
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
+  --help-list-offsets              List footprint offsets (JLCPCB)
   --help-list-outputs              List supported outputs
   --help-list-rotations            List footprint rotations (JLCPCB)
   --help-output HELP_OUTPUT        Help for this particular output
