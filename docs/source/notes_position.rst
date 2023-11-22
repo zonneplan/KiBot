@@ -364,9 +364,99 @@ rotations and ``JLCPCB Position Offset`` and/or ``JLCPosOffset`` for offsets. Th
 like ``jlcrotoffset`` is accepted.
 
 
+Including through-hole components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The default behavior is to only include SMD components in the position files. This is because in most cases is expensive to
+automatically solder them. But with some manufacturers offering simple assembly at no cost you could want to include them.
+
+For a ``position`` output you just need to disable the ``only_smd`` option. When using the ``JLCPCB`` template you can just use:
+
+.. code:: yaml
+
+   kibot:
+     version: 1
+
+   import:
+     - file: JLCPCB
+       definitions:
+         _KIBOT_POS_ONLY_SMD: false
+
+
+Including fiducials and similar stuff
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Position files are intended to be used by pick and place machines. So things like reference position marks are excluded.
+You can include them enabling the ``include_virtual`` option. But this could include other things you don't want.
+As an example we will show how to include fiducials, but exclude mounting holes:
+
+.. code:: yaml
+
+   kibot:
+     version: 1
+
+   filters:
+     - name: remove_extra
+       comment: 'Remove mounting holes'
+       type: generic
+       exclude_any:
+         - column: References
+           regex: "^H\\d+"
+
+   outputs:
+     - name: 'position'
+       type: position
+       dir: positiondir
+       options:
+         dnf_filter: remove_extra
+         format: CSV   # CSV or ASCII format
+         units: millimeters  # millimeters or inches
+         separate_files_for_front_and_back: false
+         only_smd: false
+         include_virtual: true
+
+Here the `remove_extra` filter removes references starting with `H` and followed by a number, which are used for mounting holes.
+You could also filter them using a regular expression for the footprint.
+
+The following example will generate a positions file only with the fiducials:
+
+.. code:: yaml
+
+   kibot:
+     version: 1
+
+   filters:
+     - name: remove_extra
+       comment: 'Keep only fiducials'
+       type: generic
+       include_only:
+         - column: References
+           regex: "^FID\\d+"
+
+   outputs:
+     - name: 'position'
+       type: position
+       dir: positiondir
+       options:
+         dnf_filter: remove_extra
+         format: CSV   # CSV or ASCII format
+         units: millimeters  # millimeters or inches
+         separate_files_for_front_and_back: false
+         only_smd: false
+         include_virtual: true
+
+
+Note that this needs synchronized schematics and PCBs. This means that all important objects in the PCB must be related to a
+symbol in the schematic and that you must ask KiCad to sync both. In particular the above example assumes fiducials are also
+in the schematic.
+
+If the PCB contains footprints not found in the schematic, like in the case of a KiKit panel, you'll need KiBot 1.6.4 or newer.
+
+
 .. index::
    pair: position; XYRS files
    pair: pick and place; XYRS files
+
 
 XYRS files
 ~~~~~~~~~~
