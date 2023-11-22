@@ -134,7 +134,7 @@ Supported filters
       -  ``comment`` :index:`: <pair: filter - rot_footprint; comment>` [string=''] A comment for documentation purposes.
       -  ``extend`` :index:`: <pair: filter - rot_footprint; extend>` [boolean=true] Extends the internal list of rotations with the one provided.
          Otherwise just use the provided list.
-         Note that the provided list has more precendence than the internal list.
+         Note that the provided list has more precedence than the internal list.
       -  ``invert_bottom`` :index:`: <pair: filter - rot_footprint; invert_bottom>` [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)`
          or when combined with `negative_bottom`, `(angle - component rot)`.
       -  ``mirror_bottom`` :index:`: <pair: filter - rot_footprint; mirror_bottom>` [boolean=false] The original component rotation for components in the bottom is mirrored before applying
