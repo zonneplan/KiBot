@@ -146,11 +146,11 @@ class Copy_FilesOptions(Base3DOptions):
         for fn in files_list:
             if fn.endswith('.wrl'):
                 fn = fn[:-4]+'.step'
-                if os.path.isfile(fn):
+                if os.path.isfile(fn) and fn not in files_list:
                     new_list.append(fn)
             elif fn.endswith('.step'):
                 fn = fn[:-5]+'.wrl'
-                if os.path.isfile(fn):
+                if os.path.isfile(fn) and fn not in files_list:
                     new_list.append(fn)
         return files_list+fnmatch.filter(new_list, f.source)
 
