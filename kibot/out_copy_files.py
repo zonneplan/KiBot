@@ -158,6 +158,8 @@ class Copy_FilesOptions(Base3DOptions):
         files = []
         src_dir_cwd = os.getcwd()
         src_dir_outdir = self.expand_filename_sch(GS.out_dir)
+        # Initialize the config class so we can know where are the 3D models at system level
+        KiConf.init(GS.pcb_file)
         self.rel_dirs = []
         if KiConf.models_3d_dir:
             self.rel_dirs.append(os.path.normpath(os.path.join(GS.pcb_dir, KiConf.models_3d_dir)))
