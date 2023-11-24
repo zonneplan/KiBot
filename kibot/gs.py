@@ -465,13 +465,14 @@ class GS(object):
             GS.exit_with_error('No SCH file found (*.sch), use -e to specify one.', EXIT_BAD_ARGS)
 
     @staticmethod
-    def copy_project(new_pcb_name):
+    def copy_project(new_pcb_name, dry=False):
         pro_name = GS.pro_file
         if pro_name is None or not os.path.isfile(pro_name):
             return None
         pro_copy = new_pcb_name.replace('.kicad_pcb', GS.pro_ext)
-        logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
-        copy2(pro_name, pro_copy)
+        if not dry:
+            logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
+            copy2(pro_name, pro_copy)
         return pro_copy
 
     @staticmethod
@@ -757,3 +758,16 @@ class GS(object):
         if GS.ki6:
             return shape.ShowShape()
         return shape.ShowShape(shape.GetShape())
+
+    @staticmethod
+    def create_fp_lib(lib_name):
+        """ Create a new footprints lib. You must provide a path.
+            Doesn't fail if the lib is there.
+            .pretty extension is forced. """
+        if not lib_name.endswith('.pretty'):
+            lib_name += '.pretty'
+        # FootprintLibCreate(PATH) doesn't check if the lib is there and aborts (no Python exception) if the directory exists
+        # So you must check it first and hence the abstraction is lost.
+        # This is why we just use os.makedirs
+        os.makedirs(lib_name, exist_ok=True)
+        return lib_name

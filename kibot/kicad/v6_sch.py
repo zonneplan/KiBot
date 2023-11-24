@@ -1896,6 +1896,26 @@ class SchematicV6(Schematic):
                 data.extend([s.write(cross), Sep()])
         return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
 
+    def write_lib(self, path, name, comps, do_back_up=False):
+        """ Creates a lib path/name containing the specified comps """
+        lib = [Symbol('kicad_symbol_lib')]
+        # TODO: How do I know which is the valid version? Doesn't match the schematic version!
+        lib.append(_symbol('version', [20220914]))
+        lib.append(_symbol('generator', [Symbol("KiBot")]))
+        lib.append(Sep())
+        for s in comps:
+            lib.extend([self.lib_symbol_names[name+':'+s].write(False), Sep()])
+        # Keep a back-up of existing files
+        fname = os.path.join(path, name+'.kicad_sym')
+        if do_back_up and os.path.isfile(fname):
+            bkp = fname+'-bak'
+            os.replace(fname, bkp)
+        dirname = os.path.dirname(fname)
+        os.makedirs(dirname, exist_ok=True)
+        with open(fname, 'wt') as f:
+            f.write(dumps(lib))
+            f.write('\n')
+
     def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None, cross=False, exp_hierarchy=False):
         # Switch to the current version
         global version

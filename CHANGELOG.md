@@ -64,6 +64,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Basic support for regular list items (#480)
 - Position:
   - Experimental support for gerber position files (#500)
+- Copy Files:
+  - Mode to export the whole project (SCH, PCB, symbols, footprints, 3D models
+    and project files) (#491)
 - Help for the error levels
 - Warnings:
   - Explain about wrong dir/output separation (#493)
@@ -98,6 +101,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   versions (#496)
 - Problems when using NET_NAME(n) for a value (#511)
 - JLCPCB rotations for bottom components
+- Copy Files:
+  - Warnings when using both, the STEP and WRL model, of the same component
+  - Fail to detect 3D models subdirs when running alone
 
 
 ## [1.6.3] - 2023-06-26

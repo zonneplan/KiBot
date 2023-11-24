@@ -29,7 +29,7 @@ from ..gs import GS
 from .. import log
 from ..misc import (W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH, W_3DRESVER, W_LIBTVERSION,
                     W_LIBTUNK)
-from .sexpdata import load, SExpData
+from .sexpdata import load, SExpData, Symbol, dumps, Sep
 from .sexp_helpers import _check_is_symbol_list, _check_integer, _check_relaxed
 
 # Check python version to determine which version of ConfirParser to import
@@ -124,6 +124,7 @@ class LibAlias(object):
         self.uri = None
         self.options = None
         self.descr = None
+        self.type = None
 
     @staticmethod
     def parse(items, env, extra_env):
@@ -142,6 +143,7 @@ class LibAlias(object):
                 s.descr = _check_relaxed(i, 1, i_type)
             else:
                 logger.warning(W_LIBTUNK+'Unknown lib table attribute `{}`'.format(i))
+        s.legacy = s.type is not None and s.type != 'Legacy'
         return s
 
     def __str__(self):
@@ -544,6 +546,29 @@ class KiConf(object):
             KiConf.init(fname)
             KiConf.fp_aliases = KiConf.load_all_lib_aliases(FP_LIB_TABLE, KiConf.footprint_dir, '*.pretty')
         return KiConf.fp_aliases
+
+    def save_fp_lib_aliases(fname, aliases, is_fp=True):
+        logger.debug(f'Writing lib table `{fname}`')
+        table = [Symbol('fp_lib_table' if is_fp else 'sym_lib_table'), Sep()]
+        for name in sorted(aliases.keys(), key=str.casefold):
+            alias = aliases[name]
+            cnt = [[Symbol('name'), alias.name],
+                   [Symbol('type'), alias.type],
+                   [Symbol('uri'), alias.uri]]
+            if alias.options is not None:
+                cnt.append([Symbol('options'), alias.options])
+            if alias.descr is not None:
+                cnt.append([Symbol('descr'), alias.descr])
+            table.append([Symbol('lib')] + cnt)
+            table.append(Sep())
+        with open(fname, 'wt') as f:
+            f.write(dumps(table))
+            f.write('\n')
+
+    def fp_nick_to_path(nick):
+        fp_aliases = KiConf.get_fp_lib_aliases()
+        alias = fp_aliases.get(str(nick))  # UTF8 -> str
+        return alias
 
     def load_3d_aliases():
         if not KiConf.config_dir:
