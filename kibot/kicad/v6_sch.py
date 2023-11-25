@@ -1649,7 +1649,7 @@ class Sheet(object):
         self.sheet = sheet
         parent_dir = os.path.dirname(parent_file)
         sheet.sheet_path = path_join(parent_obj.sheet_path, self.uuid)
-        sheet.sheet_path_ori = path_join(parent_obj.sheet_path, self.uuid_ori)
+        sheet.sheet_path_ori = path_join(parent_obj.sheet_path_ori, self.uuid_ori)
         sheet.sheet_path_h = path_join(parent_obj.sheet_path_h, self.name)
         parent_obj.sheet_paths[sheet.sheet_path_ori] = sheet
         sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
