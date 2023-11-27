@@ -80,6 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Components only in the PCB are now processed
 
 ### Fixed
+- Schematics: problems with deep nested and recycled sheets (#520)
 - Rotated polygons and text used in the worksheet (#466)
 - The --log/-L didn't enabled full debug for all messages
 - BoM:
