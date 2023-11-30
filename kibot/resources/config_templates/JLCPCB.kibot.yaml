@@ -44,8 +44,8 @@ outputs:
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
       plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: false
+      plot_footprint_refs: @_KIBOT_PLOT_FOOTPRINT_REFS@
+      plot_footprint_values: @_KIBOT_PLOT_FOOTPRINT_VALUES@
       force_plot_invisible_refs_vals: false
       tent_vias: true
       use_protel_extensions: true
@@ -154,6 +154,8 @@ definitions:
   _KIBOT_POS_DNF_FILTER: _remove_extra
   _KIBOT_POS_ENABLED: true
   _KIBOT_BOM_ENABLED: true
+  _KIBOT_PLOT_FOOTPRINT_REFS: true
+  _KIBOT_PLOT_FOOTPRINT_VALUES: false
   _KIBOT_GERBER_LAYERS: |
       - copper
             - F.SilkS
