@@ -322,7 +322,7 @@ The manufacturer templates (Elecrow, FusionPCB, JLCPCB, P-Ban and PCBWay) suppor
 -  **_KIBOT_MANF_DIR_COMP**: Target directory for the compressed manufacturer outputs (default: **_KIBOT_IMPORT_DIR**)
 -  **_KIBOT_GERBER_LAYERS**: List of layers to use for the gerbers (default: a specially crafted list of layers)
 -  **_KIBOT_PLOT_FOOTPRINT_REFS**: Include the footprint references in the gerbers (default: true)
--  **_KIBOT_PLOT_FOOTPRINT_VALUES: Include the footprint values in the gerbers (default: true, except for JLCPCB)
+-  **_KIBOT_PLOT_FOOTPRINT_VALUES**: Include the footprint values in the gerbers (default: true, except for JLCPCB)
 
 
 The JLCPCB case is a little bit more complex and also supports:
