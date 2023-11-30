@@ -61,6 +61,12 @@ jobs:
         #ls -la /usr/local/bin/*_do || true
         #which pcbnew_do
         #pcbnew_do --version
+        # KiDiff tests
+        curl https://codeload.github.com/INTI-CMNB/KiDiff/zip/refs/heads/kiri_mode --output pp.zip
+        unzip pp.zip
+        prefix=/usr make -C KiDiff-kiri_mode install
+        rm -rf KiDiff-kiri_mode/ pp.zip
+        kicad-diff.py --version
         ##### End Experimental stuff
         # Ensure we start a fresh coverage meassurement
         python3-coverage erase
