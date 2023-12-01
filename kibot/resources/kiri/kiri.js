@@ -816,68 +816,6 @@ function update_sheets_list(commit1, commit2) {
     }
 }
 
-function layer_color(layer_id) {
-
-    var color;
-
-    console.log(">>> layer_id", layer_id);
-
-    const F_Cu      = 0;
-    const In1_Cu    = 1;
-    const In2_Cu    = 2;
-    const In3_Cu    = 3;
-    const In4_Cu    = 4;
-    const B_Cu      = 31;
-    const B_Adhes   = 32;
-    const F_Adhes   = 33;
-    const B_Paste   = 34;
-    const F_Paste   = 35;
-    const B_SilkS   = 36;
-    const F_SilkS   = 37;
-    const B_Mask    = 38;
-    const F_Mask    = 39;
-    const Dwgs_User = 40;
-    const Cmts_User = 41;
-    const Eco1_User = 42;
-    const Eco2_User = 43;
-    const Edge_Cuts = 44;
-    const Margin    = 45;
-    const B_CrtYd   = 46;
-    const F_CrtYd   = 47;
-    const B_Fab     = 48;
-    const F_Fab     = 49;
-
-    switch(layer_id) {
-        case B_Adhes:   color="#3545A8"; break;
-        case B_CrtYd:   color="#D3D04B"; break;
-        case B_Cu:      color="#359632"; break;
-        case B_Fab:     color="#858585"; break;
-        case B_Mask:    color="#943197"; break;
-        case B_Paste:   color="#969696"; break;
-        case B_SilkS:   color="#481649"; break;
-        case Cmts_User: color="#7AC0F4"; break;
-        case Dwgs_User: color="#0364D3"; break;
-        case Eco1_User: color="#008500"; break;
-        case Eco2_User: color="#008500"; break;
-        case Edge_Cuts: color="#C9C83B"; break;
-        case F_Adhes:   color="#A74AA8"; break;
-        case F_CrtYd:   color="#A7A7A7"; break;
-        case F_Cu:      color="#952927"; break;
-        case F_Fab:     color="#C2C200"; break;
-        case F_Mask:    color="#943197"; break;
-        case F_Paste:   color="#3DC9C9"; break;
-        case F_SilkS:   color="#339697"; break;
-        case In1_Cu:    color="#C2C200"; break;
-        case In2_Cu:    color="#C200C2"; break;
-        case In3_Cu:    color="#C20000"; break;
-        case In4_Cu:    color="#0000C2"; break;
-        case Margin:    color="#D357D2"; break;
-        default:        color="#DBDBDB";
-    }
-
-    return color;
-}
-
 function pad(num, size)
 {
     num = num.toString();
@@ -954,13 +892,12 @@ function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer
         id = parseInt(layer_id);
         id_pad = pad(id, 2);
         layer_name = layer_names[0];
-        color = layer_color(id);
 
         var input_html = `
         <!-- Generated Layer ${id} -->
         <input  id="layer-${id_pad}" value="layer-${layer_names}" type="radio" name="layers" onchange="update_layer()">
         <label for="layer-${id_pad}" id="label-layer-${id_pad}" data-toggle="tooltip" title="${id}, ${layer_names}" class="rounded text-sm-left list-group-item radio-box" onclick="update_layer_onclick()">
-            <span style="margin-left:0.5em; margin-right:0.1em; color:${color}" class="iconify" data-icon="teenyicons-square-solid" data-inline="false"></span>
+            <span class="iconify layer_color_margin layer_color_${id}" data-icon="teenyicons-square-solid" data-inline="false"></span>
             ${layer_names}
         </label>
         `;
