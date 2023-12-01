@@ -725,7 +725,7 @@ function update_sheets_list(commit1, commit2) {
         selected_sheet = pages[selected_page].id;
     }
     catch(err) {
-        selected_page = "";
+        selected_sheet = "";
         console.log("There isn't a sheet selected");
     }
 
@@ -807,11 +807,13 @@ function update_sheets_list(commit1, commit2) {
     }
     else {
         // If old selection does not exist, maybe the list is now shorter, then select the last item...
-        pages[optionLabels.length-1].checked = true;
+        if (optionLabels.length) {
+            pages[optionLabels.length-1].checked = true;
+        }
     }
 
     // If nothing is selected still, select the first item
-    if (!pages.filter(':checked').length) {
+    if (pages.length && !pages.filter(':checked').length) {
         pages[0].checked = true;
     }
 }
@@ -937,7 +939,9 @@ function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer
     }
     else {
         // If old selection does not exist, maybe the list is now shorter, then select the last item...
-        layers[optionLabels.length-1].checked = true;
+        if (optionLabels.length) {
+            layers[optionLabels.length-1].checked = true;
+        }
     }
 
     // restore previously selected index
@@ -975,9 +979,15 @@ function update_layer() {
                 layer_id = layers[selected_layer].id.split("-")[1];
                 console.log(">>>> [label_id_ELSE] = ", layer_id);
             } catch (error) {
-                console.log("[PCB] Images may not exist and Kicad layout may be missing.");
-                show_sch();
-                return;
+                if (layers.length == 0) {
+                    selected_layer = -1
+                    layer_id = ""
+                }
+                else {
+                    console.log("[PCB] Images may not exist and Kicad layout may be missing.");
+                    show_sch();
+                    return;
+                }
             }
         }
     }
@@ -1012,7 +1022,7 @@ function update_layer() {
         removeEmbed();
         lastEmbed = createNewEmbed(image_path_timestamp_1, image_path_timestamp_2);
     }
-    else
+    else if (layer_id != "")
     {
         document.getElementById("diff-xlink-1").href.baseVal = image_path_timestamp_1;
         document.getElementById("diff-xlink-2").href.baseVal = image_path_timestamp_2;

@@ -222,10 +222,10 @@ class KiRiOptions(VariantOptions):
                 f.write(ln+'\n')
                 if ln.endswith('<!-- FILL_COMMITS_HERE -->'):
                     self.create_commits(f, commits)
-                elif ln.endswith('<!-- FILL_PAGES_HERE -->'):
-                    self.create_pages(f)
-                elif ln.endswith('<!-- FILL_LAYERS_HERE -->'):
-                    self.create_layers(f)
+#                 elif ln.endswith('<!-- FILL_PAGES_HERE -->'):
+#                     self.create_pages(f)
+#                 elif ln.endswith('<!-- FILL_LAYERS_HERE -->'):
+#                     self.create_layers(f)
 
     def create_commits(self, f, commits):
         template = self.load_html_template('commits', 8)
