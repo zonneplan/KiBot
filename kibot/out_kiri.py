@@ -66,6 +66,8 @@ class KiRiOptions(VariantOptions):
             """ *Selects the color theme. Only applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
+            self.keep_generated = False
+            """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -275,6 +277,9 @@ class KiRiOptions(VariantOptions):
             try:
                 for h in hashes:
                     hash = h[0]
+                    if self.keep_generated and os.path.isdir(os.path.join(self.cache_dir, hash[:7])):
+                        logger.debug(f'- Images for {hash} already generated')
+                        continue
                     git_tmp_wd = mkdtemp()
                     logger.debug('Checking out '+hash+' to '+git_tmp_wd)
                     self.run_git(['worktree', 'add', git_tmp_wd, hash])
