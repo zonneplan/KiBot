@@ -21,6 +21,7 @@ Dependencies:
 """
 import datetime
 import pwd
+import re
 import os
 from shutil import copy2
 from subprocess import CalledProcessError
@@ -47,6 +48,7 @@ PCB_IMG = ('<span class="iconify" style="padding-left: 0px; padding-right: 0px; 
 TXT_IMG = ('<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #888888;"'
            ' data-inline="false"; data-icon="bi:file-earmark-text"></span>')
 HASH_LOCAL = '_local_'
+UNDEF_COLOR = '#DBDBDB'
 
 
 def get_cur_user():
@@ -136,7 +138,7 @@ class KiRiOptions(VariantOptions):
             if la._id in layer_id2color:
                 la.color = layer_id2color[la._id]
             else:
-                la.color = "#000000"
+                la.color = UNDEF_COLOR
 
     def create_layers(self, f):
         template = self.load_html_template('layers', 11)
@@ -251,7 +253,17 @@ class KiRiOptions(VariantOptions):
         copy2(os.path.join(src_dir, 'blank.svg'), os.path.join(web_dir, 'blank.svg'))
         copy2(os.path.join(src_dir, 'favicon.ico'), os.path.join(web_dir, 'favicon.ico'))
         copy2(os.path.join(src_dir, 'kiri.css'), os.path.join(web_dir, 'kiri.css'))
-        copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
+        # Patch the JS
+        with open(os.path.join(src_dir, 'kiri.js'), 'rt') as f:
+            code = f.read()
+        layer_color = "function layer_color(layer_id) {\n    switch(layer_id) {\n"
+        for id, color in self._color_theme.layer_id2color.items():
+            layer_color += f'        case {id}: return "{color[:7]}";\n'
+        layer_color += f'        default: return "{UNDEF_COLOR}";\n    '+'}\n}\n'
+        logger.error('Replace')
+        code = re.sub('function layer_color(.*)color;.}', layer_color, code, flags=re.S)
+        with open(os.path.join(web_dir, 'kiri.js'), 'wt') as f:
+            f.write(code)
 
     def run(self, name):
         self.cache_dir = self._parent.output_dir
