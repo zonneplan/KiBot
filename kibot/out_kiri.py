@@ -148,13 +148,13 @@ class KiRiOptions(VariantOptions):
             else:
                 la.color = UNDEF_COLOR
 
-    def create_layers(self, f):
-        template = self.load_html_template('layers', 11)
-        for i, la in enumerate(self._solved_layers):
-            # TODO: Configure checked?
-            checked = 'checked="checked"' if i == 0 else ''
-            f.write(template.format(i=i+1, layer_id_padding='%02d' % (i+1), layer_name=la.suffix,
-                                    layer_id=la.id, layer_color=la.color, checked=checked))
+#     def create_layers(self, f):
+#         template = self.load_html_template('layers', 11)
+#         for i, la in enumerate(self._solved_layers):
+#             # TODO: Configure checked?
+#             checked = 'checked="checked"' if i == 0 else ''
+#             f.write(template.format(i=i+1, layer_id_padding='%02d' % (i+1), layer_name=la.suffix,
+#                                     layer_id=la.id, layer_color=la.color, checked=checked))
 
     def save_sch_sheet(self, hash, name_sch):
         # Load the schematic. Really worth?
@@ -173,21 +173,21 @@ class KiRiOptions(VariantOptions):
                     sheet_path = GS.sch_basename+'-'+sheet_path[1:]
                 f.write(f'{no_ext}|{rel_name}||{instance_name}|{sheet_path}\n')
 
-    def create_pages(self, f):
-        template = self.load_html_template('pages', 11)
-        for i, s in enumerate(sorted(GS.sch.all_sheets, key=lambda s: s.sheet_path_h)):
-            fname = s.fname
-            checked = 'checked="checked"' if i == 0 else ''
-            base_name = os.path.basename(fname)
-            rel_name = os.path.relpath(fname, GS.sch_dir)
-            if s.sheet_path_h == '/':
-                instance_name = sheet_path = GS.sch_basename
-            else:
-                instance_name = os.path.basename(s.sheet_path_h)
-                sheet_path = s.sheet_path_h.replace('/', '-')
-                sheet_path = GS.sch_basename+'-'+sheet_path[1:]
-            f.write(template.format(i=i+1, page_name=instance_name, page_filename_path=rel_name,
-                                    page_filename=base_name, checked=checked))
+#     def create_pages(self, f):
+#         template = self.load_html_template('pages', 11)
+#         for i, s in enumerate(sorted(GS.sch.all_sheets, key=lambda s: s.sheet_path_h)):
+#             fname = s.fname
+#             checked = 'checked="checked"' if i == 0 else ''
+#             base_name = os.path.basename(fname)
+#             rel_name = os.path.relpath(fname, GS.sch_dir)
+#             if s.sheet_path_h == '/':
+#                 instance_name = sheet_path = GS.sch_basename
+#             else:
+#                 instance_name = os.path.basename(s.sheet_path_h)
+#                 sheet_path = s.sheet_path_h.replace('/', '-')
+#                 sheet_path = GS.sch_basename+'-'+sheet_path[1:]
+#             f.write(template.format(i=i+1, page_name=instance_name, page_filename_path=rel_name,
+#                                     page_filename=base_name, checked=checked))
 
     def load_html_template(self, type, tabs):
         """ Load a template used to generate an HTML section.
