@@ -22,7 +22,7 @@ Dependencies:
 import datetime
 import pwd
 import os
-from shutil import copy2
+from shutil import copy2, rmtree
 from subprocess import CalledProcessError
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
@@ -292,9 +292,12 @@ class KiRiOptions(VariantOptions):
             try:
                 for h in hashes:
                     hash = h[0]
-                    if self.keep_generated and os.path.isdir(os.path.join(self.cache_dir, hash[:7])):
+                    dst_dir = os.path.join(self.cache_dir, hash[:7])
+                    already_generated = os.path.isdir(dst_dir)
+                    if self.keep_generated and already_generated:
                         logger.debug(f'- Images for {hash} already generated')
                         continue
+                    rmtree(dst_dir)
                     git_tmp_wd = mkdtemp()
                     logger.debug('Checking out '+hash+' to '+git_tmp_wd)
                     self.run_git(['worktree', 'add', git_tmp_wd, hash])
@@ -317,10 +320,16 @@ class KiRiOptions(VariantOptions):
             pcb_dirty = self.git_dirty(GS.pcb_file)
             if sch_dirty or pcb_dirty:
                 # Include the current files
-                name_sch = self.do_cache(GS.sch_file, GS.sch_dir, HASH_LOCAL)
-                self.save_sch_sheet(HASH_LOCAL, name_sch)
-                self.do_cache(GS.pcb_file, GS.pcb_dir, HASH_LOCAL)
-                self.save_pcb_layers(HASH_LOCAL)
+                dst_dir = os.path.join(self.cache_dir, HASH_LOCAL)
+                already_generated = os.path.isdir(dst_dir)
+                if self.keep_generated and already_generated:
+                    logger.debug(f'- Images for {HASH_LOCAL} already generated')
+                else:
+                    rmtree(dst_dir)
+                    name_sch = self.do_cache(GS.sch_file, GS.sch_dir, HASH_LOCAL)
+                    self.save_sch_sheet(HASH_LOCAL, name_sch)
+                    self.do_cache(GS.pcb_file, GS.pcb_dir, HASH_LOCAL)
+                    self.save_pcb_layers(HASH_LOCAL)
                 hashes.insert(0, (HASH_LOCAL, datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S'), get_cur_user(),
                               'Local changes not committed'))
                 if pcb_dirty:
