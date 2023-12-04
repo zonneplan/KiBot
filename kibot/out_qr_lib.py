@@ -227,7 +227,16 @@ class QR_LibOptions(BaseOptions):
         mod.append([Symbol('layer'), Symbol(qr.layer)])
         mod.append([Symbol('tedit'), 0])
         mod.append(Sep())
-        mod.append([Symbol('attr'), Symbol('virtual')])
+        attrs = [Symbol('attr')]
+        if not GS.ki6:
+            # KiCad 5
+            attrs.append(Symbol('virtual'))
+        else:
+            attrs.append(Symbol('exclude_from_pos_files'))
+            attrs.append(Symbol('exclude_from_bom'))
+            if GS.ki7:
+                attrs.append(Symbol('allow_missing_courtyard'))
+        mod.append(attrs)
         mod.append(Sep())
         mod.append(self.fp_field(center, 'reference', self.reference+'***', qr.layer, 0))
         mod.append(Sep())
@@ -309,6 +318,9 @@ class QR_LibOptions(BaseOptions):
             sym.append(Sep())
             sym.append(self.sym_field(center, 'qr_text', qr._text_sch, 8))
             sym.append(Sep())
+            if GS.ki7:
+                sym.append(self.sym_field(center, 'Sim.Enable', "0", 9))
+                sym.append(Sep())
             sym.extend(self.qr_draw_sym(size, size_rect, center, qrc))
             lib.append(sym)
             lib.append(Sep())
