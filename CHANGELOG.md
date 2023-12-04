@@ -80,6 +80,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - With a navigation side bar
 - Variants and filters:
   - Components only in the PCB are now processed
+- QR Lib:
+  - Footprints: now they are flagged with exclude from BoM and Pos, also
+    with no court yard requirements for KiCad 7
+  - Symbol: Excluded from simulation for KiCad 7
 
 ### Fixed
 - Schematics: problems with deep nested and recycled sheets (#520)
