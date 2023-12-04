@@ -111,6 +111,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Copy Files:
   - Warnings when using both, the STEP and WRL model, of the same component
   - Fail to detect 3D models subdirs when running alone
+- QR Lib:
+  - When used from the preflight the name of the file changed to the name of a
+    temporal, generating problems with the plot outputs, like pcb_print
 
 
 ## [1.6.3] - 2023-06-26

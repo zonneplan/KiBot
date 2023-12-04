@@ -413,6 +413,8 @@ class QR_LibOptions(BaseOptions):
                     with open(prl_name, 'rt') as f:
                         prl = f.read()
             GS.board.Save(GS.pcb_file)
+            # After saving the file the name isn't changed, we must force it!!!
+            GS.board.SetFileName(GS.pcb_file)
             if prl:
                 with open(prl_name, 'wt') as f:
                     f.write(prl)
