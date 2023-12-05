@@ -243,17 +243,29 @@ class GS(object):
 
     @staticmethod
     def read_pro():
-        if GS.pro_file:
-            # Note: We use binary mode to preserve the original end of lines
-            # Otherwise git could see changes in the file
-            with open(GS.pro_file, 'rb') as f:
-                return f.read()
+        if not GS.pro_file:
+            return None
+        # Note: We use binary mode to preserve the original end of lines
+        # Otherwise git could see changes in the file
+        with open(GS.pro_file, 'rb') as f:
+            pro = f.read()
+        prl_name = GS.pro_file[:-3]+'prl'
+        prl = None
+        if os.path.isfile(prl_name):
+            with open(prl_name, 'rb') as f:
+                prl = f.read()
+        return (pro, prl)
 
     @staticmethod
-    def write_pro(prj):
-        if GS.pro_file and prj:
-            with open(GS.pro_file, 'wb') as f:
-                f.write(prj)
+    def write_pro(data):
+        if not GS.pro_file or data is None:
+            return
+        with open(GS.pro_file, 'wb') as f:
+            f.write(data[0])
+        if data[1] is None:
+            return
+        with open(GS.pro_file[:-3]+'prl', 'wb') as f:
+            f.write(data[1])
 
     @staticmethod
     def load_sch_title_block():

@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `layer_defaults` to specify the default suffix and description. (#504)
   - `include_components_from_pcb` to disable the new behavior that includes
     components from the PCB in the filter/variants processing
+  - `restore_project` now also restores the PRL
 - Schematic format:
   - Support for *unit names* (#513)
 - Internal templates:
