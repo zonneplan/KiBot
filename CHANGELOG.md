@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.4] - UNRELEASED
 ### Added
+- General:
+  - Operations that copies the project now also copies the PRL
 - Command line:
   - `--help-list-offsets` to list footprint offsets (JLCPCB)
   - `--help-list-rotations` to list footprint rotations (JLCPCB)

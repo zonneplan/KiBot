@@ -483,9 +483,17 @@ class GS(object):
             return None
         pro_copy = new_pcb_name.replace('.kicad_pcb', GS.pro_ext)
         if not dry:
-            logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
+            logger.debug(f'Copying project `{pro_name}` to `{pro_copy}`')
             copy2(pro_name, pro_copy)
-        return pro_copy
+        # Also copy the PRL
+        prl_name = pro_name[:-3]+'prl'
+        prl_copy = None
+        if os.path.isfile(prl_name):
+            prl_copy = pro_copy[:-3]+'prl'
+            if not dry:
+                logger.debug(f'Copying project local settings `{prl_name}` to `{prl_copy}`')
+                copy2(prl_name, prl_copy)
+        return pro_copy, prl_copy
 
     @staticmethod
     def copy_project_sch(sch_dir):

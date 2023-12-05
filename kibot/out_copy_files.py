@@ -232,11 +232,13 @@ class Copy_FilesOptions(Base3DOptions):
                     self.add_sch_files(extra_files, dest_dir)
             elif mode_project:
                 self.add_sch_files(extra_files, dest_dir)
-            prj_name = GS.copy_project(fname, dry)
+            prj_name, prl_name = GS.copy_project(fname, dry)
             # Extra files that we are generating
             extra_files.append(fname)
             if prj_name:
                 extra_files.append(prj_name)
+            if prl_name:
+                extra_files.append(prl_name)
             if mode_project:
                 extra_files += self.copy_footprints(f.dest, dry)
                 extra_files += self.copy_symbols(f.dest, dry)
