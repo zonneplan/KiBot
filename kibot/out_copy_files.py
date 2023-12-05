@@ -178,6 +178,9 @@ class Copy_FilesOptions(Base3DOptions):
         else:
             # Create the libs
             for lib, comps in libs.items():
+                if lib == 'locally_edited':
+                    # Not from a lib, just a copy inside the SCH
+                    continue
                 GS.sch.write_lib(out_lib_base, lib, comps)
                 new_alias = LibAlias()
                 new_alias.name = lib
