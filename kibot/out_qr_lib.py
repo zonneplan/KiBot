@@ -398,6 +398,8 @@ class QR_LibOptions(BaseOptions):
                 f.write(dumps(separated))
                 f.write('\n')
                 tmp_pcb = f.name
+            # Also copy the project
+            GS.copy_project(tmp_pcb)
             # Reload it
             logger.debug('- Loading the temporal PCB')
             load_board(tmp_pcb, forced=True)
@@ -405,19 +407,9 @@ class QR_LibOptions(BaseOptions):
             logger.debug('- Replacing the old PCB')
             os.remove(tmp_pcb)
             GS.make_bkp(GS.pcb_file)
-            prl = None
-            if GS.ki6:
-                # KiCad 6 is destroying the PRL ...
-                prl_name = GS.pcb_no_ext+'.kicad_prl'
-                if os.path.isfile(prl_name):
-                    with open(prl_name, 'rt') as f:
-                        prl = f.read()
             GS.board.Save(GS.pcb_file)
             # After saving the file the name isn't changed, we must force it!!!
             GS.board.SetFileName(GS.pcb_file)
-            if prl:
-                with open(prl_name, 'wt') as f:
-                    f.write(prl)
 
     def update_symbol(self, name, c_name, sexp, qr):
         logger.debug('- Updating QR symbol: '+name)

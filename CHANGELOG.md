@@ -117,6 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - QR Lib:
   - When used from the preflight the name of the file changed to the name of a
     temporal, generating problems with the plot outputs, like pcb_print
+  - Project options not preserved, i.e. set_text_variables failing
 
 
 ## [1.6.3] - 2023-06-26
