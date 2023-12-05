@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.4] - UNRELEASED
 ### Added
+- General:
+  - Operations that copies the project now also copies the PRL
 - Command line:
   - `--help-list-offsets` to list footprint offsets (JLCPCB)
   - `--help-list-rotations` to list footprint rotations (JLCPCB)
@@ -16,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `layer_defaults` to specify the default suffix and description. (#504)
   - `include_components_from_pcb` to disable the new behavior that includes
     components from the PCB in the filter/variants processing
+  - `restore_project` now also restores the PRL
 - Schematic format:
   - Support for *unit names* (#513)
 - Internal templates:
@@ -114,6 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - QR Lib:
   - When used from the preflight the name of the file changed to the name of a
     temporal, generating problems with the plot outputs, like pcb_print
+  - Project options not preserved, i.e. set_text_variables failing
 
 
 ## [1.6.3] - 2023-06-26

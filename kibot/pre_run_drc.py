@@ -30,7 +30,8 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
         If you need to check the parity use the `update_xml` preflight.
         KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
-        This will change in the future """
+        This will change in the future.
+        If you use DRC exclusions please consult the `drc_exclusions_workaround` global option """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

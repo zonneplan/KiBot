@@ -243,17 +243,29 @@ class GS(object):
 
     @staticmethod
     def read_pro():
-        if GS.pro_file:
-            # Note: We use binary mode to preserve the original end of lines
-            # Otherwise git could see changes in the file
-            with open(GS.pro_file, 'rb') as f:
-                return f.read()
+        if not GS.pro_file:
+            return None
+        # Note: We use binary mode to preserve the original end of lines
+        # Otherwise git could see changes in the file
+        with open(GS.pro_file, 'rb') as f:
+            pro = f.read()
+        prl_name = GS.pro_file[:-3]+'prl'
+        prl = None
+        if os.path.isfile(prl_name):
+            with open(prl_name, 'rb') as f:
+                prl = f.read()
+        return (pro, prl)
 
     @staticmethod
-    def write_pro(prj):
-        if GS.pro_file and prj:
-            with open(GS.pro_file, 'wb') as f:
-                f.write(prj)
+    def write_pro(data):
+        if not GS.pro_file or data is None:
+            return
+        with open(GS.pro_file, 'wb') as f:
+            f.write(data[0])
+        if data[1] is None:
+            return
+        with open(GS.pro_file[:-3]+'prl', 'wb') as f:
+            f.write(data[1])
 
     @staticmethod
     def load_sch_title_block():
@@ -468,12 +480,20 @@ class GS(object):
     def copy_project(new_pcb_name, dry=False):
         pro_name = GS.pro_file
         if pro_name is None or not os.path.isfile(pro_name):
-            return None
+            return None, None
         pro_copy = new_pcb_name.replace('.kicad_pcb', GS.pro_ext)
         if not dry:
-            logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
+            logger.debug(f'Copying project `{pro_name}` to `{pro_copy}`')
             copy2(pro_name, pro_copy)
-        return pro_copy
+        # Also copy the PRL
+        prl_name = pro_name[:-3]+'prl'
+        prl_copy = None
+        if os.path.isfile(prl_name):
+            prl_copy = pro_copy[:-3]+'prl'
+            if not dry:
+                logger.debug(f'Copying project local settings `{prl_name}` to `{prl_copy}`')
+                copy2(prl_name, prl_copy)
+        return pro_copy, prl_copy
 
     @staticmethod
     def copy_project_sch(sch_dir):

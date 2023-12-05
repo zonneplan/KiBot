@@ -171,6 +171,7 @@
          which is used by the KiBot docker images, on other OSs *your mileage may vary*.
       -  ``restore_project`` :index:`: <pair: global options; restore_project>` [boolean=false] Restore the KiCad project after execution.
          Note that this option will undo operations like `set_text_variables`.
+         Starting with 1.6.4 it also restores the PRL (Project Local Settings) file.
       -  ``set_text_variables_before_output`` :index:`: <pair: global options; set_text_variables_before_output>` [boolean=false] Run the `set_text_variables` preflight before running each output that involves variants.
          This can be used when a text variable uses the variant and you want to create more than
          one variant in the same run. Note that this could be slow because it forces a board

@@ -84,7 +84,8 @@ Supported preflights
    Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported. |br|
    If you need to check the parity use the `update_xml` preflight. |br|
    KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot. |br|
-   This will change in the future.
+   This will change in the future. |br|
+   If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
 -  **run_erc**: :index:`: <pair: preflights; run_erc>` [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
    The report file name is controlled by the global output pattern (%i=erc %x=txt).
 -  **sch_replace**: :index:`: <pair: preflights; sch_replace>` [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
