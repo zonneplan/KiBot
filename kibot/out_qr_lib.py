@@ -177,6 +177,7 @@ class QR_LibOptions(BaseOptions):
 
     def qr_draw_fp(self, size, size_rect, center, qrc, negative, layer, do_sep=True):
         mod = []
+        is_bottom = layer[0] == 'B'
         for y in range(size):
             for x in range(size):
                 if qrc.get_module(x-negative, y-negative) ^ negative:
@@ -186,6 +187,9 @@ class QR_LibOptions(BaseOptions):
                     y_pos2 = round(y_pos+size_rect, 2)
                     rect = [Symbol('fp_poly')]  # fp_rect not in v5
                     pts = [Symbol('pts')]
+                    if is_bottom:
+                        y_pos = -y_pos
+                        y_pos2 = -y_pos2
                     pts.append([Symbol('xy'), x_pos, y_pos])
                     pts.append([Symbol('xy'), x_pos, y_pos2])
                     pts.append([Symbol('xy'), x_pos2, y_pos2])
