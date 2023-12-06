@@ -604,7 +604,7 @@ class KiConf(object):
                     dest = os.path.join(dest_dir, key+'.kicad_wks')
                     logger.debug('Copying {} -> {}'.format(fname, dest))
                     copy2(fname, dest)
-                    data[key]['page_layout_descr_file'] = dest
+                    data[key]['page_layout_descr_file'] = key+'.kicad_wks'
                     return dest
                 else:
                     logger.error('Missing page layout file: '+fname)
@@ -626,10 +626,10 @@ class KiConf(object):
         else:
             aux = data.get('schematic', None)
             if aux:
-                layouts[0] = KiConf.expand_env(aux.get('page_layout_descr_file', None))
+                layouts[0] = KiConf.expand_env(aux.get('page_layout_descr_file', None), ref_dir=dest_dir)
             aux = data.get('pcbnew', None)
             if aux:
-                layouts[1] = KiConf.expand_env(aux.get('page_layout_descr_file', None))
+                layouts[1] = KiConf.expand_env(aux.get('page_layout_descr_file', None), ref_dir=dest_dir)
         return layouts
 
     def fix_page_layout_k5(project, dry):
@@ -655,13 +655,14 @@ class KiConf(object):
                             layouts[is_pcb_new] = dest
                         else:
                             layouts[is_pcb_new] = fname
+                        dest = str(order)+'.kicad_wks'
                         order = order+1
                     else:
                         logger.error('Missing page layout file: '+fname)
                         exit(MISSING_WKS)
                 else:
                     dest = ''
-                lns[c] = 'PageLayoutDescrFile='+dest+'\n'
+                lns[c] = f'PageLayoutDescrFile={dest}\n'
         if not dry:
             with open(project, 'wt') as f:
                 lns = f.writelines(lns)
