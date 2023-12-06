@@ -1634,6 +1634,30 @@ outputs:
       # [string='default'] Path to a template directory or a name of built-in one.
       # See KiKit's doc/present.md for template specification
       template: 'default'
+  # KiRi:
+  # Recursive git submodules aren't supported (submodules inside submodules)
+  - name: 'kiri_example'
+    comment: 'Generates a PDF with the differences between two PCBs or schematics.'
+    type: 'kiri'
+    dir: 'Example/kiri_dir'
+    options:
+      # [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
+      # To use the KiCad 6 default colors select `_builtin_default`.
+      # Usually user colors are stored as `user`, but you can give it another name
+      color_theme: '_builtin_classic'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=false] Avoid PCB and SCH images regeneration. Useful for incremental usage
+      keep_generated: false
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options
+      output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string=''] Board variant to apply
+      variant: ''
+    layers: all
   # Navigate Results:
   - name: 'navigate_results_example'
     comment: 'Generates a web page to navigate the generated outputs'

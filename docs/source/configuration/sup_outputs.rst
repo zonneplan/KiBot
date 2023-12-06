@@ -31,6 +31,7 @@ Notes:
    outputs/kibom
    outputs/kicost
    outputs/kikit_present
+   outputs/kiri
    outputs/navigate_results
    outputs/netlist
    outputs/panelize

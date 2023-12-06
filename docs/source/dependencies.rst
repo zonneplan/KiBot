@@ -19,6 +19,7 @@
 
    -  Compare schematics for `diff` (v2.2.0)
    -  Show KiAuto installation information for `info` (v2.0.0)
+   -  Compare schematics for `kiri` (v2.2.0)
    -  Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
 `KiKit <https://github.com/INTI-CMNB/KiKit>`__ :index:`: <pair: dependency; KiKit>`  v1.3.0.4 |image11| |Auto-download|
@@ -27,42 +28,42 @@
 -  Optional to separate multiboard projects for general use
 -  Note: Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest
 
-`LXML <https://pypi.org/project/LXML/>`__ :index:`: <pair: dependency; LXML>`  |image12| |image13| |Auto-download|
+`KiCad PCB/SCH Diff <https://github.com/INTI-CMNB/KiDiff>`__ :index:`: <pair: dependency; KiCad PCB/SCH Diff>`  v2.5.0 |image12| |Auto-download|
+
+-  Mandatory for: `diff`, `kiri`
+
+`LXML <https://pypi.org/project/LXML/>`__ :index:`: <pair: dependency; LXML>`  |image13| |image14| |Auto-download|
 
 -  Mandatory for: `pcb_print`, `pcbdraw`
 
-`OpenSCAD <https://openscad.org/>`__ :index:`: <pair: dependency; OpenSCAD>`  |image14| |image15|
+`OpenSCAD <https://openscad.org/>`__ :index:`: <pair: dependency; OpenSCAD>`  |image15| |image16|
 
 -  Mandatory for: `stencil_3d`, `stencil_for_jig`
 
-`Xvfb <https://www.x.org>`__ :index:`: <pair: dependency; Xvfb>`  |image16| |image17|
+`Xvfb <https://www.x.org>`__ :index:`: <pair: dependency; Xvfb>`  |image17| |image18|
 
 -  Mandatory for: `stencil_3d`, `stencil_for_jig`
 
-`Xvfbwrapper <https://pypi.org/project/Xvfbwrapper/>`__ :index:`: <pair: dependency; Xvfbwrapper>`  |image18| |image19| |Auto-download|
+`Xvfbwrapper <https://pypi.org/project/Xvfbwrapper/>`__ :index:`: <pair: dependency; Xvfbwrapper>`  |image19| |image20| |Auto-download|
 
 -  Mandatory for: `stencil_3d`, `stencil_for_jig`
 
-`KiCost <https://github.com/hildogjr/KiCost>`__ :index:`: <pair: dependency; KiCost>`  v1.1.8 |image20| |Auto-download|
+`KiCost <https://github.com/hildogjr/KiCost>`__ :index:`: <pair: dependency; KiCost>`  v1.1.8 |image21| |Auto-download|
 
 -  Mandatory for `kicost`
 -  Optional to find components costs and specs for `bom`
 
-`Blender <https://www.blender.org/>`__ :index:`: <pair: dependency; Blender>`  v3.4.0 |image21| |image22|
+`Blender <https://www.blender.org/>`__ :index:`: <pair: dependency; Blender>`  v3.4.0 |image22| |image23|
 
 -  Mandatory for `blender_export`
 
-`Interactive HTML BoM <https://github.com/INTI-CMNB/InteractiveHtmlBom>`__ :index:`: <pair: dependency; Interactive HTML BoM>`  v2.7.0 |image23| |Auto-download|
+`Interactive HTML BoM <https://github.com/INTI-CMNB/InteractiveHtmlBom>`__ :index:`: <pair: dependency; Interactive HTML BoM>`  v2.7.0 |image24| |Auto-download|
 
 -  Mandatory for `ibom`
 
-`KiBoM <https://github.com/INTI-CMNB/KiBoM>`__ :index:`: <pair: dependency; KiBoM>`  v1.8.0 |image24| |Auto-download|
+`KiBoM <https://github.com/INTI-CMNB/KiBoM>`__ :index:`: <pair: dependency; KiBoM>`  v1.8.0 |image25| |Auto-download|
 
 -  Mandatory for `kibom`
-
-`KiCad PCB/SCH Diff <https://github.com/INTI-CMNB/KiDiff>`__ :index:`: <pair: dependency; KiCad PCB/SCH Diff>`  v2.4.4 |image25| |Auto-download|
-
--  Mandatory for `diff`
 
 `markdown2 <https://pypi.org/project/markdown2/>`__ :index:`: <pair: dependency; markdown2>`  |image26| |image27| |image28|
 
@@ -86,6 +87,7 @@
 
    -  Compare with files in the repo for `diff`
    -  Find commit hash and/or date for `kikit_present`
+   -  Compare with files in the repo for `kiri`
    -  Find commit hash and/or date for `pcb_replace`
    -  Find commit hash and/or date for `sch_replace`
    -  Find commit hash and/or date for `set_text_variables`
@@ -165,34 +167,34 @@
    :target: https://github.com/INTI-CMNB/KiAuto
 .. |image11| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://github.com/INTI-CMNB/KiKit
-.. |image12| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
-   :target: https://pypi.org/project/LXML/
-.. |image13| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
-   :target: https://packages.debian.org/stable/python3-lxml
-.. |image14| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
-   :target: https://openscad.org/
-.. |image15| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
-   :target: https://packages.debian.org/stable/openscad
-.. |image16| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
-   :target: https://www.x.org
-.. |image17| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
-   :target: https://packages.debian.org/stable/xvfb
-.. |image18| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
-   :target: https://pypi.org/project/Xvfbwrapper/
-.. |image19| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
-   :target: https://packages.debian.org/stable/python3-xvfbwrapper
-.. |image20| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
-   :target: https://github.com/hildogjr/KiCost
-.. |image21| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
-   :target: https://www.blender.org/
-.. |image22| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
-   :target: https://packages.debian.org/stable/blender
-.. |image23| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
-   :target: https://github.com/INTI-CMNB/InteractiveHtmlBom
-.. |image24| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
-   :target: https://github.com/INTI-CMNB/KiBoM
-.. |image25| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image12| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://github.com/INTI-CMNB/KiDiff
+.. |image13| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
+   :target: https://pypi.org/project/LXML/
+.. |image14| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+   :target: https://packages.debian.org/stable/python3-lxml
+.. |image15| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+   :target: https://openscad.org/
+.. |image16| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+   :target: https://packages.debian.org/stable/openscad
+.. |image17| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+   :target: https://www.x.org
+.. |image18| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+   :target: https://packages.debian.org/stable/xvfb
+.. |image19| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
+   :target: https://pypi.org/project/Xvfbwrapper/
+.. |image20| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+   :target: https://packages.debian.org/stable/python3-xvfbwrapper
+.. |image21| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+   :target: https://github.com/hildogjr/KiCost
+.. |image22| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+   :target: https://www.blender.org/
+.. |image23| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+   :target: https://packages.debian.org/stable/blender
+.. |image24| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+   :target: https://github.com/INTI-CMNB/InteractiveHtmlBom
+.. |image25| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+   :target: https://github.com/INTI-CMNB/KiBoM
 .. |image26| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
    :target: https://pypi.org/project/markdown2/
 .. |image27| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png
