@@ -174,7 +174,8 @@ class Copy_FilesOptions(Base3DOptions):
         extra_files.append(table_fname)
         if dry:
             for lib in libs.keys():
-                extra_files.append(os.path.join(out_lib_base, lib+'.kicad_sym'))
+                if lib != 'locally_edited':
+                    extra_files.append(os.path.join(out_lib_base, lib+'.kicad_sym'))
         else:
             # Create the libs
             for lib, comps in libs.items():
