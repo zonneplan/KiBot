@@ -161,7 +161,7 @@ class KiRiOptions(VariantOptions):
         sch = load_any_sch(name_sch, GS.sch_basename)
         with open(os.path.join(self.cache_dir, hash[:7], '_KIRI_', 'sch_sheets'), 'wt') as f:
             base_dir = os.path.dirname(name_sch)
-            for s in sch.all_sheets:
+            for s in sorted(sch.all_sheets, key=lambda x: x.sheet_path_h):
                 fname = s.fname
                 no_ext = os.path.splitext(os.path.basename(fname))[0]
                 rel_name = os.path.relpath(fname, base_dir)
@@ -297,7 +297,8 @@ class KiRiOptions(VariantOptions):
                     if self.keep_generated and already_generated:
                         logger.debug(f'- Images for {hash} already generated')
                         continue
-                    rmtree(dst_dir)
+                    if already_generated:
+                        rmtree(dst_dir)
                     git_tmp_wd = mkdtemp()
                     logger.debug('Checking out '+hash+' to '+git_tmp_wd)
                     self.run_git(['worktree', 'add', git_tmp_wd, hash])
@@ -325,7 +326,8 @@ class KiRiOptions(VariantOptions):
                 if self.keep_generated and already_generated:
                     logger.debug(f'- Images for {HASH_LOCAL} already generated')
                 else:
-                    rmtree(dst_dir)
+                    if already_generated:
+                        rmtree(dst_dir)
                     name_sch = self.do_cache(GS.sch_file, GS.sch_dir, HASH_LOCAL)
                     self.save_sch_sheet(HASH_LOCAL, name_sch)
                     self.do_cache(GS.pcb_file, GS.pcb_dir, HASH_LOCAL)
