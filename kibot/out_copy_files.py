@@ -174,7 +174,8 @@ class Copy_FilesOptions(Base3DOptions):
         extra_files.append(table_fname)
         if dry:
             for lib in libs.keys():
-                extra_files.append(os.path.join(out_lib_base, lib+'.kicad_sym'))
+                if lib != 'locally_edited':
+                    extra_files.append(os.path.join(out_lib_base, lib+'.kicad_sym'))
         else:
             # Create the libs
             for lib, comps in libs.items():
@@ -235,13 +236,18 @@ class Copy_FilesOptions(Base3DOptions):
                     self.add_sch_files(extra_files, dest_dir)
             elif mode_project:
                 self.add_sch_files(extra_files, dest_dir)
-            prj_name, prl_name = GS.copy_project(fname, dry)
+            prj_name, prl_name, dru_name = GS.copy_project(fname, dry)
             # Extra files that we are generating
             extra_files.append(fname)
             if prj_name:
                 extra_files.append(prj_name)
             if prl_name:
                 extra_files.append(prl_name)
+            if dru_name:
+                extra_files.append(dru_name)
+            # Worksheet
+            wks = GS.fix_page_layout(prj_name, dry=dry)
+            extra_files += [w for w in wks if w is not None]
             if mode_project:
                 extra_files += self.copy_footprints(f.dest, dry)
                 extra_files += self.copy_symbols(f.dest, dry)

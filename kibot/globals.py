@@ -239,7 +239,7 @@ class Globals(FiltersOptions):
             self.restore_project = False
             """ Restore the KiCad project after execution.
                 Note that this option will undo operations like `set_text_variables`.
-                Starting with 1.6.4 it also restores the PRL (Project Local Settings) file """
+                Starting with 1.6.4 it also restores the PRL (Project Local Settings) and DRU (Design RUles) files """
             self.set_text_variables_before_output = False
             """ Run the `set_text_variables` preflight before running each output that involves variants.
                 This can be used when a text variable uses the variant and you want to create more than

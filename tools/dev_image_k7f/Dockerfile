@@ -1,6 +1,6 @@
 FROM ghcr.io/inti-cmnb/kicad_auto_test:ki7
 MAINTAINER Salvador E. Tropea <stropea@inti.gob.ar>
-LABEL Description="KiCad 6 with KiBot and other automation scripts"
+LABEL Description="KiCad 7 with KiBot and other automation scripts"
 
 RUN     dpkg --remove kicost kibot && \
 	apt-get update && \
@@ -20,3 +20,15 @@ RUN     dpkg --remove kicost kibot && \
 # 	unzip pp.zip && \
 # 	pip3 install --break-system-packages KiAuto-master/ && \
 # 	rm -rf KiAuto-master/ pp.zip && \
+
+ARG repo_hash
+ENV KIBOT_REPO_HASH=$repo_hash
+ENV KICAD_AUTO_FULL=1
+
+RUN     kibot --version | sed 's/.* \([0-9]\+\.[0-9]\+\.[0-9]\+\) .*/\1/' | tr -d '\n' > /etc/kiauto_tag && \
+	echo -n -${KIBOT_REPO_HASH}_k >> /etc/kiauto_tag && \
+	kicad_version.py >> /etc/kiauto_tag && \
+	echo -n _d >> /etc/kiauto_tag && \
+	cat /etc/debian_version | tr -d '\n' >> /etc/kiauto_tag && \
+	echo -n _b >> /etc/kiauto_tag && \
+	blender --version | head -n 1 | tr -d 'Blender ' >> /etc/kiauto_tag

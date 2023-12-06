@@ -930,7 +930,7 @@ class VariantOptions(BaseOptions):
         fname = os.path.join(pcb_dir, basename+'.kicad_pcb')
         logger.debug('Storing modified PCB to `{}`'.format(fname))
         GS.board.Save(fname)
-        pro_name, _ = GS.copy_project(fname)
+        pro_name, _, _ = GS.copy_project(fname)
         KiConf.fix_page_layout(pro_name)
         return fname, pcb_dir
 

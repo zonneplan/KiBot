@@ -1,8 +1,8 @@
 #!/bin/sh
 set -e
-docker build -f Dockerfile -t ghcr.io/inti-cmnb/kicad5_auto_full:dev .
-TG1=`docker run --rm ghcr.io/inti-cmnb/kicad5_auto_full:dev kibot --version | sed 's/.* \([0-9]\+\.[0-9]\+\.[0-9]\+\) .*/\1/' | tr -d '\n'`
 HASH=`git log --pretty=format:%h -1 | tr -d '\n'`
+docker build -f Dockerfile --build-arg repo_hash=${HASH} -t ghcr.io/inti-cmnb/kicad5_auto_full:dev .
+TG1=`docker run --rm ghcr.io/inti-cmnb/kicad5_auto_full:dev kibot --version | sed 's/.* \([0-9]\+\.[0-9]\+\.[0-9]\+\) .*/\1/' | tr -d '\n'`
 TG2=k`docker run --rm ghcr.io/inti-cmnb/kicad5_auto_full:dev kicad_version.py`
 TG3=d`docker run --rm ghcr.io/inti-cmnb/kicad5_auto_full:dev cat /etc/debian_version | tr -d '\n'`
 TG4=b`docker run --rm ghcr.io/inti-cmnb/kicad5_auto_full:dev /bin/bash -c "blender --version | head -n 1 | tr -d 'Blender '"`
