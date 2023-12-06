@@ -254,7 +254,12 @@ class GS(object):
         if os.path.isfile(prl_name):
             with open(prl_name, 'rb') as f:
                 prl = f.read()
-        return (pro, prl)
+        dru_name = GS.pro_file[:-3]+'dru'
+        dru = None
+        if os.path.isfile(dru_name):
+            with open(dru_name, 'rb') as f:
+                dru = f.read()
+        return (pro, prl, dru)
 
     @staticmethod
     def write_pro(data):
@@ -262,10 +267,12 @@ class GS(object):
             return
         with open(GS.pro_file, 'wb') as f:
             f.write(data[0])
-        if data[1] is None:
-            return
-        with open(GS.pro_file[:-3]+'prl', 'wb') as f:
-            f.write(data[1])
+        if data[1] is not None:
+            with open(GS.pro_file[:-3]+'prl', 'wb') as f:
+                f.write(data[1])
+        if data[2] is not None:
+            with open(GS.pro_file[:-3]+'dru', 'wb') as f:
+                f.write(data[2])
 
     @staticmethod
     def load_sch_title_block():
@@ -480,7 +487,7 @@ class GS(object):
     def copy_project(new_pcb_name, dry=False):
         pro_name = GS.pro_file
         if pro_name is None or not os.path.isfile(pro_name):
-            return None, None
+            return None, None, None
         pro_copy = new_pcb_name.replace('.kicad_pcb', GS.pro_ext)
         if not dry:
             logger.debug(f'Copying project `{pro_name}` to `{pro_copy}`')
@@ -493,7 +500,15 @@ class GS(object):
             if not dry:
                 logger.debug(f'Copying project local settings `{prl_name}` to `{prl_copy}`')
                 copy2(prl_name, prl_copy)
-        return pro_copy, prl_copy
+        # ... and the DRU
+        dru_name = pro_name[:-3]+'dru'
+        dru_copy = None
+        if os.path.isfile(dru_name):
+            dru_copy = pro_copy[:-3]+'dru'
+            if not dry:
+                logger.debug(f'Copying project custom design rules `{dru_name}` to `{dru_copy}`')
+                copy2(dru_name, dru_copy)
+        return pro_copy, prl_copy, dru_copy
 
     @staticmethod
     def copy_project_sch(sch_dir):
