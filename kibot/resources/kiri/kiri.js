@@ -29,6 +29,9 @@ var selected_view = "schematic";
 
 var is_fullscreen = false;
 
+var sheet_pages_commit1 = [];
+var sheet_pages_commit2 = [];
+
 // =======================================
 // HANDLE SHORTCUTS
 // =======================================
@@ -661,8 +664,20 @@ function update_selected_page()
         commit2 = document.getElementById("diff-xlink-2-sch").href.baseVal.split("/")[1];
     }
 
-    var image_path_1 = "../" + commit1 + "/_KIRI_/sch/" + page_filename + ".svg";
-    var image_path_2 = "../" + commit2 + "/_KIRI_/sch/" + page_filename + ".svg";
+    var image_path_1;
+    var image_path_2;
+
+    if (sheet_pages_commit1.includes(page_filename)) {
+        image_path_1 = "../" + commit1 + "/_KIRI_/sch/" + page_filename + ".svg";
+    } else {
+        image_path_1 = "blank.svg";
+    }
+
+    if (sheet_pages_commit2.includes(page_filename)) {
+        image_path_2 = "../" + commit2 + "/_KIRI_/sch/" + page_filename + ".svg";
+    } else {
+        image_path_2 = "blank.svg";
+    }
 
     console.log("[SCH] page_filename =", page_filename);
     console.log("[SCH]  image_path_1 =", image_path_1);
@@ -745,6 +760,7 @@ function update_sheets_list(commit1, commit2) {
     for (const d of data1)
     {
         sheets.push(d);
+        sheet_pages_commit1.push(d.split("|")[4]);
     }
 
     for (const d of data2)
@@ -753,6 +769,7 @@ function update_sheets_list(commit1, commit2) {
         {
             sheets.push(d);
         }
+        sheet_pages_commit2.push(d.split("|")[4]);
     }
 
     sheets = Array.from(new Set(sheets));
