@@ -622,13 +622,8 @@ function loadFile(filePath) {
     return result;
 }
 
-function update_page()
+function update_selected_page()
 {
-    console.log("-----------------------------------------");
-
-    // Runs only when updating commits
-    update_sheets_list(commit1, commit2);
-
     var pages = $("#pages_list input:radio[name='pages']");
     var selected_page;
     var page_name;
@@ -650,7 +645,8 @@ function update_page()
     // TODO: instead of the first item by default, a better solution would change to the next inferior index
     // and keep decrementing until reaching a valid index
     } catch (error) {
-        previous_selected_page = current_selected_page;
+        previous_selected_page = 0; // current_selected_page;
+        console.log(current_selected_page)
         pages[0].checked = true;
         selected_page = pages.index(pages.filter(':checked'));
         page_name = pages[selected_page].id;
@@ -714,6 +710,15 @@ function update_page()
     update_fullscreen_label();
 }
 
+function update_page()
+{
+    console.log("-----------------------------------------");
+
+    // Runs only when updating commits
+    update_sheets_list(commit1, commit2);
+    update_selected_page();
+}
+
 function update_sheets_list(commit1, commit2) {
 
     // Get current selected page name
@@ -729,10 +734,11 @@ function update_sheets_list(commit1, commit2) {
         console.log("There isn't a sheet selected");
     }
 
+    // File = ../[COMMIT]/_KIRI_/sch_sheets
     // Data format: ID|LAYER
 
-    data1 = loadFile("../" + commit1 + "/_KIRI_/sch_sheets" + url_timestamp(commit1)).split("\n").filter((a) => a);
-    data2 = loadFile("../" + commit2 + "/_KIRI_/sch_sheets" + url_timestamp(commit2)).split("\n").filter((a) => a);
+    data1 = loadFile("../" + commit1 + "/_KIRI_/sch_sheets").split("\n").filter((a) => a);
+    data2 = loadFile("../" + commit2 + "/_KIRI_/sch_sheets").split("\n").filter((a) => a);
 
     var sheets = [];
 
@@ -751,8 +757,6 @@ function update_sheets_list(commit1, commit2) {
         }
     }
 
-    // sheets.sort();
-    // sheets = Array.from(new Set(sheets.sort()));
     sheets = Array.from(new Set(sheets));
 
     console.log("[SCH]  Sheets =", sheets.length);
@@ -764,8 +768,8 @@ function update_sheets_list(commit1, commit2) {
     for (const sheet of sheets)
     {
         var input_html = `
-        <input id="${sheet}" data-toggle="tooltip" title="${sheet}" type="radio" value="${sheet}" name="pages" onchange="update_page()">
-            <label for="${sheet}" data-toggle="tooltip" title="${sheet}" id="label-${sheet}" class="rounded text-sm-left list-group-item radio-box" onclick="update_page_onclick()" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        <input id="${sheet}" data-toggle="tooltip" title="${sheet}" type="radio" value="${sheet}" name="pages" onchange="update_selected_page()">
+            <label for="${sheet}" data-toggle="tooltip" title="${sheet}" id="label-${sheet}" class="rounded text-sm-left list-group-item radio-box" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                 <span data-toggle="tooltip" title="${sheet}" style="margin-left:0.5em; margin-right:0.1em;" class="iconify" data-icon="gridicons:pages" data-inline="false"></span>
                 ${sheet}
             </label>
