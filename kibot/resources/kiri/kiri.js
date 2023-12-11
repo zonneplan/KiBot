@@ -789,11 +789,22 @@ function update_sheets_list(commit1, commit2) {
         var splitted = d.split("|");
         var visible_sheet = splitted[3];
         var sheet = splitted[4];
+        var color_style;
+        in_c1 = sheet_pages_commit1.has(sheet);
+        in_c2 = sheet_pages_commit2.has(sheet);
+        if (in_c1 && in_c2) {
+            color_style = "normal_item";
+        } else if (in_c2) {
+            color_style = "removed_item";
+        } else {
+            color_style = "added_item";
+        }
+
         var input_html = `
         <input id="${sheet}" data-toggle="tooltip" title="${sheet}" type="radio" value="${sheet}" name="pages" onchange="update_selected_page()">
             <label for="${sheet}" data-toggle="tooltip" title="${sheet}" id="label-${sheet}" class="rounded text-sm-left list-group-item radio-box">
                 <span data-toggle="tooltip" title="${sheet}" class="iconify icon-sheet-page" data-icon="gridicons:pages" data-inline="false"></span>
-                ${visible_sheet}
+                <span class="${color_style}">${visible_sheet}</span>
             </label>
         </label>
         `;
@@ -925,12 +936,23 @@ function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer
         id_pad = pad(id, 2);
         layer_name = layer_names[0];
 
+        var color_style;
+        in_c1 = layers_commit1.has(id_pad);
+        in_c2 = layers_commit2.has(id_pad);
+        if (in_c1 && in_c2) {
+            color_style = "normal_item";
+        } else if (in_c2) {
+            color_style = "removed_item";
+        } else {
+            color_style = "added_item";
+        }
+
         var input_html = `
         <!-- Generated Layer ${id} -->
         <input  id="layer-${id_pad}" value="layer-${layer_names}" type="radio" name="layers" onchange="update_layer()">
         <label for="layer-${id_pad}" id="label-layer-${id_pad}" data-toggle="tooltip" title="${id}, ${layer_names}" class="rounded text-sm-left list-group-item radio-box" onclick="update_layer_onclick()">
             <span class="iconify layer_color_margin layer_color_${id}" data-icon="teenyicons-square-solid" data-inline="false"></span>
-            ${layer_names}
+            <span class="${color_style}">${layer_names}</span>
         </label>
         `;
 

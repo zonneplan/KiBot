@@ -64,6 +64,18 @@ html, body {
 	color: inherit;
 }
 
+.removed_item {
+	color: #FF0000;
+}
+
+.added_item {
+	color: #00FF00;
+}
+
+.normal_item {
+	color: #dbdbdb;
+}
+
 /* ==============================
    Scrollbar
    ==============================
