@@ -735,10 +735,10 @@ function update_sheets_list(commit1, commit2) {
     }
 
     // File = ../[COMMIT]/_KIRI_/sch_sheets
-    // Data format: ID|LAYER
+    // Data format: Name_without_extension|Relative_file_name|UUID|Instance_name|Sheet_Path_Name
 
-    data1 = loadFile("../" + commit1 + "/_KIRI_/sch_sheets").split("\n").filter((a) => a);
-    data2 = loadFile("../" + commit2 + "/_KIRI_/sch_sheets").split("\n").filter((a) => a);
+    data1 = loadFile("../" + commit1 + "/_KIRI_/sch_sheets" + url_timestamp(commit1)).split("\n").filter((a) => a);
+    data2 = loadFile("../" + commit2 + "/_KIRI_/sch_sheets" + url_timestamp(commit2)).split("\n").filter((a) => a);
 
     var sheets = [];
 
