@@ -31,8 +31,10 @@ var is_fullscreen = false;
 
 var sheet_pages_commit1 = new Set();
 var sheet_pages_commit2 = new Set();
+var current_sheets_list = [];
 var layers_commit1 = new Set();
 var layers_commit2 = new Set();
+var current_layers_list = [];
 
 // =======================================
 // HANDLE SHORTCUTS
@@ -651,7 +653,6 @@ function update_selected_page()
     // and keep decrementing until reaching a valid index
     } catch (error) {
         previous_selected_page = 0; // current_selected_page;
-        console.log(current_selected_page)
         pages[0].checked = true;
         selected_page = pages.index(pages.filter(':checked'));
         page_name = pages[selected_page].id;
@@ -758,12 +759,15 @@ function update_sheets_list(commit1, commit2) {
     data2 = loadFile("../" + commit2 + "/_KIRI_/sch_sheets" + url_timestamp(commit2)).split("\n").filter((a) => a);
 
     var sheets = [];
+    var new_sheets_list = [];
 
     sheet_pages_commit1 = new Set();
     for (const d of data1)
     {
         sheets.push(d);
-        sheet_pages_commit1.add(d.split("|")[4]);
+        sheet = d.split("|")[4];
+        sheet_pages_commit1.add(sheet);
+        new_sheets_list.push(sheet);
     }
 
     sheet_pages_commit2 = new Set();
@@ -773,7 +777,9 @@ function update_sheets_list(commit1, commit2) {
         {
             sheets.push(d);
         }
-        sheet_pages_commit2.add(d.split("|")[4]);
+        sheet = d.split("|")[4];
+        sheet_pages_commit2.add(sheet);
+        new_sheets_list.push(sheet);
     }
 
     sheets = Array.from(new Set(sheets));
@@ -781,7 +787,6 @@ function update_sheets_list(commit1, commit2) {
     console.log("[SCH]  Sheets =", sheets.length);
     console.log("sheets", sheets);
 
-    var new_sheets_list = [];
     var form_inputs_html;
 
     for (const d of sheets)
@@ -809,14 +814,11 @@ function update_sheets_list(commit1, commit2) {
         </label>
         `;
 
-        new_sheets_list.push(sheet);
-
         form_inputs_html = form_inputs_html + input_html;
     }
 
-    // Get the current list of pages
+    // Current pages, including selection
     pages = $("#pages_list input:radio[name='pages']");
-    const current_sheets_list = Array.from(pages).map((opt) => opt.id);
 
     // Return if the current list is equal to the new list
     console.log("current_sheets_list = ", current_sheets_list);
@@ -825,6 +827,7 @@ function update_sheets_list(commit1, commit2) {
         console.log("Keep the same list of sheets");
         return;
     }
+    current_sheets_list = new_sheets_list;
 
     // Update list of pages
     sheets_element = document.getElementById("pages_list_form");
@@ -907,6 +910,7 @@ function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer
         layer = line.split("|")[1]; //.replace(".", "_");
         dict[id] = [layer];
         layers_commit1.add(pad(id, 2));
+        new_layers_list.push(id);
     }
 
     layers_commit2 = new Set();
@@ -915,6 +919,7 @@ function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer
         id = line.split("|")[0];
         layer = line.split("|")[1]; //.replace(".", "_");
         layers_commit2.add(pad(id, 2));
+        new_layers_list.push(id);
 
         // Add new key
         if (! dict.hasOwnProperty(id)) {
@@ -950,27 +955,23 @@ function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer
         var input_html = `
         <!-- Generated Layer ${id} -->
         <input  id="layer-${id_pad}" value="layer-${layer_names}" type="radio" name="layers" onchange="update_layer()">
-        <label for="layer-${id_pad}" id="label-layer-${id_pad}" data-toggle="tooltip" title="${id}, ${layer_names}" class="rounded text-sm-left list-group-item radio-box" onclick="update_layer_onclick()">
+        <label for="layer-${id_pad}" id="label-layer-${id_pad}" data-toggle="tooltip" title="${id}, ${layer_names}" class="rounded text-sm-left list-group-item radio-box">
             <span class="iconify layer_color_margin layer_color_${id}" data-icon="teenyicons-square-solid" data-inline="false"></span>
             <span class="${color_style}">${layer_names}</span>
         </label>
         `;
 
-        new_layers_list.push(layer_names.toString());
-
         form_inputs_html = form_inputs_html + input_html;
     }
 
-    // Get the current list of pages
-    const current_layers_list = Array.from(layers).map((opt) => opt.value.replace("layer-", ""));
-
-        // Return if the current list is equal to the new list
+    // Return if the current list is equal to the new list
     console.log("current_layers_list = ", current_layers_list);
     console.log("new_layers_list = ", new_layers_list);
     if (current_layers_list.toString() === new_layers_list.toString()) {
         console.log("Keep the same list of layers");
         return;
     }
+    current_layers_list = new_layers_list;
 
     // Update layers list
     layers_element = document.getElementById("layers_list_form");
@@ -1271,14 +1272,6 @@ function show_slide() {
 
 // =======================================
 // =======================================
-
-function update_page_onclick(obj) {
-    update_page();
-}
-
-function update_layer_onclick(obj) {
-    update_layer();
-}
 
 // Hide fields with missing images
 function imgError(image)
