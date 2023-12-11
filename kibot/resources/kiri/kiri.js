@@ -744,16 +744,14 @@ function update_sheets_list(commit1, commit2) {
 
     for (const d of data1)
     {
-        sheet = d.split("|")[0];
-        sheets.push(sheet);
+        sheets.push(d);
     }
 
     for (const d of data2)
     {
-        sheet = d.split("|")[0];
-        if (! sheets.includes(sheet))
+        if (! sheets.includes(d))
         {
-            sheets.push(sheet);
+            sheets.push(d);
         }
     }
 
@@ -765,13 +763,16 @@ function update_sheets_list(commit1, commit2) {
     var new_sheets_list = [];
     var form_inputs_html;
 
-    for (const sheet of sheets)
+    for (const d of sheets)
     {
+        var splitted = d.split("|");
+        var visible_sheet = splitted[3];
+        var sheet = splitted[4];
         var input_html = `
         <input id="${sheet}" data-toggle="tooltip" title="${sheet}" type="radio" value="${sheet}" name="pages" onchange="update_selected_page()">
             <label for="${sheet}" data-toggle="tooltip" title="${sheet}" id="label-${sheet}" class="rounded text-sm-left list-group-item radio-box">
                 <span data-toggle="tooltip" title="${sheet}" class="iconify icon-sheet-page" data-icon="gridicons:pages" data-inline="false"></span>
-                ${sheet}
+                ${visible_sheet}
             </label>
         </label>
         `;
