@@ -31,6 +31,8 @@ var is_fullscreen = false;
 
 var sheet_pages_commit1 = [];
 var sheet_pages_commit2 = [];
+var layers_commit1 = new Set();
+var layers_commit2 = new Set();
 
 // =======================================
 // HANDLE SHORTCUTS
@@ -885,17 +887,21 @@ function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer
     used_layers_1 = loadFile("../" + commit1 + "/_KIRI_/pcb_layers" + url_timestamp(commit1)).split("\n").filter((a) => a);
     used_layers_2 = loadFile("../" + commit2 + "/_KIRI_/pcb_layers" + url_timestamp(commit2)).split("\n").filter((a) => a);
 
+    layers_commit1 = new Set();
     for (const line of used_layers_1)
     {
         id = line.split("|")[0];
         layer = line.split("|")[1]; //.replace(".", "_");
         dict[id] = [layer];
+        layers_commit1.add(pad(id, 2));
     }
 
+    layers_commit2 = new Set();
     for (const line of used_layers_2)
     {
         id = line.split("|")[0];
         layer = line.split("|")[1]; //.replace(".", "_");
+        layers_commit2.add(pad(id, 2));
 
         // Add new key
         if (! dict.hasOwnProperty(id)) {
@@ -1030,6 +1036,17 @@ function update_layer() {
 
     var image_path_1 = "../" + commit1 + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
     var image_path_2 = "../" + commit2 + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
+
+    if (layers_commit1.has(layer_id)) {
+        image_path_1 = "../" + commit1 + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
+    } else {
+        image_path_1 = "blank.svg";
+    }
+    if (layers_commit2.has(layer_id)) {
+        image_path_2 = "../" + commit2 + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
+    } else {
+        image_path_2 = "blank.svg";
+    }
 
     console.log("[PCB]      layer_id =", layer_id);
     console.log("[PCB]  image_path_1 =", image_path_1);

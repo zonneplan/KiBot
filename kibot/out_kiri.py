@@ -129,11 +129,13 @@ class KiRiOptions(VariantOptions):
         self.add_to_cache(name_copy, hash)
         return name_copy
 
-    def save_pcb_layers(self, hash=None):
-        subdir = os.path.join(hash[:7], '_KIRI_') if hash is not None else ''
+    def save_pcb_layers(self, hash):
+        subdir = os.path.join(hash[:7], '_KIRI_')
+        subdir_layers = os.path.join(self.cache_dir, subdir, 'pcb', 'layer-')
         with open(os.path.join(self.cache_dir, subdir, 'pcb_layers'), 'wt') as f:
             for la in self._solved_layers:
-                f.write(str(la.id)+'|'+la.layer+'\n')
+                if os.path.isfile(subdir_layers+('%02d' % la.id)+'.svg'):
+                    f.write(str(la.id)+'|'+la.layer+'\n')
 
     def solve_layer_colors(self):
         # Color theme
