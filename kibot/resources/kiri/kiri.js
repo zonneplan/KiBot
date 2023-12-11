@@ -770,7 +770,7 @@ function update_sheets_list(commit1, commit2) {
         var input_html = `
         <input id="${sheet}" data-toggle="tooltip" title="${sheet}" type="radio" value="${sheet}" name="pages" onchange="update_selected_page()">
             <label for="${sheet}" data-toggle="tooltip" title="${sheet}" id="label-${sheet}" class="rounded text-sm-left list-group-item radio-box">
-                <span data-toggle="tooltip" title="${sheet}" style="margin-left:0.5em; margin-right:0.1em;" class="iconify" data-icon="gridicons:pages" data-inline="false"></span>
+                <span data-toggle="tooltip" title="${sheet}" class="iconify icon-sheet-page" data-icon="gridicons:pages" data-inline="false"></span>
                 ${sheet}
             </label>
         </label>
