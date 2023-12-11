@@ -29,8 +29,8 @@ var selected_view = "schematic";
 
 var is_fullscreen = false;
 
-var sheet_pages_commit1 = [];
-var sheet_pages_commit2 = [];
+var sheet_pages_commit1 = new Set();
+var sheet_pages_commit2 = new Set();
 var layers_commit1 = new Set();
 var layers_commit2 = new Set();
 
@@ -669,13 +669,13 @@ function update_selected_page()
     var image_path_1;
     var image_path_2;
 
-    if (sheet_pages_commit1.includes(page_filename)) {
+    if (sheet_pages_commit1.has(page_filename)) {
         image_path_1 = "../" + commit1 + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
         image_path_1 = "blank.svg";
     }
 
-    if (sheet_pages_commit2.includes(page_filename)) {
+    if (sheet_pages_commit2.has(page_filename)) {
         image_path_2 = "../" + commit2 + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
         image_path_2 = "blank.svg";
@@ -759,19 +759,21 @@ function update_sheets_list(commit1, commit2) {
 
     var sheets = [];
 
+    sheet_pages_commit1 = new Set();
     for (const d of data1)
     {
         sheets.push(d);
-        sheet_pages_commit1.push(d.split("|")[4]);
+        sheet_pages_commit1.add(d.split("|")[4]);
     }
 
+    sheet_pages_commit2 = new Set();
     for (const d of data2)
     {
         if (! sheets.includes(d))
         {
             sheets.push(d);
         }
-        sheet_pages_commit2.push(d.split("|")[4]);
+        sheet_pages_commit2.add(d.split("|")[4]);
     }
 
     sheets = Array.from(new Set(sheets));
