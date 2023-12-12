@@ -40,8 +40,6 @@ const SCH_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 
                 ' data-inline="false"; data-icon="carbon:schematics"></span>';
 const PCB_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #F92672;"'+
                 ' data-inline="false"; data-icon="codicon:circuit-board"></span>';
-const TXT_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #888888;"'+
-                ' data-inline="false"; data-icon="bi:file-earmark-text"></span>';
 
 // =======================================
 // HANDLE SHORTCUTS
@@ -892,7 +890,6 @@ function load_commits()
         var pcb_changed = splitted[5] == 'True';
         var pcb_icon = (pcb_changed ? PCB_IMG : EMPTY_IMG);
         var sch_icon = (sch_changed ? SCH_IMG : EMPTY_IMG);
-        var txt_icon = TXT_IMG;
         var i02 = pad(i, 2);
         var cls = (hash == '_local_' ? 'text-warning' : 'text-info');
         var commit_html = `
@@ -907,7 +904,7 @@ function load_commits()
                         </svg>
                     </td>
                     <td style="white-space:nowrap; overflow: hidden; text-overflow: ellipsis;">
-                        <span class="text-muted"> ${i02} | </span> <span class="text-success font-weight-normal">${hash}</span> <span class="text-muted"> | </span> ${sch_icon} ${pcb_icon} ${txt_icon} <span class="text-muted font-weight-normal"> | ${dt} | ${author}</span>
+                        <span class="text-muted"> ${i02} | </span> <span class="text-success font-weight-normal">${hash}</span> <span class="text-muted"> | </span> ${sch_icon} ${pcb_icon} <span class="text-muted font-weight-normal"> | ${dt} | ${author}</span>
                     </td>
                 </tr>
                 <tr>
