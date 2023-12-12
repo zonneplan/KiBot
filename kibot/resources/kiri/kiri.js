@@ -36,6 +36,13 @@ var layers_commit1 = new Set();
 var layers_commit2 = new Set();
 var current_layers_list = [];
 
+const SCH_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #A6E22E;"'+
+                ' data-inline="false"; data-icon="carbon:schematics"></span>';
+const PCB_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #F92672;"'+
+                ' data-inline="false"; data-icon="codicon:circuit-board"></span>';
+const TXT_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #888888;"'+
+                ' data-inline="false"; data-icon="bi:file-earmark-text"></span>';
+
 // =======================================
 // HANDLE SHORTCUTS
 // =======================================
@@ -867,6 +874,59 @@ function pad(num, size)
     return num;
 }
 
+function load_commits()
+{
+    commits = loadFile("../commits").split("\n").filter((a) => a);
+    console.log(commits);
+    var i = 1;
+    var all_commits_html = "";
+    for (const line of commits)
+    {
+        // Data format: HASH|DATE|AUTHOR|DESCRIPTION|SCH_CHANGED|PCB_CHANGED
+        splitted = line.split("|");
+        var hash = splitted[0];
+        var dt = splitted[1];
+        var author = splitted[2];
+        var desc = splitted[3];
+        var tooltip = `<div>Commit: ${hash}</br>Date: ${dt}</br>Author: ${author}</br>Description:</br>${desc}</div>`;
+        var sch_changed = splitted[4] == 'True';
+        var pcb_changed = splitted[5] == 'True';
+        var pcb_icon = (pcb_changed ? PCB_IMG : EMPTY_IMG);
+        var sch_icon = (sch_changed ? SCH_IMG : EMPTY_IMG);
+        var txt_icon = TXT_IMG;
+        var i02 = pad(i, 2);
+        var cls = (hash == '_local_' ? 'text-warning' : 'text-info');
+        var commit_html = `
+        <!-- Commit ${i} -->
+        <input class="chkGroup" type="checkbox" id="${hash}" name="commit" value="${hash}" onchange="update_commits()">
+        <label class="text-sm-left list-group-item" style="display: block; width: 445px; margin-left: 0px;" for="${hash}">
+            <table data-toggle="tooltip" title="${tooltip}">
+                <tr>
+                    <td rowspan=2 style="vertical-align: top; width: 1.8em;">
+                        <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
+                            <path d="M7.5 10.5a3 3 0 010-6m0 6a3 3 0 000-6m0 6V15m0-10.5V0" stroke="currentColor"></path>
+                        </svg>
+                    </td>
+                    <td style="white-space:nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        <span class="text-muted"> ${i02} | </span> <span class="text-success font-weight-normal">${hash}</span> <span class="text-muted"> | </span> ${sch_icon} ${pcb_icon} ${txt_icon} <span class="text-muted font-weight-normal"> | ${dt} | ${author}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <em class="${cls}" style=" line-height: 0.7;">${desc}</em>
+                    </td>
+                </tr>
+            </table>
+        </label>
+        `;
+        console.log(commit_html);
+        all_commits_html = all_commits_html + commit_html;
+        i = i+1;
+    }
+    // Update commits list
+    document.getElementById("commits_form").innerHTML = all_commits_html;
+}
+
 function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer_id)
 {
     var used_layers_1;
@@ -1164,7 +1224,7 @@ function get_selected_commits()
 }
 
 
-// Interpret tooltois as html
+// Interpret tooltips as html
 $(document).ready(function()
 {
     $('[data-toggle="tooltip"]').tooltip({html:true});
@@ -1186,6 +1246,8 @@ $(document).ready(function()
 
 function ready()
 {
+    console.log('Starting JS');
+    load_commits();
     check_server_status();
     select_initial_commits();
 

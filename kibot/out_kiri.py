@@ -36,16 +36,6 @@ from . import log
 
 logger = log.get_logger()
 STASH_MSG = 'KiBot_Changes_Entry'
-TOOLTIP_HTML = '<div>Commit: {hash}</br>Date: {dt}</br>Author: {author}</br>Description:</br>{desc}</div>'
-# Icons for modified status
-EMPTY_IMG = ('<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #ff0000;"'
-             ' data-inline="false"; data-icon="bx:bx-x"></span>')
-SCH_IMG = ('<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #A6E22E;"'
-           ' data-inline="false"; data-icon="carbon:schematics"></span>')
-PCB_IMG = ('<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #F92672;"'
-           ' data-inline="false"; data-icon="codicon:circuit-board"></span>')
-TXT_IMG = ('<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #888888;"'
-           ' data-inline="false"; data-icon="bi:file-earmark-text"></span>')
 HASH_LOCAL = '_local_'
 UNDEF_COLOR = '#DBDBDB'
 LAYER_COLORS_HEAD = """/* ==============================
@@ -222,28 +212,39 @@ class KiRiOptions(VariantOptions):
                 for k, v in rep.items():
                     ln = ln.replace(f'[{k}]', v)
                 f.write(ln+'\n')
-                if ln.endswith('<!-- FILL_COMMITS_HERE -->'):
-                    self.create_commits(f, commits)
+#                 if ln.endswith('<!-- FILL_COMMITS_HERE -->'):
+#                     self.create_commits(f, commits)
 #                 elif ln.endswith('<!-- FILL_PAGES_HERE -->'):
 #                     self.create_pages(f)
 #                 elif ln.endswith('<!-- FILL_LAYERS_HERE -->'):
 #                     self.create_layers(f)
 
-    def create_commits(self, f, commits):
-        template = self.load_html_template('commits', 8)
-        for i, c in enumerate(commits):
-            hash = c[0][:7]
-            dt = c[1].split()[0]
-            author = c[2]+' '
-            desc = c[3]
-            tooltip = TOOLTIP_HTML.format(hash=hash, dt=dt, author=author, desc=desc)
-            cls = 'text-warning' if hash == HASH_LOCAL else 'text-info'
-            icon_pcb = PCB_IMG if c[0] in self.commits_with_changed_pcb else EMPTY_IMG
-            icon_sch = SCH_IMG if c[0] in self.commits_with_changed_sch else EMPTY_IMG
-            # TODO What's this? if we only track changes in PCB/Sch this should be empty
-            icon_txt = TXT_IMG
-            f.write(template.format(i=i+1, hash=hash, tooltip=tooltip, text=c[3], cls=cls, i02='%02d' % (i+1),
-                    date=dt, user=author, pcb_icon=icon_pcb, sch_icon=icon_sch, txt_icon=icon_txt, hash_label=hash))
+#     def create_commits(self, f, commits):
+#         template = self.load_html_template('commits', 8)
+#         for i, c in enumerate(commits):
+#             hash = c[0][:7]
+#             dt = c[1].split()[0]
+#             author = c[2]+' '
+#             desc = c[3]
+#             tooltip = TOOLTIP_HTML.format(hash=hash, dt=dt, author=author, desc=desc)
+#             cls = 'text-warning' if hash == HASH_LOCAL else 'text-info'
+#             icon_pcb = PCB_IMG if c[0] in self.commits_with_changed_pcb else EMPTY_IMG
+#             icon_sch = SCH_IMG if c[0] in self.commits_with_changed_sch else EMPTY_IMG
+#             # TODO What's this? if we only track changes in PCB/Sch this should be empty
+#             icon_txt = TXT_IMG
+#             f.write(template.format(i=i+1, hash=hash, tooltip=tooltip, text=c[3], cls=cls, i02='%02d' % (i+1),
+#                     date=dt, user=author, pcb_icon=icon_pcb, sch_icon=icon_sch, txt_icon=icon_txt, hash_label=hash))
+
+    def save_commits(self, commits):
+        with open(os.path.join(self.cache_dir, 'commits'), 'wt') as f:
+            for c in commits:
+                hash = c[0][:7]
+                dt = c[1].split()[0]
+                author = c[2]
+                desc = c[3]
+                sch_changed = c[0] in self.commits_with_changed_sch
+                pcb_changed = c[0] in self.commits_with_changed_pcb
+                f.write(f'{hash}|{dt}|{author}|{desc}|{sch_changed}|{pcb_changed}\n')
 
     def get_modified_status(self, pcb_file, sch_files):
         res = self.run_git(['log', '--pretty=format:%H', '--', pcb_file])
@@ -345,6 +346,7 @@ class KiRiOptions(VariantOptions):
                 os.remove(self.incl_file)
         self.create_kiri_files()
         self.create_index(hashes)
+        self.save_commits(hashes)
 
 
 @output_class
