@@ -278,6 +278,14 @@ hr {
 	height: 10px;
 }
 
+.icon-commit1-fs {
+	margin-left: 0em;
+	margin-right: 0.2em;
+	color: #00FF00;
+	width: 10px;
+	height: 10px;
+}
+
 .icon-commit2 {
 	display: inline;
 	margin-left: 1em;
@@ -287,12 +295,48 @@ hr {
 	height: 10px;
 }
 
+.icon-commit2-fs {
+	display: inline;
+	margin-left:1em;
+	margin-right:0.2em;
+	color: #FF0000;
+	width: 10px;
+	height: 10px;
+}
+
+.commit-standalone-color {
+	color: #A7A7A7;
+}
+
 .icon-commit3 {
 	margin-left:1em;
 	margin-right:0.2em;
 	color: #FFA000;
 	width: 10px;
 	height: 10px;
+}
+
+.icon-commit3-fs {
+	margin-left: 1em;
+	margin-right: 0.2em;
+	color: #FFA000;
+	width: 10px;
+	height: 10px;
+}
+
+.icon-sch-pcb-modif {
+	padding-left: 0px;
+	padding-right: 0px;
+	width: 14px;
+	height: 14px;
+}
+
+.icon-sch-modif {
+	color: #A6E22E;
+}
+
+.icon-pcb-modif {
+	color: #F92672;
 }
 
 .icon-sheets {
@@ -439,6 +483,25 @@ hr {
 .ui-legend-sep1 {
 	display: inline;
 	width: 2em;
+}
+
+.ui-legend-sep1-fs {
+	display: inline;
+	width: 3em;
+}
+
+.ui-legend-sep2-fs {
+	margin-left:1em;
+	margin-right:0.2em;
+}
+
+.ui-view-item-fs {
+	margin-left:1em;
+	margin-right:0.2em;
+}
+
+.ui-fs-label {
+	background-color: #333;
 }
 
 .ui-diff-container {

@@ -36,10 +36,12 @@ var layers_commit1 = new Set();
 var layers_commit2 = new Set();
 var current_layers_list = [];
 
-const SCH_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #A6E22E;"'+
-                ' data-inline="false"; data-icon="carbon:schematics"></span>';
-const PCB_IMG = '<span class="iconify" style="padding-left: 0px; padding-right: 0px; width: 14px; height: 14px; color: #F92672;"'+
-                ' data-inline="false"; data-icon="codicon:circuit-board"></span>';
+const SCH_IMG = '<span class="iconify icon-sch-pcb-modif icon-sch-modif" data-inline="false"; data-icon="carbon:schematics"></span>';
+const PCB_IMG = '<span class="iconify icon-sch-pcb-modif icon-pcb-modif" data-inline="false"; data-icon="codicon:circuit-board"></span>';
+
+var commit1_legend_color;
+var commit2_legend_color;
+var commit_standalone_color;
 
 // =======================================
 // HANDLE SHORTCUTS
@@ -220,16 +222,16 @@ function reset_commits_selection()
     $("#commit1_legend_text").css('visibility', 'visible');
     $("#commit1_legend_fs").css('visibility', 'visible');
     $("#commit1_legend_text_fs").css('visibility', 'visible');
-    $("#commit1_legend").css('color', '#00FF00');
-    $("#commit1_legend_fs").css('color', '#00FF00');
+    $("#commit1_legend").css('color', commit1_legend_color);
+    $("#commit1_legend_fs").css('color', commit1_legend_color);
 
     $("#diff-xlink-2").css('visibility', 'visible')
     $("#commit2_legend").css('visibility', 'visible');
     $("#commit2_legend_text").css('visibility', 'visible');
     $("#commit2_legend_fs").css('visibility', 'visible');
     $("#commit2_legend_text_fs").css('visibility', 'visible');
-    $("#commit2_legend").css('color', '#FF0000');
-    $("#commit2_legend_fs").css('color', '#FF0000');
+    $("#commit2_legend").css('color', commit2_legend_color);
+    $("#commit2_legend_fs").css('color', commit2_legend_color);
 
     $("#commit3_legend").css('visibility', 'visible');
     $("#commit3_legend_text").css('visibility', 'visible');
@@ -294,18 +296,18 @@ function toggle_old_commit_visibility()
         $("#commit2_legend_fs").css('visibility', 'visible');
         $("#commit2_legend_text_fs").css('visibility', 'visible');
 
-        $("#commit2_legend").css('color', '#a7a7a7');
-        $("#commit2_legend_fs").css('color', '#a7a7a7');
+        $("#commit2_legend").css('color', commit_standalone_color);
+        $("#commit2_legend_fs").css('color', commit_standalone_color);
     }
     else
     {
         $("#diff-xlink-1").css('filter', 'url(#filter-1)') /// FILTER_DEFAULT
         $("#diff-xlink-2").css('filter', 'url(#filter-2)') /// FILTER_DEFAULT
 
-        $("#commit1_legend").css('color', '#00FF00');
-        $("#commit1_legend_fs").css('color', '#00FF00');
-        $("#commit2_legend").css('color', '#FF0000');
-        $("#commit2_legend_fs").css('color', '#FF0000');
+        $("#commit1_legend").css('color', commit1_legend_color);
+        $("#commit1_legend_fs").css('color', commit1_legend_color);
+        $("#commit2_legend").css('color', commit2_legend_color);
+        $("#commit2_legend_fs").css('color', commit2_legend_color);
     }
 }
 
@@ -350,18 +352,18 @@ function toggle_new_commit_visibility()
         $("#commit1_legend_fs").css('visibility', 'visible');
         $("#commit1_legend_text_fs").css('visibility', 'visible');
 
-        $("#commit1_legend").css('color', '#a7a7a7');
-        $("#commit1_legend_text_fs").css('color', '#a7a7a7');
+        $("#commit1_legend").css('color', commit_standalone_color);
+        $("#commit1_legend_text_fs").css('color', commit_standalone_color);
     }
     else
     {
         $("#diff-xlink-1").css('filter', 'url(#filter-1)') /// FILTER_DEFAULT
         $("#diff-xlink-2").css('filter', 'url(#filter-2)') /// FILTER_DEFAULT
 
-        $("#commit1_legend").css('color', '#00FF00');
-        $("#commit1_legend_fs").css('color', '#00FF00');
-        $("#commit2_legend").css('color', '#FF0000');
-        $("#commit2_legend_fs").css('color', '#FF0000');
+        $("#commit1_legend").css('color', commit1_legend_color);
+        $("#commit1_legend_fs").css('color', commit1_legend_color);
+        $("#commit2_legend").css('color', commit2_legend_color);
+        $("#commit2_legend_fs").css('color', commit2_legend_color);
     }
 }
 
@@ -1257,6 +1259,10 @@ $(document).ready(function()
 function ready()
 {
     console.log('Starting JS');
+    commit1_legend_color = $(".icon-commit1").css('color');
+    commit2_legend_color = $(".icon-commit2").css('color');
+    commit_standalone_color = $(".commit-standalone-color").css('color');
+    console.log(commit_standalone_color);
     load_project_data();
     load_commits();
     check_server_status();
@@ -1613,31 +1619,31 @@ function update_fullscreen_label()
         else
         {
             label = `
-                <div id="fullscreen_label" class="alert alert-dark border border-dark rounded-pill position-absolute top-10 start-50 translate-middle" style="background-color: #333;" role="alert">
-                    <span id=commit1_legend_fs style="margin-left:0em; margin-right:0.2em; color: #00FF00; width: 10px; height: 10px;" class="iconify" data-icon="teenyicons-square-solid"></span>
-                    <small id=commit1_legend_text_fs class="text-sm text-light">
+                <div id="fullscreen_label" class="alert alert-dark border border-dark rounded-pill position-absolute top-10 start-50 translate-middle ui-fs-label" role="alert">
+                    <span id="commit1_legend_fs" class="iconify icon-commit1-fs" data-icon="teenyicons-square-solid"></span>
+                    <small id="commit1_legend_text_fs" class="text-sm text-light">
                         Newer
                         <span id="commit1_fs" class="text-monospace">(<a id="commit1_legend_hash">${commit1}</a>)</span>
                     </small>
 
-                    <span style="display: inline; width: 3em;"></span>
-                    <span id="commit2_legend_fs" style="display: inline; margin-left:1em; margin-right:0.2em; color: #FF0000; width: 10px; height: 10px;" class="iconify" data-icon="teenyicons-square-solid"></span>
+                    <span class="ui-legend-sep1-fs"></span>
+                    <span id="commit2_legend_fs" class="iconify icon-commit2-fs" data-icon="teenyicons-square-solid"></span>
                     <small id=commit2_legend_text_fs class="text-sm text-light">
                         Older
                         <span id="commit2_fs" class="text-monospace">(<a id="commit2_legend_hash">${commit2}</a>)</span>
                     </small>
 
-                    <span style="display: inline; width: 3em;"></span>
-                    <span id="commit3_legend_fs" style="margin-left:1em; margin-right:0.2em; color: #FFA000; width: 10px; height: 10px;" class="iconify" data-icon="teenyicons-square-solid"></span>
+                    <span class="ui-legend-sep1-fs"></span>
+                    <span id="commit3_legend_fs" class="iconify icon-commit3-fs" data-icon="teenyicons-square-solid"></span>
                     <small id="commit3_legend_text_fs" class="text-sm text-light">
                         Unchanged
                     </small>
 
-                    <small class="text-sm text-muted" style="margin-left:1em; margin-right:0.2em;">
+                    <small class="text-sm text-muted ui-legend-sep2-fs">
                         |
                     </small>
-                    <span style="display: inline; width: 3em;"></span>
-                    <small id="view_item_fs" class="text-sm text-light" style="margin-left:1em; margin-right:0.2em;">
+                    <span class="ui-legend-sep1-fs"></span>
+                    <small id="view_item_fs" class="text-sm text-light ui-view-item-fs">
                         ${view_item}
                     </small>
                 </div>
