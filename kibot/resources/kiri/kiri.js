@@ -877,7 +877,6 @@ function pad(num, size)
 function load_commits()
 {
     commits = loadFile("../commits").split("\n").filter((a) => a);
-    console.log(commits);
     var i = 1;
     var all_commits_html = "";
     for (const line of commits)
@@ -919,12 +918,26 @@ function load_commits()
             </table>
         </label>
         `;
-        console.log(commit_html);
         all_commits_html = all_commits_html + commit_html;
         i = i+1;
     }
     // Update commits list
     document.getElementById("commits_form").innerHTML = all_commits_html;
+}
+
+function load_project_data()
+{
+    // Data format: TITLE
+    //              SCH_TITLE|SCH_REVISION|SCH_DATE
+    //              PCB_TITLE|PCB_REVISION|PCB_DATE
+    data = loadFile("../project").split("\n").filter((a) => a);
+    document.title = data[0];
+    splitted = data[1].split("|");
+    document.getElementById("sch_title_text").innerHTML = splitted[0];
+    document.getElementById("sch_rev").innerHTML = `Rev. ${splitted[1]} (${splitted[2]})`;
+    splitted = data[2].split("|");
+    document.getElementById("pcb_title_text").innerHTML = splitted[0];
+    document.getElementById("pcb_rev").innerHTML = `Rev. ${splitted[1]} (${splitted[2]})`;
 }
 
 function update_layers_list(commit1, commit2, selected_layer_idx, selected_layer_id)
@@ -1247,6 +1260,7 @@ $(document).ready(function()
 function ready()
 {
     console.log('Starting JS');
+    load_project_data();
     load_commits();
     check_server_status();
     select_initial_commits();

@@ -140,14 +140,6 @@ class KiRiOptions(VariantOptions):
             else:
                 la.color = UNDEF_COLOR
 
-#     def create_layers(self, f):
-#         template = self.load_html_template('layers', 11)
-#         for i, la in enumerate(self._solved_layers):
-#             # TODO: Configure checked?
-#             checked = 'checked="checked"' if i == 0 else ''
-#             f.write(template.format(i=i+1, layer_id_padding='%02d' % (i+1), layer_name=la.suffix,
-#                                     layer_id=la.id, layer_color=la.color, checked=checked))
-
     def save_sch_sheet(self, hash, name_sch):
         # Load the schematic. Really worth?
         sch = load_any_sch(name_sch, GS.sch_basename)
@@ -165,76 +157,6 @@ class KiRiOptions(VariantOptions):
                     sheet_path = GS.sch_basename+'-'+sheet_path[1:]
                 f.write(f'{no_ext}|{rel_name}||{instance_name}|{sheet_path}\n')
 
-#     def create_pages(self, f):
-#         template = self.load_html_template('pages', 11)
-#         for i, s in enumerate(sorted(GS.sch.all_sheets, key=lambda s: s.sheet_path_h)):
-#             fname = s.fname
-#             checked = 'checked="checked"' if i == 0 else ''
-#             base_name = os.path.basename(fname)
-#             rel_name = os.path.relpath(fname, GS.sch_dir)
-#             if s.sheet_path_h == '/':
-#                 instance_name = sheet_path = GS.sch_basename
-#             else:
-#                 instance_name = os.path.basename(s.sheet_path_h)
-#                 sheet_path = s.sheet_path_h.replace('/', '-')
-#                 sheet_path = GS.sch_basename+'-'+sheet_path[1:]
-#             f.write(template.format(i=i+1, page_name=instance_name, page_filename_path=rel_name,
-#                                     page_filename=base_name, checked=checked))
-
-    def load_html_template(self, type, tabs):
-        """ Load a template used to generate an HTML section.
-            Outside of the code for easier modification/customization. """
-        with open(os.path.join(GS.get_resource_path('kiri'), f'{type}_template.html'), 'rt') as f:
-            template = f.read()
-        template = template.replace('${', '{')
-        template = template.replace('$(printf "%02d" {i})', '{i02}')
-        template = template.replace('{class}', '{cls}')
-        template = template.replace('\t\t', '\t'*tabs)
-        return template
-
-    def create_index(self, commits):
-        # Get the KiRi template
-        with open(os.path.join(GS.get_resource_path('kiri'), 'index.html'), 'rt') as f:
-            template = f.read()
-        today = datetime.datetime.today().strftime('%Y-%m-%d')
-        # Replacement keys
-        rep = {}
-        rep['PROJECT_TITLE'] = GS.pro_basename or GS.sch_basename or GS.pcb_basename or 'unknown'
-        rep['SCH_TITLE'] = GS.sch_title or 'No title'
-        rep['SCH_REVISION'] = GS.sch_rev or ''
-        rep['SCH_DATE'] = GS.sch_date or today
-        rep['PCB_TITLE'] = GS.pcb_title or 'No title'
-        rep['PCB_REVISION'] = GS.pcb_rev or ''
-        rep['PCB_DATE'] = GS.pcb_date or today
-        # Fill the template
-        with open(os.path.join(self.cache_dir, 'web', 'index.html'), 'wt') as f:
-            for ln in iter(template.splitlines()):
-                for k, v in rep.items():
-                    ln = ln.replace(f'[{k}]', v)
-                f.write(ln+'\n')
-#                 if ln.endswith('<!-- FILL_COMMITS_HERE -->'):
-#                     self.create_commits(f, commits)
-#                 elif ln.endswith('<!-- FILL_PAGES_HERE -->'):
-#                     self.create_pages(f)
-#                 elif ln.endswith('<!-- FILL_LAYERS_HERE -->'):
-#                     self.create_layers(f)
-
-#     def create_commits(self, f, commits):
-#         template = self.load_html_template('commits', 8)
-#         for i, c in enumerate(commits):
-#             hash = c[0][:7]
-#             dt = c[1].split()[0]
-#             author = c[2]+' '
-#             desc = c[3]
-#             tooltip = TOOLTIP_HTML.format(hash=hash, dt=dt, author=author, desc=desc)
-#             cls = 'text-warning' if hash == HASH_LOCAL else 'text-info'
-#             icon_pcb = PCB_IMG if c[0] in self.commits_with_changed_pcb else EMPTY_IMG
-#             icon_sch = SCH_IMG if c[0] in self.commits_with_changed_sch else EMPTY_IMG
-#             # TODO What's this? if we only track changes in PCB/Sch this should be empty
-#             icon_txt = TXT_IMG
-#             f.write(template.format(i=i+1, hash=hash, tooltip=tooltip, text=c[3], cls=cls, i02='%02d' % (i+1),
-#                     date=dt, user=author, pcb_icon=icon_pcb, sch_icon=icon_sch, txt_icon=icon_txt, hash_label=hash))
-
     def save_commits(self, commits):
         with open(os.path.join(self.cache_dir, 'commits'), 'wt') as f:
             for c in commits:
@@ -245,6 +167,13 @@ class KiRiOptions(VariantOptions):
                 sch_changed = c[0] in self.commits_with_changed_sch
                 pcb_changed = c[0] in self.commits_with_changed_pcb
                 f.write(f'{hash}|{dt}|{author}|{desc}|{sch_changed}|{pcb_changed}\n')
+
+    def save_project_data(self):
+        today = datetime.datetime.today().strftime('%Y-%m-%d')
+        with open(os.path.join(self.cache_dir, 'project'), 'wt') as f:
+            f.write((GS.pro_basename or GS.sch_basename or GS.pcb_basename or 'unknown')+'\n')
+            f.write((GS.sch_title or 'No title')+'|'+(GS.sch_rev or '')+'|'+(GS.sch_date or today)+'\n')
+            f.write((GS.pcb_title or 'No title')+'|'+(GS.pcb_rev or '')+'|'+(GS.pcb_date or today)+'\n')
 
     def get_modified_status(self, pcb_file, sch_files):
         res = self.run_git(['log', '--pretty=format:%H', '--', pcb_file])
@@ -265,6 +194,7 @@ class KiRiOptions(VariantOptions):
         copy2(os.path.join(src_dir, 'favicon.ico'), os.path.join(web_dir, 'favicon.ico'))
         copy2(os.path.join(src_dir, 'kiri.css'), os.path.join(web_dir, 'kiri.css'))
         copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
+        copy2(os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
         # Colors for the layers
         with open(os.path.join(web_dir, 'layer_colors.css'), 'wt') as f:
             f.write(LAYER_COLORS_HEAD)
@@ -345,8 +275,8 @@ class KiRiOptions(VariantOptions):
             if self.incl_file:
                 os.remove(self.incl_file)
         self.create_kiri_files()
-        self.create_index(hashes)
         self.save_commits(hashes)
+        self.save_project_data()
 
 
 @output_class
