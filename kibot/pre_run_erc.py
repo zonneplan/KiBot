@@ -11,7 +11,9 @@ Dependencies:
     version: 2.2.1
 """
 import os
+from shutil import move
 from sys import exit
+from tempfile import NamedTemporaryFile
 from .macros import macros, pre_class  # noqa: F401
 from .gs import GS
 from .optionable import Optionable
@@ -52,8 +54,12 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         # But here we need data from it.
         output = self.get_targets()[0]
         os.makedirs(os.path.dirname(output), exist_ok=True)
-        logger.debug('ERC report: '+output)
-        cmd = [command, 'run_erc', '-o', output, '-g', str(GS.global_erc_grid)]
+        # Workaround for KiCad 7 odd behavior: it forces a file extension
+        # Note: One thing is adding the extension before you enter a name, other is add something you removed on purpose
+        with NamedTemporaryFile(mode='w', delete=False, suffix='.rpt', prefix='erc_report') as f:
+            tmp_name = f.name
+        logger.debug('ERC report: '+tmp_name)
+        cmd = [command, 'run_erc', '-o', tmp_name, '-g', str(GS.global_erc_grid)]
         if BasePreFlight.get_option('erc_warnings'):  # noqa: F821
             cmd.append('-w')
         if GS.filter_file:
@@ -63,6 +69,10 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         cmd = self.add_extra_options(cmd)
         logger.info('- Running the ERC')
         ret = self.exec_with_retry(cmd)
+        try:
+            move(tmp_name, output)
+        except FileNotFoundError:
+            pass
         if ret:
             if ret > 127:
                 ret = -(256-ret)
