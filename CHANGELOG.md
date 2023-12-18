@@ -26,8 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     3DRender_bottom_straight: to generate simple and quick 3D renders.
   - _KIBOT_POS_DNF_FILTER option to JLCPCB. It now excludes components added
     by KiKit to create panels and can be customized.
-  - _KIBOT_PLOT_FOOTPRINT_REFS and  _KIBOT_PLOT_FOOTPRINT_VALUES to
+  - _KIBOT_PLOT_FOOTPRINT_REFS and _KIBOT_PLOT_FOOTPRINT_VALUES to
     manufacturer templates. (#523)
+  - _KIBOT_COMPRESS_MOVE to move gerber and drill files to the compressed
+    output, enabled by default. (#537)
 - Filters:
   - New `_rot_footprint_jlcpcb` internal filter to fix the JLCPCB bottom
     rotations.
@@ -87,6 +89,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Footprints: now they are flagged with exclude from BoM and Pos, also
     with no court yard requirements for KiCad 7
   - Symbol: Excluded from simulation for KiCad 7
+- Elecrow, FusionPCB, JLCPCB, PCBWay and P-Ban templates now moves the files
+  to the compressed output by default.
+  - Note that JLCPCB BoM and Position files aren't included anymore, they are
+    uploaded separately.
 
 ### Fixed
 - Schematics: problems with deep nested and recycled sheets (#520)

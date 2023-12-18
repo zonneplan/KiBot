@@ -131,14 +131,11 @@ outputs:
     options:
       # Position and BoM can be disabled
       skip_not_run: true
+      move_files: @_KIBOT_COMPRESS_MOVE@
       files:
         - from_output: _JLCPCB_gerbers@_KIBOT_IMPORT_ID@
           dest: /
         - from_output: _JLCPCB_drill@_KIBOT_IMPORT_ID@
-          dest: /
-        - from_output: _JLCPCB_position@_KIBOT_IMPORT_ID@
-          dest: /
-        - from_output: _JLCPCB_bom@_KIBOT_IMPORT_ID@
           dest: /
 
 ...
@@ -156,6 +153,7 @@ definitions:
   _KIBOT_BOM_ENABLED: true
   _KIBOT_PLOT_FOOTPRINT_REFS: true
   _KIBOT_PLOT_FOOTPRINT_VALUES: false
+  _KIBOT_COMPRESS_MOVE: true
   _KIBOT_GERBER_LAYERS: |
       - copper
             - F.SilkS
