@@ -1099,6 +1099,8 @@ class PCB_PrintOptions(VariantOptions):
                 vis_layers = LSET()
                 for la in p.layers:
                     vis_layers.addLayer(la._id)
+                if self.force_edge_cuts:
+                    vis_layers.addLayer(edge_id)
                 GS.board.SetVisibleLayers(vis_layers)
             # Use a dir for each page, avoid overwriting files, just for debug purposes
             page_str = "%02d" % (n+1)
