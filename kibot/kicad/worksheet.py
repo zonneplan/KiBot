@@ -50,8 +50,9 @@ from .. import log
 
 logger = log.get_logger()
 setup = None
-# The version of "kicad_wks" used for all tests
-SUP_VERSION = 20210606
+# The version of "kicad_wks" used for all tests is 20210606
+# 20220228 seems to be fully supported
+SUP_VERSION = 20220228
 # Hash to convert KiCad 5 "%X" markers to KiCad 6 "${XXX}" text variables
 KI5_2_KI6 = {'K': 'KICAD_VERSION', 'S': '#', 'N': '##', 'C0': 'COMMENT1', 'C1': 'COMMENT2', 'C2': 'COMMENT3',
              'C3': 'COMMENT4', 'C4': 'COMMENT5', 'C5': 'COMMENT6', 'C6': 'COMMENT7', 'C7': 'COMMENT8',
