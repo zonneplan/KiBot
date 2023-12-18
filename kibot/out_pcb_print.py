@@ -1090,6 +1090,17 @@ class PCB_PrintOptions(VariantOptions):
                     edge_layer.color = layer_id2color[edge_id]
                 else:
                     edge_layer.color = "#000000"
+        # Make visible only the layers we need
+        # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
+        if not self.individual_page_scaling:
+            # Make all the layers in all the pages visible
+            vis_layers = LSET()
+            for p in self.pages:
+                for la in p.layers:
+                    vis_layers.addLayer(la._id)
+            if self.force_edge_cuts:
+                vis_layers.addLayer(edge_id)
+            GS.board.SetVisibleLayers(vis_layers)
         # Generate the output, page by page
         pages = []
         for n, p in enumerate(self.pages):
