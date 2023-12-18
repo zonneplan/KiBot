@@ -664,7 +664,7 @@ class Blender_ExportOptions(BaseOptions):
 
 @output_class
 class Blender_Export(Base3D):
-    """ Blender Export **Experimental**
+    """ Blender Export
         Exports the PCB in various 3D file formats.
         Also renders the PCB with high-quality.
         Needs KiCad 6 or newer.
