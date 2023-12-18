@@ -49,6 +49,9 @@ Parameters:
       -  ``diff_mode`` :index:`: <pair: output - diff - options; diff_mode>` [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
          The `stats` mode is used to meassure the amount of difference. In this mode all
          changes are red, but you can abort if the difference is bigger than certain threshold.
+      -  ``dnf_filter`` :index:`: <pair: output - diff - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+         A short-cut to use for simple cases where a variant is an overkill.
+
       -  ``force_checkout`` :index:`: <pair: output - diff - options; force_checkout>` [boolean=false] When `old_type` and/or `new_type` are `git` KiBot will checkout the indicated point.
          Before doing it KiBot will stash any change. Under some circumstances git could fail
          to do a checkout, even after stashing, this option can workaround the problem.
@@ -79,11 +82,15 @@ Parameters:
          Note that when no differeces are found we get a page saying *No diff*.
       -  ``only_first_sch_page`` :index:`: <pair: output - diff - options; only_first_sch_page>` [boolean=false] Compare only the main schematic page (root page).
       -  ``pcb`` :index:`: <pair: output - diff - options; pcb>` [boolean=true] Compare the PCB, otherwise compare the schematic.
+      -  ``pre_transform`` :index:`: <pair: output - diff - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+         A short-cut to use for simple cases where a variant is an overkill.
+
       -  ``threshold`` :index:`: <pair: output - diff - options; threshold>` [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
          difference bigger than the indicated value will make the diff fail.
          KiBot will return error level 29 and the diff generation will be aborted.
       -  ``use_file_id`` :index:`: <pair: output - diff - options; use_file_id>` [boolean=false] When creating the link name of an output file related to a variant use the variant
          `file_id` instead of its name.
+      -  ``variant`` :index:`: <pair: output - diff - options; variant>` [string=''] Board variant to apply.
 
 -  **type** :index:`: <pair: output - diff; type>` [string=''] Type of output.
 -  ``category`` :index:`: <pair: output - diff; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.

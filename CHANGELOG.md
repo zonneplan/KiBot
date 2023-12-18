@@ -119,9 +119,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     temporal, generating problems with the plot outputs, like pcb_print
   - Project options not preserved, i.e. set_text_variables failing
   - Bottom QRs should be mirrored in the Y axis
-- ERC:
-  - Problems creating report files without extension (KiCad 7 odd behavior)
-    (#529)
+- Diff
+  - `current`: didn't apply global variants
+  - `current`: didn't honor KiCad native DNP flags, they need a filter
 
 
 ## [1.6.3] - 2023-06-26
