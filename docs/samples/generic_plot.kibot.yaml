@@ -95,7 +95,7 @@ preflight:
   update_xml: true
 
 outputs:
-  # Blender Export **Experimental**:
+  # Blender Export:
   # Also renders the PCB with high-quality.
   # Needs KiCad 6 or newer.
   # This output is complex to setup and needs very big dependencies.
