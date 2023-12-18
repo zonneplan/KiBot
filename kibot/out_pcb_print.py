@@ -489,6 +489,7 @@ class PCB_PrintOptions(VariantOptions):
         vars['TITLE'] = tb.GetTitle()
         vars['FILENAME'] = GS.pcb_basename+'.kicad_pcb'
         vars['SHEETNAME'] = p.sheet
+        vars['SHEETPATH'] = ''  # Only relevant for an schematic
         layer = ''
         for la in p.layers:
             if len(layer):
