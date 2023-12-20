@@ -77,7 +77,7 @@ class EasyedaApi:
             logger.warning(W_EEDA3D+"Failed to download STEP 3D model data found for EasyEDA uuid: "+uuid)
             step = None
         else:
-            step = r.content.decode()
+            step = r.content
         return obj, step
 
 
@@ -340,7 +340,7 @@ class Exporter3dModelKicad:
             else:
                 name_step = os.path.splitext(name_step)[0]+'.step'
             name_step = os.path.join(lib_path, name_step)
-            with open(name_step, "w", encoding="utf-8") as my_lib:
+            with open(name_step, "wb") as my_lib:
                 my_lib.write(self.output_step)
         return name_wrl or name_step
 
