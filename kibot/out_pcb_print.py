@@ -138,7 +138,8 @@ class LayerOptions(Layer):
         self._unknown_is_error = True
         with document:
             self.color = ""
-            """ Color used for this layer """
+            """ Color used for this layer.
+                KiCad 6+: don't forget the alpha channel for layers like the solder mask """
             self.plot_footprint_refs = True
             """ Include the footprint references """
             self.plot_footprint_values = True
