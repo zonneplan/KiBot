@@ -47,7 +47,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
-                   VIATYPE_MICROVIA, FONT_HELP_TEXT)
+                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -889,6 +889,33 @@ class PCB_PrintOptions(VariantOptions):
         from lxml.etree import tostring
         return tostring(image).decode()
 
+#     def kicad7_scale_workaround(self, id, temp_dir, out_file, color, mirror, scale):
+#         logger.error(f'Fix {out_file}')
+#         svg = svgutils.fromfile(out_file)
+#         logger.error(self.get_view_box(svg))
+#         bbox = GS.board.GetBoundingBox()
+#         logger.error(bbox.GetSize())
+#         for f in GS.board.Footprints():
+#             logger.error('Pads')
+#             for p in f.Pads():
+#                 bbox = p.GetBoundingBox()
+#                 logger.error(bbox.GetSize())
+#             logger.error('Graphics')
+#             for gi in f.GraphicalItems():
+#                 bbox = gi.GetBoundingBox()
+#                 logger.error(bbox.GetSize())
+#         logger.error('Drawings')
+#         for d in GS.board.Drawings():
+#             bbox = d.GetBoundingBox()
+#             logger.error(bbox.GetSize())
+#         logger.error('Tracks')
+#         for t in GS.board.Tracks():
+#             bbox = t.GetBoundingBox()
+#             logger.error(bbox.GetSize())
+#
+#     def get_view_box(self, svg):
+#         return tuple(map(lambda x: float(x), svg.root.get('viewBox').split(' ')))
+
     def plot_realistic_solder_mask(self, id, temp_dir, out_file, color, mirror, scale):
         """ Plot the solder mask closer to reality, not the apertures """
         if not self.realistic_solder_mask or (id != F_Mask and id != B_Mask):
@@ -1048,6 +1075,19 @@ class PCB_PrintOptions(VariantOptions):
             if cur_name != user_name and os.path.isfile(cur_name):
                 os.replace(cur_name, user_name)
 
+    def check_ki7_scale_issue(self):
+        """ Check if all visible layers has scaling problems """
+        if not GS.ki7:
+            return False
+        cur_vis = GS.board.GetVisibleLayers()
+        # Copper layers are OK
+        if len(cur_vis.CuStack()):
+            return False
+        for la in ['Edge.Cuts', 'F.SilkS', 'B.SilkS']:
+            if cur_vis.Contains(Layer.DEFAULT_LAYER_NAMES[la]):
+                return False
+        return True
+
     def generate_output(self, output):
         self.check_tools()
         # Avoid KiCad 5 complaining about fake vias diameter == drill == 0
@@ -1114,6 +1154,11 @@ class PCB_PrintOptions(VariantOptions):
                 if self.force_edge_cuts:
                     vis_layers.addLayer(edge_id)
                 GS.board.SetVisibleLayers(vis_layers)
+            needs_ki7_scale_workaround = p.scaling != 1.0 and self.check_ki7_scale_issue()
+            if needs_ki7_scale_workaround:
+                logger.warning(f"{W_BUG16418}In output `{self._parent.name}` page {n+1}: "
+                               "KiCad 7 bug #16418 prevents correct page view. "
+                               "Add some copper, silk or edge layer")
             # Use a dir for each page, avoid overwriting files, just for debug purposes
             page_str = "%02d" % (n+1)
             temp_dir = os.path.join(temp_dir_base, page_str)
@@ -1151,6 +1196,8 @@ class PCB_PrintOptions(VariantOptions):
                 filelist.append((pc.GetPlotFileName(), la.color))
                 self.plot_extra_cu(id, la, pc, p, filelist)
                 self.plot_realistic_solder_mask(id, temp_dir, filelist[-1][0], filelist[-1][1], p.mirror, p.scaling)
+#                 if needs_ki7_scale_workaround:
+#                     self.kicad7_scale_workaround(id, temp_dir, filelist[-1][0], filelist[-1][1], p.mirror, p.scaling)
             # 2) Plot the frame using an empty layer and 1.0 scale
             po.SetMirror(False)
             if self.plot_sheet_reference:
