@@ -3,7 +3,6 @@
 	<head>
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-		<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 		<script src="https://cdn.rawgit.com/ccampbell/mousetrap/825ce50c/mousetrap.min.js"></script>
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -19,7 +18,7 @@
 		</div>
 
 		<!-- User Interface -->
-		<div class="container fill no-gutters ui-style">
+		<div id="main_ui" class="container fill no-gutters ui-style">
 			<div class="row fill align-items-start no-gutters ui-row-style">
 				<!-- Project info and commits -->
 				<div class="col align-self-start justify-content-start col-3 no-gutters ui-col-prjdata">
@@ -101,33 +100,39 @@
 						<div class="col no-gutters ui-canvas-in">
 							<div id="legend" class="rounded no-gutters ui-legend">
 								<iframe name="hidden_post_target" class="hidden_iframe"></iframe>
-								<span id="commit1_legend" class="iconify icon-commit1" data-icon="teenyicons-square-solid"></span>
-								<small id="commit1_legend_text" class="text-sm text-light">
-									Newer
-									<span class="text-monospace">
-										<form id="KICAD_COMMIT_1" class="form-inline" style="display: inline;" action="index.html" method="post" target="hidden_post_target">
-											<input id="commit1_hash" type="hidden" name="hash" value="[KICAD_COMMIT_1]">
-											<input id="commit1_kicad_pro_path" type="hidden" name="kicad_pro_path" value="[COMMIT_1_KICAD_PRO]">
-											(<a data-toggle="tooltip" title="Launch Kicad at this Rev" id="commit1_legend_hash" href="javascript:{}" onclick="document.getElementById('KICAD_COMMIT_1').submit();">[COMMIT_1_HASH]</a>)
-										</form>
-									</span>
-								</small>
+								<div id="commit1" class="commit1" style="visibility: visible;">
+									<span id="commit1_legend" class="iconify icon-commit1 icon-commit1-color" data-icon="teenyicons-square-solid"></span>
+									<small id="commit1_legend_text" class="text-sm text-light">
+										Newer
+										<span class="text-monospace">
+											<form id="KICAD_COMMIT_1" class="form-inline" style="display: inline;" action="index.html" method="post" target="hidden_post_target">
+												<input id="commit1_hash" type="hidden" name="hash" value="[KICAD_COMMIT_1]">
+												<input id="commit1_kicad_pro_path" type="hidden" name="kicad_pro_path" value="[COMMIT_1_KICAD_PRO]">
+												(<a data-toggle="tooltip" title="Launch Kicad at this Rev" id="commit1_legend_hash" href="javascript:{}" onclick="document.getElementById('KICAD_COMMIT_1').submit();">[COMMIT_1_HASH]</a>)
+											</form>
+										</span>
+									</small>
+								</div>
 								<span class="ui-legend-sep1"></span>
-								<span id="commit2_legend" class="iconify icon-commit2" data-icon="teenyicons-square-solid"></span>
-								<small id="commit2_legend_text" class="text-sm text-light">
-									Older
-									<span class="text-monospace">
-										<form id="KICAD_COMMIT_2" class="form-inline" style="display: inline;" action="index.html" method="post" target="hidden_post_target">
-											<input id="commit2_hash" type="hidden" name="hash" value="[KICAD_COMMIT_2]">
-											<input id="commit2_kicad_pro_path" type="hidden" name="kicad_pro_path" value="[COMMIT_2_KICAD_PRO]">
-											(<a data-toggle="tooltip" title="Launch Kicad at this Rev" id="commit2_legend_hash" href="javascript:{}" onclick="document.getElementById('KICAD_COMMIT_2').submit();">[COMMIT_2_HASH]</a>)
-										</form>
-									</span>
-								</small>
-								<span id="commit3_legend" class="iconify icon-commit3" data-icon="teenyicons-square-solid"></span>
-								<small id="commit3_legend_text" class="text-sm text-light">
-									Unchanged
-								</small>
+								<div id="commit2" class="commit2" style="visibility: visible;">
+									<span id="commit2_legend" class="iconify icon-commit2 icon-commit2-color" data-icon="teenyicons-square-solid"></span>
+									<small id="commit2_legend_text" class="text-sm text-light">
+										Older
+										<span class="text-monospace">
+											<form id="KICAD_COMMIT_2" class="form-inline" style="display: inline;" action="index.html" method="post" target="hidden_post_target">
+												<input id="commit2_hash" type="hidden" name="hash" value="[KICAD_COMMIT_2]">
+												<input id="commit2_kicad_pro_path" type="hidden" name="kicad_pro_path" value="[COMMIT_2_KICAD_PRO]">
+												(<a data-toggle="tooltip" title="Launch Kicad at this Rev" id="commit2_legend_hash" href="javascript:{}" onclick="document.getElementById('KICAD_COMMIT_2').submit();">[COMMIT_2_HASH]</a>)
+											</form>
+										</span>
+									</small>
+								</div>
+								<div id="commit3" class="commit3" style="visibility: visible;">
+									<span id="commit3_legend" class="iconify icon-commit3" data-icon="teenyicons-square-solid"></span>
+									<small id="commit3_legend_text" class="text-sm text-light">
+										Unchanged
+									</small>
+								</div>
 								<span class="commit-standalone-color"></span>
 							</div>
 							<!-- Diff canvas -->

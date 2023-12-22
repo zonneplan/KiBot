@@ -270,23 +270,26 @@ hr {
 	height: 20px;
 }
 
-.icon-commit1 {
-	margin-left: 0.5em;
+
+.icon-commit1, .icon-commit1-fs {
 	margin-right: 0.2em;
-	color: #00FF00;
 	width: 10px;
 	height: 10px;
+}
+
+.icon-commit1 {
+	margin-left: 0.5em;
 }
 
 .icon-commit1-fs {
 	margin-left: 0em;
-	margin-right: 0.2em;
-	color: #00FF00;
-	width: 10px;
-	height: 10px;
 }
 
-.icon-commit2 {
+.icon-commit1-color {
+	color: #00FF00;
+}
+
+.icon-commit2, .icon-commit2-fs {
 	display: inline;
 	margin-left: 1em;
 	margin-right:0.2em;
@@ -295,13 +298,8 @@ hr {
 	height: 10px;
 }
 
-.icon-commit2-fs {
-	display: inline;
-	margin-left:1em;
-	margin-right:0.2em;
+.icon-commit2-color {
 	color: #FF0000;
-	width: 10px;
-	height: 10px;
 }
 
 .commit-standalone-color {
@@ -538,4 +536,8 @@ hr {
 	margin: 0px;
 	overflow-y: scroll;
 	max-height: 90vh;
+}
+
+.commit1, .commit2, .commit3 {
+	display: inline;
 }
