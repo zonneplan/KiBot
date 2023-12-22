@@ -31,7 +31,6 @@ from .gs import GS
 from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
 from .layer import Layer
 from .misc import DIFF_TOO_BIG, FAILED_EXECUTE
-from .optionable import BaseOptions
 from .out_base import VariantOptions
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
@@ -41,7 +40,7 @@ logger = log.get_logger()
 STASH_MSG = 'KiBot_Changes_Entry'
 
 
-class DiffOptions(BaseOptions):
+class DiffOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -458,12 +457,20 @@ class DiffOptions(BaseOptions):
     def cache_current(self):
         """ The file as we interpreted it """
         if self.pcb:
-            fname, dir_name = VariantOptions.save_tmp_dir_board('diff')
+            fname, dir_name = self.save_tmp_dir_board('diff')
+            self.dirs_to_remove.append(dir_name)
         else:
-            dir_name = mkdtemp()
-            fname = GS.sch.save_variant(dir_name)
-            GS.copy_project_sch(dir_name)
-        self.dirs_to_remove.append(dir_name)
+            if self._comps:
+                # We have a variant/filter applied
+                dir_name = mkdtemp()
+                fname = GS.sch.save_variant(dir_name)
+                GS.copy_project_sch(dir_name)
+                self.dirs_to_remove.append(dir_name)
+            else:
+                # Just use the current file
+                # Note: The KiCad 7 DNP field needs some filter to be honored
+                dir_name = GS.sch_dir
+                fname = os.path.basename(GS.sch_file)
         res = self.cache_file(os.path.join(dir_name, fname))
         self.git_hash = 'Current'
         return res

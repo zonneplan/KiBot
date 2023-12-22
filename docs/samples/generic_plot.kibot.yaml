@@ -95,7 +95,7 @@ preflight:
   update_xml: true
 
 outputs:
-  # Blender Export **Experimental**:
+  # Blender Export:
   # Also renders the PCB with high-quality.
   # Needs KiCad 6 or newer.
   # This output is complex to setup and needs very big dependencies.
@@ -762,6 +762,9 @@ outputs:
       # The `stats` mode is used to meassure the amount of difference. In this mode all
       # changes are red, but you can abort if the difference is bigger than certain threshold
       diff_mode: 'red_green'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
       # [boolean=false] When `old_type` and/or `new_type` are `git` KiBot will checkout the indicated point.
       # Before doing it KiBot will stash any change. Under some circumstances git could fail
       # to do a checkout, even after stashing, this option can workaround the problem.
@@ -803,6 +806,9 @@ outputs:
       output: '%f-%i%I%v.%x'
       # [boolean=true] Compare the PCB, otherwise compare the schematic
       pcb: true
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
       # difference bigger than the indicated value will make the diff fail.
       # KiBot will return error level 29 and the diff generation will be aborted
@@ -810,6 +816,8 @@ outputs:
       # [boolean=false] When creating the link name of an output file related to a variant use the variant
       # `file_id` instead of its name
       use_file_id: false
+      # [string=''] Board variant to apply
+      variant: ''
     layers: all
   # Datasheets downloader:
   - name: 'download_datasheets_example'
@@ -2312,7 +2320,8 @@ outputs:
           # Order is important, the last goes on top.
           # You can reuse other layers lists, some options aren't used here, but they are valid
           layers:
-            # [string=''] Color used for this layer
+            # [string=''] Color used for this layer.
+            # KiCad 6+: don't forget the alpha channel for layers like the solder mask
             - color: ''
               # [string=''] A description for the layer, for documentation purposes.
               # A default can be specified using the `layer_defaults` global option
@@ -2349,7 +2358,8 @@ outputs:
           # [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
           # This can be used to generate a page for each copper layer, here you put `copper`
           repeat_layers:
-            # [string=''] Color used for this layer
+            # [string=''] Color used for this layer.
+            # KiCad 6+: don't forget the alpha channel for layers like the solder mask
             - color: ''
               # [string=''] A description for the layer, for documentation purposes.
               # A default can be specified using the `layer_defaults` global option

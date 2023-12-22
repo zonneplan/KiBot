@@ -61,6 +61,7 @@ outputs:
     type: compress
     dir: @_KIBOT_MANF_DIR_COMP@
     options:
+      move_files: @_KIBOT_COMPRESS_MOVE@
       files:
         - from_output: _P-Ban_gerbers@_KIBOT_IMPORT_ID@
           dest: /
@@ -77,6 +78,7 @@ definitions:
   _KIBOT_MANF_DIR_COMP: '@_KIBOT_IMPORT_DIR@'
   _KIBOT_PLOT_FOOTPRINT_REFS: true
   _KIBOT_PLOT_FOOTPRINT_VALUES: true
+  _KIBOT_COMPRESS_MOVE: true
   _KIBOT_GERBER_LAYERS: |
       - F.Cu
             - B.Cu

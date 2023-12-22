@@ -46,6 +46,7 @@ Parameters:
                -  Valid keys:
 
                   -  ``color`` :index:`: <pair: output - pcb_print - options - pages - layers; color>` [string=''] Color used for this layer.
+                     KiCad 6+: don't forget the alpha channel for layers like the solder mask.
                   -  ``description`` :index:`: <pair: output - pcb_print - options - pages - layers; description>` [string=''] A description for the layer, for documentation purposes.
                      A default can be specified using the `layer_defaults` global option.
                   -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - layers; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.
@@ -79,6 +80,7 @@ Parameters:
                -  Valid keys:
 
                   -  ``color`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; color>` [string=''] Color used for this layer.
+                     KiCad 6+: don't forget the alpha channel for layers like the solder mask.
                   -  ``description`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; description>` [string=''] A description for the layer, for documentation purposes.
                      A default can be specified using the `layer_defaults` global option.
                   -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.

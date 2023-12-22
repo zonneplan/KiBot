@@ -99,6 +99,14 @@ For more information about the docker images visit
 `kicad_debian <https://github.com/INTI-CMNB/kicad_debian>`__ and
 `kicad_auto <https://github.com/INTI-CMNB/kicad_auto>`__.
 
+.. index::
+   pair: usage; GitHub
+
+GitHub workflows
+~~~~~~~~~~~~~~~~
+
+A work-in-progress guide can be found `here <https://github.com/INTI-CMNB/KiBot/blob/dev/docs/GITHUB-ACTIONS-README.md>`__.
+
 
 .. index::
    pair: usage; GitHub Actions
