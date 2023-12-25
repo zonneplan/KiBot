@@ -446,8 +446,8 @@ def get_output_dir(o_dir, obj, dry=False):
     outdir = os.path.realpath(os.path.abspath(obj.expand_dirname(os.path.join(GS.out_dir, o_dir))))
     # Create directory if needed
     logger.debug("Output destination: {}".format(outdir))
-    if not dry and not os.path.exists(outdir):
-        os.makedirs(outdir)
+    if not dry:
+        os.makedirs(outdir, exist_ok=True)
     return outdir
 
 
