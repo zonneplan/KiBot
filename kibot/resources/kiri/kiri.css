@@ -258,11 +258,36 @@ hr {
 .icon-sheet-page {
 	margin-left: 0.5em;
 	margin-right: 0.1em;
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	background-color: currentColor;
+	--svg: url('./images/pages.svg');
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
 }
 
 .icon-commits {
 	margin-left: 5px;
 	margin-right:0.5em;
+	/* Add dimensions to span */
+	display: inline-block;
+	width: 1em;
+	height: 1em;
+	/* Add background color */
+	background-color: currentColor;
+	/* Add mask image, use variable to reduce duplication */
+	--svg: url('./images/code-branch-solid.svg');
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
 }
 
 .icon-control {
@@ -271,10 +296,61 @@ hr {
 }
 
 
-.icon-commit1, .icon-commit1-fs {
-	margin-right: 0.2em;
+.icon-control-sch, .icon-control-pcb, .icon-control-zin, .icon-control-zout, .icon-control-center, .icon-control-info {
+	display: block;
+	width: 20px;
+	height: 20px;
+	margin: 0.2em;
+	background-color: currentColor;
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
+}
+
+.icon-control-sch {
+	--svg: url('./images/schematics.svg');
+}
+
+.icon-control-pcb {
+	--svg: url('./images/circuit-board.svg');
+}
+
+.icon-control-zin {
+	--svg: url('./images/zoom-in.svg');
+}
+
+.icon-control-zout {
+	--svg: url('./images/zoom-out.svg');
+}
+
+.icon-control-center {
+	--svg: url('./images/center-to-fit.svg');
+}
+
+.icon-control-info {
+	--svg: url('./images/info.svg');
+}
+
+
+.icon-commit1, .icon-commit1-fs, .icon-commit2, .icon-commit2-fs, .icon-commit3, .icon-commit3-fs {
+	display: inline-block;
 	width: 10px;
 	height: 10px;
+	background-color: currentColor;
+	--svg: url('./images/square-solid.svg');
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
+}
+
+.icon-commit1, .icon-commit1-fs {
+	margin-right: 0.2em;
 }
 
 .icon-commit1 {
@@ -290,12 +366,9 @@ hr {
 }
 
 .icon-commit2, .icon-commit2-fs {
-	display: inline;
 	margin-left: 1em;
 	margin-right:0.2em;
 	color: #FF0000;
-	width: 10px;
-	height: 10px;
 }
 
 .icon-commit2-color {
@@ -306,41 +379,74 @@ hr {
 	color: #A7A7A7;
 }
 
-.icon-commit3 {
+.icon-commit3, .icon-commit3-fs {
 	margin-left:1em;
 	margin-right:0.2em;
 	color: #FFA000;
-	width: 10px;
-	height: 10px;
 }
 
-.icon-commit3-fs {
-	margin-left: 1em;
-	margin-right: 0.2em;
-	color: #FFA000;
-	width: 10px;
-	height: 10px;
-}
 
-.icon-sch-pcb-modif {
+.icon-sch-modif, .icon-pcb-modif {
+	display: inline-block;
 	padding-left: 0px;
 	padding-right: 0px;
 	width: 14px;
 	height: 14px;
+	background-color: currentColor;
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
 }
 
 .icon-sch-modif {
+	--svg: url('./images/schematics.svg');
 	color: #A6E22E;
 }
 
 .icon-pcb-modif {
+	--svg: url('./images/circuit-board.svg');
 	color: #F92672;
 }
 
-.icon-sheets {
+.icon-sheets, .icon-layers {
 	margin-right:0.5em;
 	width: 20px;
 	height: 20px;
+	display: inline-block;
+	background-color: currentColor;
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
+}
+
+.icon-sheets {
+	--svg: url('./images/next-page.svg');
+}
+
+.icon-layers {
+	--svg: url('./images/layers-solid.svg');
+}
+
+.layer_color_margin {
+	margin-left:0.5em;
+	margin-right:0.1em;
+	width: 0.7em;
+	height: 0.7em;
+	display: inline-block;
+	background-color: currentColor;
+	--svg: url('./images/square-solid.svg');
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
 }
 
 .ui-style {
@@ -541,3 +647,4 @@ hr {
 .commit1, .commit2, .commit3 {
 	display: inline;
 }
+

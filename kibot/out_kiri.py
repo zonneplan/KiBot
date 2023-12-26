@@ -22,7 +22,7 @@ Dependencies:
 import datetime
 import pwd
 import os
-from shutil import copy2, rmtree
+from shutil import copy2, rmtree, copytree
 from subprocess import CalledProcessError
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
@@ -41,11 +41,6 @@ UNDEF_COLOR = '#DBDBDB'
 LAYER_COLORS_HEAD = """/* ==============================
    Layer colors
 ** ============================*/
-
-.layer_color_margin {
-        margin-left:0.5em;
-        margin-right:0.1em;
-}
 """
 
 
@@ -190,11 +185,11 @@ class KiRiOptions(VariantOptions):
         copy2(os.path.join(src_dir, 'kiri-server'), os.path.join(self.cache_dir, 'kiri-server'))
         web_dir = os.path.join(self.cache_dir, 'web')
         os.makedirs(web_dir, exist_ok=True)
-        copy2(os.path.join(src_dir, 'blank.svg'), os.path.join(web_dir, 'blank.svg'))
         copy2(os.path.join(src_dir, 'favicon.ico'), os.path.join(web_dir, 'favicon.ico'))
         copy2(os.path.join(src_dir, 'kiri.css'), os.path.join(web_dir, 'kiri.css'))
         copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
         copy2(os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
+        copytree(os.path.join(src_dir, 'images'), os.path.join(web_dir, 'images'), dirs_exist_ok=True)
         # Colors for the layers
         with open(os.path.join(web_dir, 'layer_colors.css'), 'wt') as f:
             f.write(LAYER_COLORS_HEAD)

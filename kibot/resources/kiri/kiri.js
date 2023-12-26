@@ -43,9 +43,9 @@ var layers_commit2 = new Set();
 // Displayed PCB layers
 var current_layers_list = [];
 // Icon to indicate the schematic was changed in a commit
-const SCH_IMG = '<span class="iconify icon-sch-pcb-modif icon-sch-modif" data-inline="false"; data-icon="carbon:schematics"></span>';
+const SCH_IMG = '<span class="icon-sch-modif"></span>';
 // Icon to indicate the PCB was changed in a commit
-const PCB_IMG = '<span class="iconify icon-sch-pcb-modif icon-pcb-modif" data-inline="false"; data-icon="codicon:circuit-board"></span>';
+const PCB_IMG = '<span class="icon-pcb-modif"></span>';
 // Color for the commit1
 var commit1_legend_color;
 // Color for the commit2
@@ -548,13 +548,13 @@ function update_selected_page()
     if (sheet_pages_commit1.has(page_filename)) {
         image_path_1 = "../" + commit1.value + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
-        image_path_1 = "blank.svg";
+        image_path_1 = "images/blank.svg";
     }
 
     if (sheet_pages_commit2.has(page_filename)) {
         image_path_2 = "../" + commit2.value + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
-        image_path_2 = "blank.svg";
+        image_path_2 = "images/blank.svg";
     }
 
     console.log("[SCH] page_filename =", page_filename);
@@ -650,7 +650,7 @@ function update_sheets_list() {
         var input_html = `
         <input id="${sheet}" data-toggle="tooltip" title="${sheet}" type="radio" value="${sheet}" name="pages" onchange="change_selected_page(${index})">
             <label for="${sheet}" data-toggle="tooltip" title="${sheet}" id="label-${sheet}" class="rounded text-sm-left list-group-item radio-box">
-                <span data-toggle="tooltip" title="${sheet}" class="iconify icon-sheet-page" data-icon="gridicons:pages" data-inline="false"></span>
+                <span data-toggle="tooltip" title="${sheet}" class="icon-sheet-page"></span>
                 <span class="${color_style}">${visible_sheet}</span>
             </label>
         </label>
@@ -850,7 +850,7 @@ function update_layers_list()
         <!-- Generated Layer ${id} -->
         <input  id="layer-${id_pad}" value="layer-${layer_names}" type="radio" name="layers" onchange="change_selected_layer(${index})">
         <label for="layer-${id_pad}" id="label-layer-${id_pad}" data-toggle="tooltip" title="${id}, ${layer_names}" class="rounded text-sm-left list-group-item radio-box">
-            <span class="iconify layer_color_margin layer_color_${id}" data-icon="teenyicons-square-solid" data-inline="false"></span>
+            <span class="layer_color_margin layer_color_${id}"></span>
             <span class="${color_style}">${layer_names}</span>
         </label>
         `;
@@ -909,12 +909,12 @@ function update_selected_layer() {
     if (layers_commit1.has(layer_id)) {
         image_path_1 = "../" + commit1.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
     } else {
-        image_path_1 = "blank.svg";
+        image_path_1 = "images/blank.svg";
     }
     if (layers_commit2.has(layer_id)) {
         image_path_2 = "../" + commit2.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
     } else {
-        image_path_2 = "blank.svg";
+        image_path_2 = "images/blank.svg";
     }
 
     console.log("[PCB]      layer_id =", layer_id);
@@ -1149,6 +1149,7 @@ function createNewEmbed(src1, src2)
 
     document.getElementById('diff-container').replaceWith(embed);
     document.getElementById('diff-container').innerHTML = svg_element;
+    document.getElementById('diff-container').onfullscreenchange = fullscreenchanged;
     console.log(">>> SVG: ", embed);
 
     svgpanzoom_selector = "#svg-id";
@@ -1283,7 +1284,7 @@ function update_fullscreen_label()
             label = `
                 <div id="fullscreen_label" class="alert alert-dark border border-dark rounded-pill position-absolute top-10 start-50 translate-middle ui-fs-label" role="alert">
                     <div id="commit1_div_fs" class="commit1" style="visibility: ${vis1};">
-                        <span id="commit1_legend_fs" class="iconify icon-commit1-fs icon-commit1-color" style="color: ${col1};" data-icon="teenyicons-square-solid"></span>
+                        <span id="commit1_legend_fs" class="icon-commit1-fs icon-commit1-color" style="color: ${col1};"></span>
                         <small id="commit1_legend_text_fs" class="text-sm text-light">
                             Newer
                             <span id="commit1_fs" class="text-monospace">(<a id="commit1_legend_hash">${commit1.value}</a>)</span>
@@ -1293,7 +1294,7 @@ function update_fullscreen_label()
                     <span class="ui-legend-sep1-fs"></span>
 
                     <div id="commit2_div_fs" class="commit2" style="visibility: ${vis2};">
-                        <span id="commit2_legend_fs" class="iconify icon-commit2-fs icon-commit2-color" style="color: ${col2};" data-icon="teenyicons-square-solid"></span>
+                        <span id="commit2_legend_fs" class="icon-commit2-fs icon-commit2-color" style="color: ${col2};"></span>
                         <small id=commit2_legend_text_fs class="text-sm text-light">
                             Older
                             <span id="commit2_fs" class="text-monospace">(<a id="commit2_legend_hash">${commit2.value}</a>)</span>
@@ -1303,7 +1304,7 @@ function update_fullscreen_label()
                     <span class="ui-legend-sep1-fs"></span>
 
                     <div id="commit3_div_fs" class="commit3" style="visibility: ${vis3};">
-                       <span id="commit3_legend_fs" class="iconify icon-commit3-fs" data-icon="teenyicons-square-solid"></span>
+                       <span id="commit3_legend_fs" class="icon-commit3-fs"></span>
                        <small id="commit3_legend_text_fs" class="text-sm text-light">
                            Unchanged
                        </small>
@@ -1372,4 +1373,3 @@ function fullscreenchanged(event) {
     box.remove();
   }
 }
-document.getElementById("diff-container").onfullscreenchange = fullscreenchanged;
