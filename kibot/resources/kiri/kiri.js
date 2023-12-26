@@ -323,59 +323,108 @@ function manual_pan(direction)
     const step = 50;
 
     switch(direction) {
-       case "up":
+       case "Up":
             panZoom_instance.panBy({x: 0, y: step});
             break;
-       case "down":
+       case "Down":
             panZoom_instance.panBy({x: 0, y: -step});
             break;
-       case "left":
+       case "Left":
             panZoom_instance.panBy({x: step, y: 0});
             break;
-       case "right":
+       case "Right":
             panZoom_instance.panBy({x: -step, y: 0});
             break;
     }
 }
 
-// Commits
-Mousetrap.bind(['ctrl+down', 'ctrl+]','command+down', 'command+]'], function(){select_next_2_commits()});
-Mousetrap.bind(['down', ']'],      function(){select_next_commit()});
+document.onkeydown = function (e) {
+    /*console.log('e.key', e.key);
+    console.log('e.altKey', e.altKey);
+    console.log('e.code', e.code);*/
+    if (e.altKey && ! (e.ctrlKey || e.metaKey)) {
+        // ALT + xxx
+        switch (e.code) {
+            case "KeyR":
+                reset_commits_selection();
+                break;
+            case "KeyQ":
+                toggle_new_commit_visibility();
+                break;
+            case "KeyW":
+                toggle_old_commit_visibility();
+                break;
+            // SVG PAN
+            case "ArrowUp":
+            case "ArrowDown":
+            case "ArrowLeft":
+            case "ArrowRight":
+                manual_pan(e.key.substring(5));
+                break;
+        }
+    } else if ((e.ctrlKey || e.metaKey) && ! e.altKey) {
+        // CTRL/Command + xxxx
+        switch (e.code) {
+            case "ArrowUp":
+            case "BracketLeft":
+                select_previous_2_commits();
+                break;
+            case "ArrowDown":
+            case "BracketRight":
+                select_next_2_commits();
+                break;
+            case "ArrowLeft":
+                select_preview_sch_or_pcb(true);
+                break;
+            case "ArrowRight":
+                select_next_sch_or_pcb(true);
+                break;
+        }
+    } else if (! (e.ctrlKey || e.metaKey || e.altKey)) {
+        // Key alone
+        switch (e.code) {
+            case "ArrowUp":
+            case "BracketLeft":
+                select_previous_commit();
+                break;
+            case "ArrowDown":
+            case "BracketRight":
+                select_next_commit();
+                break;
+            // View
+            case "KeyS":
+                toggle_sch_pcb_view();
+                break;
+            case "ArrowLeft":
+                select_preview_sch_or_pcb();
+                break;
+            case "ArrowRight":
+                select_next_sch_or_pcb();
+                break;
+             // SVG ZOOM
+             case "Digit0":
+                 svg_fit_center();
+                 break;
+             // Misc
+             case "KeyF":
+                 toggle_fullscreen();
+                 break;
+             case "KeyI":
+                 document.getElementById("info-btn").click();
+                 break;
+             default:
+                 switch (e.key) {
+                     case "+":
+                          svg_zoom_in();
+                          break;
+                     case "-":
+                          svg_zoom_out();
+                          break;
+                 }
+        }
+    }
+}
 
-Mousetrap.bind(['ctrl+up', 'ctrl+[', 'command+up', 'command+['], function(){select_previous_2_commits()});
-Mousetrap.bind(['up', '['],        function(){select_previous_commit()});
-
-Mousetrap.bind(['r', 'R'],  function(){reset_commits_selection()});
-
-// View
-Mousetrap.bind(['s', 'S'],  function(){toggle_sch_pcb_view()});
-
-Mousetrap.bind(['q', 'Q'],  function(){toggle_old_commit_visibility()});
-Mousetrap.bind(['w', 'W'],  function(){toggle_new_commit_visibility()});
-
-Mousetrap.bind(['alt+q', 'alt+Q'],  function(){toggle_new_commit_visibility()});
-Mousetrap.bind(['alt+w', 'alt+W'],  function(){toggle_old_commit_visibility()});
-
-Mousetrap.bind(['right'], function(){select_next_sch_or_pcb()});
-Mousetrap.bind(['left'],  function(){select_preview_sch_or_pcb()});
-
-Mousetrap.bind(['ctrl+right', 'command+right'], function(){select_next_sch_or_pcb(true)});
-Mousetrap.bind(['ctrl+left', 'command+left'],  function(){select_preview_sch_or_pcb(true)});
-
-// SVG PAN
-Mousetrap.bind('alt+up',    function(){manual_pan("up")});
-Mousetrap.bind('alt+down',  function(){manual_pan("down")});
-Mousetrap.bind('alt+left',  function(){manual_pan("left")});
-Mousetrap.bind('alt+right', function(){manual_pan("right")});
-
-// SVG ZOOM
-Mousetrap.bind('0',        function(){svg_fit_center()});
-Mousetrap.bind(['+', '='], function(){svg_zoom_in()});
-Mousetrap.bind('-',        function(){svg_zoom_out()});
-
-// Misc
-Mousetrap.bind(['f', 'F'], function(){toggle_fullscreen()});
-Mousetrap.bind(['i', 'I'], function(){show_info_popup()});
 
 // =======================================
 // =======================================
@@ -1324,8 +1373,3 @@ function fullscreenchanged(event) {
   }
 }
 document.getElementById("diff-container").onfullscreenchange = fullscreenchanged;
-
-function show_info_popup()
-{
-    document.getElementById("info-btn").click();
-}
