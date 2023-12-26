@@ -190,6 +190,7 @@ class KiRiOptions(VariantOptions):
         copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
         copy2(os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
         copytree(os.path.join(src_dir, 'images'), os.path.join(web_dir, 'images'), dirs_exist_ok=True)
+        copytree(os.path.join(src_dir, 'utils'), os.path.join(web_dir, 'utils'), dirs_exist_ok=True)
         # Colors for the layers
         with open(os.path.join(web_dir, 'layer_colors.css'), 'wt') as f:
             f.write(LAYER_COLORS_HEAD)
