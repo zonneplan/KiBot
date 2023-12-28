@@ -22,7 +22,7 @@ Dependencies:
 import datetime
 import pwd
 import os
-from shutil import copy2, rmtree, copytree
+from shutil import copy2, rmtree
 from subprocess import CalledProcessError
 from tempfile import mkdtemp, NamedTemporaryFile
 from .error import KiPlotConfigurationError
@@ -179,6 +179,45 @@ class KiRiOptions(VariantOptions):
             logger.debug(f'Commits with changes in the PCB: {self.commits_with_changed_pcb}')
             logger.debug(f'Commits with changes in the Schematics: {self.commits_with_changed_sch}')
 
+    def copy_index(self, src_dir, src_index, dst_index):
+        with open(src_index, 'rt') as src:
+            with open(dst_index, 'wt') as dst:
+                for ln in src:
+                    ln_stripped = ln.strip()
+                    if ln_stripped.startswith('<script src="'):
+                        fn = ln_stripped[13:].split('"')[0]
+                        with open(os.path.join(src_dir, fn), 'rt') as f:
+                            script = f.read()
+                        dst.write('<script>\n')
+                        dst.write(script)
+                        dst.write('\n</script>\n')
+                    elif ln_stripped.startswith('<link rel="stylesheet" href="'):
+                        fn = ln_stripped[29:].split('"')[0]
+                        if fn == 'layer_colors.css':
+                            script = ''
+                            for id, color in self._color_theme.layer_id2color.items():
+                                script += f'.layer_color_{id} {{ color: {color[:7]}; }}\n'
+                        elif fn == 'kiri.css':
+                            # Replace the SVGs using its source
+                            script = ''
+                            with open(os.path.join(src_dir, fn), 'rt') as f:
+                                for lns in f:
+                                    if lns.startswith("\t--svg: url('"):
+                                        fns = lns[13:].split("'")[0]
+                                        with open(os.path.join(src_dir, fns), 'rt') as f:
+                                            svg = f.read().strip()
+                                        script += "\t--svg: url('data:image/svg+xml;utf8,"+svg+"');\n"
+                                    else:
+                                        script += lns
+                        else:
+                            with open(os.path.join(src_dir, fn), 'rt') as f:
+                                script = f.read()
+                        dst.write('<style>\n')
+                        dst.write(script)
+                        dst.write('\n</style>\n')
+                    else:
+                        dst.write(ln)
+
     def create_kiri_files(self):
         src_dir = GS.get_resource_path('kiri')
         copy2(os.path.join(src_dir, 'redirect.html'), os.path.join(self.cache_dir, 'index.html'))
@@ -186,16 +225,18 @@ class KiRiOptions(VariantOptions):
         web_dir = os.path.join(self.cache_dir, 'web')
         os.makedirs(web_dir, exist_ok=True)
         copy2(os.path.join(src_dir, 'favicon.ico'), os.path.join(web_dir, 'favicon.ico'))
-        copy2(os.path.join(src_dir, 'kiri.css'), os.path.join(web_dir, 'kiri.css'))
-        copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
-        copy2(os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
-        copytree(os.path.join(src_dir, 'images'), os.path.join(web_dir, 'images'), dirs_exist_ok=True)
-        copytree(os.path.join(src_dir, 'utils'), os.path.join(web_dir, 'utils'), dirs_exist_ok=True)
+        copy2(os.path.join(src_dir, 'blank.svg'), os.path.join(web_dir, 'blank.svg'))
+        self.copy_index(src_dir, os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
+        # copytree(os.path.join(src_dir, 'images'), os.path.join(web_dir, 'images'), dirs_exist_ok=True)
+        # copy2(os.path.join(src_dir, 'kiri.css'), os.path.join(web_dir, 'kiri.css'))
+        # copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
+        # copy2(os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
+        # copytree(os.path.join(src_dir, 'utils'), os.path.join(web_dir, 'utils'), dirs_exist_ok=True)
         # Colors for the layers
-        with open(os.path.join(web_dir, 'layer_colors.css'), 'wt') as f:
-            f.write(LAYER_COLORS_HEAD)
-            for id, color in self._color_theme.layer_id2color.items():
-                f.write(f'.layer_color_{id} {{ color: {color[:7]}; }}\n')
+        # with open(os.path.join(web_dir, 'layer_colors.css'), 'wt') as f:
+        #    f.write(LAYER_COLORS_HEAD)
+        #    for id, color in self._color_theme.layer_id2color.items():
+        #        f.write(f'.layer_color_{id} {{ color: {color[:7]}; }}\n')
 
     def run(self, name):
         self.cache_dir = self._parent.output_dir

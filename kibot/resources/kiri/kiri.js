@@ -548,13 +548,13 @@ function update_selected_page()
     if (sheet_pages_commit1.has(page_filename)) {
         image_path_1 = "../" + commit1.value + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
-        image_path_1 = "images/blank.svg";
+        image_path_1 = "blank.svg";
     }
 
     if (sheet_pages_commit2.has(page_filename)) {
         image_path_2 = "../" + commit2.value + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
-        image_path_2 = "images/blank.svg";
+        image_path_2 = "blank.svg";
     }
 
     console.log("[SCH] page_filename =", page_filename);
@@ -907,12 +907,12 @@ function update_selected_layer() {
     if (layers_commit1.has(layer_id)) {
         image_path_1 = "../" + commit1.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
     } else {
-        image_path_1 = "images/blank.svg";
+        image_path_1 = "blank.svg";
     }
     if (layers_commit2.has(layer_id)) {
         image_path_2 = "../" + commit2.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
     } else {
-        image_path_2 = "images/blank.svg";
+        image_path_2 = "blank.svg";
     }
 
     console.log("[PCB]      layer_id =", layer_id);
