@@ -409,7 +409,7 @@ hr {
 .icon-commit {
 	width: 1em;
 	height: 1em;
-	--svg: url("data:image/svg+xml;utf8,<svg viewBox='0 0 15 15' fill='none' xmlns='http://www.w3.org/2000/svg' width='15' height='15'><path d='M7.5 10.5a3 3 0 010-6m0 6a3 3 0 000-6m0 6V15m0-10.5V0' stroke='currentColor'></path></svg>");
+	--svg: url('./images/commit.svg');
 }
 
 .commit-label {
