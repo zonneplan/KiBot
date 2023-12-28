@@ -449,6 +449,41 @@ hr {
 	mask-size: 100% 100%;
 }
 
+.icon-commit {
+	width: 1em;
+	height: 1em;
+	display: inline-block;
+	background-color: currentColor;
+	--svg: url("data:image/svg+xml;utf8,<svg viewBox='0 0 15 15' fill='none' xmlns='http://www.w3.org/2000/svg' width='15' height='15'><path d='M7.5 10.5a3 3 0 010-6m0 6a3 3 0 000-6m0 6V15m0-10.5V0' stroke='currentColor'></path></svg>");
+	-webkit-mask-image: var(--svg);
+	mask-image: var(--svg);
+	-webkit-mask-repeat: no-repeat;
+	mask-repeat: no-repeat;
+	-webkit-mask-size: 100% 100%;
+	mask-size: 100% 100%;
+}
+
+.commit-label {
+	display: block;
+	width: 640px;
+	margin-left: 0px;
+}
+
+.commit-icon-cell {
+	vertical-align: top;
+	width: 1.8em;
+}
+
+.commit-info-cell {
+	white-space:nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.commit-desc-cell {
+	line-height: 0.7;
+}
+
 .ui-style {
 	background-color: #333;
 	overflow-y: hidden;

@@ -726,21 +726,19 @@ function load_commits()
         var commit_html = `
         <!-- Commit ${i} -->
         <input class="chkGroup" type="checkbox" id="${hash}" name="commit" value="${hash}" onchange="update_selected_commits(this, ${i})"${checked} order="${i}">
-        <label class="text-sm-left list-group-item" style="display: block; width: 445px; margin-left: 0px;" for="${hash}">
+        <label class="text-sm-left list-group-item commit-label" for="${hash}">
             <table data-toggle="tooltip" title="${tooltip}">
                 <tr>
-                    <td rowspan=2 style="vertical-align: top; width: 1.8em;">
-                        <svg viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" width="15" height="15">
-                            <path d="M7.5 10.5a3 3 0 010-6m0 6a3 3 0 000-6m0 6V15m0-10.5V0" stroke="currentColor"></path>
-                        </svg>
+                    <td rowspan=2 class="commit-icon-cell">
+                        <span class="icon-commit"></span>
                     </td>
-                    <td style="white-space:nowrap; overflow: hidden; text-overflow: ellipsis;">
+                    <td class="commit-info-cell">
                         <span class="text-muted"> ${i02} | </span> <span class="text-success font-weight-normal">${hash}</span> <span class="text-muted"> | </span> ${sch_icon} ${pcb_icon} <span class="text-muted font-weight-normal"> | ${dt} | ${author}</span>
                     </td>
                 </tr>
                 <tr>
                     <td>
-                        <em class="${cls}" style=" line-height: 0.7;">${desc}</em>
+                        <em class="${cls} commit-desc-cell">${desc}</em>
                     </td>
                 </tr>
             </table>
