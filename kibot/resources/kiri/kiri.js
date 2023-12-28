@@ -546,13 +546,13 @@ function update_selected_page()
     var image_path_2;
 
     if (sheet_pages_commit1.has(page_filename)) {
-        image_path_1 = "../" + commit1.value + "/_KIRI_/sch/" + page_filename + ".svg";
+        image_path_1 = commit1.value + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
         image_path_1 = "blank.svg";
     }
 
     if (sheet_pages_commit2.has(page_filename)) {
-        image_path_2 = "../" + commit2.value + "/_KIRI_/sch/" + page_filename + ".svg";
+        image_path_2 = commit2.value + "/_KIRI_/sch/" + page_filename + ".svg";
     } else {
         image_path_2 = "blank.svg";
     }
@@ -593,11 +593,11 @@ function update_page()
 
 function update_sheets_list() {
 
-    // File = ../[COMMIT]/_KIRI_/sch_sheets
+    // File = [COMMIT]/_KIRI_/sch_sheets
     // Data format: Name_without_extension|Relative_file_name|UUID|Instance_name|Sheet_Path_Name
 
-    data1 = loadFile("../" + commit1.value + "/_KIRI_/sch_sheets" + url_timestamp(commit1));
-    data2 = loadFile("../" + commit2.value + "/_KIRI_/sch_sheets" + url_timestamp(commit2));
+    data1 = loadFile(commit1.value + "/_KIRI_/sch_sheets" + url_timestamp(commit1));
+    data2 = loadFile(commit2.value + "/_KIRI_/sch_sheets" + url_timestamp(commit2));
 
     var sheets = [];
     var new_sheets_list = [];
@@ -704,7 +704,7 @@ function pad(num, size)
 function load_commits()
 {
     commit1 = commit2 = -1;
-    commits = loadFile("../commits");
+    commits = loadFile("commits");
     var i = 1;
     var all_commits_html = "";
     for (const line of commits)
@@ -761,7 +761,7 @@ function load_project_data()
     // Data format: TITLE
     //              SCH_TITLE|SCH_REVISION|SCH_DATE
     //              PCB_TITLE|PCB_REVISION|PCB_DATE
-    data = loadFile("../project");
+    data = loadFile("project");
     document.title = data[0];
     splitted = data[1].split("|");
     document.getElementById("sch_title_text").innerHTML = splitted[0];
@@ -788,11 +788,11 @@ function update_layers_list()
     var new_layers_list = [];
     var form_inputs_html;
 
-    // File = ../[COMMIT]/_KIRI_/pcb_layers
+    // File = [COMMIT]/_KIRI_/pcb_layers
     // Format = ID|LAYER
 
-    var used_layers_1 = loadFile("../" + commit1.value + "/_KIRI_/pcb_layers" + url_timestamp(commit1));
-    var used_layers_2 = loadFile("../" + commit2.value + "/_KIRI_/pcb_layers" + url_timestamp(commit2));
+    var used_layers_1 = loadFile(commit1.value + "/_KIRI_/pcb_layers" + url_timestamp(commit1));
+    var used_layers_2 = loadFile(commit2.value + "/_KIRI_/pcb_layers" + url_timestamp(commit2));
 
     layers_commit1 = new Set();
     for (const line of used_layers_1)
@@ -901,16 +901,16 @@ function update_layer()
 function update_selected_layer() {
 
     var layer_id = layers[selected_layer].id.split("-")[1];
-    var image_path_1 = "../" + commit1.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
-    var image_path_2 = "../" + commit2.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
+    var image_path_1;
+    var image_path_2;
 
     if (layers_commit1.has(layer_id)) {
-        image_path_1 = "../" + commit1.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
+        image_path_1 = commit1.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
     } else {
         image_path_1 = "blank.svg";
     }
     if (layers_commit2.has(layer_id)) {
-        image_path_2 = "../" + commit2.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
+        image_path_2 = commit2.value + "/_KIRI_/pcb/layer" + "-" + layer_id + ".svg";
     } else {
         image_path_2 = "blank.svg";
     }
@@ -1055,7 +1055,7 @@ function check_server_status()
         server_is_offline();
     };
 
-    img.src = "favicon.ico" + url_timestamp();
+    img.src = "blank.svg" + url_timestamp();
 
     setTimeout(check_server_status, 5000);
 }

@@ -220,13 +220,13 @@ class KiRiOptions(VariantOptions):
 
     def create_kiri_files(self):
         src_dir = GS.get_resource_path('kiri')
-        copy2(os.path.join(src_dir, 'redirect.html'), os.path.join(self.cache_dir, 'index.html'))
         copy2(os.path.join(src_dir, 'kiri-server'), os.path.join(self.cache_dir, 'kiri-server'))
-        web_dir = os.path.join(self.cache_dir, 'web')
+        web_dir = self.cache_dir
         os.makedirs(web_dir, exist_ok=True)
-        copy2(os.path.join(src_dir, 'favicon.ico'), os.path.join(web_dir, 'favicon.ico'))
         copy2(os.path.join(src_dir, 'blank.svg'), os.path.join(web_dir, 'blank.svg'))
         self.copy_index(src_dir, os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
+        # copy2(os.path.join(src_dir, 'redirect.html'), os.path.join(self.cache_dir, 'index.html'))
+        # copy2(os.path.join(src_dir, 'favicon.ico'), os.path.join(web_dir, 'favicon.ico'))
         # copytree(os.path.join(src_dir, 'images'), os.path.join(web_dir, 'images'), dirs_exist_ok=True)
         # copy2(os.path.join(src_dir, 'kiri.css'), os.path.join(web_dir, 'kiri.css'))
         # copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
