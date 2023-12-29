@@ -30,6 +30,7 @@ from .gs import GS
 from .kicad.color_theme import load_color_theme
 from .kiplot import load_any_sch, run_command
 from .layer import Layer
+from .misc import W_NOTHCMP
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -64,6 +65,8 @@ class KiRiOptions(VariantOptions):
             """ Color used for the background of the diff canvas """
             self.max_commits = 0
             """ Maximum number of commits to include. Use 0 for all available commits """
+            self.branch = 'HEAD'
+            """ Branch to use for the commits """
             self.keep_generated = False
             """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
         super().__init__()
@@ -180,9 +183,9 @@ class KiRiOptions(VariantOptions):
             f.write((GS.pcb_title or 'No title')+'|'+(GS.pcb_rev or '')+'|'+(GS.pcb_date or today)+'\n')
 
     def get_modified_status(self, pcb_file, sch_files):
-        res = self.run_git(['log', '--pretty=format:%H', '--', pcb_file])
+        res = self.run_git(['log', '--pretty=format:%H', self.branch] + self._max_commits + ['--', pcb_file])
         self.commits_with_changed_pcb = set(res.split())
-        res = self.run_git(['log', '--pretty=format:%H', '--'] + sch_files)
+        res = self.run_git(['log', '--pretty=format:%H', self.branch] + self._max_commits + ['--'] + sch_files)
         self.commits_with_changed_sch = set(res.split())
         if GS.debug_level > 1:
             logger.debug(f'Commits with changes in the PCB: {self.commits_with_changed_pcb}')
@@ -262,17 +265,20 @@ class KiRiOptions(VariantOptions):
         self.repo_dir = GS.sch_dir
         GS.check_pcb()
         # Get a list of hashes where we have changes
-        # TODO implement a limit -n X
+        self._max_commits = ['-n', str(self.max_commits)] if self.max_commits else []
         cmd = ['log', "--date=format:%Y-%m-%d %H:%M:%S", '--pretty=format:%H | %ad | %an | %s']
-        if self.max_commits:
-            cmd += ['-n', str(self.max_commits)]
-        res = self.run_git(cmd + ['--', GS.pcb_file] + sch_files)
+        res = self.run_git(cmd + self._max_commits + [self.branch, '--', GS.pcb_file] + sch_files)
         hashes = [r.split(' | ') for r in res.split('\n')]
-        self.create_layers_incl(self.layers)
-        self.solve_layer_colors()
+        # Ensure we have at least 2
+        sch_dirty = self.git_dirty(GS.sch_file)
+        pcb_dirty = self.git_dirty(GS.pcb_file)
+        if len(hashes) + (1 if sch_dirty or pcb_dirty else 0) < 2:
+            logger.warning(W_NOTHCMP+'Nothing to compare')
+            return
         # Get more information about what is changed
         self.get_modified_status(GS.pcb_file, sch_files)
-        # TODO ensure we have at least 2
+        self.create_layers_incl(self.layers)
+        self.solve_layer_colors()
         try:
             git_tmp_wd = None
             try:
@@ -303,8 +309,6 @@ class KiRiOptions(VariantOptions):
                 if git_tmp_wd:
                     self.remove_git_worktree(git_tmp_wd)
             # Do we have modifications?
-            sch_dirty = self.git_dirty(GS.sch_file)
-            pcb_dirty = self.git_dirty(GS.pcb_file)
             if sch_dirty or pcb_dirty:
                 # Include the current files
                 dst_dir = os.path.join(self.cache_dir, HASH_LOCAL)
