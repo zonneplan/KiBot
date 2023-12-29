@@ -1649,6 +1649,8 @@ outputs:
     type: 'kiri'
     dir: 'Example/kiri_dir'
     options:
+      # [string='#FFFFFF'] Color used for the background of the diff canvas
+      background_color: '#FFFFFF'
       # [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
       # To use the KiCad 6 default colors select `_builtin_default`.
       # Usually user colors are stored as `user`, but you can give it another name
@@ -1658,11 +1660,14 @@ outputs:
       dnf_filter: '_none'
       # [boolean=false] Avoid PCB and SCH images regeneration. Useful for incremental usage
       keep_generated: false
-      # [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options
-      output: '%f-%i%I%v.%x'
+      # [number=0] Maximum number of commits to include. Use 0 for all available commits
+      max_commits: 0
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [string='HEAD'] Starting point for the commits, can be a branch, a hash, etc.
+      # Note that this can be a revision-range, consult the gitrevisions manual for more information
+      revision: 'HEAD'
       # [string=''] Board variant to apply
       variant: ''
     layers: all

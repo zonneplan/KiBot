@@ -40,13 +40,16 @@ Parameters:
          To use the KiCad 6 default colors select `_builtin_default`.
          Usually user colors are stored as `user`, but you can give it another name.
       -  **keep_generated** :index:`: <pair: output - kiri - options; keep_generated>` [boolean=false] Avoid PCB and SCH images regeneration. Useful for incremental usage.
-      -  **output** :index:`: <pair: output - kiri - options; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=diff_pcb/diff_sch, %x=pdf). Affected by global options.
+      -  ``background_color`` :index:`: <pair: output - kiri - options; background_color>` [string='#FFFFFF'] Color used for the background of the diff canvas.
       -  ``dnf_filter`` :index:`: <pair: output - kiri - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
+      -  ``max_commits`` :index:`: <pair: output - kiri - options; max_commits>` [number=0] Maximum number of commits to include. Use 0 for all available commits.
       -  ``pre_transform`` :index:`: <pair: output - kiri - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
+      -  ``revision`` :index:`: <pair: output - kiri - options; revision>` [string='HEAD'] Starting point for the commits, can be a branch, a hash, etc.
+         Note that this can be a revision-range, consult the gitrevisions manual for more information.
       -  ``variant`` :index:`: <pair: output - kiri - options; variant>` [string=''] Board variant to apply.
 
 -  **type** :index:`: <pair: output - kiri; type>` [string=''] Type of output.
