@@ -206,8 +206,18 @@ label#layers, label#pages {
 	background-color: rgba(0,0,0,0.8);
 	z-index: 2;
 	cursor: pointer;
+	color: #FFFFFF;
+	text-align: center;
+	vertical-align: center;
+	font-size: 5em;
+	line-height: 100%;
 }
 
+#server_offline span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: normal;
+}
 /* ==============================
 ** ============================*/
 
