@@ -55,8 +55,6 @@ def get_cur_user():
 class KiRiOptions(VariantOptions):
     def __init__(self):
         with document:
-            self.output = GS.def_global_output
-            """ *Filename for the output (%i=diff_pcb/diff_sch, %x=pdf) """
             self.color_theme = '_builtin_classic'
             """ *Selects the color theme. Only applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.
@@ -80,8 +78,15 @@ class KiRiOptions(VariantOptions):
             raise KiPlotConfigurationError(f"Wrong number of commits ({self.max_commits}) must be positive")
 
     def get_targets(self, out_dir):
-        # TODO: Implement
-        return [self._parent.expand_filename(out_dir, self.output)]
+        hashes, sch_dirty, pcb_dirty, sch_files = self.collect_hashes(out_dir)
+        if len(hashes) + (1 if sch_dirty or pcb_dirty else 0) < 2:
+            return []
+        files = [os.path.join(self.cache_dir, f) for f in ['blank.svg', 'commits', 'index.html', 'kiri-server', 'project']]
+        for h in hashes:
+            files.append(os.path.join(self.cache_dir, h[0][:7]))
+        if sch_dirty or pcb_dirty:
+            files.append(os.path.join(self.cache_dir, HASH_LOCAL))
+        return files
 
     def add_to_cache(self, name, hash):
         cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash[:7], '--cache_dir', self.cache_dir,
@@ -255,8 +260,8 @@ class KiRiOptions(VariantOptions):
         #    for id, color in self._color_theme.layer_id2color.items():
         #        f.write(f'.layer_color_{id} {{ color: {color[:7]}; }}\n')
 
-    def run(self, name):
-        self.cache_dir = self._parent.output_dir
+    def collect_hashes(self, out_dir):
+        self.cache_dir = out_dir
         self.command = self.ensure_tool('KiDiff')
         self.git_command = self.ensure_tool('Git')
         # Get a list of files for the project
@@ -272,6 +277,10 @@ class KiRiOptions(VariantOptions):
         # Ensure we have at least 2
         sch_dirty = self.git_dirty(GS.sch_file)
         pcb_dirty = self.git_dirty(GS.pcb_file)
+        return hashes, sch_dirty, pcb_dirty, sch_files
+
+    def run(self, name):
+        hashes, sch_dirty, pcb_dirty, sch_files = self.collect_hashes(self._parent.output_dir)
         if len(hashes) + (1 if sch_dirty or pcb_dirty else 0) < 2:
             logger.warning(W_NOTHCMP+'Nothing to compare')
             return
