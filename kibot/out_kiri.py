@@ -35,7 +35,6 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
-STASH_MSG = 'KiBot_Changes_Entry'
 HASH_LOCAL = '_local_'
 UNDEF_COLOR = '#DBDBDB'
 LAYER_COLORS_HEAD = """/* ==============================
@@ -63,6 +62,8 @@ class KiRiOptions(VariantOptions):
                 Usually user colors are stored as `user`, but you can give it another name """
             self.background_color = "#FFFFFF"
             """ Color used for the background of the diff canvas """
+            self.max_commits = 0
+            """ Maximum number of commits to include. Use 0 for all available commits """
             self.keep_generated = False
             """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
         super().__init__()
@@ -72,6 +73,8 @@ class KiRiOptions(VariantOptions):
     def config(self, parent):
         super().config(parent)
         self.validate_colors(['background_color'])
+        if self.max_commits < 0:
+            raise KiPlotConfigurationError(f"Wrong number of commits ({self.max_commits}) must be positive")
 
     def get_targets(self, out_dir):
         # TODO: Implement
@@ -260,8 +263,10 @@ class KiRiOptions(VariantOptions):
         GS.check_pcb()
         # Get a list of hashes where we have changes
         # TODO implement a limit -n X
-        res = self.run_git(['log', "--date=format:%Y-%m-%d %H:%M:%S", '--pretty=format:%H | %ad | %an | %s', '--',
-                            GS.pcb_file] + sch_files)
+        cmd = ['log', "--date=format:%Y-%m-%d %H:%M:%S", '--pretty=format:%H | %ad | %an | %s']
+        if self.max_commits:
+            cmd += ['-n', str(self.max_commits)]
+        res = self.run_git(cmd + ['--', GS.pcb_file] + sch_files)
         hashes = [r.split(' | ') for r in res.split('\n')]
         self.create_layers_incl(self.layers)
         self.solve_layer_colors()
