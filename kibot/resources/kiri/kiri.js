@@ -46,6 +46,8 @@ var current_layers_list = [];
 const SCH_IMG = '<span class="icon-sch-modif"></span>';
 // Icon to indicate the PCB was changed in a commit
 const PCB_IMG = '<span class="icon-pcb-modif"></span>';
+// Icon to indicate no change in a commit
+const EMPTY_IMG = '<span class="icon-x-modif"></span>';
 // Color for the commit1
 var commit1_legend_color;
 // Color for the commit2

@@ -273,7 +273,7 @@ hr {
 */
 .icon-sheet-page, .icon-commits, .icon-control-sch, .icon-control-pcb, .icon-control-zin, .icon-control-zout, .icon-control-center,
 .icon-control-info, .icon-commit1, .icon-commit1-fs, .icon-commit2, .icon-commit2-fs, .icon-commit3, .icon-commit3-fs,
-.icon-sch-modif, .icon-pcb-modif, .icon-sheets, .icon-layers, .layer_color_margin, .icon-commit {
+.icon-sch-modif, .icon-pcb-modif, .icon-sheets, .icon-layers, .layer_color_margin, .icon-commit, .icon-x-modif {
 	display: inline-block;
 	background-color: currentColor;
 	-webkit-mask-image: var(--svg);
@@ -297,7 +297,6 @@ hr {
 	margin-right:0.5em;
 	width: 1em;
 	height: 1em;
-	/* Add mask image, use variable to reduce duplication */
 	--svg: url('./images/code-branch-solid.svg');
 }
 
@@ -380,7 +379,7 @@ hr {
 }
 
 
-.icon-sch-modif, .icon-pcb-modif {
+.icon-sch-modif, .icon-pcb-modif, .icon-x-modif {
 	padding-left: 0px;
 	padding-right: 0px;
 	width: 14px;
@@ -395,6 +394,11 @@ hr {
 .icon-pcb-modif {
 	--svg: url('./images/circuit-board.svg');
 	color: #F92672;
+}
+
+.icon-x-modif {
+	--svg: url('./images/x.svg');
+	color: #FF0000;
 }
 
 .icon-sheets, .icon-layers {
