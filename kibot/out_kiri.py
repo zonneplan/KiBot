@@ -64,8 +64,9 @@ class KiRiOptions(VariantOptions):
             """ Color used for the background of the diff canvas """
             self.max_commits = 0
             """ Maximum number of commits to include. Use 0 for all available commits """
-            self.branch = 'HEAD'
-            """ Branch to use for the commits """
+            self.revision = 'HEAD'
+            """ Starting point for the commits, can be a branch, a hash, etc.
+                Note that this can be a revision-range, consult the gitrevisions manual for more information """
             self.keep_generated = False
             """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
         super().__init__()
@@ -199,9 +200,9 @@ class KiRiOptions(VariantOptions):
             f.write((GS.pcb_title or 'No title')+'|'+(GS.pcb_rev or '')+'|'+(GS.pcb_date or today)+'\n')
 
     def get_modified_status(self, pcb_file, sch_files):
-        res = self.run_git(['log', '--pretty=format:%H', self.branch] + self._max_commits + ['--', pcb_file])
+        res = self.run_git(['log', '--pretty=format:%H', self.revision] + self._max_commits + ['--', pcb_file])
         self.commits_with_changed_pcb = set(res.split())
-        res = self.run_git(['log', '--pretty=format:%H', self.branch] + self._max_commits + ['--'] + sch_files)
+        res = self.run_git(['log', '--pretty=format:%H', self.revision] + self._max_commits + ['--'] + sch_files)
         self.commits_with_changed_sch = set(res.split())
         if GS.debug_level > 1:
             logger.debug(f'Commits with changes in the PCB: {self.commits_with_changed_pcb}')
@@ -283,7 +284,7 @@ class KiRiOptions(VariantOptions):
         # Get a list of hashes where we have changes
         self._max_commits = ['-n', str(self.max_commits)] if self.max_commits else []
         cmd = ['log', "--date=format:%Y-%m-%d %H:%M:%S", '--pretty=format:%H | %ad | %an | %s']
-        res = self.run_git(cmd + self._max_commits + [self.branch, '--', GS.pcb_file] + sch_files)
+        res = self.run_git(cmd + self._max_commits + [self.revision, '--', GS.pcb_file] + sch_files)
         hashes = [r.split(' | ') for r in res.split('\n')]
         # Ensure we have at least 2
         sch_dirty = self.git_dirty(GS.sch_file)
