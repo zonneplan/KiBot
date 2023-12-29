@@ -180,7 +180,7 @@ class CompressOptions(BaseOptions):
                             # - We must parse the input markdown
                             # - We must coinfigure and use the renderer output to do the file name expansion
                             # This is almost as complex as generating the whole output, so it adds the dir
-                            extra_files = glob.iglob(os.path.join(file, '**'))
+                            extra_files += glob.glob(os.path.join(file, '**'), recursive=True)
                     if extra_files:
                         files_list += extra_files
             else:
