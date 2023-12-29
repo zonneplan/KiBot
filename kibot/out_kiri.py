@@ -20,6 +20,7 @@ Dependencies:
     version: 2.2.0
 """
 import datetime
+import glob
 import pwd
 import os
 from shutil import copy2, rmtree
@@ -113,16 +114,18 @@ class KiRiOptions(VariantOptions):
 
     def create_layers_incl(self, layers):
         self.incl_file = None
-        if not isinstance(layers, type):
-            layers = Layer.solve(layers)
-            # TODO no list (ALL)
-            self._solved_layers = layers
-            logger.debug('Including layers:')
-            with NamedTemporaryFile(mode='w', suffix='.lst', delete=False) as f:
-                self.incl_file = f.name
-                for la in layers:
-                    logger.debug('- {} ({})'.format(la.layer, la.id))
-                    f.write(str(la.id)+'\n')
+        if isinstance(layers, type):
+            self._solved_layers = None
+            return False
+        layers = Layer.solve(layers)
+        self._solved_layers = layers
+        logger.debug('Including layers:')
+        with NamedTemporaryFile(mode='w', suffix='.lst', delete=False) as f:
+            self.incl_file = f.name
+            for la in layers:
+                logger.debug('- {} ({})'.format(la.layer, la.id))
+                f.write(str(la.id)+'\n')
+        return True
 
     def do_cache(self, name, tmp_wd, hash):
         name_copy = self.run_git(['ls-files', '--full-name', name])
@@ -135,15 +138,23 @@ class KiRiOptions(VariantOptions):
         subdir = os.path.join(hash[:7], '_KIRI_')
         subdir_layers = os.path.join(self.cache_dir, subdir, 'pcb', 'layer-')
         with open(os.path.join(self.cache_dir, subdir, 'pcb_layers'), 'wt') as f:
-            for la in self._solved_layers:
-                if os.path.isfile(subdir_layers+('%02d' % la.id)+'.svg'):
-                    f.write(str(la.id)+'|'+la.layer+'\n')
+            if self._solved_layers:
+                for la in self._solved_layers:
+                    if os.path.isfile(subdir_layers+('%02d' % la.id)+'.svg'):
+                        f.write(str(la.id)+'|'+la.layer+'\n')
+            else:
+                discard = len(subdir_layers)
+                for la in sorted(glob.glob(subdir_layers+'??.svg')):
+                    id = int(la[discard:discard+2])
+                    f.write(str(id)+'|'+GS.board.GetLayerName(id)+'\n')
 
     def solve_layer_colors(self):
         # Color theme
         self._color_theme = load_color_theme(self.color_theme)
         if self._color_theme is None:
             raise KiPlotConfigurationError("Unable to load `{}` color theme".format(self.color_theme))
+        if self._solved_layers is None:
+            return
         # Assign a color if none was defined
         layer_id2color = self._color_theme.layer_id2color
         for la in self._solved_layers:
