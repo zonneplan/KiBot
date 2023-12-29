@@ -166,9 +166,12 @@ html, body {
 #svg-id {
 /*	border: 1px solid #111;*/
 	margin-top: 15px;
-	background-color: #000000;
 	border-radius: 5px;
 }
+
+/* Keep it separated for simple parsing */
+#svg-id { background-color: #ffffff; }
+
 
 /* ==============================
 ** ============================*/

@@ -61,11 +61,17 @@ class KiRiOptions(VariantOptions):
             """ *Selects the color theme. Only applies to KiCad 6.
                 To use the KiCad 6 default colors select `_builtin_default`.
                 Usually user colors are stored as `user`, but you can give it another name """
+            self.background_color = "#FFFFFF"
+            """ Color used for the background of the diff canvas """
             self.keep_generated = False
             """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
+
+    def config(self, parent):
+        super().config(parent)
+        self.validate_colors(['background_color'])
 
     def get_targets(self, out_dir):
         # TODO: Implement
@@ -185,6 +191,7 @@ class KiRiOptions(VariantOptions):
                 for ln in src:
                     ln_stripped = ln.strip()
                     if ln_stripped.startswith('<script src="'):
+                        # Embed Java Scripts
                         fn = ln_stripped[13:].split('"')[0]
                         with open(os.path.join(src_dir, fn), 'rt') as f:
                             script = f.read()
@@ -192,8 +199,10 @@ class KiRiOptions(VariantOptions):
                         dst.write(script)
                         dst.write('\n</script>\n')
                     elif ln_stripped.startswith('<link rel="stylesheet" href="'):
+                        # Embed CSS
                         fn = ln_stripped[29:].split('"')[0]
                         if fn == 'layer_colors.css':
+                            # Create the colors
                             script = ''
                             for id, color in self._color_theme.layer_id2color.items():
                                 script += f'.layer_color_{id} {{ color: {color[:7]}; }}\n'
@@ -207,6 +216,8 @@ class KiRiOptions(VariantOptions):
                                         with open(os.path.join(src_dir, fns), 'rt') as f:
                                             svg = f.read().strip()
                                         script += "\t--svg: url('data:image/svg+xml;utf8,"+svg+"');\n"
+                                    elif lns.startswith('#svg-id { background-color: '):
+                                        script += f'#svg-id {{ background-color: {self.background_color}; }}\n'
                                     else:
                                         script += lns
                         else:
