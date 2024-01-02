@@ -93,6 +93,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   to the compressed output by default.
   - Note that JLCPCB BoM and Position files aren't included anymore, they are
     uploaded separately.
+- Quick Start:
+  - Now we generate if for projects, not separated files.
+    This avoids problems for sub-sheets in separated dirs.
 
 ### Fixed
 - Schematics: problems with deep nested and recycled sheets (#520)

@@ -1129,11 +1129,11 @@ def generate_examples(start_dir, dry, types):
     # Install the resources
     setup_resources()
     # Look for candidate dirs
-    k_files_regex = re.compile(r'([^/]+)\.(kicad_pcb|kicad_sch|sch)$')
+    k_files_regex = re.compile(r'([^/]+)\.(kicad_pro|pro)$')
     candidates = set()
     for f in _walk(start_dir, 6):
         if k_files_regex.search(f):
-            candidates.add(os.path.dirname(f))
+            candidates.add(os.path.realpath(os.path.dirname(f)))
     # Try to generate the configs in the candidate places
     confs = []
     for c in sorted(candidates):
