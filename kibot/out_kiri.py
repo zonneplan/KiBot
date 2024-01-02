@@ -80,7 +80,8 @@ class KiRiOptions(VariantOptions):
             raise KiPlotConfigurationError(f"Wrong number of commits ({self.max_commits}) must be positive")
 
     def get_targets(self, out_dir):
-        hashes, sch_dirty, pcb_dirty, sch_files = self.collect_hashes(out_dir)
+        self.init_tools(out_dir)
+        hashes, sch_dirty, pcb_dirty, sch_files = self.collect_hashes()
         if len(hashes) + (1 if sch_dirty or pcb_dirty else 0) < 2:
             return []
         files = [os.path.join(self.cache_dir, f) for f in ['blank.svg', 'commits', 'index.html', 'kiri-server', 'project']]
@@ -259,23 +260,13 @@ class KiRiOptions(VariantOptions):
         os.makedirs(web_dir, exist_ok=True)
         copy2(os.path.join(src_dir, 'blank.svg'), os.path.join(web_dir, 'blank.svg'))
         self.copy_index(src_dir, os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
-        # copy2(os.path.join(src_dir, 'redirect.html'), os.path.join(self.cache_dir, 'index.html'))
-        # copy2(os.path.join(src_dir, 'favicon.ico'), os.path.join(web_dir, 'favicon.ico'))
-        # copytree(os.path.join(src_dir, 'images'), os.path.join(web_dir, 'images'), dirs_exist_ok=True)
-        # copy2(os.path.join(src_dir, 'kiri.css'), os.path.join(web_dir, 'kiri.css'))
-        # copy2(os.path.join(src_dir, 'kiri.js'), os.path.join(web_dir, 'kiri.js'))
-        # copy2(os.path.join(src_dir, 'index.html'), os.path.join(web_dir, 'index.html'))
-        # copytree(os.path.join(src_dir, 'utils'), os.path.join(web_dir, 'utils'), dirs_exist_ok=True)
-        # Colors for the layers
-        # with open(os.path.join(web_dir, 'layer_colors.css'), 'wt') as f:
-        #    f.write(LAYER_COLORS_HEAD)
-        #    for id, color in self._color_theme.layer_id2color.items():
-        #        f.write(f'.layer_color_{id} {{ color: {color[:7]}; }}\n')
 
-    def collect_hashes(self, out_dir):
+    def init_tools(self, out_dir):
         self.cache_dir = out_dir
         self.command = self.ensure_tool('KiDiff')
         self.git_command = self.ensure_tool('Git')
+
+    def collect_hashes(self):
         # Get a list of files for the project
         GS.check_sch()
         sch_files = GS.sch.get_files()
@@ -286,13 +277,14 @@ class KiRiOptions(VariantOptions):
         cmd = ['log', "--date=format:%Y-%m-%d %H:%M:%S", '--pretty=format:%H | %ad | %an | %s']
         res = self.run_git(cmd + self._max_commits + [self.revision, '--', GS.pcb_file] + sch_files)
         hashes = [r.split(' | ') for r in res.split('\n')]
-        # Ensure we have at least 2
         sch_dirty = self.git_dirty(GS.sch_file)
         pcb_dirty = self.git_dirty(GS.pcb_file)
         return hashes, sch_dirty, pcb_dirty, sch_files
 
     def run(self, name):
-        hashes, sch_dirty, pcb_dirty, sch_files = self.collect_hashes(self._parent.output_dir)
+        self.init_tools(self._parent.output_dir)
+        hashes, sch_dirty, pcb_dirty, sch_files = self.collect_hashes()
+        # Ensure we have at least 2
         if len(hashes) + (1 if sch_dirty or pcb_dirty else 0) < 2:
             logger.warning(W_NOTHCMP+'Nothing to compare')
             return
@@ -391,15 +383,27 @@ class KiRi(BaseOutput):  # noqa: F821
     def get_conf_examples(name, layers):
         outs = []
         git_command = GS.check_tool(name, 'Git')
-        # TODO: Implement
+        if not git_command or not GS.check_tool(name, 'KiDiff'):
+            return None
         if (GS.pcb_file and GS.sch_file and KiRi.has_repo(git_command, GS.pcb_file) and
            KiRi.has_repo(git_command, GS.sch_file)):
+            ops = KiRiOptions()
+            ops.git_command = git_command
+            hashes, sch_dirty, pcb_dirty, _ = ops.collect_hashes()
+            if sch_dirty or pcb_dirty:
+                hashes.append(HASH_LOCAL)
+            if len(hashes) < 2:
+                return None
+            if GS.debug_level > 1:
+                logger.debug(f'get_conf_examples found: {hashes}')
             gb = {}
             gb['name'] = 'basic_{}'.format(name)
             gb['comment'] = 'Interactive diff between commits'
             gb['type'] = name
             gb['dir'] = 'diff'
             gb['layers'] = [KiRi.layer2dict(la) for la in layers]
+            # Avoid taking too much time
+            gb['options'] = {'max_commits': 4}
             outs.append(gb)
         return outs
 
