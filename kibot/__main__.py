@@ -215,7 +215,7 @@ def list_variants(logger, only_names):
 def solve_config(a_plot_config, quiet=False):
     plot_config = a_plot_config
     if not plot_config:
-        plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')
+        plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')+glob('*.kibot.yml')
         if len(plot_configs) == 1:
             plot_config = plot_configs[0]
             if not quiet:

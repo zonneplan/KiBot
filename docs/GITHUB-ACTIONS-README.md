@@ -67,7 +67,7 @@ The `uses: actions/checkout` refers to a specific repo, [GitHub Actions](https:/
 
 ## Caveats, Gotchyas, and Pitfalls
 
-1. KiBot requires a `{meaningful_name}.kibot.yaml` file name scheme.  While most places use `*.yml` and `*.yaml` interchangeably, it is specific here that `*.kibot.yml` won't work. This is especially odd since GitHub uses `*.yml` and kibot uses `*.yaml`.
+1. KiBot requires a `{meaningful_name}.kibot.yaml` file name scheme. You can also use `{meaningful_name}.kibot.yml`.
 
 ## Different ways of doing things
 
