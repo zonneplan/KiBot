@@ -1233,6 +1233,7 @@ def test_quick_start_1(test_dir):
     dest_file = os.path.join(dest_dir, board_file)
     os.makedirs(dest_dir, exist_ok=True)
     shutil.copy2(ctx.board_file, dest_file)
+    shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.PRO_EXT), dest_file.replace('.kicad_pcb', context.PRO_EXT))
     sch_file = os.path.basename(ctx.sch_file)
     dest_file_sch = os.path.join(dest_dir, sch_file)
     shutil.copy2(ctx.sch_file, dest_file_sch)
