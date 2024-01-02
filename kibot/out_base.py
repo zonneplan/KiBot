@@ -194,7 +194,7 @@ class BaseOutput(RegOutput):
     def run(self, output_dir):
         self.output_dir = output_dir
         output = self.options.output if hasattr(self.options, 'output') else ''
-        target = self.expand_filename(output_dir, output)
+        target = os.path.realpath(self.expand_filename(output_dir, output))
         # Ensure the destination dir already exists
         target_dir = os.path.dirname(os.path.abspath(target))
         if not os.path.isdir(target_dir):
