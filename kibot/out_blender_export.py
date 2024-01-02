@@ -82,6 +82,8 @@ class BlenderOutputOptions(Optionable):
             self.output = GS.def_global_output
             """ Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                 The extension is selected from the type """
+            self.dir = ''
+            """ Subdirectory for this output """
         self._unknown_is_error = True
 
 
@@ -413,7 +415,7 @@ class Blender_ExportOptions(BaseOptions):
             val = res % order
             file_id = file_id.replace(res, val)
         self._expand_id += file_id
-        name = self._parent.expand_filename(output_dir, o.output)
+        name = self._parent.expand_filename(os.path.join(output_dir, o.dir), o.output)
         self._expand_id = cur_id
         return name
 

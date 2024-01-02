@@ -148,6 +148,7 @@ Parameters:
                format, 'ply' is Polygon File Format (Stanford).
                Note that some formats includes the light and camera and others are just the 3D model
                (i.e. STL and PLY).
+            -  ``dir`` :index:`: <pair: output - blender_export - options - outputs; dir>` [string=''] Subdirectory for this output.
             -  ``output`` :index:`: <pair: output - blender_export - options - outputs; output>` [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                The extension is selected from the type. Affected by global options.
 

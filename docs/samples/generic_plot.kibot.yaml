@@ -157,9 +157,11 @@ outputs:
           type: 'POINT'
       # [dict|list(dict)] Outputs to generate in the same run
       outputs:
-        # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
-        # The extension is selected from the type. Affected by global options
-        - output: '%f-%i%I%v.%x'
+        # [string=''] Subdirectory for this output
+        - dir: ''
+          # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
+          # The extension is selected from the type. Affected by global options
+          output: '%f-%i%I%v.%x'
           # [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
           # The `render` type will generate a PNG image of the render result.
           # `fbx` is Kaydara's Filmbox, 'obj' is the Wavefront, 'x3d' is the new ISO/IEC standard
