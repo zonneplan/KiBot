@@ -97,6 +97,8 @@ Parameters:
             -  ``background1`` :index:`: <pair: output - blender_export - options - render_options; background1>` [string='#66667F'] First color for the background gradient.
             -  ``background2`` :index:`: <pair: output - blender_export - options - render_options; background2>` [string='#CCCCE5'] Second color for the background gradient.
             -  *height* :index:`: <pair: output - blender_export - options - render_options; height>` Alias for resolution_y.
+            -  ``no_denoiser`` :index:`: <pair: output - blender_export - options - render_options; no_denoiser>` [boolean=false] Used to disable the render denoiser on old hardware, or when the functionality isn't compiled.
+               Note that the impact in quality is huge, you should increase the amount of samples 10 times.
             -  ``resolution_x`` :index:`: <pair: output - blender_export - options - render_options; resolution_x>` [number=1280] Width of the image.
             -  ``resolution_y`` :index:`: <pair: output - blender_export - options - render_options; resolution_y>` [number=720] Height of the image.
             -  *width* :index:`: <pair: output - blender_export - options - render_options; width>` Alias for resolution_x.

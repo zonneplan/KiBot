@@ -197,6 +197,9 @@ class BlenderRenderOptions(Optionable):
             self.auto_crop = False
             """ When enabled the image will be post-processed to remove the empty space around the image.
                 In this mode the `background2` is changed to be the same as `background1` """
+            self.no_denoiser = False
+            """ Used to disable the render denoiser on old hardware, or when the functionality isn't compiled.
+                Note that the impact in quality is huge, you should increase the amount of samples 10 times """
         self._unknown_is_error = True
 
 
@@ -634,6 +637,8 @@ class Blender_ExportOptions(BaseOptions):
                 cmd.extend(['--solder_joints', pi.solder_joints])
             if not pi.stack_boards:
                 cmd.append('--dont_stack_boards')
+            if self.render_options.no_denoiser:
+                cmd.append('--no_denoiser')
             cmd.append('--format')
             for pov in self.point_of_view:
                 for _ in range(pov.steps):

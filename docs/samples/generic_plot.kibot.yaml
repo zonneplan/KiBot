@@ -265,6 +265,9 @@ outputs:
         # [string='#CCCCE5'] Second color for the background gradient
         background2: '#CCCCE5'
         # `height` is an alias for `resolution_y`
+        # [boolean=false] Used to disable the render denoiser on old hardware, or when the functionality isn't compiled.
+        # Note that the impact in quality is huge, you should increase the amount of samples 10 times
+        no_denoiser: false
         # [number=1280] Width of the image
         resolution_x: 1280
         # [number=720] Height of the image

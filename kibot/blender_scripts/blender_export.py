@@ -370,6 +370,8 @@ def main():
     parser.add_argument("-m", "--pcb_material", type=str, choices=["RASTERIZED", "3D"], default="RASTERIZED",
                         help="Rasterized (Cycles) or 3D (deprecated) [RASTERIZED]")
     parser.add_argument("-M", "--dont_merge_materials", action="store_false", help="do not merge materials")
+    parser.add_argument("-n", "--no_denoiser", action="store_true",
+                        help="Disable the denoiser (poor quality, increase passes)")
     parser.add_argument("-o", "--output", type=str, required=True, nargs='+', help="output file name, can be repeated")
     parser.add_argument("-r", "--scene", type=str, help="JSON file containing camera, light and render options")
     parser.add_argument("-s", "--solder_joints", type=str, choices=["NONE", "SMART", "ALL"], default="SMART",
@@ -408,6 +410,8 @@ def main():
         del ops["center_pcb"]
         ops["center_boards"] = args.dont_center
         bpy.ops.pcb2blender.import_pcb3d(**ops)
+    if args.no_denoiser:
+        bpy.context.scene.cycles.use_denoising = False
     # Apply the scene first scene
     c_views = apply_start_scene(args.scene)
     c_formats = len(args.format)
