@@ -33,6 +33,7 @@ from .kiplot import load_any_sch, run_command
 from .layer import Layer
 from .misc import W_NOTHCMP
 from .out_base import VariantOptions
+from .pre_base import BasePreFlight
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -69,6 +70,11 @@ class KiRiOptions(VariantOptions):
                 Note that this can be a revision-range, consult the gitrevisions manual for more information """
             self.keep_generated = False
             """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
+            self.zones = 'global'
+            """ [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
+                fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
+                a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
+                Be careful with the *keep_generated* option when changing this setting """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -94,6 +100,13 @@ class KiRiOptions(VariantOptions):
     def add_to_cache(self, name, hash):
         cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash[:7], '--cache_dir', self.cache_dir,
                '--kiri_mode', '--all_pages']
+        if self.zones == 'global':
+            if BasePreFlight.get_option('check_zone_fills'):
+                cmd.extend(['--zones', 'fill'])
+        elif self.zones == 'fill':
+            cmd.extend(['--zones', 'fill'])
+        elif self.zones == 'unfill':
+            cmd.extend(['--zones', 'unfill'])
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if GS.debug_enabled:

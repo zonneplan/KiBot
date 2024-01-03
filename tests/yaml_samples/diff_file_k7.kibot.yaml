@@ -10,3 +10,4 @@ outputs:
       old: tests/board_samples/kicad_7/light_control.kicad_pcb
       old_type: file
       cache_dir: .cache
+      # zones: unfill

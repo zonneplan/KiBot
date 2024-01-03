@@ -32,6 +32,7 @@ from .kiplot import load_any_sch, run_command, config_output, get_output_dir, ru
 from .layer import Layer
 from .misc import DIFF_TOO_BIG, FAILED_EXECUTE
 from .out_base import VariantOptions
+from .pre_base import BasePreFlight
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -108,6 +109,11 @@ class DiffOptions(VariantOptions):
             """ Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
                 So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
                 Enabling this option KiBot will report an error """
+            self.zones = 'global'
+            """ [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
+                fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
+                a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
+                Be careful with the cache when changing this setting"""
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'
@@ -143,6 +149,13 @@ class DiffOptions(VariantOptions):
 
     def add_to_cache(self, name, hash):
         cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
+        if self.zones == 'global':
+            if BasePreFlight.get_option('check_zone_fills'):
+                cmd.extend(['--zones', 'fill'])
+        elif self.zones == 'fill':
+            cmd.extend(['--zones', 'fill'])
+        elif self.zones == 'unfill':
+            cmd.extend(['--zones', 'unfill'])
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if not self.only_first_sch_page:

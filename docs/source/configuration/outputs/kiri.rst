@@ -52,6 +52,10 @@ Parameters:
       -  ``revision`` :index:`: <pair: output - kiri - options; revision>` [string='HEAD'] Starting point for the commits, can be a branch, a hash, etc.
          Note that this can be a revision-range, consult the gitrevisions manual for more information.
       -  ``variant`` :index:`: <pair: output - kiri - options; variant>` [string=''] Board variant to apply.
+      -  ``zones`` :index:`: <pair: output - kiri - options; zones>` [string='global'] [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
+         fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
+         a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
+         Be careful with the *keep_generated* option when changing this setting.
 
 -  **type** :index:`: <pair: output - kiri; type>` [string=''] Type of output.
 -  ``category`` :index:`: <pair: output - kiri; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.

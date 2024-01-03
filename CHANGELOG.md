@@ -80,6 +80,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Help for the error levels
 - Warnings:
   - Explain about wrong dir/output separation (#493)
+- Diff:
+  - Added option to un/fill zones before doing the comparison (See #391)
 
 ### Changed
 - Documentation:
@@ -99,6 +101,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Quick Start:
   - Now we generate if for projects, not separated files.
     This avoids problems for sub-sheets in separated dirs.
+- Diff:
+  - When *check_zone_fills* is enabled now we do a refill for the boards
 
 ### Fixed
 - Schematics: problems with deep nested and recycled sheets (#520)

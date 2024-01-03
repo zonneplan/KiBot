@@ -91,6 +91,10 @@ Parameters:
       -  ``use_file_id`` :index:`: <pair: output - diff - options; use_file_id>` [boolean=false] When creating the link name of an output file related to a variant use the variant
          `file_id` instead of its name.
       -  ``variant`` :index:`: <pair: output - diff - options; variant>` [string=''] Board variant to apply.
+      -  ``zones`` :index:`: <pair: output - diff - options; zones>` [string='global'] [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
+         fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
+         a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
+         Be careful with the cache when changing this setting.
 
 -  **type** :index:`: <pair: output - diff; type>` [string=''] Type of output.
 -  ``category`` :index:`: <pair: output - diff; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
