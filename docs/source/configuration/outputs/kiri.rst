@@ -6,7 +6,8 @@
 KiRi
 ~~~~
 
-Generates a PDF with the differences between two PCBs or schematics.
+Generates an interactive web page to browse the schematic and/or PCB differences between git commits.
+Must be applied to a git repository. |br|
 Recursive git submodules aren't supported (submodules inside submodules)
 
 Type: ``kiri``

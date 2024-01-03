@@ -1648,9 +1648,10 @@ outputs:
       # See KiKit's doc/present.md for template specification
       template: 'default'
   # KiRi:
+  # Must be applied to a git repository.
   # Recursive git submodules aren't supported (submodules inside submodules)
   - name: 'kiri_example'
-    comment: 'Generates a PDF with the differences between two PCBs or schematics.'
+    comment: 'Generates an interactive web page to browse the schematic and/or PCB differences between git commits.'
     type: 'kiri'
     dir: 'Example/kiri_dir'
     options:
