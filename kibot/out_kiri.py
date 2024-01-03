@@ -265,6 +265,8 @@ class KiRiOptions(VariantOptions):
         self.cache_dir = out_dir
         self.command = self.ensure_tool('KiDiff')
         self.git_command = self.ensure_tool('Git')
+        # Only needed for schematic
+        self.ensure_tool('KiAuto')
 
     def collect_hashes(self):
         # Get a list of files for the project
