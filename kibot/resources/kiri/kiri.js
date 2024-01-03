@@ -711,7 +711,8 @@ function load_commits()
     var all_commits_html = "";
     for (const line of commits)
     {
-        // Data format: HASH|DATE|AUTHOR|DESCRIPTION|SCH_CHANGED|PCB_CHANGED
+        // Data format: HASH|DATE|AUTHOR|DESCRIPTION|SCH_CHANGED|PCB_CHANGED|TXT_CHANGED
+        // TXT_CHANGED doesn't seem to be useful, currently discarded
         splitted = line.split("|");
         var hash = splitted[0];
         var dt = splitted[1];
