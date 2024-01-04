@@ -8,9 +8,9 @@
 """KiBot: KiCad automation tool for documents generation
 
 Usage:
-  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
+  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [-w LIST] [-W] [--banner N] [TARGET...]
+         [-E DEF] ... [-w LIST] [-D | -W] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
          [--output-name-first] --list
