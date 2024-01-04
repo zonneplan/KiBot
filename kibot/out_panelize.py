@@ -18,7 +18,7 @@ from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import run_command, config_output, register_xmp_import
 from .layer import Layer
-from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES
+from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES, W_KEEPTMP
 from .optionable import PanelOptions
 from .out_base import VariantOptions
 from .registrable import RegOutput
@@ -723,7 +723,7 @@ class PanelizeOptions(VariantOptions):
         finally:
             if GS.debug_enabled and not remove_tmps:
                 if self._files_to_remove:
-                    logger.error('Keeping temporal files: '+str(self._files_to_remove))
+                    logger.warning(W_KEEPTMP+'Keeping temporal files: '+str(self._files_to_remove))
             else:
                 self.remove_temporals()
 

@@ -135,7 +135,7 @@ class Subparts(BaseFilter):  # noqa: F821
                 return float(vals[0])/float(vals[1])
             return float(qty)
         except ValueError:
-            logger.error('Internal error qty_to_float("{}"), please report'.format(qty))
+            logger.non_critical_error(f'Internal error qty_to_float("{qty}"), please report')
 
     def do_split(self, comp, max_num_subparts, split_fields):
         """ Split `comp` according to the detected subparts """

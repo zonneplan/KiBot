@@ -12,7 +12,6 @@ Dependencies:
 """
 from collections import namedtuple
 import os
-from sys import exit
 import xml.etree.ElementTree as ET
 from .macros import macros, document, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
@@ -160,12 +159,10 @@ class Update_XML(BasePreFlight):  # noqa: F821
 
     def check_pcb_parity(self):
         if GS.ki5:
-            logger.error('PCB vs schematic parity only available for KiCad 6')
-            exit(MISSING_TOOL)
+            GS.exit_with_error('PCB vs schematic parity only available for KiCad 6', MISSING_TOOL)
         if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1:
-            logger.error("Connectivity API is broken on KiCad 7.0.0\n"
-                         "Please upgrade KiCad to 7.0.1 or newer")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("Connectivity API is broken on KiCad 7.0.0\n"
+                               "Please upgrade KiCad to 7.0.1 or newer", MISSING_TOOL)
         fname = GS.sch_no_ext+'.xml'
         logger.debug('Loading XML: '+fname)
         try:
@@ -208,9 +205,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
                 for e in errors:
                     logger.warning(W_PARITY+e)
             else:
-                for e in errors:
-                    logger.error(e)
-                exit(NETLIST_DIFF)
+                GS.exit_with_error(errors, NETLIST_DIFF)
 
     def run(self):
         command = self.ensure_tool('KiAuto')

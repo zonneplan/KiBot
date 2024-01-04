@@ -9,7 +9,7 @@ from .gs import GS
 from .registrable import Registrable
 from .optionable import Optionable
 from .error import PlotError, KiPlotConfigurationError
-from .misc import PLOT_ERROR, EXIT_BAD_CONFIG
+from .misc import PLOT_ERROR, EXIT_BAD_CONFIG, W_KEEPTMP
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -88,11 +88,9 @@ class BasePreFlight(Registrable):
                     logger.debug('Preflight run '+k)
                     v.run()
         except PlotError as e:
-            logger.error("In preflight `"+str(k)+"`: "+str(e))
-            exit(PLOT_ERROR)
+            GS.exit_with_error("In preflight `"+str(k)+"`: "+str(e), PLOT_ERROR)
         except KiPlotConfigurationError as e:
-            logger.error("In preflight `"+str(k)+"`: "+str(e))
-            exit(EXIT_BAD_CONFIG)
+            GS.exit_with_error("In preflight `"+str(k)+"`: "+str(e), EXIT_BAD_CONFIG)
 
     def disable(self):
         self._enabled = False
@@ -185,7 +183,7 @@ class BasePreFlight(Registrable):
         finally:
             if GS.debug_enabled and not remove_tmps:
                 if self._files_to_remove:
-                    logger.error('Keeping temporal files: '+str(self._files_to_remove))
+                    logger.warning(W_KEEPTMP+'Keeping temporal files: '+str(self._files_to_remove))
             else:
                 self.remove_temporals()
         if self._files_to_remove:

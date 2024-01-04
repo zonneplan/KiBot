@@ -14,7 +14,6 @@ import json
 import os
 import re
 from subprocess import run, PIPE
-import sys
 from .error import KiPlotConfigurationError
 from .misc import FAILED_EXECUTE, W_EMPTREP
 from .optionable import Optionable
@@ -135,12 +134,12 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 logger.debug('Executing: '+GS.pasteable_cmd(command))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
-                    logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
+                    msgs = [f'Failed to execute:\n{r.command}\nreturn code {result.returncode}']
                     if result.stdout:
-                        logger.error('stdout:\n{}'.format(result.stdout))
+                        msgs.append(f'stdout:\n{result.stdout}')
                     if result.stderr:
-                        logger.error('stderr:\n{}'.format(result.stderr))
-                    sys.exit(FAILED_EXECUTE)
+                        msgs.append(f'stderr:\n{result.stderr}')
+                    GS.exit_with_error(msgs, FAILED_EXECUTE)
                 if not result.stdout:
                     logger.warning(W_EMPTREP+"Empty value from `{}`".format(r.command))
                 text = result.stdout.strip()

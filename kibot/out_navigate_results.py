@@ -147,9 +147,9 @@ def _run_command(cmd):
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
         if e.output:
             logger.debug('Output from command: '+e.output.decode())
+        logger.non_critical_error(f'Failed to run {cmd[0]}, error {e.returncode}')
         return False
     if cmd_output.strip():
         logger.debug('- Output from command:\n'+cmd_output.decode())
@@ -173,7 +173,7 @@ class Navigate_ResultsOptions(BaseOptions):
             self.link_from_root = ''
             """ *The name of a file to create at the main output directory linking to the home page """
             self.skip_not_run = False
-            """ Skip outputs with `run_by_default: false` """
+            # """ Skip outputs with `run_by_default: false` """
         super().__init__()
         self._expand_id = 'navigate'
         self._expand_ext = 'html'

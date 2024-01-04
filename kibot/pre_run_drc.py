@@ -10,7 +10,6 @@ Dependencies:
     version: 2.0.0
 """
 import os
-from sys import exit
 from .macros import macros, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -79,7 +78,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
             if ret > 127:
                 ret = -(256-ret)
             if ret < 0:
-                logger.error('DRC violations: %d', -ret)
+                msg = f'DRC violations: {-ret}'
             else:
-                logger.error('DRC returned %d', ret)
-            exit(DRC_ERROR)
+                msg = f'DRC returned {ret}'
+            GS.exit_with_error(msg, DRC_ERROR)

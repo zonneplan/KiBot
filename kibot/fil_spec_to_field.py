@@ -208,7 +208,7 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
                     v = self.normalize(v, EI_TYPES[n], c)
                     if not self.compare(cur_val, v):
                         desc = "`{}` vs `{}` collision, `{}` != `{}`".format(d, cur_dist, v, cur_val)
-                        logger.error(desc)
+                        logger.non_critical_error(desc)
 
     def filter(self, comp):
         self.solve_from()

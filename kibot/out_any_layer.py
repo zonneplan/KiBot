@@ -151,9 +151,8 @@ class AnyLayerOptions(VariantOptions):
     def run(self, output_dir, layers):
         super().run(output_dir)
         if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1 and not self.exclude_edge_layer:
-            logger.error("Plotting the edge layer is not supported by KiCad 7.0.0\n"
-                         "Please upgrade KiCad to 7.0.1 or newer")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("Plotting the edge layer is not supported by KiCad 7.0.0\n"
+                               "Please upgrade KiCad to 7.0.1 or newer", MISSING_TOOL)
         # Memorize the list of visible layers
         old_visible = GS.board.GetVisibleLayers()
         # Apply the variants and filters

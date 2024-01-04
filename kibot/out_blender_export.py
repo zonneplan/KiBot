@@ -14,7 +14,6 @@ Dependencies:
 import json
 import os
 import re
-import sys
 from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
@@ -551,13 +550,11 @@ class Blender_ExportOptions(BaseOptions):
 
     def analyze_errors(self, msg):
         if 'Traceback ' in msg:
-            logger.error('Error from Blender run:\n'+msg[msg.index('Traceback '):])
-            sys.exit(BLENDER_ERROR)
+            GS.exit_with_error('Error from Blender run:\n'+msg[msg.index('Traceback '):], BLENDER_ERROR)
 
     def run(self, output):
         if GS.ki5:
-            logger.error("`blender_export` needs KiCad 6+")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("`blender_export` needs KiCad 6+", MISSING_TOOL)
         pcb3d_file = self.solve_pcb3d()
         # If no outputs specified just finish
         # Can be used to export the PCB to Blender

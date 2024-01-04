@@ -17,7 +17,7 @@ import io
 import json
 import os
 import re
-from sys import exit, maxsize
+from sys import maxsize
 import sys
 import textwrap
 
@@ -58,9 +58,7 @@ try:
     import yaml
 except ImportError:
     log.init()
-    logger.error('No yaml module for Python, install python3-yaml')
-    logger.error(TRY_INSTALL_CHECK)
-    exit(NO_YAML_MODULE)
+    GS.exit_with_error(['No yaml module for Python, install python3-yaml', TRY_INSTALL_CHECK], NO_YAML_MODULE)
 
 
 def update_dict(d, u):
@@ -650,7 +648,7 @@ class CfgYamlReader(object):
                 for k, v in collected_definitions[-1].items():
                     content, replaced = do_replace(k, v, content, replaced)
             if depth >= 20:
-                logger.error('Maximum depth of definition replacements reached, loop?')
+                logger.non_critical_error('Maximum depth of definition replacements reached, loop?')
             if GS.debug_level > 3:
                 logger.debug('YAML after expanding definitions:\n'+content)
         # Create an stream from the string
@@ -817,7 +815,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         entry = ind_base_sp+entry
         if help is None:
             help = 'Undocumented'
-            logger.error('Undocumented option: `{}`'.format(k))
+            logger.non_critical_error(f'Undocumented option: `{k}`')
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         if rst_mode and context:
@@ -944,8 +942,7 @@ def print_outputs_help(rst, details=False):
 
 def print_output_help(name):
     if not RegOutput.is_registered(name):
-        logger.error('Unknown output type `{}`, try --help-list-outputs'.format(name))
-        exit(EXIT_BAD_ARGS)
+        GS.exit_with_error(f'Unknown output type `{name}`, try --help-list-outputs', EXIT_BAD_ARGS)
     print_one_out_help(True, name, RegOutput.get_class_for(name))
 
 
@@ -1150,8 +1147,7 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         os.makedirs(out_dir)
     fname = os.path.join(out_dir, EXAMPLE_CFG)
     if os.path.isfile(fname):
-        logger.error(fname+" already exists, won't overwrite")
-        exit(WONT_OVERWRITE)
+        GS.exit_with_error(fname+" already exists, won't overwrite", WONT_OVERWRITE)
     with open(fname, 'w') as f:
         logger.info('Creating {} example configuration'.format(fname))
         f.write("# ATTENTION! THIS ISN'T A FULLY FUNCTIONAL EXAMPLE.\n")

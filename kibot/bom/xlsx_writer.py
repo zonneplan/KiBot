@@ -722,7 +722,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     cfg = BoMOptions object with all the configuration
     """
     if not XLSX_SUPPORT:
-        logger.error('Python xlsxwriter module not installed')
+        logger.non_critical_error('Python xlsxwriter module not installed')
         return False
 
     link_datasheet = -1

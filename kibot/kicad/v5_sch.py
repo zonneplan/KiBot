@@ -73,14 +73,14 @@ class DCMLineReader(LineReader):
         try:
             res = res.decode()
         except UnicodeDecodeError:
-            logger.error('Invalid UTF-8 sequence at line {} of file `{}`'.format(self.line+1, self.file))
+            logger.non_critical_error(f'Invalid UTF-8 sequence at line {self.line+1} of file `{self.file}`')
             nres = ''
             for c in res:
                 if c > 127:
                     c = 32
                 nres += chr(c)
             res = nres
-            logger.error('Using: '+res.rstrip())
+            logger.non_critical_error('Using: '+res.rstrip())
         return res
 
     def get_line(self):

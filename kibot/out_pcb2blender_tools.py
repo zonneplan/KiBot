@@ -315,8 +315,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
     def run(self, output):
         super().run(output)
         if GS.ki5:
-            logger.error("`pcb2blender_tools` needs KiCad 6+")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("`pcb2blender_tools` needs KiCad 6+", MISSING_TOOL)
         dir_name = os.path.dirname(output)
         self.apply_show_components()
         self.filter_pcb_components(do_3D=True)

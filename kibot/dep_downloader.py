@@ -377,7 +377,7 @@ def python_downloader(dep):
     # Check if we have pip and wheel
     pip_command = check_pip()
     if pip_command is None:
-        logger.error('No pip command available!')
+        logger.non_critical_error('No pip command available!')
         return False
     # Try to pip install it
     if not pip_install(pip_command, name=dep.pypi_name.lower()):
@@ -737,7 +737,7 @@ def try_download_tool_binary(dep):
         if res:
             using_downloaded(dep)
     except Exception as e:
-        logger.error('- Failed to download {}: {}'.format(dep.name, e))
+        logger.non_critical_error(f'- Failed to download {dep.name}: {e}')
     return res, ver
 
 
@@ -799,14 +799,13 @@ def check_tool_python(dep, reload=False):
         importlib.invalidate_caches()
         mod = importlib.import_module(dep.module_name)
         if mod.__file__ is None:
-            logger.error(mod)
             return None, None
         res, ver = check_tool_python_version(mod, dep)
         if res is not None and reload:
             res = importlib.reload(reload)
         return res, ver
     except ModuleNotFoundError:
-        logger.error(f'Pip failed for {dep.module_name}')
+        logger.non_critical_error(f'Pip failed for {dep.module_name}')
     return None, None
 
 
@@ -970,7 +969,7 @@ def register_dep(context, dep):
     if parent:
         parent_data = base_deps.get(parent.lower(), None)
         if parent_data is None:
-            logger.error('{} dependency unkwnown parent {}'.format(context, parent))
+            logger.non_critical_error(f'{context} dependency unkwnown parent {parent}')
             return
         new_dep = deepcopy(parent_data)
         new_dep.update(dep)

@@ -166,9 +166,8 @@ class KiCostOptions(VariantOptions):
             # Currently we only support the XML mechanism.
             netlist = GS.sch_no_ext+'.xml'
             if not isfile(netlist):
-                logger.error('Missing netlist in XML format `{}`'.format(netlist))
-                logger.error('You can generate it using the `update_xml` preflight')
-                exit(BOM_ERROR)
+                GS.exit_with_error([f'Missing netlist in XML format `{netlist}`',
+                                    'You can generate it using the `update_xml` preflight'], BOM_ERROR)
         # Check KiCost is available
         cmd_kicost = abspath(join(dirname(__file__), KICOST_SUBMODULE))
         if not isfile(cmd_kicost):

@@ -879,8 +879,7 @@ class PCB_PrintOptions(VariantOptions):
             plotter.svg_precision = self.svg_precision
             image = plotter.plot()
         except (RuntimeError, SyntaxError, IOError) as e:
-            logger.error('PcbDraw error: '+str(e))
-            exit(PCBDRAW_ERR)
+            GS.exit_with_error('PcbDraw error: '+str(e), PCBDRAW_ERR)
 
         if GS.debug_level > 1:
             # Save the SVG only for debug purposes

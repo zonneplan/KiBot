@@ -263,9 +263,8 @@ class Render3DOptions(Base3DOptionsWithHL):
     def run(self, output):
         super().run(output)
         if GS.ki6 and GS.kicad_version_n < KICAD_VERSION_6_0_2:
-            logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
-                         "Please upgrade KiCad to 6.0.2 or newer")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("3D Viewer not supported for KiCad 6.0.0/1\n"
+                               "Please upgrade KiCad to 6.0.2 or newer", MISSING_TOOL)
         command = self.ensure_tool('KiAuto')
         if self.transparent_background:
             # Use the chroma key color

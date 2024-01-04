@@ -108,6 +108,9 @@ class MyLogger(logging.Logger):
             super().warning(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
         else:
             super().warning(buf, **kwargs)
+        self.check_warn_stop()
+
+    def check_warn_stop(self):
         if stop_on_warnings:
             self.error('Warnings treated as errors')
             sys.exit(WARN_AS_ERROR)
@@ -147,6 +150,10 @@ class MyLogger(logging.Logger):
             if MyLogger.n_filtered:
                 filt_msg = ', {} filtered'.format(MyLogger.n_filtered)
             self.info('Found {} unique warning/s ({} total{})'.format(MyLogger.warn_cnt, MyLogger.warn_tcnt, filt_msg))
+
+    def non_critical_error(self, msg):
+        self.error(msg)
+        self.check_warn_stop()
 
     def findCaller(self, stack_info=False, stacklevel=1):
         f = sys._getframe(1)

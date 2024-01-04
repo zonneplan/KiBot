@@ -496,8 +496,7 @@ class PcbDrawOptions(VariantOptions):
         # When the PCB can't be loaded we get IOError
         # When the SVG contains errors we get SyntaxError
         except (RuntimeError, SyntaxError, IOError) as e:
-            logger.error('PcbDraw error: '+str(e))
-            exit(PCBDRAW_ERR)
+            GS.exit_with_error('PcbDraw error: '+str(e), PCBDRAW_ERR)
 
         # Save the result
         logger.debug('Saving output to '+svg_save_output_name)

@@ -542,8 +542,7 @@ class DiffOptions(VariantOptions):
             run_command(cmd, just_raise=True)
         except CalledProcessError as e:
             if e.returncode == 10:
-                logger.error('Diff above the threshold')
-                exit(DIFF_TOO_BIG)
+                GS.exit_with_error('Diff above the threshold', DIFF_TOO_BIG)
             logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
             if e.stdout:
                 logger.debug('- Output from command: '+e.stdout.decode())

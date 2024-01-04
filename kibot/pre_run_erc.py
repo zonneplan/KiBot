@@ -12,7 +12,6 @@ Dependencies:
 """
 import os
 from shutil import move
-from sys import exit
 from tempfile import NamedTemporaryFile
 from .macros import macros, pre_class  # noqa: F401
 from .gs import GS
@@ -77,9 +76,9 @@ class Run_ERC(BasePreFlight):  # noqa: F821
             if ret > 127:
                 ret = -(256-ret)
             if ret < 0:
-                logger.error('ERC errors: %d', -ret)
+                msgs = [f'ERC errors: {-ret}']
             else:
-                logger.error('ERC returned %d', ret)
+                msgs = [f'ERC returned {ret}']
                 if GS.sch.annotation_error:
-                    logger.error('Make sure your schematic is fully annotated')
-            exit(ERC_ERROR)
+                    msgs.append('Make sure your schematic is fully annotated')
+            GS.exit_with_error(msgs, ERC_ERROR)

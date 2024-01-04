@@ -130,7 +130,7 @@ def get_prefix_simple(prefix):
     # Unknown, we shouldn't get here because the regex matched
     # BUT: I found that sometimes unexpected things happen, like mu matching micro and then we reaching this code
     #      Now is fixed, but I can't be sure some bizarre case is overlooked
-    logger.error('Unknown prefix, please report')
+    logger.non_critical_error('Unknown prefix, please report')
     return 0
 
 

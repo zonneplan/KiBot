@@ -284,10 +284,10 @@ class ReportOptions(BaseOptions):
                     rep = str(val)
                 line = line.replace('${'+var_ori+'}', rep)
             else:
-                logger.error('Unable to expand `{}`'.format(var))
+                logger.non_critical_error('Unable to expand `{}`'.format(var))
                 if not self._shown_defined:
                     self._shown_defined = True
-                    logger.error('Defined values: {}'.format([v for v in defined.keys() if v[0] != '_']))
+                    logger.non_critical_error('Defined values: {}'.format([v for v in defined.keys() if v[0] != '_']))
         return line
 
     def context_defined_tracks(self, line):

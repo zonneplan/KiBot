@@ -226,11 +226,9 @@ def solve_config(a_plot_config, quiet=False):
             logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
                            '  Using '+plot_config+' if you want to use another use -c option.')
         else:
-            logger.error('No config file found (*.kibot.yaml), use -c to specify one.')
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error('No config file found (*.kibot.yaml), use -c to specify one.', EXIT_BAD_ARGS)
     if not os.path.isfile(plot_config):
-        logger.error("Plot config file not found: "+plot_config)
-        sys.exit(EXIT_BAD_ARGS)
+        GS.exit_with_error("Plot config file not found: "+plot_config, EXIT_BAD_ARGS)
     logger.debug('Using configuration file: `{}`'.format(plot_config))
     return plot_config
 
@@ -254,11 +252,10 @@ def detect_kicad():
     try:
         import pcbnew
     except ImportError:
-        logger.error("Failed to import pcbnew Python module."
-                     " Is KiCad installed?"
-                     " Do you need to add it to PYTHONPATH?")
-        logger.error(TRY_INSTALL_CHECK)
-        sys.exit(NO_PCBNEW_MODULE)
+        GS.exit_with_error(["Failed to import pcbnew Python module."
+                            " Is KiCad installed?"
+                            " Do you need to add it to PYTHONPATH?",
+                            TRY_INSTALL_CHECK], NO_PCBNEW_MODULE)
     try:
         GS.kicad_version = pcbnew.GetBuildVersion()
     except AttributeError:
@@ -274,8 +271,7 @@ def detect_kicad():
 
     m = re.search(r'(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?', GS.kicad_version)
     if m is None:
-        logger.error("Unable to detect KiCad version, got: `{}`".format(GS.kicad_version))
-        sys.exit(NO_PCBNEW_MODULE)
+        GS.exit_with_error(f"Unable to detect KiCad version, got: `{GS.kicad_version}`", NO_PCBNEW_MODULE)
     GS.kicad_version_major = int(m.group(1))
     GS.kicad_version_minor = int(m.group(2))
     GS.kicad_version_patch = int(m.group(3))
@@ -346,8 +342,7 @@ def detect_kicad():
 def parse_defines(args):
     for define in args.define:
         if '=' not in define:
-            logger.error('Malformed `define` option, must be VARIABLE=VALUE ({})'.format(define))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'Malformed `define` option, must be VARIABLE=VALUE ({define})', EXIT_BAD_ARGS)
         var = define.split('=')[0]
         GS.cli_defines[var] = define[len(var)+1:]
 
@@ -355,8 +350,7 @@ def parse_defines(args):
 def parse_global_redef(args):
     for redef in args.global_redef:
         if '=' not in redef:
-            logger.error('Malformed global-redef option, must be VARIABLE=VALUE ({})'.format(redef))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'Malformed global-redef option, must be VARIABLE=VALUE ({redef})', EXIT_BAD_ARGS)
         var = redef.split('=')[0]
         GS.cli_global_defs[var] = redef[len(var)+1:]
 
@@ -373,8 +367,7 @@ def apply_warning_filter(args):
         try:
             log.set_filters([SimpleFilter(int(n)) for n in args.no_warn.split(',')])
         except ValueError:
-            logger.error('-w/--no-warn must specify a comma separated list of numbers ({})'.format(args.no_warn))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'-w/--no-warn must specify a comma separated list of numbers ({args.no_warn})', EXIT_BAD_ARGS)
 
 
 def debug_arguments(args):
@@ -437,8 +430,7 @@ def main():
         try:
             id = int(args.banner)
         except ValueError:
-            logger.error('The banner option needs an integer ({})'.format(id))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'The banner option needs an integer ({id})', EXIT_BAD_ARGS)
         logger.info(get_banner(id))
 
     if args.help_outputs or args.help_list_outputs:
@@ -479,8 +471,7 @@ def main():
     if args.example:
         check_board_file(args.board_file)
         if args.copy_options and not args.board_file:
-            logger.error('Asked to copy options but no PCB specified.')
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error('Asked to copy options but no PCB specified.', EXIT_BAD_ARGS)
         create_example(args.board_file, GS.out_dir, args.copy_options, args.copy_and_expand)
         sys.exit(0)
     if args.quick_start:

@@ -70,9 +70,8 @@ class Any_PCB_PrintOptions(VariantOptions):
     def run(self, output, svg=False):
         super().run(self._layers)
         if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1 and self.scaling != 0 and self.scaling != 1.0:
-            logger.error("Scaled printing is broken in KiCad 7.0.0\n"
-                         "Please upgrade KiCad to 7.0.1 or newer")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("Scaled printing is broken in KiCad 7.0.0\n"
+                               "Please upgrade KiCad to 7.0.1 or newer", MISSING_TOOL)
         command = self.ensure_tool('KiAuto')
         # Output file name
         cmd = [command, 'export', '--output_name', output]

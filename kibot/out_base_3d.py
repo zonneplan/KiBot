@@ -236,7 +236,7 @@ class Base3DOptions(VariantOptions):
         try:
             replace = download_easyeda_3d_model(lcsc_id, self._tmp_dir, fname)
         except Exception as e:
-            logger.error(f'Error downloading 3D model for LCSC part {lcsc_id} (model: {model} problem: {e})')
+            logger.non_critical_error(f'Error downloading 3D model for LCSC part {lcsc_id} (model: {model} problem: {e})')
             replace = None
         if not replace:
             return None

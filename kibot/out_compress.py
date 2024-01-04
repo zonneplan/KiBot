@@ -172,8 +172,7 @@ class CompressOptions(BaseOptions):
                                 run_output(out)
                             if not os.path.exists(file):
                                 # Still missing, something is wrong
-                                logger.error('Unable to generate `{}` from {}'.format(file, out))
-                                exit(INTERNAL_ERROR)
+                                GS.exit_with_error(f'Unable to generate `{file}` from {out}', INTERNAL_ERROR)
                         if os.path.isdir(file):
                             # Popultate output adds the image dirs
                             # Computing its content is complex:

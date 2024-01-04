@@ -26,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH)
-from .error import PlotError, KiPlotConfigurationError, config_error
+from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
 from .dep_downloader import register_deps
@@ -46,9 +46,7 @@ try:
     import yaml
 except ImportError:
     log.init()
-    logger.error('No yaml module for Python, install python3-yaml')
-    logger.error(TRY_INSTALL_CHECK)
-    exit(NO_YAML_MODULE)
+    GS.exit_with_error(['No yaml module for Python, install python3-yaml', TRY_INSTALL_CHECK], NO_YAML_MODULE)
 
 
 def cased_path(path):
@@ -61,8 +59,7 @@ def try_register_deps(mod, name):
         try:
             data = yaml.safe_load(mod.__doc__)
         except yaml.YAMLError as e:
-            logger.error('While loading plug-in `{}`:'.format(name))
-            config_error("Error loading YAML "+str(e))
+            config_error([f'While loading plug-in `{name}`:', "Error loading YAML "+str(e)])
         register_deps(name, data)
 
 
@@ -195,8 +192,7 @@ def exec_with_retry(cmd, exit_with=None):
                 logger.warning(W_TIMEOUT+'Time out detected, on slow machines or complex projects try:')
                 logger.warning(W_TIMEOUT+'`kiauto_time_out_scale` and/or `kiauto_wait_start` global options')
             if exit_with is not None and ret:
-                logger.error(cmd[0]+' returned %d', ret)
-                exit(exit_with)
+                GS.exit_with_error(cmd[0]+' returned '+str(ret), exit_with)
             return ret
 
 
@@ -232,9 +228,7 @@ def load_board(pcb_file=None, forced=False):
                     dr.Update()
         GS.board = board
     except OSError as e:
-        logger.error('Error loading PCB file. Corrupted?')
-        logger.error(e)
-        exit(CORRUPTED_PCB)
+        GS.exit_with_error(['Error loading PCB file. Corrupted?', str(e)], CORRUPTED_PCB)
     assert board is not None
     logger.debug("Board loaded")
     return board
@@ -425,13 +419,11 @@ def preflight_checks(skip_pre, targets):
             skip_list = skip_pre.split(',')
             for skip in skip_list:
                 if skip == 'all':
-                    logger.error('All can\'t be part of a list of actions '
-                                 'to skip. Use `--skip all`')
-                    exit(EXIT_BAD_ARGS)
+                    GS.exit_with_error('All can\'t be part of a list of actions '
+                                       'to skip. Use `--skip all`', EXIT_BAD_ARGS)
                 else:
                     if not BasePreFlight.is_registered(skip):
-                        logger.error('Unknown preflight `{}`'.format(skip))
-                        exit(EXIT_BAD_ARGS)
+                        GS.exit_with_error(f'Unknown preflight `{skip}`', EXIT_BAD_ARGS)
                     o_pre = BasePreFlight.get_preflight(skip)
                     if not o_pre:
                         logger.warning(W_NONEEDSKIP + '`{}` preflight is not in use, no need to skip'.format(skip))
@@ -480,8 +472,7 @@ def config_output(out, dry=False, dont_stop=False):
 def get_output_targets(output, parent):
     out = RegOutput.get_output(output)
     if out is None:
-        logger.error('Unknown output `{}` selected in {}'.format(output, parent))
-        exit(WRONG_ARGUMENTS)
+        GS.exit_with_error(f'Unknown output `{output}` selected in {parent}', WRONG_ARGUMENTS)
     config_output(out)
     out_dir = get_output_dir(out.dir, out, dry=True)
     files_list = out.get_targets(out_dir)
@@ -501,7 +492,7 @@ def run_output(out, dont_stop=False):
     try:
         out.run(get_output_dir(out.dir, out))
         out._done = True
-    except PlotError as e:
+    except (PlotError, KiPlotError) as e:
         logger.error("In output `"+str(out)+"`: "+str(e))
         if not dont_stop:
             exit(PLOT_ERROR)
@@ -551,12 +542,10 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
         # Check we got a valid list of outputs
         unknown = next(filter(lambda x: not RegOutput.is_output_or_group(x), targets), None)
         if unknown:
-            logger.error('Unknown output/group `{}`'.format(unknown))
-            exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'Unknown output/group `{unknown}`', EXIT_BAD_ARGS)
         # Check for CLI+invert inconsistency
         if cli_order and invert:
-            logger.error("CLI order and invert options can't be used simultaneously")
-            exit(EXIT_BAD_ARGS)
+            GS.exit_with_error("CLI order and invert options can't be used simultaneously", EXIT_BAD_ARGS)
         # Expand groups
         logger.debug('Outputs before groups expansion: {}'.format(targets))
         try:
@@ -777,10 +766,9 @@ def guess_ki6_sch(schematics):
 
 
 def avoid_mixing_5_and_6(sch, kicad_sch):
-    logger.error('Found KiCad 5 and KiCad 6+ files, make sure the whole project uses one version')
-    logger.error('KiCad 5:  '+os.path.basename(sch))
-    logger.error('KiCad 6+: '+os.path.basename(kicad_sch))
-    exit(EXIT_BAD_CONFIG)
+    GS.exit_with_error(['Found KiCad 5 and KiCad 6+ files, make sure the whole project uses one version',
+                        'KiCad 5:  '+os.path.basename(sch),
+                        'KiCad 6+: '+os.path.basename(kicad_sch)], EXIT_BAD_CONFIG)
 
 
 def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, sug_e=True):
@@ -846,8 +834,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
             logger.warning(W_VARSCH + 'More than one SCH file found in `'+base_dir+'`.\n'
                            '  Using '+schematic+msg+'.')
     if schematic and not os.path.isfile(schematic):
-        logger.error("Schematic file not found: "+schematic)
-        exit(NO_SCH_FILE)
+        GS.exit_with_error("Schematic file not found: "+schematic, NO_SCH_FILE)
     if schematic:
         schematic = os.path.abspath(schematic)
         logger.debug('Using schematic: `{}`'.format(schematic))
@@ -859,8 +846,7 @@ def solve_schematic(base_dir, a_schematic=None, a_board_file=None, config=None, 
 
 def check_board_file(board_file):
     if board_file and not os.path.isfile(board_file):
-        logger.error("Board file not found: "+board_file)
-        exit(NO_PCB_FILE)
+        GS.exit_with_error("Board file not found: "+board_file, NO_PCB_FILE)
 
 
 def solve_board_file(base_dir, a_board_file=None, sug_b=True):
@@ -1120,8 +1106,7 @@ def generate_examples(start_dir, dry, types):
         start_dir = '.'
     else:
         if not os.path.isdir(start_dir):
-            logger.error('Invalid dir {} to quick start'.format(start_dir))
-            exit(WRONG_ARGUMENTS)
+            GS.exit_with_error(f'Invalid dir {start_dir} to quick start', WRONG_ARGUMENTS)
     # Set default global options
     glb = GS.class_for_global_opts()
     glb.set_tree({})

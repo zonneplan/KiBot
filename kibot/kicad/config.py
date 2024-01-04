@@ -72,10 +72,10 @@ def parse_len_str(val):
         c = int(val[:pos])
     except ValueError:
         c = None
-        logger.error('Malformed 3D alias entry: '+val)
+        logger.non_critical_error('Malformed 3D alias entry: '+val)
     value = val[pos+1:]
     if c is not None and c != len(value):
-        logger.error('3D alias entry error, expected len {}, but found {}'.format(c, len(value)))
+        logger.non_critical_error(f'3D alias entry error, expected len {c}, but found {len(value)}')
     return value
 
 
@@ -110,7 +110,7 @@ def expand_env(val, env, extra_env, used_extra=None):
                 success = False
                 # Note: We can't expand NET_NAME(n)
                 if var not in reported and not var.startswith('NET_NAME('):
-                    logger.error('Unable to expand `{}` in `{}`'.format(var, val))
+                    logger.non_critical_error(f'Unable to expand `{var}` in `{val}`')
                     reported.add(var)
     return val
 
@@ -585,7 +585,7 @@ class KiConf(object):
                 logger.warning(W_3DRESVER, 'Unsupported 3D resolver version ({})'.format(head))
             for r in reader:
                 if len(r) != 3:
-                    logger.error("3D resolver doesn't contain three values ({})".format(r))
+                    logger.non_critical_error(f"3D resolver doesn't contain three values ({r})")
                     continue
                 name = parse_len_str(r[0])
                 value = parse_len_str(r[1])
@@ -607,8 +607,7 @@ class KiConf(object):
                     data[key]['page_layout_descr_file'] = key+'.kicad_wks'
                     return dest
                 else:
-                    logger.error('Missing page layout file: '+fname)
-                    exit(MISSING_WKS)
+                    GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
         return None
 
     def fix_page_layout_k6(project, dry):
@@ -658,8 +657,7 @@ class KiConf(object):
                         dest = str(order)+'.kicad_wks'
                         order = order+1
                     else:
-                        logger.error('Missing page layout file: '+fname)
-                        exit(MISSING_WKS)
+                        GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
                 else:
                     dest = ''
                 lns[c] = f'PageLayoutDescrFile={dest}\n'

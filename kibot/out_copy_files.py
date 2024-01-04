@@ -9,7 +9,6 @@ import glob
 import os
 import re
 from shutil import copy2
-from sys import exit
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import config_output, get_output_dir, run_output
@@ -106,8 +105,7 @@ class Copy_FilesOptions(Base3DOptions):
             files_list = out.get_targets(out_dir)
             logger.debugl(2, '- List of files: {}'.format(files_list))
         else:
-            logger.error('Unknown output `{}` selected in {}'.format(from_output, self._parent))
-            exit(WRONG_ARGUMENTS)
+            GS.exit_with_error(f'Unknown output `{from_output}` selected in {self._parent}', WRONG_ARGUMENTS)
         # Check if we must run the output to create the files
         if not no_out_run:
             for file in files_list:
@@ -118,8 +116,7 @@ class Copy_FilesOptions(Base3DOptions):
                         run_output(out)
                     if not os.path.isfile(file):
                         # Still missing, something is wrong
-                        logger.error('Unable to generate `{}` from {}'.format(file, out))
-                        exit(INTERNAL_ERROR)
+                        GS.exit_with_error(f'Unable to generate `{file}` from {out}', INTERNAL_ERROR)
         return files_list
 
     def copy_footprints(self, dest, dry):

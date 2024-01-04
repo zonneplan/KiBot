@@ -5,7 +5,6 @@
 # Project: KiBot (formerly KiPlot)
 import os
 import re
-import sys
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
 from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS
@@ -107,8 +106,7 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 logger.debugl(2, 'Running: {}'.format(cmd))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
-                    logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
-                    sys.exit(FAILED_EXECUTE)
+                    GS.exit_with_error('Failed to execute:\n{r.command}\nreturn code {result.returncode}', FAILED_EXECUTE)
                 if not result.stdout:
                     logger.warning(W_EMPTREP+"Empty value from `{}` skipping it".format(r.command))
                     continue
