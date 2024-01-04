@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
-    version: 2.4.4
+    version: 2.5.1
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -147,8 +147,7 @@ class DiffOptions(VariantOptions):
                 self.h.update(chunk)
         return self.h.hexdigest()
 
-    def add_to_cache(self, name, hash):
-        cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
+    def add_zones_ops(self, cmd):
         if self.zones == 'global':
             if BasePreFlight.get_option('check_zone_fills'):
                 cmd.extend(['--zones', 'fill'])
@@ -156,6 +155,10 @@ class DiffOptions(VariantOptions):
             cmd.extend(['--zones', 'fill'])
         elif self.zones == 'unfill':
             cmd.extend(['--zones', 'unfill'])
+
+    def add_to_cache(self, name, hash):
+        cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
+        self.add_zones_ops(cmd)
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if not self.only_first_sch_page:
@@ -523,6 +526,7 @@ class DiffOptions(VariantOptions):
         cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
                '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
                '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz), '--no_exist_check']
+        self.add_zones_ops(cmd)
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if self.threshold:
