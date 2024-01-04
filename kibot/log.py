@@ -14,6 +14,7 @@ import os
 import sys
 import traceback
 import logging
+from .misc import WARN_AS_ERROR
 no_colorama = False
 try:
     from colorama import init as colorama_init, Fore, Back, Style
@@ -30,6 +31,7 @@ filters = []
 root_logger = None
 visual_level = None
 debug_level = 0
+stop_on_warnings = False
 
 
 def get_logger(name=None, indent=None):
@@ -106,6 +108,9 @@ class MyLogger(logging.Logger):
             super().warning(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
         else:
             super().warning(buf, **kwargs)
+        if stop_on_warnings:
+            self.error('Warnings treated as errors')
+            sys.exit(WARN_AS_ERROR)
 
     def log(self, level, msg, *args, **kwargs):
         if level < self.getEffectiveLevel():

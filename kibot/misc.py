@@ -46,6 +46,7 @@ DXF_SCH_PRINT = 32
 HPGL_SCH_PRINT = 33
 CORRUPTED_PRO = 34
 BLENDER_ERROR = 35
+WARN_AS_ERROR = 36
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -81,7 +82,8 @@ error_level_to_name = ['NONE',
                        'DXF_SCH_PRINT',
                        'HPGL_SCH_PRINT',
                        'CORRUPTED_PRO',
-                       'BLENDER_ERROR'
+                       'BLENDER_ERROR',
+                       'WARN_AS_ERROR'
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'

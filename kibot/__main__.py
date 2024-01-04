@@ -10,7 +10,7 @@
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
+         [-E DEF] ... [-w LIST] [-W] [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
          [--output-name-first] --list
@@ -72,6 +72,7 @@ Options:
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
   -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
+  -W, --stop-on-warnings           Stop on warnings
   -x, --example                    Create a template configuration file
 
 Quick start options:
@@ -410,6 +411,7 @@ def main():
     # The log setup finished, this is our first log message
     logger.debug('KiBot {} verbose level: {} started on {}'.format(__version__, args.verbose, datetime.now()))
     apply_warning_filter(args)
+    log.stop_on_warnings = args.stop_on_warnings
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
     detect_windows()
