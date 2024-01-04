@@ -37,7 +37,6 @@ class OSVariables(Optionable):
             v0 = tuple(self._tree.values())[0]
             n0 = tuple(self._tree.keys())[0]
             if n0 != 'name' and n0 != 'value' and isinstance(v0, str):
-                logger.error(self._tree)
                 self.name = n0
                 self.value = v0
                 return
