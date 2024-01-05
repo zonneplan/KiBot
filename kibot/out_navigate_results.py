@@ -173,7 +173,7 @@ class Navigate_ResultsOptions(BaseOptions):
             self.link_from_root = ''
             """ *The name of a file to create at the main output directory linking to the home page """
             self.skip_not_run = False
-            # """ Skip outputs with `run_by_default: false` """
+            """ Skip outputs with `run_by_default: false` """
         super().__init__()
         self._expand_id = 'navigate'
         self._expand_ext = 'html'
