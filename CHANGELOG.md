@@ -117,6 +117,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Rotations are now applied to the current view, not just the top view
   - Board/components not visible for small boards (See #484)
   - Light type names (extra space) (#505)
+  - Problems when no point of view was defined (#546)
 - update_xml with check_pcb_parity enabled:
   - Avoid errors for KiCad 6 using "Exclude from BoM" components.
     This limitation isn't found on KiCad 7. (#486)

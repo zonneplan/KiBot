@@ -93,6 +93,8 @@ def do_point_of_view(scene, name):
         return (0, 90, 90)
     if view == 'X':
         return (0, -90, -90)
+    print(f'Unknown view `{view}`')
+    return (0, 0, 0)
 
 
 def srgb_to_linearrgb(c):

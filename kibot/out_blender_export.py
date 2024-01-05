@@ -396,7 +396,10 @@ class Blender_ExportOptions(BaseOptions):
             self.render_options = BlenderRenderOptions()
         # Point of View, make sure we have a list and at least 1 element
         if isinstance(self.point_of_view, type):
-            self.point_of_view = [BlenderPointOfViewOptions()]
+            pov = BlenderPointOfViewOptions()
+            # Manually translate top -> z
+            pov.view = 'z'
+            self.point_of_view = [pov]
         elif isinstance(self.point_of_view, BlenderPointOfViewOptions):
             self.point_of_view = [self.point_of_view]
 
