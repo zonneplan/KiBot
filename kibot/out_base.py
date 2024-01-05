@@ -327,7 +327,7 @@ class VariantOptions(BaseOptions):
             brect = Rect()
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
-                # Meassure the component BBox (only graphics)
+                # Measure the component BBox (only graphics)
                 for gi in m.GraphicalItems():
                     if gi.GetClass() == GS.footprint_gr_type:
                         l_gi = gi.GetLayer()
@@ -419,7 +419,7 @@ class VariantOptions(BaseOptions):
                         old_c_layers.append(pad_layers.FmtHex())
                         pad_layers.removeLayerSet(exclude)
                         if len(pad_layers.Seq()) == 0:
-                            # No layers at all. Ridiculous, but happends.
+                            # No layers at all. Ridiculous, but happens.
                             # At least add an F.Mask
                             pad_layers.addLayer(fmask if is_front else bmask)
                             logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)

@@ -217,7 +217,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     get the old behavior.
 - Git diff link file name:
   - Now we default to using worktrees instead of stash push/pop. As a side
-    effect the names of the git points are chnaged. This is because main/master
+    effect the names of the git points are changed. This is because main/master
     only applies to the main worktree. So the names now refer to the closest
     tag.
 - JLCPCB_stencil: Is now just like JLCPCB. The only difference is the added
@@ -973,7 +973,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   internal BoM. They are usually mistakes that prevents grouping components.
 
 ### Fixed
-- The variants logic for BoMs when a component resquested to be only added to
+- The variants logic for BoMs when a component requested to be only added to
   more than one variant.
 - Removed warnings about malformed values for DNF components indicating it in
   its value.

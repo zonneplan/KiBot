@@ -241,7 +241,7 @@ class PcbDrawOptions(VariantOptions):
             self.show_solderpaste = True
             """ Show the solder paste layers """
             self.resistor_remap = PcbDrawResistorRemap
-            """ [list(dict)] List of resitors to be remapped. You can change the value of the resistors here """
+            """ [list(dict)] List of resistors to be remapped. You can change the value of the resistors here """
             self.resistor_flip = Optionable
             """ [string|list(string)=''] List of resistors to flip its bands """
             self.size_detection = 'kicad_edge'

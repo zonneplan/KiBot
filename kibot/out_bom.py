@@ -1029,7 +1029,7 @@ class BoM(BaseOutput):  # noqa: F821
         fld_names_l = [f.lower() for f in fld_names]
         fld_set = set(fld_names_l)
         logger.debug(' - Available fields {}'.format(fld_names_l))
-        # Look for the manufaturer part number
+        # Look for the manufacturer part number
         mpn_set = {k for k, v in KICOST_NAME_TRANSLATIONS.items() if v == 'manf#'}
         mpn_set.add('manf#')
         mpn_fields = fld_set.intersection(mpn_set)

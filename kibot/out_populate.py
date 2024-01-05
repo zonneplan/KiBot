@@ -70,7 +70,7 @@ class PopulateOptions(VariantOptions):
             raise KiPlotConfigurationError('Missing input file `{}`'.format(self.input))
         # Initial components
         self.initial_components = Optionable.force_list(self.initial_components)
-        # Validate the image patter name
+        # Validate the image pattern name
         if '%d' not in self.imgname:
             raise KiPlotConfigurationError('The image pattern must contain `%d` `{}`'.format(self.imgname))
 

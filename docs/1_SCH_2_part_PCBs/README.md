@@ -83,7 +83,7 @@ Filter B:
 ![Schematic](Hierarchy_1/Filter_B/Generated/Filter_B-assembly_page_02.png)
 
 In order to create a schematic for the whole system you create a third project.
-In this project you use hierarchichal sheets to join both projects and show
+In this project you use hierarchical sheets to join both projects and show
 how they are connected.
 
 ![Schematic](Hierarchy_1/Top_Level/Generated/Schematic.svg)

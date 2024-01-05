@@ -220,7 +220,7 @@ class BlenderPointOfViewOptions(Optionable):
             """ *[top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
                 Compatible with `render_3d` """
             self.file_id = ''
-            """ String to diferentiate the name of this point of view.
+            """ String to differentiate the name of this point of view.
                 When empty we use the `default_file_id` or the `view` """
             self.steps = 1
             """ [1-1000] Generate this amount of steps using the rotation angles as increments.

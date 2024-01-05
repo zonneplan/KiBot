@@ -914,7 +914,7 @@ def test_compress_sources_1(test_dir):
 
 
 def test_date_format_1(test_dir):
-    """ Date from SCH reformated """
+    """ Date from SCH reformatted """
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'date_format_1')
     ctx.run(extra=[])
@@ -923,7 +923,7 @@ def test_date_format_1(test_dir):
 
 
 def test_date_format_2(test_dir):
-    """ Date from SCH reformated """
+    """ Date from SCH reformatted """
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'date_format_1')
     ctx.run(extra=[])
@@ -1044,7 +1044,7 @@ def test_report_simple_2(test_dir):
 
 
 def test_report_edge_1(test_dir):
-    """ Meassures the PCB size when using a component that contains the real PCB edges #164 """
+    """ Measures the PCB size when using a component that contains the real PCB edges #164 """
     prj = 'comp_edge'
     ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
     ctx.run()
@@ -1055,7 +1055,7 @@ def test_report_edge_1(test_dir):
 
 @pytest.mark.skipif(context.ki5(), reason="Example in KiCad 6 format")
 def test_report_edge_2(test_dir):
-    """ Meassures the PCB size when using circles in the PCB edge #375 """
+    """ Measures the PCB size when using circles in the PCB edge #375 """
     prj = 'circle_edge'
     ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
     ctx.run()

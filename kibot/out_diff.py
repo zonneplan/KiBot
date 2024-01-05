@@ -76,7 +76,7 @@ class DiffOptions(VariantOptions):
             """ Directory to cache the intermediate files. Leave it blank to disable the cache """
             self.diff_mode = 'red_green'
             """ [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
-                The `stats` mode is used to meassure the amount of difference. In this mode all
+                The `stats` mode is used to measure the amount of difference. In this mode all
                 changes are red, but you can abort if the difference is bigger than certain threshold """
             self.fuzz = 5
             """ [0,100] Color tolerance (fuzzyness) for the `stats` mode """
@@ -102,7 +102,7 @@ class DiffOptions(VariantOptions):
                 `file_id` instead of its name """
             self.only_different = False
             """ Only include the pages with differences in the output PDF.
-                Note that when no differeces are found we get a page saying *No diff* """
+                Note that when no differences are found we get a page saying *No diff* """
             self.only_first_sch_page = False
             """ Compare only the main schematic page (root page) """
             self.always_fail_if_missing = False

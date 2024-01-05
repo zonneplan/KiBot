@@ -1927,7 +1927,7 @@ class Schematic(object):
     def save_netlist_components(self, root, comps, excluded, fitted, no_field):
         """ Generates the `components` section of the netlist """
         components = SubElement(root, 'components')
-        # Colapse units
+        # Collapse units
         real_comps = []
         tstamps = {}
         for c in comps:
