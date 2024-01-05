@@ -1,0 +1,21 @@
+[run]
+source = 
+    kibot
+    src
+omit = */kibot/blender_scripts/*
+       */kibot/docopt.py
+       */kibot/kicad/sexpdata.py
+       */kibot/mcpy/*
+       */kibot/mcpyrate/*
+       */kibot/PyPDF2/*
+       */kibot/PcbDraw/*
+       */kibot/svgutils/*
+parallel = true
+
+[report]
+exclude_lines =
+    pragma: no cover
+#    @pre_class
+#    @output_class
+#    raise RuntimeError
+
