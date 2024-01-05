@@ -218,10 +218,7 @@ class KiBoMConfig(Optionable):
             with open(csv, 'rt') as f:
                 columns = f.readline().rstrip().split(',')
         except CalledProcessError as e:
-            logger.error('Failed to get the column names for `{}`, error {}'.format(xml, e.returncode))
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(BOM_ERROR)
+            GS.exit_with_error(f'Failed to get the column names for `{xml}`, error {e.returncode}', BOM_ERROR, e)
         finally:
             if config:
                 os.remove(config)
@@ -433,10 +430,7 @@ class KiBoMOptions(BaseOptions):
         try:
             cmd_output = check_output(cmd, stderr=STDOUT)
         except CalledProcessError as e:
-            logger.error('Failed to create BoM, error %d', e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(BOM_ERROR)
+            GS.exit_with_error(f'Failed to create BoM, error {e.returncode}', BOM_ERROR, e)
         if force_output:
             # When we create the .ini we can control the name.
             # But when the user does it we can trust the settings.

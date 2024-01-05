@@ -12,7 +12,6 @@ from copy import deepcopy
 from collections import OrderedDict
 import os
 import re
-from sys import exit
 from sys import path as sys_path
 from shutil import which, copy2
 from subprocess import run, PIPE, STDOUT, Popen, CalledProcessError
@@ -164,9 +163,7 @@ def run_command(command, change_to=None, just_raise=False, use_x11=False):
     except CalledProcessError as e:
         if just_raise:
             raise
-        logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
-        debug_output(e)
-        exit(FAILED_EXECUTE)
+        GS.exit_with_error(None, FAILED_EXECUTE, e)
     debug_output(res)
     return res.stdout.decode().rstrip()
 

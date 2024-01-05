@@ -231,12 +231,9 @@ class IBoMOptions(VariantOptions):
             if 'ERROR Parsing failed' in cmd_output_dec:
                 raise CalledProcessError(1, cmd, cmd_output)
         except CalledProcessError as e:
-            logger.error('Failed to create BoM, error %d', e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-                if "'PCB_SHAPE' object has no attribute 'GetAngle'" in e.output.decode():
-                    logger.error("Update Interactive HTML BoM your version doesn't support KiCad 6 files")
-            exit(BOM_ERROR)
+            GS.exit_with_error(f'Failed to create BoM, error {e.returncode}', BOM_ERROR, e,
+                               ("'PCB_SHAPE' object has no attribute 'GetAngle'",
+                                "Update Interactive HTML BoM your version doesn't support KiCad 6 files"))
         finally:
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))

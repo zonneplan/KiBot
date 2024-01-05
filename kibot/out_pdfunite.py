@@ -6,7 +6,6 @@
 import re
 import os
 import glob
-from sys import exit
 from subprocess import check_output, STDOUT, CalledProcessError
 from .gs import GS
 from .error import KiPlotConfigurationError
@@ -113,10 +112,7 @@ class PDFUniteOptions(BaseOptions):
         except FileNotFoundError:
             GS.exit_with_error('Missing `pdfunite` command, install it (poppler-utils)', MISSING_TOOL)
         except CalledProcessError as e:
-            logger.error('Failed to invoke pdfunite command, error {}'.format(e.returncode))
-            if e.output:
-                logger.error('Output from command: '+e.output.decode())
-            exit(WRONG_INSTALL)
+            GS.exit_with_error(f'Failed to invoke pdfunite command, error {e.returncode}', WRONG_INSTALL, e)
 
     def run(self, output):
         # Output file name

@@ -29,10 +29,7 @@ def _run_command(cmd):
     try:
         cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as e:
-        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
-        if e.output:
-            logger.debug('Output from command: '+e.output.decode())
-        exit(RENDER_3D_ERR)
+        GS.exit_with_error(None, RENDER_3D_ERR, e)
     if cmd_output.strip():
         logger.debug('- Output from command:\n'+cmd_output.decode())
 

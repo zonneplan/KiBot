@@ -779,13 +779,23 @@ class GS(object):
                 print_tb(traceback)
 
     @staticmethod
-    def exit_with_error(msg, level):
+    def exit_with_error(msg, level, run_error=None, hints=None):
         GS.trace_dump()
         if isinstance(msg, (tuple, list)):
             for m in msg:
                 logger.error(m)
-        else:
+        elif msg:
             logger.error(msg)
+        if run_error:
+            if not msg:
+                logger.error('Running {} returned {}'.format(run_error.cmd, run_error.returncode))
+            if run_error.output:
+                out = run_error.output.decode()
+                logger.debug('- Output from command: '+out)
+                if hints:
+                    for h in hints:
+                        if h[0] in out:
+                            logger.error(h[1])
         exit(level)
 
     @staticmethod

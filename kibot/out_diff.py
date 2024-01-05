@@ -543,10 +543,7 @@ class DiffOptions(VariantOptions):
         except CalledProcessError as e:
             if e.returncode == 10:
                 GS.exit_with_error('Diff above the threshold', DIFF_TOO_BIG)
-            logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
-            if e.stdout:
-                logger.debug('- Output from command: '+e.stdout.decode())
-            exit(FAILED_EXECUTE)
+            GS.exit_with_error(None, FAILED_EXECUTE, e)
         if self.add_link_id:
             name_comps = os.path.splitext(name_ori)
             target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]

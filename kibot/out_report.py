@@ -854,10 +854,7 @@ class ReportOptions(BaseOptions):
         try:
             check_output(cmd, stderr=STDOUT)
         except CalledProcessError as e:
-            logger.error('{} error: {}'.format(command, e.returncode))
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(FAILED_EXECUTE)
+            GS.exit_with_error(None, FAILED_EXECUTE, e)
 
     def run(self, fname):
         self.pcb_material = GS.global_pcb_material

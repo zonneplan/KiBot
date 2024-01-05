@@ -18,7 +18,6 @@ import re
 import os
 import glob
 import sys
-from sys import exit
 from subprocess import check_output, STDOUT, CalledProcessError
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA
 from tarfile import open as tar_open
@@ -126,10 +125,7 @@ class CompressOptions(BaseOptions):
             try:
                 check_output(cmd, stderr=STDOUT)
             except CalledProcessError as e:
-                logger.error('Failed to invoke rar command, error {}'.format(e.returncode))
-                if e.output:
-                    logger.debug('Output from command: '+e.output.decode())
-                exit(WRONG_INSTALL)
+                GS.exit_with_error(f'Failed to invoke rar command, error {e.returncode}', WRONG_INSTALL, e)
 
     def solve_extension(self):
         if self.format == 'ZIP':

@@ -218,10 +218,7 @@ class KiCostOptions(VariantOptions):
             cmd_output = check_output(cmd, stderr=STDOUT)
             cmd_output_dec = cmd_output.decode()
         except CalledProcessError as e:
-            logger.error('Failed to create costs spreadsheet, error %d', e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(BOM_ERROR)
+            GS.exit_with_error(f'Failed to create costs spreadsheet, error {e.returncode}', BOM_ERROR, e)
         finally:
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
