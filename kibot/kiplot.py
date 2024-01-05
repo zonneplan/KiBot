@@ -492,16 +492,18 @@ def run_output(out, dont_stop=False):
     try:
         out.run(get_output_dir(out.dir, out))
         out._done = True
-    except (PlotError, KiPlotError) as e:
-        logger.error("In output `"+str(out)+"`: "+str(e))
-        if not dont_stop:
-            exit(PLOT_ERROR)
     except KiPlotConfigurationError as e:
         msg = "In section '"+out.name+"' ("+out.type+"): "+str(e)
         if dont_stop:
             logger.error(msg)
         else:
             config_error(msg)
+    except (PlotError, KiPlotError) as e:
+        msg = "In output `"+str(out)+"`: "+str(e)
+        if dont_stop:
+            logger.error(msg)
+        else:
+            GS.exit_with_error(msg, PLOT_ERROR)
     except KiConfError as e:
         ki_conf_error(e)
     except SystemExit:
