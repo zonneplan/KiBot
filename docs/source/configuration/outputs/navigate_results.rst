@@ -27,7 +27,7 @@ Parameters:
       -  **output** :index:`: <pair: output - navigate_results - options; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
       -  ``skip_not_run`` :index:`: <pair: output - navigate_results - options; skip_not_run>` [boolean=false] Skip outputs with `run_by_default: false`.
 
--  **type** :index:`: <pair: output - navigate_results; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - navigate_results; type>` 'navigate_results'
 -  ``category`` :index:`: <pair: output - navigate_results; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

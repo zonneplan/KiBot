@@ -104,7 +104,7 @@ Parameters:
       -  ``uppercase_extensions`` :index:`: <pair: output - svg - options; uppercase_extensions>` [boolean=false] Use uppercase names for the extensions.
       -  ``variant`` :index:`: <pair: output - svg - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - svg; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - svg; type>` 'svg'
 -  ``category`` :index:`: <pair: output - svg; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

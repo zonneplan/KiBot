@@ -56,7 +56,7 @@ Parameters:
          Supported by the gerber format.
       -  ``variant`` :index:`: <pair: output - position - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - position; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - position; type>` 'position'
 -  ``category`` :index:`: <pair: output - position; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

@@ -152,7 +152,7 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - pcb_print - options; variant>` [string=''] Board variant to apply.
       -  ``via_color`` :index:`: <pair: output - pcb_print - options; via_color>` [string=''] Color used for through-hole `colored_vias`.
 
--  **type** :index:`: <pair: output - pcb_print; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - pcb_print; type>` 'pcb_print'
 -  ``category`` :index:`: <pair: output - pcb_print; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

@@ -73,7 +73,7 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - kicost - options; variant>` [string=''] Board variant to apply.
          Don't use the `kicost_variant` when using internal variants/filters.
 
--  **type** :index:`: <pair: output - kicost; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - kicost; type>` 'kicost'
 -  ``category`` :index:`: <pair: output - kicost; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

@@ -87,7 +87,7 @@ Parameters:
       -  ``width_adjust`` :index:`: <pair: output - ps - options; width_adjust>` [number=0] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
          Only used to plot pads and tracks.
 
--  **type** :index:`: <pair: output - ps; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - ps; type>` 'ps'
 -  ``category`` :index:`: <pair: output - ps; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

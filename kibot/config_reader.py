@@ -789,9 +789,10 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
     if rst_mode:
         ind_base_sp += ' '
     for k, v in sorted(obj.get_attrs_gen(), key=lambda x: not obj.is_basic_option(x[0])):
-        if k == 'type' and indent == ind_size:
-            # Type is fixed for an output
-            continue
+        if k == 'type':
+            if indent == ind_size:
+                # Type is fixed for an output
+                continue
         if not num_opts:
             # We found one, put the title
             if rst_mode:
@@ -801,6 +802,10 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
             if rst_mode:
                 print()
         help, alias, is_alias = obj.get_doc(k)
+        dot = True
+        if k == 'type' and not indent:
+            help = f"*'{name}'"
+            dot = False
         is_basic = False
         if help and help[0] == '*':
             help = help[1:]
@@ -822,7 +827,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
             # Index entry
             preface = preface[:-2] + f' :index:`: <pair: {context}; {k}>` '
         clines = len(lines)
-        print('{}{}{}'.format(preface, adapt_text(lines[0].strip()), '.' if clines == 1 else ''))
+        print('{}{}{}'.format(preface, adapt_text(lines[0].strip()), '.' if clines == 1 and dot else ''))
         if rst_mode:
             if skip_keys:
                 ind_help = (indent+ind_size)*' '

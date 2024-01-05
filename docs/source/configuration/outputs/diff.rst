@@ -96,7 +96,7 @@ Parameters:
          a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
          Be careful with the cache when changing this setting.
 
--  **type** :index:`: <pair: output - diff; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - diff; type>` 'diff'
 -  ``category`` :index:`: <pair: output - diff; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

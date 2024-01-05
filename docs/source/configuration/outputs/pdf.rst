@@ -90,7 +90,7 @@ Parameters:
    (i.e. always the default worksheet style, also problems expanding text variables).
    The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
 -  **scaling** :index:`: <pair: output - pdf; scaling>` [number=1] Scale factor (0 means autoscaling).
--  **type** :index:`: <pair: output - pdf; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - pdf; type>` 'pdf'
 -  ``category`` :index:`: <pair: output - pdf; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

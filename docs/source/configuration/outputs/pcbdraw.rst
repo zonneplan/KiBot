@@ -129,7 +129,7 @@ Parameters:
          Note that any other content from this layer will be included.
       -  ``warnings`` :index:`: <pair: output - pcbdraw - options; warnings>` [string='visible'] [visible,all,none] Using visible only the warnings about components in the visible side are generated.
 
--  **type** :index:`: <pair: output - pcbdraw; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - pcbdraw; type>` 'pcbdraw'
 -  ``category`` :index:`: <pair: output - pcbdraw; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

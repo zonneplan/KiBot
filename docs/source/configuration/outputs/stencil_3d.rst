@@ -56,7 +56,7 @@ Parameters:
          side contains solder paste.
       -  ``variant`` :index:`: <pair: output - stencil_3d - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - stencil_3d; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - stencil_3d; type>` 'stencil_3d'
 -  ``category`` :index:`: <pair: output - stencil_3d; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

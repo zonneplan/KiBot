@@ -38,7 +38,7 @@ Parameters:
 
       -  ``use_external_command`` :index:`: <pair: output - pdfunite - options; use_external_command>` [boolean=false] Use the `pdfunite` tool instead of PyPDF2 Python module.
 
--  **type** :index:`: <pair: output - pdfunite; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - pdfunite; type>` 'pdfunite'
 -  ``category`` :index:`: <pair: output - pdfunite; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

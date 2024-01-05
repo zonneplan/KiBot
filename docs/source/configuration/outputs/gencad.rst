@@ -40,7 +40,7 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - gencad - options; variant>` [string=''] Board variant to apply.
          Used for sub-PCBs.
 
--  **type** :index:`: <pair: output - gencad; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - gencad; type>` 'gencad'
 -  ``category`` :index:`: <pair: output - gencad; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

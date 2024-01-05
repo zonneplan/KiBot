@@ -43,7 +43,7 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - svg_sch_print - options; variant>` [string=''] Board variant to apply.
          Not fitted components are crossed.
 
--  **type** :index:`: <pair: output - svg_sch_print; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - svg_sch_print; type>` 'svg_sch_print'
 -  ``category`` :index:`: <pair: output - svg_sch_print; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

@@ -82,7 +82,7 @@ Parameters:
       -  ``uppercase_extensions`` :index:`: <pair: output - hpgl - options; uppercase_extensions>` [boolean=false] Use uppercase names for the extensions.
       -  ``variant`` :index:`: <pair: output - hpgl - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - hpgl; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - hpgl; type>` 'hpgl'
 -  ``category`` :index:`: <pair: output - hpgl; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

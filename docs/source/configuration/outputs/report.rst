@@ -45,7 +45,7 @@ Parameters:
          diameter can be reduced to accommodate the correct annular ring values.
          Use 0 to disable it.
 
--  **type** :index:`: <pair: output - report; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - report; type>` 'report'
 -  ``category`` :index:`: <pair: output - report; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

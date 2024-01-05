@@ -90,7 +90,7 @@ Parameters:
       -  ``variants_whitelist`` :index:`: <pair: output - ibom - options; variants_whitelist>` [string=''] List of board variants to include in the BOM.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
 
--  **type** :index:`: <pair: output - ibom; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - ibom; type>` 'ibom'
 -  ``category`` :index:`: <pair: output - ibom; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

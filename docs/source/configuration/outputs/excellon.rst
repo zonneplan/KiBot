@@ -61,7 +61,7 @@ Parameters:
          Used for sub-PCBs.
       -  ``zeros_format`` :index:`: <pair: output - excellon - options; zeros_format>` [string='DECIMAL_FORMAT'] [DECIMAL_FORMAT,SUPPRESS_LEADING,SUPPRESS_TRAILING,KEEP_ZEROS] How to handle the zeros.
 
--  **type** :index:`: <pair: output - excellon; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - excellon; type>` 'excellon'
 -  ``category`` :index:`: <pair: output - excellon; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

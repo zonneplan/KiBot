@@ -65,7 +65,7 @@ Parameters:
          When disabled the `ref_x`, `ref_y` and `ref_units` will be used.
       -  ``variant`` :index:`: <pair: output - vrml - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - vrml; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - vrml; type>` 'vrml'
 -  ``category`` :index:`: <pair: output - vrml; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

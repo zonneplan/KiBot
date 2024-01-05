@@ -73,7 +73,7 @@ Parameters:
 
       -  ``variant`` :index:`: <pair: output - copy_files - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - copy_files; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - copy_files; type>` 'copy_files'
 -  ``category`` :index:`: <pair: output - copy_files; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

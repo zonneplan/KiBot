@@ -383,7 +383,7 @@ Parameters:
       -  ``units`` :index:`: <pair: output - panelize - options; units>` [string='mm'] [millimeters,inches,mils,mm,cm,dm,m,mil,inch,in] Units used when omitted.
       -  ``variant`` :index:`: <pair: output - panelize - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - panelize; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - panelize; type>` 'panelize'
 -  ``category`` :index:`: <pair: output - panelize; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

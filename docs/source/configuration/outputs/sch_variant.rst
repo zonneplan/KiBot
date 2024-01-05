@@ -36,7 +36,7 @@ Parameters:
          If it starts with `+` the text is concatenated.
       -  ``variant`` :index:`: <pair: output - sch_variant - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - sch_variant; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - sch_variant; type>` 'sch_variant'
 -  ``category`` :index:`: <pair: output - sch_variant; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

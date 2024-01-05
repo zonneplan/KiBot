@@ -47,7 +47,7 @@ Parameters:
       -  *remove_files* :index:`: <pair: output - compress - options; remove_files>` Alias for move_files.
       -  ``skip_not_run`` :index:`: <pair: output - compress - options; skip_not_run>` [boolean=false] Skip outputs with `run_by_default: false`.
 
--  **type** :index:`: <pair: output - compress; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - compress; type>` 'compress'
 -  ``category`` :index:`: <pair: output - compress; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

@@ -39,7 +39,7 @@ Parameters:
          It only makes sense if the `output` field makes their output different.
       -  ``variant`` :index:`: <pair: output - download_datasheets - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - download_datasheets; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - download_datasheets; type>` 'download_datasheets'
 -  ``category`` :index:`: <pair: output - download_datasheets; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

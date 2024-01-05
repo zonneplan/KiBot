@@ -55,7 +55,7 @@ Parameters:
       -  ``sub_boards_stacked_prefix`` :index:`: <pair: output - pcb2blender_tools - options; sub_boards_stacked_prefix>` [string='stacked\_'] Prefix used for the stack files.
       -  ``variant`` :index:`: <pair: output - pcb2blender_tools - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - pcb2blender_tools; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - pcb2blender_tools; type>` 'pcb2blender_tools'
 -  ``category`` :index:`: <pair: output - pcb2blender_tools; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

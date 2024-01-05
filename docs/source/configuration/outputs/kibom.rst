@@ -130,7 +130,7 @@ Parameters:
          variants with the ';' (semicolon) character.
          This isn't related to the KiBot concept of variants.
 
--  **type** :index:`: <pair: output - kibom; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - kibom; type>` 'kibom'
 -  ``category`` :index:`: <pair: output - kibom; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

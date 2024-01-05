@@ -57,7 +57,7 @@ Parameters:
          a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
          Be careful with the *keep_generated* option when changing this setting.
 
--  **type** :index:`: <pair: output - kiri; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - kiri; type>` 'kiri'
 -  ``category`` :index:`: <pair: output - kiri; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

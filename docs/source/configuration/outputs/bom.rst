@@ -307,7 +307,7 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - bom - options; variant>` [string=''] Board variant, used to determine which components
          are output to the BoM..
 
--  **type** :index:`: <pair: output - bom; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - bom; type>` 'bom'
 -  ``category`` :index:`: <pair: output - bom; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

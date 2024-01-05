@@ -49,7 +49,7 @@ Parameters:
          The `simple.handlebars` template is a built-in template.
       -  ``variant`` :index:`: <pair: output - populate - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - populate; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - populate; type>` 'populate'
 -  ``category`` :index:`: <pair: output - populate; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

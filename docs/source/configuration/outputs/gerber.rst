@@ -84,7 +84,7 @@ Parameters:
       -  ``use_aux_axis_as_origin`` :index:`: <pair: output - gerber - options; use_aux_axis_as_origin>` [boolean=false] Use the auxiliary axis as origin for coordinates.
       -  ``variant`` :index:`: <pair: output - gerber - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - gerber; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - gerber; type>` 'gerber'
 -  ``category`` :index:`: <pair: output - gerber; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

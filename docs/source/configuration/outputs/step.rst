@@ -53,7 +53,7 @@ Parameters:
       -  ``subst_models`` :index:`: <pair: output - step - options; subst_models>` [boolean=true] Substitute STEP or IGS models with the same name in place of VRML models.
       -  ``variant`` :index:`: <pair: output - step - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - step; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - step; type>` 'step'
 -  ``category`` :index:`: <pair: output - step; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

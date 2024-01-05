@@ -30,7 +30,7 @@ Parameters:
       -  ``environment`` :index:`: <pair: output - info - options; environment>` [string='names'] [names,none,full] List environment variables.
          IMPORTANT: Don't use `full` unless you know you are not leaking sensitive information.
 
--  **type** :index:`: <pair: output - info; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - info; type>` 'info'
 -  ``category`` :index:`: <pair: output - info; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.

@@ -82,7 +82,7 @@ Parameters:
       -  ``use_aux_axis_as_origin`` :index:`: <pair: output - dxf - options; use_aux_axis_as_origin>` [boolean=false] Use the auxiliary axis as origin for coordinates.
       -  ``variant`` :index:`: <pair: output - dxf - options; variant>` [string=''] Board variant to apply.
 
--  **type** :index:`: <pair: output - dxf; type>` [string=''] Type of output.
+-  **type** :index:`: <pair: output - dxf; type>` 'dxf'
 -  ``category`` :index:`: <pair: output - dxf; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
