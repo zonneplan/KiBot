@@ -796,7 +796,8 @@ class GS(object):
                     for h in hints:
                         if h[0] in out:
                             logger.error(h[1])
-        exit(level)
+        if level >= 0:
+            exit(level)
 
     @staticmethod
     def get_shape(shape):

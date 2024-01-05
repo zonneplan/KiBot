@@ -11,6 +11,7 @@ from contextlib import contextmanager
 
 
 # Error levels
+DONT_STOP = -1        # Keep going
 INTERNAL_ERROR = 1    # Unhandled exceptions
 WRONG_ARGUMENTS = 2   # This is what argsparse uses
 UNSUPPORTED_OPTION = 3

@@ -24,7 +24,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
-                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH)
+                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP)
 from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -454,10 +454,7 @@ def config_output(out, dry=False, dont_stop=False):
         out.config(None)
     except KiPlotConfigurationError as e:
         msg = "In section '"+out.name+"' ("+out.type+"): "+str(e)
-        if dont_stop:
-            logger.error(msg)
-        else:
-            config_error(msg)
+        GS.exit_with_error(msg, DONT_STOP if dont_stop else EXIT_BAD_CONFIG)
         ok = False
     except SystemExit:
         if not dont_stop:
@@ -497,10 +494,7 @@ def run_output(out, dont_stop=False):
             config_error(msg)
     except (PlotError, KiPlotError) as e:
         msg = "In output `"+str(out)+"`: "+str(e)
-        if dont_stop:
-            logger.error(msg)
-        else:
-            GS.exit_with_error(msg, PLOT_ERROR)
+        GS.exit_with_error(msg, DONT_STOP if dont_stop else PLOT_ERROR)
     except KiConfError as e:
         ki_conf_error(e)
     except SystemExit:
