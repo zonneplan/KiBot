@@ -47,7 +47,7 @@ Parameters:
       -  ``copy_instead_of_link`` :index:`: <pair: output - diff - options; copy_instead_of_link>` [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a
          symlink. Useful for some Windows setups.
       -  ``diff_mode`` :index:`: <pair: output - diff - options; diff_mode>` [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
-         The `stats` mode is used to meassure the amount of difference. In this mode all
+         The `stats` mode is used to measure the amount of difference. In this mode all
          changes are red, but you can abort if the difference is bigger than certain threshold.
       -  ``dnf_filter`` :index:`: <pair: output - diff - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
@@ -79,7 +79,7 @@ Parameters:
          Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
          Use `multivar` to specify a reference file when `new_type` is also `multivar`.
       -  ``only_different`` :index:`: <pair: output - diff - options; only_different>` [boolean=false] Only include the pages with differences in the output PDF.
-         Note that when no differeces are found we get a page saying *No diff*.
+         Note that when no differences are found we get a page saying *No diff*.
       -  ``only_first_sch_page`` :index:`: <pair: output - diff - options; only_first_sch_page>` [boolean=false] Compare only the main schematic page (root page).
       -  ``pcb`` :index:`: <pair: output - diff - options; pcb>` [boolean=true] Compare the PCB, otherwise compare the schematic.
       -  ``pre_transform`` :index:`: <pair: output - diff - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.

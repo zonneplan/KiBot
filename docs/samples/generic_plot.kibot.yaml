@@ -238,7 +238,7 @@ outputs:
         texture_dpi: 1016.0
       # [dict|list(dict)] How the object is viewed by the camera
       point_of_view:
-        # [string=''] String to diferentiate the name of this point of view.
+        # [string=''] String to differentiate the name of this point of view.
         # When empty we use the `default_file_id` or the `view`
         - file_id: ''
           # [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees]
@@ -764,7 +764,7 @@ outputs:
       # symlink. Useful for some Windows setups
       copy_instead_of_link: false
       # [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
-      # The `stats` mode is used to meassure the amount of difference. In this mode all
+      # The `stats` mode is used to measure the amount of difference. In this mode all
       # changes are red, but you can abort if the difference is bigger than certain threshold
       diff_mode: 'red_green'
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
@@ -803,7 +803,7 @@ outputs:
       # Use `multivar` to specify a reference file when `new_type` is also `multivar`
       old_type: 'git'
       # [boolean=false] Only include the pages with differences in the output PDF.
-      # Note that when no differeces are found we get a page saying *No diff*
+      # Note that when no differences are found we get a page saying *No diff*
       only_different: false
       # [boolean=false] Compare only the main schematic page (root page)
       only_first_sch_page: false
@@ -2544,7 +2544,7 @@ outputs:
           # `reference` is an alias for `ref`
       # [string|list(string)=''] List of resistors to flip its bands
       resistor_flip: ''
-      # [list(dict)] List of resitors to be remapped. You can change the value of the resistors here
+      # [list(dict)] List of resistors to be remapped. You can change the value of the resistors here
       resistor_remap:
         # [string=''] Reference for the resistor to change
         - ref: ''

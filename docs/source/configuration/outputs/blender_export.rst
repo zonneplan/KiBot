@@ -75,7 +75,7 @@ Parameters:
 
             -  **view** :index:`: <pair: output - blender_export - options - point_of_view; view>` [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
                Compatible with `render_3d`.
-            -  ``file_id`` :index:`: <pair: output - blender_export - options - point_of_view; file_id>` [string=''] String to diferentiate the name of this point of view.
+            -  ``file_id`` :index:`: <pair: output - blender_export - options - point_of_view; file_id>` [string=''] String to differentiate the name of this point of view.
                When empty we use the `default_file_id` or the `view`.
             -  ``rotate_x`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_x>` [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees].
             -  ``rotate_y`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_y>` [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees].

@@ -39,3 +39,4 @@ Supported error levels
 - 33: HPGL_SCH_PRINT
 - 34: CORRUPTED_PRO
 - 35: BLENDER_ERROR
+- 36: WARN_AS_ERROR

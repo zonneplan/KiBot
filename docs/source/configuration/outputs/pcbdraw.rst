@@ -103,7 +103,7 @@ Parameters:
 
       -  ``resistor_flip`` :index:`: <pair: output - pcbdraw - options; resistor_flip>` [string|list(string)=''] List of resistors to flip its bands.
 
-      -  ``resistor_remap`` :index:`: <pair: output - pcbdraw - options; resistor_remap>` [list(dict)] List of resitors to be remapped. You can change the value of the resistors here.
+      -  ``resistor_remap`` :index:`: <pair: output - pcbdraw - options; resistor_remap>` [list(dict)] List of resistors to be remapped. You can change the value of the resistors here.
 
          -  Valid keys:
 
