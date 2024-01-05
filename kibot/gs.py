@@ -625,7 +625,7 @@ class GS(object):
             For tuples we assume the result is SVG coordinates, for 1 value a scale """
         if GS.ki5:
             if isinstance(values, tuple):
-                return (int(round(x*KICAD5_SVG_SCALE)) for x in values)
+                return tuple(int(round(x*KICAD5_SVG_SCALE)) for x in values)
             return values*KICAD5_SVG_SCALE
         if GS.ki7:
             if isinstance(values, tuple):
@@ -634,7 +634,7 @@ class GS(object):
         # KiCad 6
         mult = 10.0 ** (svg_precision - 6)
         if isinstance(values, tuple):
-            return (int(round(x*mult)) for x in values)
+            return tuple(int(round(x*mult)) for x in values)
         return values*mult
 
     @staticmethod

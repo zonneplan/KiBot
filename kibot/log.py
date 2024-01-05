@@ -121,7 +121,7 @@ class MyLogger(logging.Logger):
         if isinstance(msg, tuple):
             msg = ' '.join(map(str, msg))
         if sys.version_info >= (3, 8):
-            super(self.__class__, self).debug(msg, stacklevel=2, *args, **kwargs)  # pragma: no cover (Py38)
+            super(self.__class__, self).debug(msg, *args, **kwargs, stacklevel=2)  # pragma: no cover (Py38)
         else:
             super(self.__class__, self).debug(msg, *args, **kwargs)
 
@@ -140,7 +140,7 @@ class MyLogger(logging.Logger):
         if isinstance(msg, tuple):
             msg = ' '.join(map(str, msg))
         if sys.version_info >= (3, 8):
-            super(self.__class__, self).debug(msg, stacklevel=2, *args, **kwargs)  # pragma: no cover (Py38)
+            super(self.__class__, self).debug(msg, *args, **kwargs, stacklevel=2)  # pragma: no cover (Py38)
         else:
             super(self.__class__, self).debug(msg, *args, **kwargs)
 

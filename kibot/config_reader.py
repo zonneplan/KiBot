@@ -340,7 +340,7 @@ class CfgYamlReader(object):
                 if explicit_outs:
                     logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
             else:
-                logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, (c.name for c in sel_outs)))
+                logger.debug('Outputs loaded from `{}`: {}'.format(fn_rel, [c.name for c in sel_outs]))
         if outs is None and explicit_outs and 'outputs' not in data:
             logger.warning(W_NOOUTPUTS+"No outputs found in `{}`".format(fn_rel))
         return sel_outs
@@ -364,7 +364,7 @@ class CfgYamlReader(object):
                 if explicit_pres:
                     logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
             else:
-                logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, (c._name for c in sel_pres)))
+                logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, [c._name for c in sel_pres]))
         if pre is None and explicit_pres and 'preflight' not in data:
             logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
         return sel_pres

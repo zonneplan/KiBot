@@ -2053,7 +2053,7 @@ class SchematicV6(Schematic):
                 # 0 or 1 can't be different
                 continue
             ref_c = l_ins[0]
-            if any(map(lambda c: self.compare_component(ref_c, c), l_ins[1:])):
+            if any((self.compare_component(ref_c, c) for c in l_ins[1:])):
                 return True
         # No variant
         return False

@@ -349,7 +349,7 @@ class Optionable(object):
         # Replace KiCad 6 variables first
         name = GS.expand_text_variables(name)
         # Determine if we need to expand SCH and/or PCB related data
-        has_dep_exp = any(map(lambda x: x in name, PATTERNS_DEP))
+        has_dep_exp = any((x in name for x in PATTERNS_DEP))
         do_sch = is_sch and has_dep_exp
         # logger.error(name + '  is_sch ' +str(is_sch)+"   "+ str(do_sch))
         # raise

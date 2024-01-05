@@ -27,10 +27,10 @@ def convert2csv(ctx, xlsx, skip_empty=False, sheet=None):
     subprocess.check_output(cmd)
     with open(csv, 'rt') as f:
         content = f.read()
-    content = re.sub(r'(\$|Prj) date:,[^,]+', r'\1 date:,', content, 3)
-    content = re.sub(r'KiCost[^,]+', 'KiCost', content, 1)
+    content = re.sub(r'(\$|Prj) date:,[^,]+', r'\1 date:,', content, count=3)
+    content = re.sub(r'KiCost[^,]+', 'KiCost', content, count=1)
     content = re.sub(r'KiCad Version:,[^,]+', 'KiCad Version:,', content)
-    content = re.sub(r'Created:,[^,]+', 'Created:,', content, 1)
+    content = re.sub(r'Created:,[^,]+', 'Created:,', content, count=1)
     with open(csv, 'wt') as f:
         f.write(content)
 

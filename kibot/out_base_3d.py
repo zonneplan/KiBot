@@ -318,7 +318,7 @@ class Base3DOptions(VariantOptions):
                     m = coo_re.match(ln)
                     if m:
                         index = prev_ln
-                        points = list(map(lambda x: tuple(map(float, x.split(' '))), m.group(1).split(',')))
+                        points = [(float(v) for v in x.split(' ')) for x in m.group(1).split(',')]
                         x_len = (points[0][X]-points[2][X])*2.54*2
                         if abs(x_len-r_len) < 0.01:
                             logger.debug('  - Found horizontal: {}'.format(round(x_len, 2)))
@@ -418,7 +418,7 @@ class Base3DOptions(VariantOptions):
             bars[bar] = ord(val_str[bar])-ord('0')
         # Make sure we don't have digits that can't be represented
         rest = val_str[dig_bars:]
-        if rest and not all(map(lambda x: x == '0', rest)):
+        if rest and not all((x == '0' for x in rest)):
             logger.warning(W_RESVALISSUE+'Digits not represented in {} {} ({} %)'.format(c.ref, c.value, tol))
         bars[nbars-1] = tol_color
         # For 20% remove the last bar
@@ -550,7 +550,7 @@ class Base3DOptions(VariantOptions):
                 GS.load_sch()
                 all_comps = GS.sch.get_components()
                 if (GS.global_kicad_dnp_applies_to_3D and
-                   any(map(lambda c: c.kicad_dnp is not None and c.kicad_dnp, all_comps))):
+                   any((c.kicad_dnp is not None and c.kicad_dnp for c in all_comps))):
                     # One or more components are DNP, remove them
                     reset_filters(all_comps)
                     all_comps_hash = {c.ref: c for c in all_comps}
