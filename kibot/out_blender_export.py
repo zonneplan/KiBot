@@ -655,6 +655,7 @@ class Blender_ExportOptions(BaseOptions):
                             raise KiPlotConfigurationError('Repeated name (use `file_id`): '+name)
                         cmd.append(name)
                         names.add(name)
+                        os.makedirs(os.path.dirname(name), exist_ok=True)
                     order += 1
             cmd.extend(['--scene', f.name])
             cmd.append(pcb3d_file)
