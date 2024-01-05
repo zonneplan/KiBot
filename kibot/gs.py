@@ -781,7 +781,7 @@ class GS(object):
     @staticmethod
     def exit_with_error(msg, level):
         GS.trace_dump()
-        if isinstance(msg, tuple):
+        if isinstance(msg, (tuple, list)):
             for m in msg:
                 logger.error(m)
         else:
