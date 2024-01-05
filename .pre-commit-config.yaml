@@ -18,7 +18,7 @@ exclude:
   )$
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.5.0
     hooks:
       - id: no-commit-to-branch
         args: [--branch, main]
@@ -40,7 +40,7 @@ repos:
       - id: check-shebang-scripts-are-executable
       # - id: check-toml
   - repo: https://github.com/adrienverge/yamllint.git
-    rev: v1.23.0
+    rev: v1.33.0
     hooks:
       - id: yamllint
         args: [-c, .yamllint]
@@ -55,30 +55,30 @@ repos:
 #    hooks:
 #      - id: black
   - repo: https://github.com/fsouza/autoflake8
-    rev: v0.3.1
+    rev: v0.4.1
     hooks:
       - id: autoflake8
   - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
+    rev: 7.0.0
     hooks:
       - id: flake8
         exclude: ^kibot/mcpyrate/
         args: [--count, --statistics]
         additional_dependencies:
-          - flake8-bugbear==22.1.11
-          - flake8-comprehensions==3.8.0
-          - flake8_2020==1.6.1
+          - flake8-bugbear>=22.1.11
+          - flake8-comprehensions>=3.8.0
+          - flake8_2020>=1.6.1
           - flake8-docstrings
-          - mccabe==0.6.1
-          - pycodestyle==2.8.0
-          - pyflakes==2.4.0
+          - mccabe>=0.6.1
+          - pycodestyle>=2.8.0
+          - pyflakes>=2.4.0
 # Sorting imports is dangerous.
 #  - repo: https://github.com/PyCQA/isort
 #    rev: 5.10.1
 #    hooks:
 #      - id: isort
   - repo: https://github.com/codespell-project/codespell
-    rev: v2.1.0
+    rev: v2.2.6
     hooks:
       - id: codespell
 #  - repo: https://github.com/pre-commit/mirrors-mypy
