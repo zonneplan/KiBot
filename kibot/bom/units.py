@@ -231,7 +231,7 @@ def comp_match(component, ref_prefix, ref=None, relax_severity=False, stronger=F
                 check_extra_data(result, original)
             result = value_from_grammar(result)
             if result and result.get_extra('discarded'):
-                discarded = " ".join(list(map(lambda x: '`'+x+'`', result.get_extra('discarded'))))
+                discarded = " ".join(('`'+x+'`' for x in result.get_extra('discarded')))
                 log_func_warn(W_BADVAL4+"Malformed value: `{}` (discarded: {}{})".format(original, discarded, where))
         if not result:
             log_func_warn(W_BADVAL1+"Malformed value: `{}` (no match{})".format(original, where))
