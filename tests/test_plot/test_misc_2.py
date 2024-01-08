@@ -28,6 +28,7 @@ cov = coverage.Coverage()
 mocked_check_output_FNF = True
 mocked_check_output_retOK = ''
 mocked_call_enabled = False
+subprocess_run = None
 
 
 # Important note:
@@ -45,6 +46,13 @@ def mocked_check_output(cmd, stderr=None, text=False):
         e = subprocess.CalledProcessError(10, 'rar')
         e.output = b'THE_ERROR'
         raise e
+
+
+def mocked_run(command, change_to):
+    logging.error('mocked_run')
+    e = subprocess.CalledProcessError(10, 'rar')
+    e.output = b'THE_ERROR'
+    raise e
 
 
 def mocked_call(cmd, exit_with=None):
@@ -118,6 +126,7 @@ def test_rar_fail(test_dir, caplog, monkeypatch):
     # We will patch subprocess.check_output to make rar fail
     with monkeypatch.context() as m:
         patch_functions(m)
+        m.setattr('kibot.kiplot._run_command', mocked_run)
         pytest_wrapped_e = run_compress(ctx)
         pytest_wrapped_e2 = run_compress(ctx, test_import_fail=True)
     # Check we exited because rar isn't installed
