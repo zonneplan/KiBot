@@ -32,7 +32,6 @@ from copy import deepcopy
 import datetime
 import re
 import os
-import subprocess
 import importlib
 from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
 from shutil import rmtree
@@ -52,6 +51,7 @@ from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
+from .kiplot import run_command
 from . import __version__
 from . import log
 
@@ -73,13 +73,7 @@ def pcbdraw_warnings(tag, msg):
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+GS.pasteable_cmd(cmd))
-    try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        GS.exit_with_error(None, PDF_PCB_PRINT, e)
-    if cmd_output.strip():
-        logger.debug('- Output from command:\n'+cmd_output.decode())
+    run_command(cmd, err_lvl=PDF_PCB_PRINT)
 
 
 def hex_to_rgb(value):

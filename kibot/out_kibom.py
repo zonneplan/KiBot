@@ -15,9 +15,9 @@ Dependencies:
 import os
 from re import search
 from tempfile import NamedTemporaryFile
-from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import BOM_ERROR, W_EXTNAME
 from .gs import GS
+from .kiplot import run_command
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
@@ -213,18 +213,14 @@ class KiBoMConfig(Optionable):
             with NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
                 csv = f.name
             cmd = [command, '--cfg', config, '-d', os.path.dirname(csv), '-s', ',', xml, csv]
-            logger.debug('Running: '+str(cmd))
-            cmd_output = check_output(cmd, stderr=STDOUT)
+            run_command(cmd, err_msg='Failed to get the column names for `'+xml+'`, error {ret}', err_lvl=BOM_ERROR)
             with open(csv, 'rt') as f:
                 columns = f.readline().rstrip().split(',')
-        except CalledProcessError as e:
-            GS.exit_with_error(f'Failed to get the column names for `{xml}`, error {e.returncode}', BOM_ERROR, e)
         finally:
             if config:
                 os.remove(config)
             if csv:
                 os.remove(csv)
-        logger.debug('Output from command:\n'+cmd_output.decode())
         return GS.sch.get_field_names(columns)
 
     def config(self, parent):
@@ -426,20 +422,15 @@ class KiBoMOptions(BaseOptions):
         if self.variant:
             cmd.extend(['-r', self.variant])
         cmd.extend([prj+'.xml', output])
-        logger.debug('Running: '+str(cmd))
-        try:
-            cmd_output = check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e:
-            GS.exit_with_error(f'Failed to create BoM, error {e.returncode}', BOM_ERROR, e)
+        cmd_output = run_command(cmd, err_msg='Failed to create BoM, error {ret}', err_lvl=BOM_ERROR)
         if force_output:
             # When we create the .ini we can control the name.
             # But when the user does it we can trust the settings.
-            m = search(r'Saving BOM File: (.*)', cmd_output.decode())
+            m = search(r'Saving BOM File: (.*)', cmd_output)
             if m and m.group(1) != output:
                 cur = m.group(1)
                 logger.debug('Renaming output file: {} -> {}'.format(cur, output))
                 os.replace(cur, output)
-        logger.debug('Output from command:\n'+cmd_output.decode())
 
 
 @output_class

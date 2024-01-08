@@ -148,8 +148,8 @@ def _run_command(command, change_to):
     return run(command, check=True, stdout=PIPE, stderr=STDOUT, cwd=change_to)
 
 
-def run_command(command, change_to=None, just_raise=False, use_x11=False):
-    logger.debug('Executing: '+GS.pasteable_cmd(command))
+def run_command(command, change_to=None, just_raise=False, use_x11=False, err_msg=None, err_lvl=FAILED_EXECUTE):
+    logger.debug('- Executing: '+GS.pasteable_cmd(command))
     if change_to is not None:
         logger.debug('- CWD: '+change_to)
     try:
@@ -163,7 +163,9 @@ def run_command(command, change_to=None, just_raise=False, use_x11=False):
     except CalledProcessError as e:
         if just_raise:
             raise
-        GS.exit_with_error(None, FAILED_EXECUTE, e)
+        if err_msg is not None:
+            err_msg = err_msg.format(ret=e.returncode)
+        GS.exit_with_error(err_msg, err_lvl, e)
     debug_output(res)
     return res.stdout.decode().rstrip()
 

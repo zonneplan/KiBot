@@ -13,11 +13,11 @@ Dependencies:
     role: Automatically crop images
 """
 import os
-import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
 from .out_base_3d import Base3DOptionsWithHL, Base3D
+from .kiplot import run_command
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -25,13 +25,7 @@ logger = log.get_logger()
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+GS.pasteable_cmd(cmd))
-    try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        GS.exit_with_error(None, RENDER_3D_ERR, e)
-    if cmd_output.strip():
-        logger.debug('- Output from command:\n'+cmd_output.decode())
+    run_command(cmd, err_lvl=RENDER_3D_ERR)
 
 
 class Render3DOptions(Base3DOptionsWithHL):

@@ -6,10 +6,9 @@
 import re
 import os
 import glob
-from subprocess import check_output, STDOUT, CalledProcessError
 from .gs import GS
 from .error import KiPlotConfigurationError
-from .kiplot import config_output, get_output_dir, run_output
+from .kiplot import config_output, get_output_dir, run_output, run_command
 from .misc import MISSING_TOOL, WRONG_INSTALL, WRONG_ARGUMENTS, INTERNAL_ERROR, W_NOTPDF, MISSING_FILES, W_NOMATCH
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
@@ -106,13 +105,10 @@ class PDFUniteOptions(BaseOptions):
 
     def run_external(self, files, output):
         cmd = ['pdfunite']+files+[output]
-        logger.debug('Running: {}'.format(cmd))
         try:
-            check_output(cmd, stderr=STDOUT)
+            run_command(cmd, err_msg='Failed to invoke pdfunite command, error {ret}', err_lvl=WRONG_INSTALL)
         except FileNotFoundError:
             GS.exit_with_error('Missing `pdfunite` command, install it (poppler-utils)', MISSING_TOOL)
-        except CalledProcessError as e:
-            GS.exit_with_error(f'Failed to invoke pdfunite command, error {e.returncode}', WRONG_INSTALL, e)
 
     def run(self, output):
         # Output file name

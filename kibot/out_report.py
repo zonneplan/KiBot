@@ -18,15 +18,14 @@ Dependencies:
 import os
 import re
 import pcbnew
-from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
-from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, FAILED_EXECUTE, W_WRONGEXT,
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT,
                    W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
-from .kiplot import config_output
+from .kiplot import config_output, run_command
 from .dep_downloader import get_dep_data
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -850,11 +849,7 @@ class ReportOptions(BaseOptions):
         if not out.endswith('.'+self.convert_to):
             logger.warning(W_WRONGEXT+'The conversion tool detects the output format using the extension')
         cmd = [command, '--from', self.convert_from, resources, fname, '-o', out]
-        logger.debug('Executing: '+GS.pasteable_cmd(cmd))
-        try:
-            check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e:
-            GS.exit_with_error(None, FAILED_EXECUTE, e)
+        run_command(cmd)
 
     def run(self, fname):
         self.pcb_material = GS.global_pcb_material

@@ -19,11 +19,10 @@ Dependencies:
     role: Automatically adjust SVG margin
 """
 import os
-import subprocess
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
-from .kiplot import load_sch, get_board_comps_data
+from .kiplot import load_sch, get_board_comps_data, run_command
 from .misc import (PCBDRAW_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, W_PCBDRAW)
 from .gs import GS
 from .layer import Layer
@@ -51,14 +50,7 @@ def _get_tmp_name(ext):
 
 
 def _run_command(cmd):
-    logger.debug('Executing: '+GS.pasteable_cmd(cmd))
-    try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        GS.exit_with_error(None, PCBDRAW_ERR, e)
-    out = cmd_output.decode()
-    if out.strip():
-        logger.debug('Output from command:\n'+out)
+    run_command(cmd, err_lvl=PCBDRAW_ERR)
 
 
 class PcbDrawStyle(Optionable):

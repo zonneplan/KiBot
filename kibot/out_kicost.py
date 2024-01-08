@@ -11,7 +11,6 @@ Dependencies:
 """
 import os
 from os.path import isfile, abspath, join, dirname
-from subprocess import check_output, STDOUT, CalledProcessError
 from tempfile import mkdtemp
 from shutil import rmtree
 from .misc import (BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
@@ -22,6 +21,7 @@ from .gs import GS
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from .fil_base import FieldRename
+from .kiplot import run_command
 from . import log
 
 logger = log.get_logger()
@@ -213,17 +213,12 @@ class KiCostOptions(VariantOptions):
             cmd.append('--translate_fields')
             cmd.extend(self.translate_fields)
         # Run the command
-        logger.debug('Running: '+str(cmd))
         try:
-            cmd_output = check_output(cmd, stderr=STDOUT)
-            cmd_output_dec = cmd_output.decode()
-        except CalledProcessError as e:
-            GS.exit_with_error(f'Failed to create costs spreadsheet, error {e.returncode}', BOM_ERROR, e)
+            run_command(cmd, err_msg='Failed to create costs spreadsheet, error {ret}', err_lvl=BOM_ERROR)
         finally:
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
                 rmtree(net_dir)
-        logger.debug('Output from command:\n'+cmd_output_dec+'\n')
 
 
 @output_class

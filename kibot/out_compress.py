@@ -18,12 +18,11 @@ import re
 import os
 import glob
 import sys
-from subprocess import check_output, STDOUT, CalledProcessError
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA
 from tarfile import open as tar_open
 from collections import OrderedDict
 from .gs import GS
-from .kiplot import config_output, run_output, get_output_targets
+from .kiplot import config_output, run_output, get_output_targets, run_command
 from .misc import WRONG_INSTALL, W_EMPTYZIP, INTERNAL_ERROR
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
@@ -121,11 +120,7 @@ class CompressOptions(BaseOptions):
         for fname, dest in files.items():
             logger.debugl(2, 'Adding '+fname+' as '+dest)
             cmd = [command, 'a', '-m5', '-ep', '-ap'+os.path.dirname(dest), output, fname]
-            logger.debugl(2, '- Running {}'.format(cmd))
-            try:
-                check_output(cmd, stderr=STDOUT)
-            except CalledProcessError as e:
-                GS.exit_with_error(f'Failed to invoke rar command, error {e.returncode}', WRONG_INSTALL, e)
+            run_command(cmd, err_msg='Failed to invoke rar command, error {ret}', err_lvl=WRONG_INSTALL)
 
     def solve_extension(self):
         if self.format == 'ZIP':
