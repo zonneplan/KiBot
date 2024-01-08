@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `--help-list-offsets` to list footprint offsets (JLCPCB)
   - `--help-list-rotations` to list footprint rotations (JLCPCB)
   - `--stop-on-warnings` (`-W`) to stop on warnings (#545)
+  - `--defs-from-env` allows using environment vars for substitution (#549)
 - Global options:
   - `remove_solder_mask_for_dnp` similar to `remove_solder_paste_for_dnp` but
     applied to the solder mask apertures. (#476)

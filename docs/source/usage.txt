@@ -3,10 +3,11 @@ KiBot: KiCad automation tool for documents generation
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [-w LIST] [-D | -W] [--banner N] [TARGET...]
+         [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--banner N]
+         [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
-         [--output-name-first] --list
+         [-E DEF] ... [--defs-from-env] [--config-outs]
+         [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
          --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
@@ -39,6 +40,8 @@ Options:
   --config-outs                    Configure all outputs before listing them
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
+  --defs-from-env                  Use the environment vars as preprocessor
+                                   values
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)

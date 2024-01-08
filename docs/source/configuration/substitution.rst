@@ -24,6 +24,8 @@ files.
 
 You can use ``-E`` as many times as you need.
 
+Also note that the ``--def-from-env`` option adds all the environment
+variables as definitions.
 
 .. index::
    pair: definitions; default
