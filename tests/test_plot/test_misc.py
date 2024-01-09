@@ -1548,11 +1548,13 @@ def test_diff_git_5(test_dir):
 @pytest.mark.slow
 @pytest.mark.eeschema
 def test_diff_file_sch_1(test_dir):
-    """ Difference between the current Schematic and a reference file """
+    """ Difference between the current Schematic and a reference file
+        Also test definitions (from CLI and env) """
     prj = 'light_control_diff'
     yaml = 'diff_file_sch'
     ctx = context.TestContext(test_dir, prj, yaml)
-    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '-E', 'SCHExt='+context.KICAD_SCH_EXT])
+    os.environ['SCHExt'] = context.KICAD_SCH_EXT
+    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '--defs-from-env'])
     ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
     if is_debian:
         ctx.compare_pdf(prj+'-diff_sch.pdf')
