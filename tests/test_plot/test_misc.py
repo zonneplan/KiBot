@@ -392,17 +392,17 @@ def test_help_preflights(test_dir):
 
 
 def test_example_1(test_dir):
-    """ Example without board """
+    """ Example without board + Banner """
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
-    ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
+    ctx.run(extra=['--example', '--banner', '1'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.clean_up()
 
 
 def test_example_2(test_dir):
-    """ Example with board """
+    """ Example with board + Random Banner """
     ctx = context.TestContext(test_dir, 'good-project', 'pre_and_position')
-    ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
+    ctx.run(extra=['--example', '--banner', '-1'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['layers: all'])
     ctx.clean_up()
