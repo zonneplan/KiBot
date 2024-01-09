@@ -381,7 +381,7 @@ def debug_arguments(args):
         logger.debug('Command line parsed:\n'+str(args))
 
 
-def detect_windows():
+def detect_windows():  # pragma: no cover (Windows)
     if platform.system() != 'Windows':
         return
     # Note: We assume this is the Python from KiCad, but we should check it ...
