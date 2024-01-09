@@ -343,6 +343,13 @@ def test_help_variants(test_dir):
     ctx.clean_up()
 
 
+def test_help_global(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-global-options', '--rst'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('allow_blind_buried_vias')
+    ctx.clean_up()
+
+
 def test_help_output_plugin_1(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.home_local_link()
