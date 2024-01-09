@@ -25,15 +25,14 @@ import pwd
 import os
 from shutil import copy2, rmtree
 from subprocess import CalledProcessError
-from tempfile import mkdtemp, NamedTemporaryFile
+from tempfile import mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kicad.color_theme import load_color_theme
 from .kiplot import load_any_sch, run_command
 from .layer import Layer
 from .misc import W_NOTHCMP
-from .out_base import VariantOptions
-from .pre_base import BasePreFlight
+from .out_any_diff import AnyDiffOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -54,7 +53,7 @@ def get_cur_user():
         return 'Local user'
 
 
-class KiRiOptions(VariantOptions):
+class KiRiOptions(AnyDiffOptions):
     def __init__(self):
         with document:
             self.color_theme = '_builtin_classic'
@@ -70,14 +69,8 @@ class KiRiOptions(VariantOptions):
                 Note that this can be a revision-range, consult the gitrevisions manual for more information """
             self.keep_generated = False
             """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
-            self.zones = 'global'
-            """ [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
-                fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
-                a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
-                Be careful with the *keep_generated* option when changing this setting """
         super().__init__()
-        self._expand_id = 'diff'
-        self._expand_ext = 'pdf'
+        self._kiri_mode = True
 
     def config(self, parent):
         super().config(parent)
@@ -97,56 +90,19 @@ class KiRiOptions(VariantOptions):
             files.append(os.path.join(self.cache_dir, HASH_LOCAL))
         return files
 
-    def add_to_cache(self, name, hash):
-        cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash[:7], '--cache_dir', self.cache_dir,
-               '--kiri_mode', '--all_pages']
-        if self.zones == 'global':
-            if BasePreFlight.get_option('check_zone_fills'):
-                cmd.extend(['--zones', 'fill'])
-        elif self.zones == 'fill':
-            cmd.extend(['--zones', 'fill'])
-        elif self.zones == 'unfill':
-            cmd.extend(['--zones', 'unfill'])
-        if self.incl_file:
-            cmd.extend(['--layers', self.incl_file])
-        if GS.debug_enabled:
-            cmd.insert(1, '-'+'v'*GS.debug_level)
-        cmd.extend([name, name])
-        self.name_used_for_cache = name
-        run_command(cmd)
-
-    def run_git(self, cmd, cwd=None, just_raise=False):
-        if cwd is None:
-            cwd = self.repo_dir
-        return run_command([self.git_command]+cmd, change_to=cwd, just_raise=just_raise)
-
-    def git_dirty(self, file):
-        return self.run_git(['status', '--porcelain', '-uno', file])
-
-    def remove_git_worktree(self, name):
-        logger.debug('Removing temporal checkout at '+name)
-        self.run_git(['worktree', 'remove', '--force', name])
-
     def create_layers_incl(self, layers):
         self.incl_file = None
         if isinstance(layers, type):
             self._solved_layers = None
             return False
-        layers = Layer.solve(layers)
-        self._solved_layers = layers
-        logger.debug('Including layers:')
-        with NamedTemporaryFile(mode='w', suffix='.lst', delete=False) as f:
-            self.incl_file = f.name
-            for la in layers:
-                logger.debug('- {} ({})'.format(la.layer, la.id))
-                f.write(str(la.id)+'\n')
+        self.save_layers_incl(Layer.solve(layers))
         return True
 
     def do_cache(self, name, tmp_wd, hash):
         name_copy = self.run_git(['ls-files', '--full-name', name])
         name_copy = os.path.join(tmp_wd, name_copy)
         logger.debug('- Using temporal copy: '+name_copy)
-        self.add_to_cache(name_copy, hash)
+        self.add_to_cache(name_copy, hash[:7])
         return name_copy
 
     def save_pcb_layers(self, hash):

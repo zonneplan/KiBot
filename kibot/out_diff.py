@@ -31,9 +31,8 @@ from .gs import GS
 from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
 from .layer import Layer
 from .misc import DIFF_TOO_BIG, FAILED_EXECUTE
-from .out_base import VariantOptions
-from .pre_base import BasePreFlight
 from .registrable import RegOutput
+from .out_any_diff import AnyDiffOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -41,7 +40,7 @@ logger = log.get_logger()
 STASH_MSG = 'KiBot_Changes_Entry'
 
 
-class DiffOptions(VariantOptions):
+class DiffOptions(AnyDiffOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -109,14 +108,7 @@ class DiffOptions(VariantOptions):
             """ Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
                 So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
                 Enabling this option KiBot will report an error """
-            self.zones = 'global'
-            """ [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
-                fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
-                a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
-                Be careful with the cache when changing this setting"""
         super().__init__()
-        self._expand_id = 'diff'
-        self._expand_ext = 'pdf'
 
     def config(self, parent):
         super().config(parent)
@@ -146,28 +138,6 @@ class DiffOptions(VariantOptions):
                     break
                 self.h.update(chunk)
         return self.h.hexdigest()
-
-    def add_zones_ops(self, cmd):
-        if self.zones == 'global':
-            if BasePreFlight.get_option('check_zone_fills'):
-                cmd.extend(['--zones', 'fill'])
-        elif self.zones == 'fill':
-            cmd.extend(['--zones', 'fill'])
-        elif self.zones == 'unfill':
-            cmd.extend(['--zones', 'unfill'])
-
-    def add_to_cache(self, name, hash):
-        cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
-        self.add_zones_ops(cmd)
-        if self.incl_file:
-            cmd.extend(['--layers', self.incl_file])
-        if not self.only_first_sch_page:
-            cmd.append('--all_pages')
-        if GS.debug_enabled:
-            cmd.insert(1, '-'+'v'*GS.debug_level)
-        cmd.extend([name, name])
-        self.name_used_for_cache = name
-        run_command(cmd)
 
     def cache_pcb(self, name, force_exist):
         if name:
@@ -228,11 +198,6 @@ class DiffOptions(VariantOptions):
     def cache_file(self, name=None, force_exist=False):
         self.git_hash = 'Current' if not name else 'FILE'
         return self.cache_pcb(name, force_exist) if self.pcb else self.cache_sch(name, force_exist)
-
-    def run_git(self, cmd, cwd=None, just_raise=False):
-        if cwd is None:
-            cwd = self.repo_dir
-        return run_command([self.git_command]+cmd, change_to=cwd, just_raise=just_raise)
 
     def stash_pop(self, cwd=None):
         # We don't know if we stashed anything (push always returns 0)
@@ -355,9 +320,6 @@ class DiffOptions(VariantOptions):
                     name += '-dirty'
         return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD'], cwd=cwd), name)
 
-    def git_dirty(self):
-        return self.run_git(['status', '--porcelain', '-uno'])
-
     def cache_git_use_stash(self, name):
         self.stashed = False
         self.checkedout = False
@@ -438,10 +400,6 @@ class DiffOptions(VariantOptions):
         self.git_hash = self.get_git_point_desc(name_ori, cwd)
         return hash
 
-    def remove_git_worktree(self, name):
-        logger.debug('Removing temporal checkout at '+name)
-        self.run_git(['worktree', 'remove', '--force', name])
-
     @staticmethod
     def check_output_type(out, must_be):
         if out.type != must_be:
@@ -501,16 +459,7 @@ class DiffOptions(VariantOptions):
         return self.cache_output(name)
 
     def create_layers_incl(self, layers):
-        incl_file = None
-        if self.pcb and not isinstance(layers, type):
-            layers = Layer.solve(layers)
-            logger.debug('Including layers:')
-            with NamedTemporaryFile(mode='w', suffix='.lst', delete=False) as f:
-                incl_file = f.name
-                for la in layers:
-                    logger.debug('- {} ({})'.format(la.layer, la.id))
-                    f.write(str(la.id)+'\n')
-        return incl_file
+        return self.save_layers_incl(Layer.solve(layers)) if self.pcb and not isinstance(layers, type) else None
 
     def do_compare(self, old, old_type, new, new_type, name, name_ori):
         dir_name = os.path.dirname(name)
