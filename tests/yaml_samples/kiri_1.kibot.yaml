@@ -1,0 +1,8 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'kiri'
+    comment: "Test for KiRi interface"
+    type: kiri
+    layers: ['F.Cu', 'In1.Cu', 'F.SilkS']
