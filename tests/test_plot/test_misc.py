@@ -1549,15 +1549,17 @@ def test_diff_git_5(test_dir):
 @pytest.mark.eeschema
 def test_diff_file_sch_1(test_dir):
     """ Difference between the current Schematic and a reference file
-        Also test definitions (from CLI and env) """
+        Also test definitions (from CLI and env)
+        Also log file """
     prj = 'light_control_diff'
     yaml = 'diff_file_sch'
     ctx = context.TestContext(test_dir, prj, yaml)
     os.environ['SCHExt'] = context.KICAD_SCH_EXT
-    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '--defs-from-env'])
+    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '--defs-from-env', '-L', ctx.get_out_path('log')])
     ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
     if is_debian:
         ctx.compare_pdf(prj+'-diff_sch.pdf')
+    ctx.expect_out_file('log')
     ctx.clean_up(keep_project=True)
 
 
@@ -1659,13 +1661,21 @@ def test_lcsc_field_unknown(test_dir):
 
 @pytest.mark.skipif(context.ki5(), reason="Needs porting")
 def test_lcsc_field_specified(test_dir):
-    """ Test we select the field """
+    """ Test we select the field
+        Also log to existing file """
     prj = 'lcsc_field_unknown'
     ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_specified', 'JLCPCB')
-    ctx.run(extra=['_JLCPCB_bom'])
+    log_file = ctx.get_out_path('log')
+    with open(log_file, 'w') as f:
+        f.write('already there')
+    ctx.run(extra=['-L', log_file, '_JLCPCB_bom'])
     assert ctx.search_err('User selected.*Cryptic')
     r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
     assert r[0][3] == 'C1234'
+    ctx.expect_out_file('log')
+    with open(log_file) as f:
+        v = f.read()
+    assert not v.startswith('already')
 
 
 @pytest.mark.skipif(context.ki5(), reason="KiKit is v6+")
