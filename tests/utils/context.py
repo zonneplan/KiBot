@@ -286,11 +286,16 @@ class TestContext(object):
         return os.path.join(self.sub_dir, self.board_name+'-NPTH-drl_map.pdf')
 
     def expect_out_file(self, filename, sub=False):
-        file = self.get_out_path(filename, sub)
-        assert os.path.isfile(file), file
-        assert os.path.getsize(file) > 0
-        logging.debug(filename+' OK')
-        return file
+        if isinstance(filename, str):
+            filename = [filename]
+        files = []
+        for f in filename:
+            file = self.get_out_path(f, sub)
+            assert os.path.isfile(file), file
+            assert os.path.getsize(file) > 0
+            logging.debug(f+' OK')
+            files.append(file)
+        return files[0] if len(files) == 1 else files
 
     def expect_out_file_d(self, filename):
         return self.expect_out_file(os.path.join(self.sub_dir, filename))

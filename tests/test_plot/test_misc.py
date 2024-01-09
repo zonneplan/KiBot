@@ -1357,6 +1357,34 @@ def test_diff_git_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+def test_diff_kiri_1(test_dir):
+    """ Difference between the current PCB and the git HEAD """
+    prj = 'light_control'
+    yaml = 'kiri_1'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    # Create a git repo
+    git_init(ctx)
+    # Copy the "old" file
+    pcb = prj+'.kicad_pcb'
+    sch = prj+context.KICAD_SCH_EXT
+    file = ctx.get_out_path(pcb)
+    shutil.copy2(ctx.board_file, file)
+    shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.KICAD_SCH_EXT),
+                 file.replace('.kicad_pcb', context.KICAD_SCH_EXT))
+    # Add it to the repo
+    ctx.run_command(['git', 'add', pcb, sch], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=True)
+    hash = ctx.run_command(['git', 'log', '--pretty=format:%h', '-n', '1'], chdir_out=True)
+    # Copy the "new" file
+    shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
+    # Run the test
+    ctx.run(extra=['-b', file], no_board_file=True)
+    ctx.expect_out_file(['_local_/_KIRI_/pcb_layers', hash+'/_KIRI_/pcb_layers',
+                         '_local_/_KIRI_/sch_sheets', hash+'/_KIRI_/sch_sheets',
+                         'index.html', 'commits', 'project'])
+    ctx.clean_up(keep_project=True)
+
+
 def test_diff_git_2(test_dir):
     """ Difference between the two repo points, wipe the current file """
     prj = 'light_control'
