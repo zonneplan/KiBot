@@ -289,6 +289,13 @@ def test_list_only_names(test_dir):
     ctx.clean_up()
 
 
+def test_list_variants(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'test_list_variants')
+    ctx.run(extra=['--list-variants'], no_verbose=True, no_out_dir=True, no_board_file=True)
+    ctx.search_out(['Default variant', 'Production variant', 'Test variant'])
+    ctx.clean_up()
+
+
 def test_help(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help'], no_verbose=True, no_out_dir=True, no_yaml_file=True)

@@ -1,0 +1,64 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+variants:
+  - name: 'production'
+    comment: 'Production variant'
+    type: ibom
+    file_id: '_(production)'
+    variants_blacklist: T2
+
+  - name: 'test'
+    comment: 'Test variant'
+    type: ibom
+    file_id: '_(test)'
+    variants_blacklist: T1
+
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    variants_blacklist: T2,T3
+
+outputs:
+  - name: 'sch_default'
+    comment: "Schematic w/default variant"
+    type: sch_variant
+    dir: default_variant
+    options:
+      variant: default
+      copy_project: true
+      title: '+ (%V)'
+
+  - name: 'sch_production'
+    comment: "Schematic w/production variant"
+    type: sch_variant
+    dir: production_variant
+    options:
+      variant: production
+      copy_project: true
+      title: '+ (%V)'
+
+  - name: 'sch_test'
+    comment: "Schematic w/test variant"
+    type: sch_variant
+    dir: test_variant
+    options:
+      variant: test
+      copy_project: true
+      title: '+ (%V)'
+
+  - name: 'diff_sch'
+    comment: "Schematic difference with variant"
+    type: diff
+    options:
+      # old: pcb_default
+      # old_type: output
+      pcb: false
+      old: ''
+      old_type: multivar
+      new: [sch_default, sch_production, sch_test]
+      new_type: multivar
+      cache_dir: .cache
+      # use_file_id: true
+      add_link_id: true
