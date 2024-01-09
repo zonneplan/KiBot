@@ -149,7 +149,8 @@ class DiffOptions(AnyDiffOptions):
         if not os.path.isfile(name):
             if self.always_fail_if_missing:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-            self._to_remove.extend(self.write_empty_file(name, create_tmp=True))
+            name, to_remove = self.write_empty_file(name, create_tmp=True)
+            self._to_remove.extend(to_remove)
         hash = self.get_digest(name)
         self.add_to_cache(name, hash)
         return hash
@@ -164,7 +165,8 @@ class DiffOptions(AnyDiffOptions):
         if not os.path.isfile(name):
             if self.always_fail_if_missing:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-            self._to_remove.extend(self.write_empty_file(name, create_tmp=True))
+            name, to_remove = self.write_empty_file(name, create_tmp=True)
+            self._to_remove.extend(to_remove)
         # Schematics can have sub-sheets
         sch = load_any_sch(name, os.path.splitext(os.path.basename(name))[0])
         files = sch.get_files()

@@ -68,7 +68,6 @@ class AnyDiffOptions(VariantOptions):
         self.run_git(['worktree', 'remove', '--force', name])
 
     def write_empty_file(self, name, create_tmp=False):
-        to_remove = [name]
         base, ext = os.path.splitext(name)
         kind = 'PCB' if ext == '.kicad_pcb' else 'schematic'
         if create_tmp:
@@ -76,6 +75,7 @@ class AnyDiffOptions(VariantOptions):
             with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
                 name = f.name
             base = os.path.splitext(name)[0]
+        to_remove = [name]
         logger.debug('Creating empty '+kind+': '+name)
         with open(name, 'w') as f:
             if ext == '.kicad_sch':
@@ -94,7 +94,7 @@ class AnyDiffOptions(VariantOptions):
                 with open(lib_name, 'w') as f:
                     f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
                 to_remove.append(lib_name)
-        return to_remove
+        return name, to_remove
 
     def save_layers_incl(self, layers):
         self._solved_layers = layers
