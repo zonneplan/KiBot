@@ -388,11 +388,19 @@ def test_help_output_plugin_4(test_dir, monkeypatch):
     ctx.clean_up()
 
 
-def test_help_outputs(test_dir):
+def test_help_outputs_md(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Gerber format')
     assert ctx.search_out('Type: .?gerber.?')
+    ctx.clean_up()
+
+
+def test_help_outputs_rst(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-outputs', '--rst'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('Gerber format')
+    assert ctx.search_out('Type: .?.?gerber.?.?')
     ctx.clean_up()
 
 
