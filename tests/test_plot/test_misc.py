@@ -1325,6 +1325,8 @@ def test_dependencies_1(test_dir):
     with open(ctx.get_out_path('output.txt'), 'rt') as f:
         data = json.load(f)
     assert dep in data
+    ctx.run(extra=['--help-dependencies', '--rst'], no_board_file=True, no_out_dir=True, no_yaml_file=True)
+    ctx.search_out('`'+dep+' <')
 
 
 def test_dont_stop_1(test_dir):
