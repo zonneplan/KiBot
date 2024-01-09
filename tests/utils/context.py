@@ -444,33 +444,33 @@ class TestContext(object):
             else:
                 del os.environ['LANG']
 
-    def search_out(self, text):
-        m = re.search(text, self.out, re.MULTILINE)
-        assert m is not None, text
-        logging.debug('output match: `{}` OK'.format(text))
-        return m
-
-    def search_err(self, text, invert=False):
+    def _search_txt(self, text, msgs, where, invert=False):
         if isinstance(text, list):
             res = []
             for t in text:
-                m = re.search(t, self.err, re.MULTILINE)
+                m = re.search(t, msgs, re.MULTILINE)
                 if invert:
                     assert m is None, t
-                    logging.debug('error no match: `{}` OK'.format(t))
+                    logging.debug(f'{where} no match: `{t}` OK')
                 else:
                     assert m is not None, t
-                    logging.debug('error match: `{}` (`{}`) OK'.format(t, m.group(0)))
+                    logging.debug(f'{where} match: `{t}` (`{m.group(0)}`) OK')
                     res.append(m)
             return res
-        m = re.search(text, self.err, re.MULTILINE)
+        m = re.search(text, msgs, re.MULTILINE)
         if invert:
             assert m is None, text
-            logging.debug('error no match: `{}` OK'.format(text))
+            logging.debug(f'{where} no match: `{text}` OK')
         else:
             assert m is not None, text
-            logging.debug('error match: `{}` (`{}`) OK'.format(text, m.group(0)))
+            logging.debug(f'{where} match: `{text}` (`{m.group(0)}`) OK')
         return m
+
+    def search_out(self, text, invert=False):
+        return self._search_txt(text, self.out, 'output', invert)
+
+    def search_err(self, text, invert=False):
+        return self._search_txt(text, self.err, 'error', invert)
 
     def search_in_file(self, file, texts, sub=False):
         logging.debug('Searching in "'+file+'" output')

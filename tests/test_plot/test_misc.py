@@ -273,14 +273,19 @@ def test_auto_pcb_and_cfg_5(test_dir):
     ctx.clean_up()
 
 
-def test_list(test_dir):
+def test_list_full(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--list'], no_verbose=True, no_out_dir=True)
-    assert ctx.search_out('run_erc: True')
-    assert ctx.search_out('run_drc: True')
-    assert ctx.search_out('update_xml: True')
-    assert ctx.search_out(r'Pick and place file.? \(position\) \[position\]')
-    assert ctx.search_out(r'Pick and place file.? \(pos_ascii\) \[position\]')
+    ctx.search_out(['run_erc: True', 'run_drc: True', 'update_xml: True', r'Pick and place file.? \(position\) \[position\]',
+                    r'Pick and place file.? \(pos_ascii\) \[position\]'])
+    ctx.clean_up()
+
+
+def test_list_only_names(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--list', '--only-names'], no_verbose=True, no_out_dir=True)
+    ctx.search_out(['position', 'pos_ascii'])
+    ctx.search_out('Pick and place file', invert=True)
     ctx.clean_up()
 
 
