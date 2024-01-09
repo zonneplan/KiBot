@@ -3,7 +3,7 @@
 ![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
 
 [![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=dev&style=plastic&logo=github)](https://github.com/INTI-CMNB/KiBot/actions)
-[![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic&logo=coveralls)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=master)
+[![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic&logo=coveralls&branch=dev)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=dev)
 [![PyPI version](https://img.shields.io/pypi/v/kibot?style=plastic&logo=pypi)](https://pypi.org/project/kibot/)
 [![DOCs status](https://img.shields.io/readthedocs/kibot?style=plastic&logo=readthedocs)](https://kibot.readthedocs.io/en/latest/)
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg?style=plastic&logo=paypal)](https://www.paypal.com/donate/?hosted_button_id=K2T86GDTTMRPL)
