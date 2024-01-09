@@ -305,6 +305,13 @@ def test_help(test_dir):
     ctx.clean_up()
 
 
+def test_help_errors(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-errors'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('1: INTERNAL_ERROR')
+    ctx.clean_up()
+
+
 def test_help_list_outputs(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-list-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
