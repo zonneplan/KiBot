@@ -99,8 +99,9 @@ class KiRiOptions(AnyDiffOptions):
         return True
 
     def do_cache(self, name, tmp_wd, hash):
-        name_copy = self.run_git(['ls-files', '--full-name', name])
-        name_copy = os.path.join(tmp_wd, name_copy)
+        name_copy = os.path.join(tmp_wd, name)
+        if not os.path.isfile(name_copy):
+            self.write_empty_file(name_copy)
         logger.debug('- Using temporal copy: '+name_copy)
         self.add_to_cache(name_copy, hash[:7])
         return name_copy
@@ -242,7 +243,13 @@ class KiRiOptions(AnyDiffOptions):
         GS.check_sch()
         sch_files = GS.sch.get_files()
         self.repo_dir = GS.sch_dir
+        self.sch_rel_name = self.run_git(['ls-files', '--full-name', GS.sch_file])
+        if not self.sch_rel_name:
+            raise KiPlotConfigurationError("The schematic must be committed")
         GS.check_pcb()
+        self.pcb_rel_name = self.run_git(['ls-files', '--full-name', GS.pcb_file])
+        if not self.pcb_rel_name:
+            raise KiPlotConfigurationError("The PCB must be committed")
         # Get a list of hashes where we have changes
         self._max_commits = ['-n', str(self.max_commits)] if self.max_commits else []
         cmd = ['log', "--date=format:%Y-%m-%d %H:%M:%S", '--pretty=format:%H | %ad | %an | %s']
@@ -280,9 +287,9 @@ class KiRiOptions(AnyDiffOptions):
                     self.run_git(['worktree', 'add', git_tmp_wd, hash])
                     self.run_git(['submodule', 'update', '--init', '--recursive'], cwd=git_tmp_wd)
                     # Generate SVGs for the schematic
-                    name_sch = self.do_cache(GS.sch_file, git_tmp_wd, hash)
+                    name_sch = self.do_cache(self.sch_rel_name, git_tmp_wd, hash)
                     # Generate SVGs for the PCB
-                    self.do_cache(GS.pcb_file, git_tmp_wd, hash)
+                    self.do_cache(self.pcb_rel_name, git_tmp_wd, hash)
                     # List of layers
                     self.save_pcb_layers(hash)
                     # Schematic hierarchy

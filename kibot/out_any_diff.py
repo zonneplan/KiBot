@@ -3,6 +3,7 @@
 # Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
 from tempfile import NamedTemporaryFile
 from .gs import GS
 from .kiplot import run_command
@@ -65,6 +66,35 @@ class AnyDiffOptions(VariantOptions):
     def remove_git_worktree(self, name):
         logger.debug('Removing temporal checkout at '+name)
         self.run_git(['worktree', 'remove', '--force', name])
+
+    def write_empty_file(self, name, create_tmp=False):
+        to_remove = [name]
+        base, ext = os.path.splitext(name)
+        kind = 'PCB' if ext == '.kicad_pcb' else 'schematic'
+        if create_tmp:
+            # Use a temporary file
+            with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
+                name = f.name
+            base = os.path.splitext(name)[0]
+        logger.debug('Creating empty '+kind+': '+name)
+        with open(name, 'w') as f:
+            if ext == '.kicad_sch':
+                f.write("(kicad_sch (version 20211123) (generator eeschema))\n")
+            elif ext == '.sch':
+                f.write("EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n$Descr A4 11693 8268\n"
+                        "$EndDescr\n$EndSCHEMATC\n")
+            elif ext == '.kicad_pcb':
+                f.write("(kicad_pcb (version 20171130) (host pcbnew 5.1.5))\n")
+            else:  # pragma: no cover
+                raise AssertionError('Unknown extension')
+        if ext == '.sch':
+            lib_name = base+'-cache.lib'
+            if not os.path.isfile(lib_name):
+                logger.debug('Creating dummy cache lib: '+lib_name)
+                with open(lib_name, 'w') as f:
+                    f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
+                to_remove.append(lib_name)
+        return to_remove
 
     def save_layers_incl(self, layers):
         self._solved_layers = layers

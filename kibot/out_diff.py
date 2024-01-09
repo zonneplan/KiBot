@@ -25,7 +25,7 @@ import os
 import re
 from shutil import rmtree, copy2
 from subprocess import CalledProcessError
-from tempfile import mkdtemp, NamedTemporaryFile
+from tempfile import mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
@@ -149,10 +149,7 @@ class DiffOptions(AnyDiffOptions):
         if not os.path.isfile(name):
             if self.always_fail_if_missing:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-            with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
-                f.write("(kicad_pcb (version 20171130) (host pcbnew 5.1.5))\n")
-                name = f.name
-                self._to_remove.append(name)
+            self._to_remove.extend(self.write_empty_file(name, create_tmp=True))
         hash = self.get_digest(name)
         self.add_to_cache(name, hash)
         return hash
@@ -167,23 +164,7 @@ class DiffOptions(AnyDiffOptions):
         if not os.path.isfile(name):
             if self.always_fail_if_missing:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-            ext = os.path.splitext(name)[1]
-            with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
-                logger.debug('Creating empty schematic: '+f.name)
-                if ext == '.kicad_sch':
-                    f.write("(kicad_sch (version 20211123) (generator eeschema))\n")
-                else:
-                    f.write("EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n$Descr A4 11693 8268\n"
-                            "$EndDescr\n$EndSCHEMATC\n")
-                name = f.name
-                self._to_remove.append(name)
-            if ext != '.kicad_sch':
-                lib_name = os.path.splitext(name)[0]+'-cache.lib'
-                if not os.path.isfile(lib_name):
-                    logger.debug('Creating dummy cache lib: '+lib_name)
-                    with open(lib_name, 'w') as f:
-                        f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
-                    self._to_remove.append(lib_name)
+            self._to_remove.extend(self.write_empty_file(name, create_tmp=True))
         # Schematics can have sub-sheets
         sch = load_any_sch(name, os.path.splitext(os.path.basename(name))[0])
         files = sch.get_files()
