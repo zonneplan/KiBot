@@ -312,6 +312,20 @@ def test_help_errors(test_dir):
     ctx.clean_up()
 
 
+def test_help_list_rotations(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-list-rotations'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('SOT-223(.*)180')
+    ctx.clean_up()
+
+
+def test_help_list_offsets(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-list-offsets'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out(r'Footprint\s+Offset X')
+    ctx.clean_up()
+
+
 def test_help_list_outputs(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-list-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
