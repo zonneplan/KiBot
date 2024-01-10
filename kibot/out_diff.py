@@ -6,7 +6,7 @@
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
-    version: 2.5.1
+    version: 2.5.3
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -74,9 +74,10 @@ class DiffOptions(AnyDiffOptions):
             self.cache_dir = ''
             """ Directory to cache the intermediate files. Leave it blank to disable the cache """
             self.diff_mode = 'red_green'
-            """ [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
+            """ [red_green,stats,2color] In the `red_green` mode added stuff is green and red when removed.
                 The `stats` mode is used to measure the amount of difference. In this mode all
-                changes are red, but you can abort if the difference is bigger than certain threshold """
+                changes are red, but you can abort if the difference is bigger than certain threshold.
+                The '2color' mode is like 'red_green', but you can customize the colors """
             self.fuzz = 5
             """ [0,100] Color tolerance (fuzzyness) for the `stats` mode """
             self.threshold = 0
@@ -108,7 +109,12 @@ class DiffOptions(AnyDiffOptions):
             """ Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
                 So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
                 Enabling this option KiBot will report an error """
+            self.color_added = '#00FF00'
+            """ Color used for the added stuff in the '2color' mode """
+            self.color_removed = '#FF0000'
+            """ Color used for the removed stuff in the '2color' mode """
         super().__init__()
+        self.add_to_doc("zones", "Be careful with the cache when changing this setting")
 
     def config(self, parent):
         super().config(parent)
@@ -123,6 +129,7 @@ class DiffOptions(AnyDiffOptions):
                 raise KiPlotConfigurationError('`new` must be a single string for `{}` type'.format(self.new_type))
         if self.old_type == 'multivar' and self.new_type != 'multivar':
             raise KiPlotConfigurationError("`old_type` can't be `multivar` when `new_type` isn't (`{}`)".format(self.new_type))
+        self.validate_colors(['color_added', 'color_removed'])
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
@@ -457,7 +464,8 @@ class DiffOptions(AnyDiffOptions):
         # Compute the diff using the cache
         cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
                '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
-               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz), '--no_exist_check']
+               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz), '--no_exist_check',
+               '--added_2color', self.color_added, '--removed_2color', self.color_removed]
         self.add_zones_ops(cmd)
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])

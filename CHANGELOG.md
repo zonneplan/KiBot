@@ -84,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Explain about wrong dir/output separation (#493)
 - Diff:
   - Added option to un/fill zones before doing the comparison (See #391)
+  - Added a new mode where we can control the added/removed colors (#551)
 
 ### Changed
 - Documentation:

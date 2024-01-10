@@ -70,6 +70,7 @@ class KiRiOptions(AnyDiffOptions):
             self.keep_generated = False
             """ *Avoid PCB and SCH images regeneration. Useful for incremental usage """
         super().__init__()
+        self.add_to_doc("zones", "Be careful with the *keep_generated* option when changing this setting")
         self._kiri_mode = True
 
     def config(self, parent):

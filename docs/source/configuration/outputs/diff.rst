@@ -44,11 +44,14 @@ Parameters:
          So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
          Enabling this option KiBot will report an error.
       -  ``cache_dir`` :index:`: <pair: output - diff - options; cache_dir>` [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache.
+      -  ``color_added`` :index:`: <pair: output - diff - options; color_added>` [string='#00FF00'] Color used for the added stuff in the '2color' mode.
+      -  ``color_removed`` :index:`: <pair: output - diff - options; color_removed>` [string='#FF0000'] Color used for the removed stuff in the '2color' mode.
       -  ``copy_instead_of_link`` :index:`: <pair: output - diff - options; copy_instead_of_link>` [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a
          symlink. Useful for some Windows setups.
-      -  ``diff_mode`` :index:`: <pair: output - diff - options; diff_mode>` [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
+      -  ``diff_mode`` :index:`: <pair: output - diff - options; diff_mode>` [string='red_green'] [red_green,stats,2color] In the `red_green` mode added stuff is green and red when removed.
          The `stats` mode is used to measure the amount of difference. In this mode all
          changes are red, but you can abort if the difference is bigger than certain threshold.
+         The '2color' mode is like 'red_green', but you can customize the colors.
       -  ``dnf_filter`` :index:`: <pair: output - diff - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 

@@ -21,8 +21,7 @@ class AnyDiffOptions(VariantOptions):
             self.zones = 'global'
             """ [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
                 fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
-                a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
-                Be careful with the *keep_generated* option when changing this setting """
+                a refill, *unfill* forces a zone removal and *none* lets the zones unchanged """
         super().__init__()
         self._expand_id = 'diff'
         self._expand_ext = 'pdf'

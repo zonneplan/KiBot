@@ -760,12 +760,17 @@ outputs:
       always_fail_if_missing: false
       # [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache
       cache_dir: ''
+      # [string='#00FF00'] Color used for the added stuff in the '2color' mode
+      color_added: '#00FF00'
+      # [string='#FF0000'] Color used for the removed stuff in the '2color' mode
+      color_removed: '#FF0000'
       # [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a
       # symlink. Useful for some Windows setups
       copy_instead_of_link: false
-      # [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
+      # [string='red_green'] [red_green,stats,2color] In the `red_green` mode added stuff is green and red when removed.
       # The `stats` mode is used to measure the amount of difference. In this mode all
-      # changes are red, but you can abort if the difference is bigger than certain threshold
+      # changes are red, but you can abort if the difference is bigger than certain threshold.
+      # The '2color' mode is like 'red_green', but you can customize the colors
       diff_mode: 'red_green'
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
