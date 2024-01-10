@@ -60,8 +60,6 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
-# Opacity to make something invisible, but not removable
-ALMOST_TRANSPARENT = '0.01'
 # The following modules will be downloaded after we solve the dependencies
 # They are just helpers and we solve their dependencies
 svgutils = None  # Will be loaded during dependency check
@@ -775,8 +773,8 @@ class PCB_PrintOptions(VariantOptions):
             if c.tag.endswith('}text'):
                 opacity = c.get('opacity')
                 if opacity is not None and opacity == '0' and c.text is not None:
-                    c.set('opacity', ALMOST_TRANSPARENT)
-                    c.set('style', 'font-family:monospace')
+                    c.set('opacity', '1')
+                    c.set('style', f'font-family:monospace; fill:{self.background_color}; stroke:{self.background_color}')
                     contains_text = True
             elif c.tag.endswith('}g'):
                 # Process all text inside
@@ -785,7 +783,7 @@ class PCB_PrintOptions(VariantOptions):
         if contains_text:
             style = e.get('style')
             if style is not None:
-                e.set('style', style.replace('fill-opacity:0.0', 'fill-opacity:'+ALMOST_TRANSPARENT))
+                e.set('style', style.replace('fill-opacity:0.0', 'fill-opacity:1'))
 
     def fix_opacity(self, svg):
         """ Transparent text is discarded by rsvg-convert.

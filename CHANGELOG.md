@@ -144,6 +144,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `current`: didn't honor KiCad native DNP flags, they need a filter
 - PCB Print:
   - Issues when forcing the board edge and using scaling (#532)
+  - Text not searchable when using newer rsvg-convert tools (#552)
 
 
 ## [1.6.3] - 2023-06-26
