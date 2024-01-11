@@ -318,7 +318,7 @@ class Base3DOptions(VariantOptions):
                     m = coo_re.match(ln)
                     if m:
                         index = prev_ln
-                        points = [(float(v) for v in x.split(' ')) for x in m.group(1).split(',')]
+                        points = [tuple(float(v) for v in x.split(' ')) for x in m.group(1).split(',')]
                         x_len = (points[0][X]-points[2][X])*2.54*2
                         if abs(x_len-r_len) < 0.01:
                             logger.debug('  - Found horizontal: {}'.format(round(x_len, 2)))
