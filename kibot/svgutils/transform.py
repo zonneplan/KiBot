@@ -161,20 +161,24 @@ class TextElement(FigureElement):
         letterspacing=0,
         anchor="start",
         color="black",
+        lengthAdjust=None,
+        textLength=None,
     ):
-        txt = etree.Element(
-            SVG + "text",
-            {
-                "x": str(x),
-                "y": str(y),
-                "font-size": str(size),
-                "font-family": font,
-                "font-weight": weight,
-                "letter-spacing": str(letterspacing),
-                "text-anchor": str(anchor),
-                "fill": str(color),
-            },
-        )
+        attrs = {
+            "x": str(x),
+            "y": str(y),
+            "font-size": str(size),
+            "font-family": font,
+            "font-weight": weight,
+            "letter-spacing": str(letterspacing),
+            "text-anchor": str(anchor),
+            "fill": str(color),
+        }
+        if lengthAdjust is not None:
+            attrs['lengthAdjust'] = lengthAdjust
+        if textLength is not None:
+            attrs['textLength'] = textLength
+        txt = etree.Element(SVG + "text", attrs)
         txt.text = text
         FigureElement.__init__(self, txt)
 

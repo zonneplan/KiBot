@@ -766,39 +766,40 @@ class PCB_PrintOptions(VariantOptions):
             svg_out.insert([root])
         svg_out.insert(svgutils.RectElement(0, 0, width, height, color=self.background_color))
 
-    def fix_opacity_for_g(self, e):
-        contains_text = False
+    def search_text_for_g(self, e, texts):
+        transform = e.get('transform')
         for c in e:
             # Adjust the text opacity
             if c.tag.endswith('}text'):
                 opacity = c.get('opacity')
                 if opacity is not None and opacity == '0' and c.text is not None:
-                    c.set('opacity', '1')
-                    c.set('style', f'font-family:monospace; fill:{self.background_color}; stroke:{self.background_color}')
-                    contains_text = True
+                    cp_text = svgutils.TextElement(c.get('x'), c.get('y'), c.text, font='monospace',
+                                                   color=self.background_color, anchor=c.get('text-anchor'),
+                                                   size=c.get('font-size'), lengthAdjust=c.get('lengthAdjust'),
+                                                   textLength=c.get('textLength'))
+                    if transform is None:
+                        texts.append(cp_text)
+                    else:
+                        # Rotated text
+                        texts.append(svgutils.GroupElement([cp_text], {'transform': transform}))
             elif c.tag.endswith('}g'):
                 # Process all text inside
-                self.fix_opacity_for_g(c)
-        # Adjust the graphic opacity
-        if contains_text:
-            style = e.get('style')
-            if style is not None:
-                e.set('style', style.replace('fill-opacity:0.0', 'fill-opacity:1'))
+                self.search_text_for_g(c, texts)
 
-    def fix_opacity(self, svg):
-        """ Transparent text is discarded by rsvg-convert.
-            So we make it almost invisible. """
-        logger.debug(' - Making text searchable')
+    def search_text(self, svg, texts):
+        """ Transparent text is discarded by rsvg-convert """
+        logger.debug(' - Looking for text tags')
         # Scan the SVG
         for e in svg.root:
             # Look for graphics
             if e.tag.endswith('}g'):
                 # Process all text inside
-                self.fix_opacity_for_g(e)
+                self.search_text_for_g(e, texts)
 
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
         """ Merge all layers into one page """
         first = True
+        texts = []
         for (file, color) in input_files:
             logger.debug(' - Loading layer file '+file)
             file = os.path.join(input_folder, file)
@@ -809,8 +810,9 @@ class PCB_PrintOptions(VariantOptions):
                 if p.monochrome:
                     color = to_gray_hex(color)
                 self.fill_polygons(new_layer, color)
-            # Make text searchable
-            self.fix_opacity(new_layer)
+            if self.format == 'PDF':
+                # Look for transparent text that we will copy to a suitable place
+                self.search_text(new_layer, texts)
             if first:
                 svg_out = new_layer
                 # This is the width declared at the beginning of the file
@@ -827,6 +829,11 @@ class PCB_PrintOptions(VariantOptions):
                     for e in root:
                         e.scale(scale)
                 svg_out.append([root])
+        if self.format == 'PDF':
+            # Make the text searchable
+            # Add it before anything using the background color
+            for text in texts:
+                svg_out.insert(text)
         svg_out.save(os.path.join(output_folder, output_file))
 
     def find_paper_size(self):
