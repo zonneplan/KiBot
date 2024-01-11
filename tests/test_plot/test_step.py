@@ -158,7 +158,7 @@ def test_render_3d_variant_1(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.pcbnew
-@pytest.mark.skipif(context.ki5() or context.ki6(), reason="slow")
+@pytest.mark.skipif(not context.ki7(), reason="slow")
 def test_render_3d_res_tht_1(test_dir):
     """ Very naive test, just check if working """
     prj = 'resistor_tht'
