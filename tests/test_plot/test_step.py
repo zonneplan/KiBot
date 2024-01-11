@@ -156,17 +156,19 @@ def test_render_3d_variant_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
-# @pytest.mark.slow
-# @pytest.mark.pcbnew
-# def test_render_3d_res_tht_1(test_dir):
-#     prj = 'resistor_tht'
-#     yaml = 'render_3d_tht_res_1'
-#     ctx = context.TestContext(test_dir, prj, yaml)
-#     ctx.run()  # extra_debug=True
-#     # Check all outputs are there
-#     name = prj+'-3D_top.png'
-#     ctx.expect_out_file(name)
-#     ctx.clean_up(keep_project=True)
+@pytest.mark.slow
+@pytest.mark.pcbnew
+@pytest.mark.skipif(context.ki5() or context.ki6(), reason="slow")
+def test_render_3d_res_tht_1(test_dir):
+    """ Very naive test, just check if working """
+    prj = 'resistor_tht'
+    yaml = 'render_3d_tht_res_1'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    ctx.run()  # extra_debug=True
+    # Check all outputs are there
+    name = prj+'-3D_top.png'
+    ctx.expect_out_file(name)
+    ctx.clean_up(keep_project=True)
 
 
 @pytest.mark.slow
