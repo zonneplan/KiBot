@@ -138,7 +138,8 @@ def test_step_rel_dir_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
-@pytest.mark.indep
+# @pytest.mark.indep But we use KiCad 5 ...
+@pytest.mark.skipif(not context.ki7(), reason="Is indep, but needs KiCad 7")
 def test_step_ea_dl_1(test_dir):
     prj = 'easyeda_3d_dl'
     ctx = context.TestContext(test_dir, prj, 'step_simple', STEP_DIR)
