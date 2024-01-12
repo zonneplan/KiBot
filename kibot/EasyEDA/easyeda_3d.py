@@ -34,6 +34,12 @@ MATERIAL_MET_01 = {"name": 'MET-01', "ambient_intensity": 0.250, "shininess": 0.
                    "diffuse_color": ('0.298', '0.298', '0.298'), "specular_color": ('0.398', '0.398', '0.398')}
 MATERIAL_EPOXY_04 = {"name": 'IC-BODY-EPOXY-04', "ambient_intensity": 0.293, "shininess": 0.35, "transparency": 0,
                      "diffuse_color": ('0.148', '0.145', '0.145'), "specular_color": ('0.180', '0.168', '0.160')}
+if 'KIBOT_EASYEDA_API' in os.environ:
+    API_ENDPOINT = os.environ['KIBOT_EASYEDA_API']
+if 'KIBOT_EASYEDA_MODEL' in os.environ:
+    ENDPOINT_3D_MODEL = os.environ['KIBOT_EASYEDA_MODEL']
+if 'KIBOT_EASYEDA_STEP' in os.environ:
+    ENDPOINT_STEP = os.environ['KIBOT_EASYEDA_STEP']
 
 
 class EasyedaApi:

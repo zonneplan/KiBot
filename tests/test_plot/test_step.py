@@ -138,6 +138,23 @@ def test_step_rel_dir_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.indep
+def test_step_ea_dl_1(test_dir):
+    prj = 'easyeda_3d_dl'
+    ctx = context.TestContext(test_dir, prj, 'step_simple', STEP_DIR)
+    os.environ['KIBOT_3D_MODELS'] = os.path.join(ctx.output_dir, STEP_DIR)
+    ctx.run(kicost=True)
+    del os.environ['KIBOT_3D_MODELS']
+    # Check all outputs are there
+    name = prj+'-3D.step'
+    step = 'SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.step'
+    wrl = 'SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.wrl'
+    ctx.expect_out_file_d([name, step, wrl])
+    ctx.search_in_file_d(step, 'This is a STEP file')
+    ctx.compare_txt(os.path.join(STEP_DIR, wrl))
+    ctx.clean_up(keep_project=True)
+
+
 @pytest.mark.slow
 @pytest.mark.pcbnew
 def test_render_3d_variant_1(test_dir):

@@ -68,7 +68,28 @@ class S(BaseHTTPRequestHandler):
 
     def do_GET(self):
         self._set_headers()
-        self.wfile.write(self._html(self.path))
+        if self.path.startswith('/api/'):
+            self.easyeda_api(self.path[5:])
+        elif self.path.startswith('/model/'):
+            self.easyeda_model(self.path[7:])
+        elif self.path.startswith('/step/'):
+            self.easyeda_step(self.path[6:])
+        else:
+            self.wfile.write(self._html(self.path))
+
+    def easyeda_api(self, component):
+        print(f'EasyEDA api request for {component}')
+        with open(op.join(op.dirname(__file__), '../data/EasyEDA_API_C181094.json'), 'rb') as f:
+            self.wfile.write(f.read())
+
+    def easyeda_model(self, component):
+        print(f'EasyEDA 3D model request for {component}')
+        with open(op.join(op.dirname(__file__), '../data/EasyEDA_C181094.obj'), 'rb') as f:
+            self.wfile.write(f.read())
+
+    def easyeda_step(self, component):
+        print(f'EasyEDA STEP request for {component}')
+        self.wfile.write(b'This is a STEP file')
 
     def do_HEAD(self):
         self._set_headers()

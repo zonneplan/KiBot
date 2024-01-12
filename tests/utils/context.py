@@ -298,7 +298,9 @@ class TestContext(object):
         return files[0] if len(files) == 1 else files
 
     def expect_out_file_d(self, filename):
-        return self.expect_out_file(os.path.join(self.sub_dir, filename))
+        if isinstance(filename, str):
+            filename = [filename]
+        return self.expect_out_file([os.path.join(self.sub_dir, f) for f in filename])
 
     def dont_expect_out_file(self, filename):
         file = self.get_out_path(filename)
@@ -427,6 +429,10 @@ class TestContext(object):
                 server = None
             else:
                 os.environ['KICOST_KITSPACE_URL'] = 'http://localhost:8000'
+                os.environ['KIBOT_EASYEDA_API'] = 'http://localhost:8000/api/{lcsc_id}'
+                os.environ['KIBOT_EASYEDA_MODEL'] = 'http://localhost:8000/model/{uuid}'
+                os.environ['KIBOT_EASYEDA_STEP'] = 'http://localhost:8000/step/{uuid}'
+
                 f_o = open(self.get_out_path('server_stdout.txt'), 'at')
                 f_e = open(self.get_out_path('server_stderr.txt'), 'at')
                 server = subprocess.Popen('./tests/utils/dummy-web-server.py', stdout=f_o, stderr=f_e)
@@ -492,6 +498,8 @@ class TestContext(object):
         return res
 
     def search_in_file_d(self, file, texts):
+        if isinstance(texts, str):
+            texts = [texts]
         return self.search_in_file(os.path.join(self.sub_dir, file), texts)
 
     def search_not_in_file(self, file, texts):
