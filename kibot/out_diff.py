@@ -373,7 +373,7 @@ class DiffOptions(AnyDiffOptions):
             name = self.solve_git_name(name)
             git_tmp_wd = mkdtemp()
             logger.debug('Checking out '+name+' to '+git_tmp_wd)
-            self.run_git(['worktree', 'add', '--force', git_tmp_wd, name])
+            self.run_git(['worktree', 'add', '--detach', '--force', git_tmp_wd, name])
             self._worktrees_to_remove.append(git_tmp_wd)
             self.run_git(['submodule', 'update', '--init', '--recursive'], cwd=git_tmp_wd)
             name_copy = self.run_git(['ls-files', '--full-name', self.file])
