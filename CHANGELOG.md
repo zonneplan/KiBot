@@ -52,6 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       the same footprint but different orientation in the reel.
 - 3D outputs:
   - `download_lcsc` option to disable LCSC 3D model download (See #415)
+  - Problems when creating a colored resistor, but we didn't have a cache yet
+    (i.e. no model downloaded) #553
 - BoM:
   - Support for ${field} expansion. (#471)
   - LCSC links (SchrodingersGat/KiBoM#190)

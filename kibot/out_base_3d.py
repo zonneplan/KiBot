@@ -309,6 +309,7 @@ class Base3DOptions(VariantOptions):
             prev_ln = None
             points = None
             axis = None
+            os.makedirs(os.path.dirname(name), exist_ok=True)
             with open(name, "wt") as d:
                 colors_defined = False
                 for ln in f:
