@@ -142,6 +142,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Diff
   - `current`: didn't apply global variants
   - `current`: didn't honor KiCad native DNP flags, they need a filter
+  - Problems when trying to use an already existent worktree (#555)
 - PCB Print:
   - Issues when forcing the board edge and using scaling (#532)
   - Text not searchable when using newer rsvg-convert tools (#552)

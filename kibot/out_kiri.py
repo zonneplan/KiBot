@@ -285,7 +285,7 @@ class KiRiOptions(AnyDiffOptions):
                         rmtree(dst_dir)
                     git_tmp_wd = mkdtemp()
                     logger.debug('Checking out '+hash+' to '+git_tmp_wd)
-                    self.run_git(['worktree', 'add', git_tmp_wd, hash])
+                    self.run_git(['worktree', 'add', '--force', git_tmp_wd, hash])
                     self.run_git(['submodule', 'update', '--init', '--recursive'], cwd=git_tmp_wd)
                     # Generate SVGs for the schematic
                     name_sch = self.do_cache(self.sch_rel_name, git_tmp_wd, hash)
