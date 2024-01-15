@@ -107,7 +107,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Note that JLCPCB BoM and Position files aren't included anymore, they are
     uploaded separately.
 - Quick Start:
-  - Now we generate if for projects, not separated files.
+  - Now we generate only for projects, not separated files.
     This avoids problems for sub-sheets in separated dirs.
 - Diff:
   - When *check_zone_fills* is enabled now we do a refill for the boards
@@ -151,7 +151,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB Print:
   - Issues when forcing the board edge and using scaling (#532)
   - Text not searchable when using newer rsvg-convert tools (#552)
-
+- Quick Start:
+  - Problems with KiCad 6+ files using KiCad 5 names for layers
+  - Problems scanning dirs without enough privileges
 
 ## [1.6.3] - 2023-06-26
 ### Added

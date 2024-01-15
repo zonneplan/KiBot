@@ -1041,11 +1041,14 @@ def generate_targets(config_file):
 def _walk(path, depth):
     """ Recursively list files and directories up to a certain depth """
     depth -= 1
-    with os.scandir(path) as p:
-        for entry in p:
-            yield entry.path
-            if entry.is_dir() and depth > 0:
-                yield from _walk(entry.path, depth)
+    try:
+        with os.scandir(path) as p:
+            for entry in p:
+                yield entry.path
+                if entry.is_dir() and depth > 0:
+                    yield from _walk(entry.path, depth)
+    except Exception as e:
+        logger.debug(f'Skipping {path} because {e}')
 
 
 def setup_fonts(source):
