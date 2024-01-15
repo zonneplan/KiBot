@@ -433,6 +433,7 @@ class Blender_ExportOptions(BaseOptions):
             for _ in range(pov.steps):
                 for o in self.outputs:
                     files.append(self.get_output_filename(o, out_dir, pov, order))
+                order += 1
         return files
 
     def create_vrml(self, dest_dir):
@@ -662,12 +663,15 @@ class Blender_ExportOptions(BaseOptions):
             # Execute the command
             self.analyze_errors(run_command(cmd))
         if self.render_options.auto_crop:
+            order = 1
             for pov in self.point_of_view:
-                for o in self.outputs:
-                    if o.type != 'render':
-                        continue
-                    name = self.get_output_filename(o, self._parent.output_dir, pov)
-                    run_command([convert_command, name, '-trim', '+repage', '-trim', '+repage', name])
+                for _ in range(pov.steps):
+                    for o in self.outputs:
+                        if o.type != 'render':
+                            continue
+                        name = self.get_output_filename(o, self._parent.output_dir, pov, order)
+                        run_command([convert_command, name, '-trim', '+repage', '-trim', '+repage', name])
+                    order += 1
 
 
 @output_class
