@@ -1,0 +1,30 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'print_front'
+    comment: "Print Top and Bottom layers"
+    type: pcb_print
+    dir: Layers
+    options:
+      format: 'PDF'
+      keep_temporal_files: true
+      pages:
+        - scaling: 2.0
+          sheet: '%ln'
+          sketch_pads_on_fab_layers: true
+          sketch_pad_line_width: 1
+          repeat_for_layer: 'F.Cu'
+          repeat_layers: copper
+          layers:
+            - layer: Edge.Cuts
+            - layer: F.Cu
+            - layer: F.Mask
+              color: '#14332440'
+            - layer: F.Paste
+            - layer: F.SilkS
+            - layer: F.Fab
+              plot_footprint_refs: false
+              plot_footprint_values: false
+            - layer: Dwgs.User
