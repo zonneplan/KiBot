@@ -385,3 +385,5 @@ if GS.ki6:
         Layer.DEFAULT_LAYER_NAMES[name] = pcbnew.User_1+i-1
         Layer.DEFAULT_LAYER_DESC[name] = 'User layer '+str(i)
 Layer.ID_2_DEFAULT_NAME = {v: k for k, v in Layer.DEFAULT_LAYER_NAMES.items()}
+for k, v in Layer.KICAD6_RENAME.items():
+    Layer.DEFAULT_LAYER_NAMES[v] = Layer.DEFAULT_LAYER_NAMES[k]
