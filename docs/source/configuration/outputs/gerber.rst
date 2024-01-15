@@ -19,7 +19,7 @@ Parameters:
 -  **comment** :index:`: <pair: output - gerber; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - gerber; dir>` [string='./'] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - gerber; layers>` [list(dict)|list(string)|string] [all,selected,copper,technical,user]
+-  **layers** :index:`: <pair: output - gerber; layers>` [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
    List of PCB layers to plot.
 
    -  Valid keys:

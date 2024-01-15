@@ -250,6 +250,8 @@ You can also use any of the following grup of layers:
    paste, adhesive, etc.)
 -  **user** all the user layers (draw, comments, eco, margin, edge cuts,
    etc.)
+-  **inners** all the inner copper layers
+-  **outers** all the outer copper layers
 
 You can also mix the above definitions using a list:
 

@@ -234,6 +234,10 @@ class Layer(Optionable):
                         ext = cls._get_layers(Layer._plot_layers)
                     elif layer == 'copper':
                         ext = cls._get_layers(Layer._get_copper())
+                    elif layer == 'inners':
+                        ext = cls._get_layers(Layer._get_inners())
+                    elif layer == 'outers':
+                        ext = cls._get_layers(Layer._get_outers())
                     elif layer == 'technical':
                         ext = cls._get_layers(Layer._get_technical())
                     elif layer == 'user':
@@ -254,6 +258,16 @@ class Layer(Optionable):
     @staticmethod
     def _get_copper():
         return {GS.board.GetLayerName(id): id for id in GS.board.GetEnabledLayers().CuStack()}
+
+    @staticmethod
+    def _get_inners():
+        return {GS.board.GetLayerName(id): id for id in GS.board.GetEnabledLayers().CuStack()
+                if id != pcbnew.B_Cu and id != pcbnew.F_Cu}
+
+    @staticmethod
+    def _get_outers():
+        return {GS.board.GetLayerName(id): id for id in GS.board.GetEnabledLayers().CuStack()
+                if id == pcbnew.B_Cu or id == pcbnew.F_Cu}
 
     @staticmethod
     def _get_technical():

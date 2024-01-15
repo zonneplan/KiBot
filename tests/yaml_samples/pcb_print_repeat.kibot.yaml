@@ -13,10 +13,8 @@ outputs:
       pages:
         - scaling: 2.0
           sheet: '%ln'
-          sketch_pads_on_fab_layers: true
-          sketch_pad_line_width: 1
           repeat_for_layer: 'F.Cu'
-          repeat_layers: copper
+          repeat_layers: outers
           layers:
             - layer: Edge.Cuts
             - layer: F.Cu
@@ -27,4 +25,13 @@ outputs:
             - layer: F.Fab
               plot_footprint_refs: false
               plot_footprint_values: false
+            - layer: Dwgs.User
+        - scaling: 2.0
+          sheet: '%ln'
+          repeat_for_layer: 'F.Cu'
+          repeat_layers: inners
+          layers:
+            - layer: Edge.Cuts
+            - layer: F.Cu
+            - layer: F.SilkS
             - layer: Dwgs.User
