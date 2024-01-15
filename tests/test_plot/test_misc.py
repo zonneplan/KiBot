@@ -1821,3 +1821,12 @@ def test_definitions_1(test_dir):
         for copy in range(2):
             ctx.expect_out_file(f'{prj}-{la}_silk_{copy+1}.gbr')
     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_populate_1(test_dir):
+    prj = 'simple_2layer'  # Fake
+    ctx = context.TestContext(test_dir, prj, 'populate', 'Populate')
+    ctx.run(no_board_file=True, extra=['-b', 'tests/data/ArduinoLearningKitStarter.kicad_pcb', 'Populate'])
+    ctx.compare_image('Populate/img/populating_4.png', 'populating_4.png')
+    ctx.clean_up()
