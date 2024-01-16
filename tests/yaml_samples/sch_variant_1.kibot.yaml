@@ -52,8 +52,6 @@ outputs:
     comment: "Schematic difference with variant"
     type: diff
     options:
-      # old: pcb_default
-      # old_type: output
       pcb: false
       old: ''
       old_type: multivar
@@ -62,3 +60,13 @@ outputs:
       cache_dir: .cache
       # use_file_id: true
       add_link_id: true
+
+  - name: 'diff_sch_output'
+    comment: "Schematic difference with variant"
+    type: diff
+    options:
+      old: sch_default
+      old_type: output
+      pcb: false
+      cache_dir: .cache
+      use_file_id: true
