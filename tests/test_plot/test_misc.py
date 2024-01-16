@@ -1835,6 +1835,17 @@ def test_populate_1(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_populate_2(test_dir):
+    prj = 'simple_2layer'  # Fake
+    ctx = context.TestContext(test_dir, prj, 'populate_blender', 'PopulateSimple')
+    ctx.run(no_board_file=True, extra=['-b', 'tests/data/ArduinoLearningKitStarter.kicad_pcb'])
+    ctx.expect_out_file_d(['img/populating_1.png', 'img/populating_2.png',
+                           'ArduinoLearningKitStarter-blender_export.pcb3d', 'index.html'])
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
 def test_present_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'kikit_present_external_1', 'Present/Files')
