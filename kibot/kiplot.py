@@ -454,7 +454,7 @@ def config_output(out, dry=False, dont_stop=False):
     ok = True
     try:
         out.config(None)
-    except KiPlotConfigurationError as e:
+    except (KiPlotConfigurationError, PlotError) as e:
         msg = "In section '"+out.name+"' ("+out.type+"): "+str(e)
         GS.exit_with_error(msg, DONT_STOP if dont_stop else EXIT_BAD_CONFIG)
         ok = False
