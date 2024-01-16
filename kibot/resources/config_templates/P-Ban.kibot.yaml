@@ -80,14 +80,7 @@ definitions:
   _KIBOT_PLOT_FOOTPRINT_VALUES: true
   _KIBOT_COMPRESS_MOVE: true
   _KIBOT_GERBER_LAYERS: |
-      - F.Cu
-            - B.Cu
-            - In1.Cu
-            - In2.Cu
-            - In3.Cu
-            - In4.Cu
-            - In5.Cu
-            - In6.Cu
+      - copper
             - F.SilkS
             - B.SilkS
             - F.Mask
