@@ -112,6 +112,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
 
     def config(self, parent):
         super().config(parent)
+        self._filters_to_expand = False
         # List of components
         self._show_all_components = False
         if isinstance(self.show_components, str):
