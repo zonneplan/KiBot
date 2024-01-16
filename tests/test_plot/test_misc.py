@@ -1494,7 +1494,7 @@ def test_diff_git_2(test_dir):
 def test_diff_git_3(test_dir):
     """ Difference between the two repo points, no changes to stash """
     prj = 'light_control'
-    yaml = 'diff_git_2'
+    yaml = 'diff_git_3'
     ctx = context.TestContext(test_dir, prj, yaml)
     # Create a git repo
     git_init(ctx)
@@ -1826,6 +1826,7 @@ def test_definitions_1(test_dir):
 @pytest.mark.slow
 @pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
 def test_populate_1(test_dir):
+    """ Using PcbDraw as renderer """
     prj = 'simple_2layer'  # Fake
     ctx = context.TestContext(test_dir, prj, 'populate', 'Populate')
     ctx.run(no_board_file=True, extra=['-b', 'tests/data/ArduinoLearningKitStarter.kicad_pcb', 'Populate'])
@@ -1836,6 +1837,7 @@ def test_populate_1(test_dir):
 @pytest.mark.slow
 @pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
 def test_populate_2(test_dir):
+    """ Using Blender as renderer """
     prj = 'simple_2layer'  # Fake
     ctx = context.TestContext(test_dir, prj, 'populate_blender', 'PopulateSimple')
     ctx.run(no_board_file=True, extra=['-b', 'tests/data/ArduinoLearningKitStarter.kicad_pcb'])

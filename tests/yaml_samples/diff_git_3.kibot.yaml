@@ -1,0 +1,29 @@
+kibot:
+  version: 1
+
+globals:
+  git_diff_strategy: stash
+
+outputs:
+  - name: 'diff_pcb'
+    comment: "PCB difference with git HEAD"
+    type: diff
+    layers: ['F.Cu', 'In1.Cu']
+    options:
+      old: KIBOT_LAST-1
+      old_type: git
+      new: HEAD
+      new_type: git
+      cache_dir: .cache
+      force_checkout: true
+      add_link_id: true
+
+  - name: result
+    comment: Test zip link
+    type: compress
+    options:
+      format: TAR
+      compression: lzma
+      follow_links: false
+      files:
+        - source: '*.pdf'
