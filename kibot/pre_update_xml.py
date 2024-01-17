@@ -86,7 +86,8 @@ class Update_XML(BasePreFlight):  # noqa: F821
                     logger.warning(W_NOTINBOM+f"{ref} excluded from BoM we can't check its parity, upgrade to KiCad 7")
                     excluded.add(ref)
                 else:
-                    errors.append('{} found in PCB, but not in schematic'.format(ref))
+                    if not m.GetAttributes() & MOD_BOARD_ONLY:
+                        errors.append('{} found in PCB, but not in schematic'.format(ref))
                 continue
             sch_data = comps[ref]
             pcb_fp = m.GetFPIDAsString()
