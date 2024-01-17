@@ -17,7 +17,7 @@ from .macros import macros, document, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import load_board
-from .misc import BOM_ERROR, NETLIST_DIFF, W_PARITY, MISSING_TOOL, KICAD_VERSION_7_0_1, W_NOTINBOM
+from .misc import BOM_ERROR, NETLIST_DIFF, W_PARITY, MISSING_TOOL, KICAD_VERSION_7_0_1, W_NOTINBOM, MOD_BOARD_ONLY
 from .log import get_logger
 from .optionable import Optionable
 import pcbnew
