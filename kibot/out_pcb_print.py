@@ -157,6 +157,10 @@ class PagesOptions(Optionable):
         with document:
             self.mirror = False
             """ Print mirrored (X axis inverted) """
+            self.mirror_pcb_text = True
+            """ Mirror text in the PCB when mirror option is enabled and we plot a user layer """
+            self.mirror_footprint_text = True
+            """ Mirror text in the footprints when mirror option is enabled and we plot a user layer """
             self.monochrome = False
             """ Print in gray scale """
             self.scaling = None
@@ -1083,6 +1087,33 @@ class PCB_PrintOptions(VariantOptions):
                 return False
         return True
 
+    def mirror_text(self, page, id):
+        """ Mirror text in the user layers """
+        if not page.mirror:
+            return
+        extra_debug = GS.debug_level > 2
+        if extra_debug:
+            logger.debug('mirror_text processing')
+        if page.mirror_pcb_text:
+            for g in GS.board.GetDrawings():
+                if g.GetLayer() == id:
+                    if hasattr(g, 'GetShownText'):
+                        if extra_debug:
+                            logger.debug(f'- {g.GetClass()} {g.GetShownText()} @ {g.GetCenter()} mirrored: {g.IsMirrored()}'
+                                         f' just: {g.GetHorizJustify()}')
+                        g.SetMirrored(not g.IsMirrored())
+                        g.SetHorizJustify(-g.GetHorizJustify())
+        if page.mirror_footprint_text:
+            for m in GS.get_modules():
+                for g in m.GraphicalItems():
+                    if g.GetLayer() == id:
+                        if hasattr(g, 'GetShownText'):
+                            if extra_debug:
+                                logger.debug(f'- {g.GetClass()} {g.GetShownText()} @ {g.GetCenter()}'
+                                             f' mirrored: {g.IsMirrored()} just: {g.GetHorizJustify()}')
+                            g.SetMirrored(not g.IsMirrored())
+                            g.SetHorizJustify(-g.GetHorizJustify())
+
     def generate_output(self, output):
         self.check_tools()
         # Avoid KiCad 5 complaining about fake vias diameter == drill == 0
@@ -1176,6 +1207,7 @@ class PCB_PrintOptions(VariantOptions):
             filelist = []
             if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p.layers), None) is None:
                 p.layers.append(edge_layer)
+            user_layer_ids = set(Layer._get_user().values())
             for la in p.layers:
                 id = la._id
                 logger.debug('- Plotting layer {} ({})'.format(la.layer, id))
@@ -1185,8 +1217,12 @@ class PCB_PrintOptions(VariantOptions):
                 # Avoid holes on non-copper layers
                 po.SetDrillMarksType(self.drill_marks if IsCopperLayer(id) else 0)
                 pc.SetLayer(id)
+                if id in user_layer_ids:
+                    self.mirror_text(p, id)
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()
+                if id in user_layer_ids:
+                    self.mirror_text(p, id)
                 pc.ClosePlot()
                 filelist.append((pc.GetPlotFileName(), la.color))
                 self.plot_extra_cu(id, la, pc, p, filelist)

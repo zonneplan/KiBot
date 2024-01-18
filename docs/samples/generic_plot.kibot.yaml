@@ -2367,6 +2367,10 @@ outputs:
           line_width: 0.1
           # [boolean=false] Print mirrored (X axis inverted)
           mirror: false
+          # [boolean=true] Mirror text in the footprints when mirror option is enabled and we plot a user layer
+          mirror_footprint_text: true
+          # [boolean=true] Mirror text in the PCB when mirror option is enabled and we plot a user layer
+          mirror_pcb_text: true
           # [boolean=false] Print in gray scale
           monochrome: false
           # [boolean=false] Invert black and white. Only useful for a single layer

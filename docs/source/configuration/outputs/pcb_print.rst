@@ -65,6 +65,8 @@ Parameters:
             -  ``holes_color`` :index:`: <pair: output - pcb_print - options - pages; holes_color>` [string='#000000'] Color used for the holes when `colored_holes` is enabled.
             -  ``line_width`` :index:`: <pair: output - pcb_print - options - pages; line_width>` [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
             -  ``mirror`` :index:`: <pair: output - pcb_print - options - pages; mirror>` [boolean=false] Print mirrored (X axis inverted).
+            -  ``mirror_footprint_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_footprint_text>` [boolean=true] Mirror text in the footprints when mirror option is enabled and we plot a user layer.
+            -  ``mirror_pcb_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_pcb_text>` [boolean=true] Mirror text in the PCB when mirror option is enabled and we plot a user layer.
             -  ``monochrome`` :index:`: <pair: output - pcb_print - options - pages; monochrome>` [boolean=false] Print in gray scale.
             -  ``negative_plot`` :index:`: <pair: output - pcb_print - options - pages; negative_plot>` [boolean=false] Invert black and white. Only useful for a single layer.
             -  ``page_id`` :index:`: <pair: output - pcb_print - options - pages; page_id>` [string='%02d'] Text to differentiate the pages. Use %d (like in C) to get the page number.
