@@ -32,7 +32,8 @@ Supported preflights
 -  **check_zone_fills**: :index:`: <pair: preflights; check_zone_fills>` [boolean=false] Zones are filled before doing any operation involving PCB layers.
    The original PCB remains unchanged. If you need to abort when the zone fill
    creates significant changes to a layer use the CheckZoneFill internal template.
--  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
+-  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
+   Option for `run_erc`. ERC warnings are considered errors.
 -  **fill_zones**: :index:`: <pair: preflights; fill_zones>` [boolean=false] Fill all zones again and save the PCB.
 -  **filters**: :index:`: <pair: preflights; filters>` [list(dict)] A list of entries to filter out ERC/DRC messages.
    Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`). |br|
@@ -50,7 +51,8 @@ Supported preflights
       -  ``regex`` :index:`: <pair: preflight - filters; regex>` [string=''] Regular expression to match the text for the error we want to exclude.
       -  *regexp* :index:`: <pair: preflight - filters; regexp>` Alias for regex.
 
--  **ignore_unconnected**: :index:`: <pair: preflights; ignore_unconnected>` [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+-  **ignore_unconnected**: :index:`: <pair: preflights; ignore_unconnected>` [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`.
+   Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing. |br|
    It will also ignore KiCad 6 warnings.
 -  **pcb_replace**: :index:`: <pair: preflights; pcb_replace>` [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
    This is useful for KiCad 5, use `set_text_variables` when using KiCad 6. |br|
@@ -79,15 +81,30 @@ Supported preflights
             -  ``text`` :index:`: <pair: preflight - pcb_replace - replace_tags; text>` [string=''] Text to insert instead of the tag.
 
 
--  **run_drc**: :index:`: <pair: preflights; run_drc>` [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+-  **run_drc**: :index:`: <pair: preflights; run_drc>` [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
    The report file name is controlled by the global output pattern (%i=drc %x=txt). |br|
    Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported. |br|
    If you need to check the parity use the `update_xml` preflight. |br|
    KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot. |br|
    This will change in the future. |br|
    If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
--  **run_erc**: :index:`: <pair: preflights; run_erc>` [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+
+   -  Valid keys:
+
+      -  ``dir`` :index:`: <pair: preflight - run_drc; dir>` [string=''] Sub-directory for the report.
+      -  ``enabled`` :index:`: <pair: preflight - run_drc; enabled>` [boolean=true] Enable the DRC. This is the replacement for the boolean value.
+      -  ``ignore_unconnected`` :index:`: <pair: preflight - run_drc; ignore_unconnected>` [boolean=false] Ignores the unconnected nets. Useful if you didn't finish the routing.
+         It will also ignore KiCad 6 warnings.
+
+-  **run_erc**: :index:`: <pair: preflights; run_erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
    The report file name is controlled by the global output pattern (%i=erc %x=txt).
+
+   -  Valid keys:
+
+      -  ``dir`` :index:`: <pair: preflight - run_erc; dir>` [string=''] Sub-directory for the report.
+      -  ``enabled`` :index:`: <pair: preflight - run_erc; enabled>` [boolean=true] Enable the ERC. This is the replacement for the boolean value.
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - run_erc; warnings_as_errors>` [boolean=false] ERC warnings are considered errors.
+
 -  **sch_replace**: :index:`: <pair: preflights; sch_replace>` [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
    This is useful for KiCad 5, use `set_text_variables` when using KiCad 6. |br|
    This preflight modifies the schematics. Even when a back-up is done use it carefully.

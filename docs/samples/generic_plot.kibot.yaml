@@ -29,7 +29,8 @@ preflight:
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
-  # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
+  # [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
+  # Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
   # [boolean=false] Fill all zones again and save the PCB.
   fill_zones: true
@@ -40,7 +41,8 @@ preflight:
     - filter: 'Filter description'
       error: '10'
       regex: 'Regular expression to match'
-  # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+  # [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`.
+  # Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
   # It will also ignore KiCad 6 warnings.
   ignore_unconnected: false
   # [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
@@ -53,7 +55,7 @@ preflight:
         command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
         before: 'Git hash: <'
         after: '>'
-  # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
   # Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
   # If you need to check the parity use the `update_xml` preflight.
@@ -61,7 +63,7 @@ preflight:
   # This will change in the future.
   # If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
   run_drc: true
-  # [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).
   run_erc: true
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.

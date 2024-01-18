@@ -82,6 +82,19 @@ def test_erc_warning_2(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
+def test_erc_warning_3(test_dir):
+    """ Using an SCH with ERC warnings as errors """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w_2', 'def_dir')
+    ctx.run(ERC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.txt', sub=True)
+    ctx.search_err(r"ERROR:1 ERC errors detected")
+    ctx.clean_up(keep_project=context.ki7())
+
+
+@pytest.mark.slow
+@pytest.mark.eeschema
 @pytest.mark.skipif(not context.ki7(), reason="KiCad 7 off grid check")
 def test_erc_off_grid_1(test_dir):
     """ ERC using 25 mils grid """
@@ -129,13 +142,23 @@ def test_drc_filter_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
-def test_drc_unco(test_dir):
-    """ Check we can ignore unconnected nets """
+def test_drc_unco_1(test_dir):
+    """ Check we can ignore unconnected nets. Old style """
     prj = 'warning-project'
     ctx = context.TestContext(test_dir, prj, 'drc_unco', '')
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
+    ctx.clean_up()
+
+
+def test_drc_unco_2(test_dir):
+    """ Check we can ignore unconnected nets. New style """
+    prj = 'warning-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_unco_2', 'def_dir')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.txt', sub=True)
     ctx.clean_up()
 
 

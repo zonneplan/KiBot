@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -10,7 +10,7 @@ Dependencies:
     version: 2.0.0
 """
 import os
-from .macros import macros, pre_class  # noqa: F401
+from .macros import macros, document, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
@@ -22,9 +22,24 @@ from .log import get_logger
 logger = get_logger(__name__)
 
 
+class Run_DRCOptions(Optionable):
+    """ DRC options """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.enabled = True
+            """ Enable the DRC. This is the replacement for the boolean value """
+            self.dir = ''
+            """ Sub-directory for the report """
+            self.ignore_unconnected = False
+            """ Ignores the unconnected nets. Useful if you didn't finish the routing.
+                It will also ignore KiCad 6 warnings """
+        self._unknown_is_error = True
+
+
 @pre_class
 class Run_DRC(BasePreFlight):  # noqa: F821
-    """ [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+    """ [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
         The report file name is controlled by the global output pattern (%i=drc %x=txt).
         Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
         If you need to check the parity use the `update_xml` preflight.
@@ -33,9 +48,19 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         If you use DRC exclusions please consult the `drc_exclusions_workaround` global option """
     def __init__(self, name, value):
         super().__init__(name, value)
-        if not isinstance(value, bool):
-            raise KiPlotConfigurationError('must be boolean')
-        self._enabled = value
+        if isinstance(value, bool):
+            self._enabled = value
+            self._dir = ''
+            self._ignore_unconnected = False
+        elif isinstance(value, dict):
+            f = Run_DRCOptions()
+            f.set_tree(value)
+            f.config(self)
+            self._enabled = f.enabled
+            self._dir = f.dir
+            self._ignore_unconnected = f.ignore_unconnected
+        else:
+            raise KiPlotConfigurationError('must be boolean or dict')
         self._pcb_related = True
         self._expand_id = 'drc'
         self._expand_ext = 'txt'
@@ -48,7 +73,11 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         out_dir = self.expand_dirname(GS.out_dir)
         if GS.global_dir and GS.global_use_dir_for_preflights:
             out_dir = os.path.join(out_dir, self.expand_dirname(GS.global_dir))
-        return [os.path.abspath(os.path.join(out_dir, name))]
+        return [os.path.abspath(os.path.join(out_dir, self._dir, name))]
+
+    @classmethod
+    def get_doc(cls):
+        return cls.__doc__, Run_DRCOptions
 
     def run(self):
         command = self.ensure_tool('KiAuto')
@@ -62,14 +91,14 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         output = self.get_targets()[0]
         os.makedirs(os.path.dirname(output), exist_ok=True)
         logger.debug('DRC report: '+output)
-        cmd = [command, 'run_drc', '-o', output]
+        cmd = [command, 'run_drc', '-o', os.path.basename(output)]
         if GS.filter_file:
             cmd.extend(['-f', GS.filter_file])
         if GS.global_drc_exclusions_workaround:
             cmd.append('-F')
-        if BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821
+        if self._ignore_unconnected or BasePreFlight.get_option('ignore_unconnected'):  # noqa: F821
             cmd.append('-i')
-        cmd.extend([GS.pcb_file, self.expand_dirname(GS.out_dir)])
+        cmd.extend([GS.pcb_file, os.path.dirname(output)])
         # If we are in verbose mode enable debug in the child
         cmd = self.add_extra_options(cmd)
         logger.info('- Running the DRC')

@@ -9,7 +9,8 @@ from .error import (KiPlotConfigurationError)
 
 @pre_class
 class Ignore_Unconnected(BasePreFlight):  # noqa: F821
-    """ [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+    """ [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`.
+        Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
         It will also ignore KiCad 6 warnings """
     def __init__(self, name, value):
         super().__init__(name, value)
