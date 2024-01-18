@@ -930,8 +930,8 @@ class PCB_PrintOptions(VariantOptions):
         view_box = svg_kicad.root.get('viewBox')
         view_box_elements = view_box.split(' ')
         # This is the paper size using the SVG precision
-        paper_size_x = int(round(float(view_box_elements[2])))
-        paper_size_y = int(round(float(view_box_elements[3])))
+        paper_size_x = float(view_box_elements[2])
+        paper_size_y = float(view_box_elements[3])
         # Compute the coordinates translation for mirror
         transform = ''
         if scale != 1.0 and scale:
@@ -943,7 +943,7 @@ class PCB_PrintOptions(VariantOptions):
             offset_y = GS.svg_round((bcy*scale-(paper_size_y/2.0))/scale)
             if mirror:
                 scale_x = -scale_x
-                offset_x += round(paper_size_x/scale)
+                offset_x += paper_size_x/scale
             transform = 'scale({},{}) translate({},{})'.format(scale_x, scale_y, -offset_x, -offset_y)
         else:
             if mirror:
