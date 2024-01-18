@@ -24,7 +24,7 @@ import textwrap
 from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
                    W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP, error_level_to_name,
-                   DEFAULT_ROTATIONS, DEFAULT_OFFSETS)
+                   DEFAULT_ROTATIONS, DEFAULT_OFFSETS, W_EXTRADOCS)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -563,7 +563,7 @@ class CfgYamlReader(object):
                 raise KiPlotConfigurationError("`import` items must be strings or dicts ({})".format(str(entry)))
             fn, is_internal = self.check_import_file_name(dir_name, fn, is_external)
             fn_rel = os.path.relpath(fn)
-            # Create a new dict for definitions applying the new ones and nake it the last
+            # Create a new dict for definitions applying the new ones and make it the last
             cur_definitions = deepcopy(collected_definitions[-1])
             cur_definitions.update(local_defs)
             collected_definitions.append(cur_definitions)
@@ -609,13 +609,19 @@ class CfgYamlReader(object):
         content = fstream.read()
         docs = re.split(r"^\.\.\.$", content, flags=re.M)
         local_defs = None
-        if len(docs) > 1:
+        n_docs = len(docs)
+        if n_docs > 1:
+            if n_docs > 2:
+                logger.warning(W_EXTRADOCS+f'found {n_docs} YAML documents, KiBot can handle just 2')
             definitions = None
+            content = None
             for doc in docs:
                 if re.search(r"^kibot:\s*$", doc, flags=re.M):
                     content = doc
                 elif re.search(r"^definitions:\s*$", doc, flags=re.M):
                     definitions = doc
+            if content is None:
+                raise KiPlotConfigurationError("No `kibot` section")
             if definitions:
                 logger.debug("Found local definitions")
                 try:
@@ -632,6 +638,8 @@ class CfgYamlReader(object):
                 local_defs.update(collected_definitions[-1])
                 collected_definitions[-1] = local_defs
                 logger.debug("- Updated definitions: "+str(collected_definitions[-1]))
+            else:
+                logger.warning(W_EXTRADOCS+f'found {n_docs} YAML documents, but no `definitions`')
         # Apply the definitions
         if GS.cli_defines or collected_definitions[-1]:
             logger.debug('Applying preprocessor definitions')
