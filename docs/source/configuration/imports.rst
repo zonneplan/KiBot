@@ -102,6 +102,10 @@ the ``all`` and ``none`` special names, like this:
        variants: none
        global: none
 
+.. index::
+   pair: import; globals priority
+   single: imported_global_has_less_priority
+
 This will import all outputs and filters, but not variants or globals.
 Also note that imported globals has more precedence than the ones
 defined in the same file. If you want to give more priority to the local
