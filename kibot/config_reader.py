@@ -527,6 +527,12 @@ class CfgYamlReader(object):
                 fn = outs = filters = vars = globals = pre = groups = None
                 explicit_outs = is_external = False
                 for k, v in entry.items():
+                    if k not in VALID_IMPORT:
+                        msg = f"Unknown import entry `{k}`"
+                        best_matches = difflib.get_close_matches(k, VALID_IMPORT)
+                        if best_matches:
+                            msg += " (did you mean {}?)".format(' or '.join(best_matches))
+                        self._config_error_import(fn, msg)
                     if k == 'file':
                         if not isinstance(v, str):
                             raise KiPlotConfigurationError("`import.file` must be a string ({})".format(str(v)))
@@ -557,12 +563,6 @@ class CfgYamlReader(object):
                         if not isinstance(v, dict):
                             CfgYamlReader._config_error_import(fn, 'definitions must be a dict')
                         local_defs = v
-                    else:
-                        msg = f"Unknown import entry `{k}`"
-                        best_matches = difflib.get_close_matches(k, VALID_IMPORT)
-                        if best_matches:
-                            msg += " (did you mean {}?)".format(' or '.join(best_matches))
-                        self._config_error_import(fn, msg)
                 if fn is None:
                     raise KiPlotConfigurationError("`import` entry without `file` ({})".format(str(entry)))
             else:
