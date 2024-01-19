@@ -228,6 +228,8 @@ def test_position_variant_t2i(test_dir):
 
 
 def test_position_rot_1(test_dir):
+    """ Rotation filter inside a variant.
+        Also testing the import mechanism for them """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'simple_position_rot_1', POS_DIR)
     ctx.run()
@@ -235,6 +237,8 @@ def test_position_rot_1(test_dir):
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
     ctx.compare_txt(prj+'_bom_jlc.csv')
+    ctx.search_err(r"can't import `foobar` filter")
+    ctx.search_err(r"can't import `foobar` variant")
     ctx.clean_up(keep_project=True)
 
 
