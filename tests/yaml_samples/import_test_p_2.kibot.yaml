@@ -1,0 +1,12 @@
+kibot:
+  version: 1
+
+global:
+  filters:
+    - filter: 'Ignore mismatch in the 3D models'
+      error: lib_footprint_mismatch
+      regexp: '.*'
+
+import:
+  - file: drc_erc.kibot.yaml
+    preflights: ['run_drc', 'foobar']

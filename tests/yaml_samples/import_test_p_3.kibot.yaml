@@ -1,0 +1,6 @@
+kibot:
+  version: 1
+
+import:
+  - file: empty.kibot.yaml
+    preflights: ['run_drc', 'foobar']

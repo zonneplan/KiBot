@@ -888,7 +888,7 @@ def test_import_g_3(test_dir):
 
 
 def test_import_g_4(test_dir):
-    """ Import a global option: not a dict """
+    """ Import a global option: no globals """
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'import_test_g_4')
     ctx.run()
@@ -935,25 +935,53 @@ def test_import_6(test_dir):
     ctx.clean_up()
 
 
-# Isn't really slow, just avoid to run it in parallel
-@pytest.mark.slow
-@pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
-def test_import_7(test_dir):
-    """ Import a preflight """
-    prj = '3Rs'
-    ctx = context.TestContext(test_dir, prj, 'import_test_7')
+def create_rules_project(ctx):
     if context.ki7():
-        ctx.board_file.replace('kicad_pcb', 'kicad_pro')
         with open(ctx.board_file.replace('kicad_pcb', 'kicad_pro'), 'wt') as f:
             f.write(json.dumps({"board": {"design_settings": {"rule_severities": {"lib_footprint_issues": "ignore",
                                "lib_footprint_mismatch": "ignore"}}}}))
-    ctx.run(extra=[])
+
+
+# Isn't really slow, just avoid to run it in parallel
+@pytest.mark.slow
+@pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
+def test_import_p_1(test_dir):
+    """ Import a preflight """
+    prj = '3Rs'
+    ctx = context.TestContext(test_dir, prj, 'import_test_p_1')
+    create_rules_project(ctx)
+    ctx.run()
     ctx.expect_out_file('3Rs-drc.txt')
     ctx.clean_up()
 
 
+# Isn't really slow, just avoid to run it in parallel
+@pytest.mark.slow
+@pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
+def test_import_p_2(test_dir):
+    """ Import a particular preflight """
+    prj = '3Rs'
+    ctx = context.TestContext(test_dir, prj, 'import_test_p_2')
+    create_rules_project(ctx)
+    ctx.run()
+    ctx.expect_out_file('3Rs-drc.txt')
+    ctx.dont_expect_out_file('3Rs-erc.txt')
+    ctx.search_err(r"can't import `foobar`")
+    ctx.clean_up()
+
+
+def test_import_p_3(test_dir):
+    """ Import preflight: no preflights """
+    prj = '3Rs'
+    ctx = context.TestContext(test_dir, prj, 'import_test_p_3')
+    create_rules_project(ctx)
+    ctx.run()
+    ctx.search_err(r"No preflights found")
+    ctx.clean_up()
+
+
 def test_import_8(test_dir):
-    """ Import a preflight """
+    """ Import at the end """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'import_test_8')
     ctx.run(extra=[])
