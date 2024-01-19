@@ -903,7 +903,7 @@ def test_import_3(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'import_test_3')
     ctx.run(extra=['position_mine'])
-    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos)_2024_01_19.csv')
     ctx.clean_up()
 
 
@@ -912,8 +912,8 @@ def test_import_4(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'import_test_4')
     ctx.run(extra=[])
-    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
-    ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos)_2024_01_19.csv')
+    ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos)_2024_01_19.csv')
     ctx.clean_up()
 
 
@@ -931,7 +931,7 @@ def test_import_6(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'import_test_6')
     ctx.run(extra=['position_mine'])
-    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos)_2024_01_19.csv')
     ctx.clean_up()
 
 
