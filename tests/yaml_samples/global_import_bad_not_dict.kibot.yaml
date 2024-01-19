@@ -1,0 +1,6 @@
+kibot:
+  version: 1
+
+global:
+  - output: '%f_(%i)_%d.%x'
+  - date_format: '%Y_%m_%d'

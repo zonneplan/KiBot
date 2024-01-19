@@ -857,13 +857,44 @@ def test_import_1(test_dir):
     ctx.clean_up()
 
 
-def test_import_2(test_dir):
+def test_import_g_1(test_dir):
     """ Import a global option """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, prj, 'import_test_2')
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_1')
     ctx.run()
-    ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos).pos')
-    ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos).pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos)_2024_01_19.pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos)_2024_01_19.pos')
+    ctx.clean_up()
+
+
+def test_import_g_2(test_dir):
+    """ Import a particular global option """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_2')
+    ctx.run()
+    ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos)_2024-01-19.pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos)_2024-01-19.pos')
+    ctx.search_err(r"can't import `foobar`")
+    ctx.clean_up()
+
+
+def test_import_g_3(test_dir):
+    """ Import a global option: not a dict """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_3')
+    ctx.run(EXIT_BAD_CONFIG)
+    ctx.search_err(r"Incorrect `global` section")
+    ctx.clean_up()
+
+
+def test_import_g_4(test_dir):
+    """ Import a global option: not a dict """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_4')
+    ctx.run()
+    ctx.expect_out_file(POS_DIR+'/test_v5-bottom_pos.pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5-top_pos.pos')
+    ctx.search_err(r"No globals found")
     ctx.clean_up()
 
 

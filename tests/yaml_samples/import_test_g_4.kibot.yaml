@@ -1,0 +1,22 @@
+kibot:
+  version: 1
+
+import:
+  # Here we change the global.output pattern
+  - file: global_import_bad_no_globals.kibot.yaml
+    globals: ['output', 'foobar']
+
+global:
+  # The import will override it
+  output: '%f-%i.%x'
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    options:
+      format: ASCII   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true
