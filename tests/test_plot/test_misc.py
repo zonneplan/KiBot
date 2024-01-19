@@ -1915,3 +1915,23 @@ def test_present_1(test_dir):
                            'boards/light_control-gerbers.zip', 'boards/light_control.kicad_pcb',
                            'css/styles.css', 'index.html'])
     ctx.clean_up(keep_project=True)
+
+
+def test_groups_1(test_dir):
+    """ Groups definitions """
+    prj = 'simple_2layer'  # fake
+    ctx = context.TestContext(test_dir, prj, 'groups_1')
+    ctx.run(no_board_file=True, no_out_dir=True, extra=['--list'])
+    ctx.search_out(['fab: gerbers, excellon_drill, position', 'plot: SVG, PcbDraw, PcbDraw2', 'fab_svg: fab, SVG'])
+    ctx.clean_up()
+
+
+def test_groups_2(test_dir):
+    """ Imported groups and outputs """
+    prj = 'simple_2layer'  # fake
+    ctx = context.TestContext(test_dir, prj, 'import_test_internal_group')
+    ctx.run(no_board_file=True, no_out_dir=True, extra=['--only-groups', '--only-names', '--list'])
+    ctx.search_out('_Elecrow')
+    ctx.run(no_board_file=True, no_out_dir=True, extra=['--only-names', '--list'])
+    ctx.search_out(['_Elecrow_compress', '_Elecrow_drill', '_Elecrow_gerbers'])
+    ctx.clean_up()
