@@ -1,0 +1,6 @@
+kibot:
+  version: 1
+
+import:
+  - file: drc.kibot.yaml
+    definitions: 10

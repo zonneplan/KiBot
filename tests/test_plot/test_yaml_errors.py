@@ -808,3 +808,57 @@ def test_pre_list_instead_of_dict(test_dir):
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Found .*list.* instead of dict")
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_not_list(test_dir):
+    """ Import preflights, but give a number """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_not_list')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`preflights` must be a string or a list")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_item_not_str(test_dir):
+    """ Import preflights, but give a number in the list """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_item_not_str')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`preflights` items must be strings")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_defs_not_dict(test_dir):
+    """ Import definitions, but not a dict """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_defs_not_dict')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"definitions must be a dict")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_unk_entry(test_dir):
+    """ Import unknown entry (pre-flight) """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_unk_entry')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Unknown import entry `pre-flights` .* in .unnamed. import")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_no_file(test_dir):
+    """ Import no file name """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_no_file')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`import` entry without `file`")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_no_str_or_dict(test_dir):
+    """ Import no file name """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_no_str_or_dict')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`import` items must be strings or dicts")
+    ctx.clean_up(keep_project=True)
