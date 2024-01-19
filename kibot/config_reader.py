@@ -1242,7 +1242,7 @@ def print_dep_comments(dep, extra, ind):
     elif len(dep.comments) > 1:
         print(f'- {extra}Notes:')
         for comment in dep.comments:
-            print('{ind}- {extra}'+comment)
+            print(f'{ind}- {extra}'+comment)
 
 
 def compose_version(version, max_version):

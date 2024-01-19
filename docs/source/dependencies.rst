@@ -26,7 +26,9 @@
 
 -  Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
 -  Optional to separate multiboard projects for general use
--  Note: Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest
+-  Notes:
+   -  Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest
+   -  You can also try the official 1.4.0 release
 
 `KiCad PCB/SCH Diff <https://github.com/INTI-CMNB/KiDiff>`__ :index:`: <pair: dependency; KiCad PCB/SCH Diff>`  v2.5.3 |image12| |Auto-download|
 

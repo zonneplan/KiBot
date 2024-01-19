@@ -722,7 +722,8 @@ deps = '{\
         "arch": null,\
         "command": "kikit",\
         "comments": [\
-            "Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest"\
+            "Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest",\
+            "You can also try the official 1.4.0 release"\
         ],\
         "deb_package": "kikit",\
         "downloader": {},\

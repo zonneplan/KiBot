@@ -74,7 +74,9 @@ Dependencies:
     pypi: KiKit
     downloader: pytool
     version: 1.3.0.4
-    comments: Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest
+    comments:
+      - Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest
+      - You can also try the official 1.4.0 release
   - from: KiKit
     role: Separate multiboard projects
   - name: Xvfbwrapper
