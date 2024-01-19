@@ -14,7 +14,8 @@ outputs:
         comment: This is a comment
         name: Light control
         # back_image: Raytraced
-        back_image: Blender
+        # back_image: Blender
+        back_image: PcbDraw
       repository: 'https://github.com/INTI-CMNB/KiBot/'
 
   - name: PcbDraw

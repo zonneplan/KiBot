@@ -1926,6 +1926,30 @@ def test_present_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_present_2(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'kikit_present_local_1', 'Present/Local_1')
+    ctx.run()
+    ctx.expect_out_file_d(['boards/light_control-back.svg', 'boards/light_control-front.svg',
+                           'boards/light_control-gerbers.zip', 'boards/light_control.kicad_pcb',
+                           'css/styles.css', 'index.html'])
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_present_3(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'kikit_present_file_1', 'Present/Files')
+    ctx.run()
+    ctx.expect_out_file_d(['boards/light_control-back.png', 'boards/light_control-front.png',
+                           'boards/light_control-gerbers.png', 'boards/light_control.kicad_pcb',
+                           'css/styles.css', 'index.html'])
+    ctx.clean_up(keep_project=True)
+
+
 def test_groups_1(test_dir):
     """ Groups definitions """
     prj = 'simple_2layer'  # fake

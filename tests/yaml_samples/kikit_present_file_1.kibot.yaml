@@ -12,9 +12,9 @@ outputs:
       boards:
         mode: file
         comment: This is a comment
-        front_image: pp/front.png
-        back_image: pp/back.png
-        gerbers: pp/gerbers.zip
+        front_image: docs/images/kibot_370x200b.png
+        back_image: docs/images/kibot_370x200.png
+        gerbers: docs/images/Esquema.png
       resources: 'tests/data/silly_project.md'
       # template: 'default'
       repository: 'https://github.com/INTI-CMNB/KiBot/'
