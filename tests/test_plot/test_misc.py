@@ -1922,7 +1922,7 @@ def test_groups_1(test_dir):
     prj = 'simple_2layer'  # fake
     ctx = context.TestContext(test_dir, prj, 'groups_1')
     ctx.run(no_board_file=True, no_out_dir=True, extra=['--list'])
-    ctx.search_out(['fab: gerbers, excellon_drill, position', 'plot: SVG, PcbDraw, PcbDraw2', 'fab_svg: fab, SVG'])
+    ctx.search_out(['fab: gerbers, excellon_drill, position', 'plot: PcbDraw, PcbDraw2, SVG', 'fab_svg: fab, SVG'])
     ctx.clean_up()
 
 
