@@ -49,6 +49,14 @@ is_debian = os.path.isfile('/etc/debian_version') and not os.path.isfile('/etc/l
 # If we are not running on Debian skip the text part at the top of diff PDFs
 OFFSET_Y = '0' if is_debian else '80'
 DIFF_TOL = 0 if is_debian else 1200
+# The 3D models in copy_files
+MODELS = ['3d_models/3d/1/test.wrl', '3d_models/3d/2/test.wrl',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.step',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.wrl',
+          '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.step',
+          '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.wrl',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.step',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl']
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -1749,13 +1757,6 @@ def test_copy_files_2(test_dir):
     # The modified PCB
     ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
     # The 3D models
-    MODELS = ['3d_models/3d/1/test.wrl', '3d_models/3d/2/test.wrl',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.step',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.wrl',
-              '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.step',
-              '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.wrl',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.step',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl']
     for m in MODELS:
         ctx.expect_out_file(m, sub=True)
     # Make sure the PCB points to them
@@ -1764,6 +1765,28 @@ def test_copy_files_2(test_dir):
     # Some warnings
     ctx.search_err(r'WARNING:\(W098\)  2 3D models downloaded')   # 2 models are missing and they are downloaded
     ctx.search_err(r'WARNING:\(W100\)', invert=True)   # 2 models has the same name, but goes to different target
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_copy_files_3(test_dir):
+    """ Copy files and 3D models """
+    prj = 'copy_files'
+    ctx = context.TestContext(test_dir, prj, 'copy_files_3', 'test.files')
+    os.environ['KIBOT_3D_MODELS'] = '/tmp'
+    ctx.run(kicost=True)  # We use the fake web server
+    del os.environ['KIBOT_3D_MODELS']
+    # The modified PCB
+    prj_s = os.path.join('prj', prj)
+    ctx.expect_out_file([prj_s+'.kicad_pcb', prj_s+'.kicad_sch', prj_s+'.kicad_pro', prj_s+'.kicad_prl',
+                         'prj/fp-lib-table', 'prj/sym-lib-table', 'prj/symbols/Device.kicad_sym',
+                         'prj/footprints/Capacitor_SMD.pretty/C_0805_2012Metric.kicad_mod',
+                         'prj/footprints/Resistor_SMD.pretty/R_0805_2012Metric.kicad_mod'], sub=True)
+    ctx.expect_out_file(['prj/'+m for m in MODELS], sub=True)
+    # Make sure the PCB points to them
+    ctx.search_in_file(prj_s+'.kicad_pcb', ['model "{}"'.format(r'\$\{KIPRJMOD\}/'+m) for m in MODELS if m.endswith('wrl')],
+                       sub=True)
     ctx.clean_up()
 
 

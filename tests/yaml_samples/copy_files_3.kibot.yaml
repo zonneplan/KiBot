@@ -1,0 +1,43 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  environment:
+    # Relative to the PCB file
+    models_3d: '../../data/metrico/'
+    define_old: true
+  aliases_for_3d_models:
+    - name: ALIAS1
+      value: '3d/1'
+    - name: ALIAS2
+      value: '3d/2'
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    options:
+      format: ASCII   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: false
+      only_smd: true
+
+  - name: result
+    comment: 'Copy files from source, output and 3D models'
+    type: copy_files
+    dir: 'test.%x'
+    options:
+      # link_no_copy: true
+      kicad_3d_url: 'http://localhost:8000/'
+      files:
+        - source_type: project
+          dest: prj
+
+  - name: compressed
+    type: compress
+    options:
+      format: ZIP
+      files:
+        - from_output: result
