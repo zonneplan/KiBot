@@ -65,6 +65,14 @@ class Regex(Optionable):
         if offset_y is not None:
             self.offset_y = offset_y
 
+    def __str__(self):
+        res = f'{self.field} matches {self.regex} =>'
+        if self.apply_angle:
+            res += f' rotate {self.angle}'
+        if self.apply_offset:
+            res += f' move {self.offset_x},{self.offset_y}'
+        return res
+
     def config(self, parent):
         super().config(parent)
         if not self.field:
@@ -177,6 +185,13 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 self._offset.append(Regex(regex=compile(regex_str), offset_x=offset[0], offset_y=offset[1]))
         if not self._rot and not self._offset:
             raise KiPlotConfigurationError("No rotations and/or offsets provided")
+        if GS.debug_level > 2:
+            logger.debug('Final rotations list:')
+            for r in self._rot:
+                logger.debug(r)
+            logger.debug('Final offsets list:')
+            for r in self._offset:
+                logger.debug(r)
         self.rot_fields = self.force_list(self.rot_fields, default=DEFAULT_ROT_FIELDS)
         self.offset_fields = self.force_list(self.offset_fields, default=DEFAULT_OFFSET_FIELDS)
 
