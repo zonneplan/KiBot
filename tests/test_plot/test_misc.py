@@ -1991,3 +1991,13 @@ def test_groups_2(test_dir):
     ctx.run(no_board_file=True, no_out_dir=True, extra=['--only-names', '--list'])
     ctx.search_out(['_Elecrow_compress', '_Elecrow_drill', '_Elecrow_gerbers'])
     ctx.clean_up()
+
+
+@pytest.mark.indep
+def test_info_1(test_dir):
+    """ System information """
+    prj = 'simple_2layer'  # fake
+    ctx = context.TestContext(test_dir, prj, 'info_1')
+    ctx.run()
+    ctx.expect_out_file(prj+'-info.txt')
+    ctx.clean_up()
