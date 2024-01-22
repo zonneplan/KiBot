@@ -1,0 +1,24 @@
+kibot:
+  version: 1
+
+filters:
+  - name: fix_rotation
+    comment: 'Adjust rotation'
+    type: rot_footprint
+    offsets:
+      - ['SOT-23$', '1,1']
+    rotations_and_offsets:
+      - field: 'reference'
+        regex: 'Q2'
+        angle: 90
+        offset_x: 1
+        offset_y: 1
+
+outputs:
+  - name: 'position'
+    type: position
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: false
+      pre_transform: fix_rotation

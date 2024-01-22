@@ -32,7 +32,7 @@ CSV_EXPR = r'^"%s",[^,]+,[^,]+,([-\d\.]+),([-\d\.]+),([-\d\.]+),(\S+)$'
 ASCII_EXPR = r'^%s\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
 
-def expect_position(ctx, file, comp, no_comp=(), inches=False, csv=False, neg_x=False):
+def expect_position(ctx, file, comp, no_comp=(), inches=False, csv=False, neg_x=False, a_pos=positions):
     """
     Check if a list of components are or aren't in the file
     """
@@ -45,7 +45,7 @@ def expect_position(ctx, file, comp, no_comp=(), inches=False, csv=False, neg_x=
             texts.append(ASCII_EXPR % k)
     res = ctx.search_in_file(file, texts)
     for k in comp:
-        x, y, side, angle = positions[k]
+        x, y, side, angle = a_pos[k]
         if inches:
             x = x/25.4
             y = y/25.4
@@ -254,6 +254,7 @@ def test_position_rot_2(test_dir):
 
 
 def test_position_rot_3(test_dir):
+    """ Aux origin """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'simple_position_rot_3', POS_DIR)
     ctx.run(extra_debug=True)
@@ -264,6 +265,7 @@ def test_position_rot_3(test_dir):
 
 
 def test_position_rot_4(test_dir):
+    """ Importing the variant and filter with a simple import """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'simple_position_rot_4', POS_DIR)
     ctx.run(extra_debug=True)
@@ -301,6 +303,35 @@ def test_position_rot_bottom(test_dir):
     pos_bot = ctx.get_pos_both_filename()
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_bot, ['U1'], neg_x=True)
+    ctx.clean_up()
+
+
+positions_a = {'Q1': (122, 77, 'top', 180),
+               # Rotated and moved using *rotations_and_offsets*
+               'Q2': (133, 78, 'top', 90),
+               # Manually rotated 270
+               'Q3': (122, 86, 'top', 270),
+               # Manually moved 1,1
+               'Q4': (133, 85, 'top', 180),
+               'Q5': (122, 77, 'bottom', 0),
+               # Offset using *offsets*
+               'Q6': (131, 78, 'bottom', 0),
+               # Manually rotated 270
+               'Q7': (122, 86, 'bottom', 90),
+               # Manually moved 1,1
+               'Q8': (131, 87, 'bottom', 0)}
+POS_TRS = ('Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8')
+
+
+def test_position_rot_a(test_dir):
+    """  """
+    prj = 'rotations'
+    ctx = context.TestContext(test_dir, prj, 'simple_position_rot_a', POS_DIR)
+    ctx.run(extra_debug=True)
+    output = prj+'-both_pos.csv'
+    ctx.expect_out_file(output)
+    expect_position(ctx, output, POS_TRS, csv=True, a_pos=positions_a)
+    # ctx.compare_txt(output)
     ctx.clean_up()
 
 
