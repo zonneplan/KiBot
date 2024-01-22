@@ -207,14 +207,14 @@ class Base3DOptions(VariantOptions):
         # Successfully downloaded
         downloaded.add(full_name)
         # If this is a .wrl also download the .step
-        if url.endswith('.wrl'):
-            url = url[:-4]+'.step'
-            fname = fname[:-4]+'.step'
-            self.download_model(url, fname, rel_dirs)
+        extra_fname = None
+        if fname.endswith('.wrl'):
+            extra_fname = fname[:-4]+'.step'
         elif force_wrl:  # This should be a .step, so we download the wrl
-            url = os.path.splitext(url)[0]+'.wrl'
-            fname = os.path.splitext(fname)[0]+'.wrl'
-            self.download_model(url, fname, rel_dirs)
+            extra_fname = os.path.splitext(fname)[0]+'.wrl'
+        if extra_fname is not None:
+            url = self.kicad_3d_url+urllib.parse.quote_plus(extra_fname)+self.kicad_3d_url_suffix
+            self.download_model(url, extra_fname, rel_dirs)
         return replace
 
     def try_download_easyeda(self, model, full_name, downloaded, sch_comp, lcsc_field):
