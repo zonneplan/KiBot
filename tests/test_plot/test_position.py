@@ -323,6 +323,7 @@ positions_a = {'Q1': (122, 77, 'top', 180),
 POS_TRS = ('Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8')
 
 
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
 def test_position_rot_a(test_dir):
     """  """
     prj = 'rotations'
