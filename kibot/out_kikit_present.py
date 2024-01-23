@@ -356,24 +356,6 @@ class KiKit_PresentOptions(BaseOptions):
         res.append(os.path.join(out_dir, 'boards'))
         return res
 
-    def generate_images(self, dir_name, content):
-        # Memorize the current options
-        self.save_options()
-        dir = os.path.dirname(os.path.join(dir_name, self.imgname))
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        counter = 0
-        for item in content:
-            if item["type"] != "steps":
-                continue
-            for x in item["steps"]:
-                counter += 1
-                filename = self.imgname.replace('%d', str(counter))
-                x["img"] = self.generate_image(x["side"], x["components"], x["active_components"], filename)
-        # Restore the options
-        self.restore_options()
-        return content
-
     def run(self, dir_name):
         self.ensure_tool('markdown2')
         from .PcbDraw.present import boardpage
