@@ -288,6 +288,15 @@ def test_int_bom_simple_csv(test_dir):
     ctx.clean_up()
 
 
+def test_int_bom_simple_hrtxt(test_dir):
+    ctx, out = kibom_setup(test_dir, 'int_bom_simple_hrtxt', ext='txt')
+    ctx.expect_out_file(out, sub=True)
+    rows, header, info = ctx.load_hrtxt(out)
+    check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
+    kibom_verif(rows, header)
+    ctx.clean_up()
+
+
 def test_int_bom_csv_no_info(test_dir):
     """ No PCB info """
     ctx, out = kibom_setup(test_dir, 'int_bom_csv_no_info')

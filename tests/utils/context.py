@@ -690,6 +690,21 @@ class TestContext(object):
                     info.append(r)
         return rows, header, info
 
+    def load_hrtxt(self, filename):
+        nm = self.expect_out_file(os.path.join(self.sub_dir, filename))
+        nm_csv = nm.replace('.txt', '.csv')
+        with open(nm) as f:
+            with open(nm_csv, 'wt') as d:
+                for ln in f:
+                    if ln.startswith('I---'):
+                        continue
+                    if ln[0] == 'I':
+                        ln = ln[1:-2]
+                    ln = ln.strip()
+                    d.write(','.join(re.split(r'\s*I', ln)))
+                    d.write('\n')
+        return self.load_csv(filename.replace('.txt', '.csv'))
+
     def load_html(self, filename):
         file = self.expect_out_file(os.path.join(self.sub_dir, filename))
         with open(file) as f:
