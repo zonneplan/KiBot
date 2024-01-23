@@ -204,3 +204,17 @@ def test_blender_export_1(test_dir):
     ctx.expect_out_file(name, sub=True)
     # ctx.compare_image(name, fuzz='7%', tol=1000)
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
+@pytest.mark.skipif(context.ki5(), reason="uses pcb2blender")
+def test_blender_export_2(test_dir):
+    """ Stacked PCBs using the JSON stack-up """
+    prj = 'batteryPack'
+    yaml = 'pcb2blender_tools_3'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    ctx.run(extra_debug=True)
+    name = prj+'.pcb3d'
+    ctx.expect_out_file(name, sub=True)
+    ctx.clean_up()
