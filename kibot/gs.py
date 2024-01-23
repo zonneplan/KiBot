@@ -584,6 +584,8 @@ class GS(object):
 
     @staticmethod
     def reload_project(pro_name):
+        if pro_name is None:
+            return
         sm = pcbnew.GetSettingsManager()
         sm.UnloadProject(GS.board.GetProject(), False)
         assert sm.LoadProject(pro_name)
