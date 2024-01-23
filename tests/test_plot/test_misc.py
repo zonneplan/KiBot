@@ -1973,6 +1973,19 @@ def test_present_3(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_present_4(test_dir):
+    """ Gerbers from output, PCB from panel """
+    prj = 'simple_2layer'
+    ctx = context.TestContext(test_dir, prj, 'kikit_present_out_1', 'Present/Out')
+    ctx.run()
+    ctx.expect_out_file_d(['boards/simple_2layer-panel-back.svg', 'boards/simple_2layer-panel-front.svg',
+                           'boards/simple_2layer-panel-gerbers.zip', 'boards/simple_2layer-panel.kicad_pcb',
+                           'css/styles.css', 'index.html'])
+    ctx.clean_up(keep_project=True)
+
+
 def test_groups_1(test_dir):
     """ Groups definitions """
     prj = 'simple_2layer'  # fake
