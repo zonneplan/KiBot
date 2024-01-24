@@ -24,6 +24,11 @@ import kibot.log as log
 cov = coverage.Coverage()
 bin_dir = os.path.join('.local', 'share', 'kibot', 'bin')
 bin_dir_py = os.path.join('.local', 'bin')
+DEP_PYTHON_MODULE_FOOBAR = """
+  - name: FooBar
+    python_module: true
+    role: mandatory
+"""
 
 
 def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name, b_dir, use_wrapper=False):
@@ -176,16 +181,14 @@ def test_dep_python(test_dir, caplog, monkeypatch):
     try_dependency_module(ctx, caplog, monkeypatch, dep, 'engineering_notation', 'check_tool_python')
 
 
-def try_function(test_dir, caplog, monkeypatch, fun_to_test, dep='', dep2=None):
-    # Create a context to get an output directory
-    ctx = context.TestContext(test_dir, 'bom', 'bom')
+def try_function(ctx, caplog, monkeypatch, fun_to_test, dep='', dep2=None, disable_download=True):
     log.debug_level = 10
     # Refresh the module with actual dependencies
     mod = importlib.reload(downloader)
     mod.register_deps('test', yaml.safe_load(downloader.__doc__+dep))
     if dep2 is not None:
         mod.register_deps('test2', yaml.safe_load(dep2))
-    mod.disable_auto_download = True
+    mod.disable_auto_download = disable_download
     cov.load()
     cov.start()
     res = fun_to_test(mod)
@@ -206,6 +209,8 @@ def do_test_check_tool_dep_get_ver_fatal(mod):
 def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
     """ Check for missing stuff in check_tool_dep_get_ver
         Also checks show_roles, get_version and do_log_error """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
     dep = """
   - name: FooBar
     version: 1.3.0.4
@@ -216,7 +221,7 @@ def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
     command: foobar
     role: Do this and this
 """
-    pytest_wrapped_e = try_function(test_dir, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep)
+    pytest_wrapped_e = try_function(ctx, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep)
     # Check the messages
     assert "Missing `foobar` command (FooBar), install it" in caplog.text
     assert "AUR package: foobar-arch (AUR)" in caplog.text
@@ -230,6 +235,8 @@ def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
 @pytest.mark.indep
 def test_check_tool_dep_get_ver_2(test_dir, caplog, monkeypatch):
     """ Check for missing stuff in show_roles """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
     dep = """
   - name: FooBar
     command: foobar
@@ -241,9 +248,28 @@ Dependencies:
   - from: FooBar
     role: Do other stuff
 """
-    pytest_wrapped_e = try_function(test_dir, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep, dep2=dep2)
+    pytest_wrapped_e = try_function(ctx, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep, dep2=dep2)
     # Check the messages
     assert "Do this and this" in caplog.text
     assert "Do other stuff" in caplog.text
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == MISSING_TOOL
+
+
+def do_check_tool_python(mod):
+    mod.python_downloader = lambda x: True
+    return mod.check_tool_python(mod.used_deps['test:foobar'])
+
+
+@pytest.mark.indep
+def test_check_tool_python_1(test_dir, caplog, monkeypatch):
+    """ Download disabled case """
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    try_function(ctx, caplog, monkeypatch, do_check_tool_python, dep=DEP_PYTHON_MODULE_FOOBAR)
+
+
+@pytest.mark.indep
+def test_check_tool_python_2(test_dir, caplog, monkeypatch):
+    """ Download enabled, but fails """
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    try_function(ctx, caplog, monkeypatch, do_check_tool_python, dep=DEP_PYTHON_MODULE_FOOBAR, disable_download=False)
