@@ -50,8 +50,8 @@ Parameters:
 
          -  Valid keys:
 
-            -  ``content`` :index:`: <pair: output - pdf - options - custom_reports; content>` [string=''] Content for the report. Use `${basename}` for the project name without extension.
-               Use `${filename(LAYER)}` for the file corresponding to LAYER.
+            -  ``content`` :index:`: <pair: output - pdf - options - custom_reports; content>` [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+               Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
             -  ``output`` :index:`: <pair: output - pdf - options - custom_reports; output>` [string='Custom_report.txt'] File name for the custom report.
 
       -  ``dnf_filter`` :index:`: <pair: output - pdf - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
@@ -99,8 +99,8 @@ Parameters:
 
    -  Valid keys:
 
-      -  ``content`` :index:`: <pair: output - pdf - custom_reports; content>` [string=''] Content for the report. Use `${basename}` for the project name without extension.
-         Use `${filename(LAYER)}` for the file corresponding to LAYER.
+      -  ``content`` :index:`: <pair: output - pdf - custom_reports; content>` [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+         Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
       -  ``output`` :index:`: <pair: output - pdf - custom_reports; output>` [string='Custom_report.txt'] File name for the custom report.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - pdf; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
