@@ -214,7 +214,6 @@ def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
     dep = """
   - name: FooBar
     version: 1.3.0.4
-    debian: foobar-debian
     extra_deb: ['foobar-extra-debian', 'deb2']
     arch: foobar-arch (AUR)
     extra_arch: ['foobar-extra-arch', 'aur2']
@@ -228,6 +227,7 @@ def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
     assert "Recommended extra Arch packages: foobar-extra-arch aur2" in caplog.text
     assert "Recommended extra Debian packages: foobar-extra-debian deb2" in caplog.text
     assert "Used to do this and this (v1.3.0.4)" in caplog.text
+    assert "This is not an official package" in caplog.text
     assert pytest_wrapped_e.type == SystemExit
     assert pytest_wrapped_e.value.code == MISSING_TOOL
 

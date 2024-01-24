@@ -857,6 +857,8 @@ def check_tool_dep_get_ver(context, dep, fatal=False):
             do_log_err('Download page: '+dep.url_down, fatal)
         if dep.deb_package:
             do_log_err('Debian package: '+dep.deb_package, fatal)
+            if not dep.in_debian:
+                do_log_err('- This is not an official package, use KiBot repo (https://github.com/set-soft/debian)', fatal)
             if dep.extra_deb:
                 do_log_err('- Recommended extra Debian packages: '+' '.join(dep.extra_deb), fatal)
         if dep.arch:
@@ -912,10 +914,11 @@ class ToolDependency(object):
         self.name = name
         # Name of the .deb
         if deb is None:
-            if is_python:
-                self.deb_package = 'python3-'+name.lower()
-            else:
+            if not is_python:
                 self.deb_package = name.lower()
+            # We don't use it for python modules:
+            #  else:
+            #      self.deb_package = 'python3-'+name.lower()
         else:
             self.deb_package = deb
         self.is_python = is_python
