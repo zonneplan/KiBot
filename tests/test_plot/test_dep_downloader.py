@@ -18,6 +18,7 @@ from kibot.mcpyrate import activate  # noqa: F401
 import kibot.dep_downloader as downloader
 import kibot.out_compress as compress
 import kibot.out_kibom as kibom
+from kibot.misc import MISSING_TOOL
 import kibot.log as log
 
 cov = coverage.Coverage()
@@ -173,3 +174,76 @@ def test_dep_python(test_dir, caplog, monkeypatch):
         logging.error(e)
     dep = 'Dependencies:\n  - name: engineering_notation\n    role: mandatory\n    python_module: true\n'
     try_dependency_module(ctx, caplog, monkeypatch, dep, 'engineering_notation', 'check_tool_python')
+
+
+def try_function(test_dir, caplog, monkeypatch, fun_to_test, dep='', dep2=None):
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    log.debug_level = 10
+    # Refresh the module with actual dependencies
+    mod = importlib.reload(downloader)
+    mod.register_deps('test', yaml.safe_load(downloader.__doc__+dep))
+    if dep2 is not None:
+        mod.register_deps('test2', yaml.safe_load(dep2))
+    mod.disable_auto_download = True
+    cov.load()
+    cov.start()
+    res = fun_to_test(mod)
+    cov.stop()
+    cov.save()
+    with open(ctx.get_out_path('caplog.txt'), 'wt') as f:
+        f.write(caplog.text)
+    return res
+
+
+def do_test_check_tool_dep_get_ver_fatal(mod):
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        mod.check_tool_dep_get_ver('test', 'foobar', fatal=True)
+    return pytest_wrapped_e
+
+
+@pytest.mark.indep
+def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
+    """ Check for missing stuff in check_tool_dep_get_ver
+        Also checks show_roles, get_version and do_log_error """
+    dep = """
+  - name: FooBar
+    version: 1.3.0.4
+    debian: foobar-debian
+    extra_deb: ['foobar-extra-debian', 'deb2']
+    arch: foobar-arch (AUR)
+    extra_arch: ['foobar-extra-arch', 'aur2']
+    command: foobar
+    role: Do this and this
+"""
+    pytest_wrapped_e = try_function(test_dir, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep)
+    # Check the messages
+    assert "Missing `foobar` command (FooBar), install it" in caplog.text
+    assert "AUR package: foobar-arch (AUR)" in caplog.text
+    assert "Recommended extra Arch packages: foobar-extra-arch aur2" in caplog.text
+    assert "Recommended extra Debian packages: foobar-extra-debian deb2" in caplog.text
+    assert "Used to do this and this (v1.3.0.4)" in caplog.text
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == MISSING_TOOL
+
+
+@pytest.mark.indep
+def test_check_tool_dep_get_ver_2(test_dir, caplog, monkeypatch):
+    """ Check for missing stuff in show_roles """
+    dep = """
+  - name: FooBar
+    command: foobar
+  - from: FooBar
+    role: Do this and this
+"""
+    dep2 = """
+Dependencies:
+  - from: FooBar
+    role: Do other stuff
+"""
+    pytest_wrapped_e = try_function(test_dir, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep, dep2=dep2)
+    # Check the messages
+    assert "Do this and this" in caplog.text
+    assert "Do other stuff" in caplog.text
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == MISSING_TOOL
