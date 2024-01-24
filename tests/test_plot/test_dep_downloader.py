@@ -232,30 +232,6 @@ def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
     assert pytest_wrapped_e.value.code == MISSING_TOOL
 
 
-@pytest.mark.indep
-def test_check_tool_dep_get_ver_2(test_dir, caplog, monkeypatch):
-    """ Check for missing stuff in show_roles """
-    # Create a context to get an output directory
-    ctx = context.TestContext(test_dir, 'bom', 'bom')
-    dep = """
-  - name: FooBar
-    command: foobar
-  - from: FooBar
-    role: Do this and this
-"""
-    dep2 = """
-Dependencies:
-  - from: FooBar
-    role: Do other stuff
-"""
-    pytest_wrapped_e = try_function(ctx, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep, dep2=dep2)
-    # Check the messages
-    assert "Do this and this" in caplog.text
-    assert "Do other stuff" in caplog.text
-    assert pytest_wrapped_e.type == SystemExit
-    assert pytest_wrapped_e.value.code == MISSING_TOOL
-
-
 def do_check_tool_python(mod):
     mod.python_downloader = lambda x: True
     return mod.check_tool_python(mod.used_deps['test:foobar'])

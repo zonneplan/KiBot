@@ -649,9 +649,9 @@ def check_tool_binary_version(full_name, dep, no_cache=False):
         return full_name, None
     # Do we need a particular version?
     needs = (0, 0, 0)
-    for r in dep.roles:
-        if r.version and r.version > needs:
-            needs = r.version
+    ver = dep.role.version
+    if ver and ver > needs:
+        needs = ver
     if needs == (0, 0, 0):
         # Any version is Ok
         logger.debugl(2, '- No particular version needed')
@@ -766,9 +766,9 @@ def check_tool_python_version(mod, dep):
     version_check_fail = False
     # Do we need a particular version?
     needs = (0, 0, 0)
-    for r in dep.roles:
-        if r.version and r.version > needs:
-            needs = r.version
+    ver = dep.role.version
+    if ver and ver > needs:
+        needs = ver
     if needs == (0, 0, 0):
         # Any version is Ok
         logger.debugl(2, '- No particular version needed')
@@ -824,23 +824,12 @@ def get_version(role):
     return ''
 
 
-def show_roles(roles, fatal):
-    optional = []
-    for r in roles:
-        if not r.mandatory:
-            optional.append(r)
-        output = r.output
-    if output != 'global':
-        do_log_err('Output that needs it: '+output, fatal)
-    if optional:
-        if len(optional) == 1:
-            o = optional[0]
-            desc = o.desc[0].lower()+o.desc[1:]
-            do_log_err('Used to {}{}'.format(desc, get_version(o)), fatal)
-        else:
-            do_log_err('Used to:', fatal)
-            for o in optional:
-                do_log_err('- {}{}'.format(o.desc, get_version(o)), fatal)
+def show_roles(role, fatal):
+    if role.output != 'global':
+        do_log_err('Output that needs it: '+role.output, fatal)
+    if not role.mandatory:
+        desc = role.desc[0].lower()+role.desc[1:]
+        do_log_err('Used to {}{}'.format(desc, get_version(role)), fatal)
 
 
 def get_dep_data(context, dep):
@@ -881,7 +870,7 @@ def check_tool_dep_get_ver(context, dep, fatal=False):
                 do_log_err('- Recommended extra Arch packages: '+' '.join(dep.extra_arch), fatal)
         for comment in dep.comments:
             do_log_err(comment, fatal)
-        show_roles(dep.roles, fatal)
+        show_roles(dep.role, fatal)
         do_log_err(TRY_INSTALL_CHECK, fatal)
         if fatal:
             exit(MISSING_TOOL)
@@ -915,7 +904,7 @@ class ToolDependencyRole(object):
 class ToolDependency(object):
     """ Class used to define tools needed for an output """
     def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
-                 roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
+                 role=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
                  help_option=None, no_cmd_line_version_old=False, downloader=None, arch=None, extra_arch=None, tests=None):
         # The associated output
         self.output = output
@@ -956,13 +945,10 @@ class ToolDependency(object):
         self.help_option = help_option if help_option is not None else '--version'
         self.tests = tests
         # Roles
-        if roles is None:
-            roles = [ToolDependencyRole()]
-        elif not isinstance(roles, list):
-            roles = [roles]
-        for r in roles:
-            r.output = output
-        self.roles = roles
+        if role is None:
+            role = ToolDependencyRole()
+        role.output = output
+        self.role = role
 
 
 def register_dep(context, dep):
@@ -1017,7 +1003,7 @@ def register_dep(context, dep):
     tests = dep.get('tests', [])
     # logger.error('{}:{} {} {}'.format(context, name, downloader, pypi_name))
     # TODO: Make it *ARGS
-    td = ToolDependency(context, name, roles=role, url=url, url_down=url_down, deb=deb, in_debian=in_debian,
+    td = ToolDependency(context, name, role=role, url=url, url_down=url_down, deb=deb, in_debian=in_debian,
                         extra_deb=extra_deb, is_python=is_python, module_name=module_name, plugin_dirs=plugin_dirs,
                         command=command, help_option=help_option, pypi_name=pypi_name,
                         no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader, arch=arch,

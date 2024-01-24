@@ -455,7 +455,7 @@ for name, d in dependencies.items():
             version = 'Ok'
     except:
         version = NOT_AVAIL
-    sev, ver = check_version(version, d['roles'])
+    sev, ver = check_version(version, d['role'])
     d['sev'] = sev
     version = version.split('\n')[0]
     print(name+': '+do_color(version, sev, version=ver))
@@ -478,7 +478,7 @@ for name, d in dependencies.items():
             # It will just confuse run_command thinking we need to check Python
             cmd.insert(0, 'python3')
         version = run_command(cmd, no_err_2=d['no_cmd_line_version_old'])
-    sev, ver = check_version(version, d['roles'], tests=d['tests'])
+    sev, ver = check_version(version, d['role'], tests=d['tests'])
     d['sev'] = sev
     version = version.split('\n')[0]
     pypi_name = d['pypi_name']
@@ -548,10 +548,10 @@ if not kibot_ok:
 
 for name, d in dependencies.items():
     if d['is_python']:
-        python_module(d['sev'], d['pypi_name'], d['deb_package'], d['roles'], d['arch'])
+        python_module(d['sev'], d['pypi_name'], d['deb_package'], d['role'], d['arch'])
     else:
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['roles'], d['downloader_str'], d['comments'], d['arch'], d['extra_arch'])
+                    d['role'], d['downloader_str'], d['comments'], d['arch'], d['extra_arch'])
 
 if sys.stdout.isatty():
     labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')

@@ -1273,7 +1273,7 @@ def print_dependencies(markdown=True, jsn=False, rst=False):
     # Compute the importance of each dependency
     for dep in RegDependency.get_registered().values():
         importance = 0
-        for r in dep.roles:
+        for r in dep.role:
             local = r.output != 'global'
             if r.mandatory:
                 importance += LOCAL_MANDATORY if local else GLOBAL_MANDATORY
@@ -1331,7 +1331,7 @@ def print_dependencies(markdown=True, jsn=False, rst=False):
         optional = []
         version = None
         max_version = None
-        for r in dep.roles:
+        for r in dep.role:
             if r.mandatory:
                 needed.append(global2human(r.output))
             else:

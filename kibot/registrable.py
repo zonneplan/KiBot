@@ -239,9 +239,11 @@ class RegDependency(Registrable):
         if name in cl._registered:
             # Already registered, add the roles
             old_reg = cl._registered[name]
-            old_reg.roles.extend(aclass.roles)
+            old_reg.role.append(aclass.role)
         else:
-            cl._registered[name] = aclass
+            cp = copy(aclass)
+            cp.role = [aclass.role]
+            cl._registered[name] = cp
 
 
 def solve_variant(variant):

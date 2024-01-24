@@ -15,6 +15,7 @@ Dependencies:
     python_module: true
     debian: python3-xlsxwriter
     arch: python-xlsxwriter
+    version: 1.1.2
     downloader: python
 """
 import csv
