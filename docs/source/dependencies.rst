@@ -141,7 +141,7 @@
 
 -  Optional to compress in RAR format for `compress`
 
-`XLSXWriter <https://pypi.org/project/XLSXWriter/>`__ :index:`: <pair: dependency; XLSXWriter>`  |image53| |image54| |image55| |Auto-download|
+`XLSXWriter <https://pypi.org/project/XLSXWriter/>`__ :index:`: <pair: dependency; XLSXWriter>`  v1.1.2 |image53| |image54| |image55| |Auto-download|
 
 -  Optional to create XLSX files for `bom`
 
