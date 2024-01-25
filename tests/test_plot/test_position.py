@@ -385,3 +385,26 @@ def test_position_gerber_1(test_dir):
     ctx.expect_out_file_d(prj+'-top_pos.gbr')
     ctx.expect_out_file_d(prj+'-bottom_pos.gbr')
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiKit currently supports KiCad 6 only")
+def test_position_sub_pcb_bp_1(test_dir):
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'position_sub_pcb_bp', POS_DIR)
+    ctx.run(extra=['-g', 'variant=default[charger]'])
+    expect_position(ctx, os.path.join(POS_DIR, prj+'-both_pos_charger.pos'), ['J13'], ['J2', 'J3'],
+                    a_pos={'J13': (126.5, 95, 'top', 90)})
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiKit currently supports KiCad 6 only")
+def test_position_sub_pcb_bp_2(test_dir):
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'position_sub_pcb_bp_kikit', POS_DIR)
+    ctx.run(extra=['-g', 'variant=default[charger]'])
+    # KiKit just sends the PCB to 150,100; not centered, A4 page is 270x210:
+    # 297/2-150 = -1.5 -> 126.5+1.5
+    # 210/2-100 = 5 -> 95-5
+    expect_position(ctx, os.path.join(POS_DIR, prj+'-both_pos_charger.pos'), ['J13'], ['J2', 'J3'],
+                    a_pos={'J13': (126.5+1.5, 95-5, 'top', 90)})
+    ctx.clean_up(keep_project=True)
