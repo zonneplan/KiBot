@@ -79,17 +79,26 @@ class KiRiOptions(AnyDiffOptions):
         if self.max_commits < 0:
             raise KiPlotConfigurationError(f"Wrong number of commits ({self.max_commits}) must be positive")
 
-    def get_targets(self, out_dir):
+    def _get_targets(self, out_dir, only_index=False):
         self.init_tools(out_dir)
         hashes, sch_dirty, pcb_dirty, sch_files = self.collect_hashes()
         if len(hashes) + (1 if sch_dirty or pcb_dirty else 0) < 2:
             return []
+        if only_index:
+            return [os.path.join(self.cache_dir, 'index.html')]
         files = [os.path.join(self.cache_dir, f) for f in ['blank.svg', 'commits', 'index.html', 'kiri-server', 'project']]
         for h in hashes:
             files.append(os.path.join(self.cache_dir, h[0][:7]))
         if sch_dirty or pcb_dirty:
             files.append(os.path.join(self.cache_dir, HASH_LOCAL))
         return files
+
+    def get_targets(self, out_dir):
+        return self._get_targets(out_dir)
+
+    def get_navigate_targets(self, out_dir):
+        """ Targets for the navigate results, just the index """
+        return self._get_targets(out_dir, True)
 
     def create_layers_incl(self, layers):
         self.incl_file = None
@@ -375,7 +384,7 @@ class KiRi(BaseOutput):  # noqa: F821
             if len(hashes) < 2:
                 return None
             if GS.debug_level > 1:
-                logger.debug(f'get_conf_examples found: {hashes}')
+                logger.debug(f'KiRi get_conf_examples found: {hashes}')
             gb = {}
             gb['name'] = 'basic_{}'.format(name)
             gb['comment'] = 'Interactive diff between commits'
@@ -386,6 +395,10 @@ class KiRi(BaseOutput):  # noqa: F821
             gb['options'] = {'max_commits': 4}
             outs.append(gb)
         return outs
+
+    def get_navigate_targets(self, out_dir):
+        return (self.options.get_navigate_targets(out_dir),
+                [os.path.join(GS.get_resource_path('kiri'), 'images', 'icon.svg')])
 
     def run(self, name):
         self.options.layers = self.layers

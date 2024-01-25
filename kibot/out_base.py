@@ -117,6 +117,10 @@ class BaseOutput(RegOutput):
             return []
         return self.options.get_targets(out_dir)
 
+    def get_navigate_targets(self, out_dir):
+        """ Returns a list of targets suitable for the navigate results """
+        return self.get_targets(out_dir), None
+
     def get_dependencies(self):
         """ Returns a list of files needed to create this output """
         if self._sch_related:

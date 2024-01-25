@@ -200,7 +200,7 @@ class Navigate_ResultsOptions(BaseOptions):
         if img_w in self.copied_images:
             # Already copied, just return its name
             return self.copied_images[img_w]
-        src = os.path.join(self.img_src_dir, img+'.svg')
+        src = os.path.join(self.img_src_dir, img+'.svg') if not img.endswith('.svg') else img
         dst = os.path.join(self.out_dir, 'images', img_w)
         id = img_w
         if self.rsvg_command is not None and self.svg_to_png(src, dst+'.png', width):
@@ -293,12 +293,12 @@ class Navigate_ResultsOptions(BaseOptions):
             os.remove(tmp_name)
         return res, fname, os.path.relpath(fname, start=self.out_dir)
 
-    def get_image_for_file(self, file, out_name, no_icon=False):
+    def get_image_for_file(self, file, out_name, no_icon=False, image=None):
         ext = os.path.splitext(file)[1][1:].lower()
         wide = False
         # Copy the icon for this file extension
         icon_name = 'folder' if os.path.isdir(file) else EXT_IMAGE.get(ext, 'unknown')
-        img = self.copy(icon_name, MID_ICON)
+        img = self.copy(image or icon_name, MID_ICON)
         # Full name for the file
         file_full = file
         # Just the file, to display it
@@ -387,10 +387,10 @@ class Navigate_ResultsOptions(BaseOptions):
             f.write('<thead><tr><th colspan="{}">{}</th></tr></thead>\n'.format(OUT_COLS, oname))
             out_dir = get_output_dir(out.dir, out, dry=True)
             f.write('<tbody><tr>\n')
-            targets = out.get_targets(out_dir)
+            targets, icons = out.get_navigate_targets(out_dir)
             if len(targets) == 1:
                 tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
-                img, _ = self.get_image_for_file(targets[0], out_name)
+                img, _ = self.get_image_for_file(targets[0], out_name, image=icons[0] if icons else None)
                 f.write('<td class="out-cell" colspan="{}"><a href="{}">{}</a></td>\n'.
                         format(OUT_COLS, tg_rel, img))
             else:
