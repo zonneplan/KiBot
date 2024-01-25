@@ -792,7 +792,7 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-archive.zip') in deps
     deps = targets[targets['archive']].split(' ')
-    assert len(deps) == 16, deps
+    assert len(deps) == 18, deps
     # - position
     assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-top_pos.csv')) in deps
     assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-bottom_pos.csv')) in deps
