@@ -119,6 +119,16 @@ def usable_cmd(cmd):
     return ' '.join(cmd)
 
 
+def move_existant(name):
+    if not os.path.isfile(name):
+        return
+    for n in range(9):
+        new_name = name+f'_{n+1}'
+        if not os.path.isfile(new_name):
+            break
+    os.rename(name, new_name)
+
+
 @contextmanager
 def cover_it(cov):
     # Start coverage
@@ -327,6 +337,8 @@ class TestContext(object):
             f_err = slave
             f_out = slave
         else:
+            move_existant(out_filename)
+            move_existant(err_filename)
             # Redirect stdout and stderr to files
             f_out = os.open(out_filename, os.O_RDWR | os.O_CREAT)
             f_err = os.open(err_filename, os.O_RDWR | os.O_CREAT)
