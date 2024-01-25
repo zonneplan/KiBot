@@ -4,6 +4,7 @@ import re
 import pytest
 import coverage
 import logging
+import requests
 import subprocess
 import sys
 from . import context
@@ -23,6 +24,7 @@ from kibot.__main__ import detect_kicad
 from kibot.kicad.config import KiConf
 from kibot.globals import Globals
 from kibot.PcbDraw.unit import read_resistance
+from kibot.out_download_datasheets import Download_Datasheets_Options
 
 cov = coverage.Coverage()
 mocked_check_output_FNF = True
@@ -559,3 +561,56 @@ def test_electro_grammar_1():
                 res = parse(c)
                 assert res == ref, "For `{}` got:\n{}\nExpected:\n{}".format(c, res, ref)
                 logging.debug(c+" Ok")
+
+
+class Comp:
+    def __init__(self):
+        self.ref = 'R1'
+
+
+def mocked_requests_get(url, allow_redirects=True, headers=None, timeout=20):
+    res = requests.Response()
+    if url == '1':
+        res.status_code = 666
+        return res
+    elif url == '2':
+        raise requests.exceptions.ReadTimeout()
+    elif url == '3':
+        raise requests.exceptions.SSLError()
+    elif url == '4':
+        raise requests.exceptions.TooManyRedirects()
+    elif url == '5':
+        raise requests.exceptions.ConnectionError()
+    elif url == '6':
+        raise requests.exceptions.RequestException("Hello!")
+    logging.error(url)
+    return res
+
+
+@pytest.mark.indep
+def test_ds_net_error(caplog, monkeypatch):
+    with context.cover_it(cov):
+        o = Download_Datasheets_Options()
+        o._downloaded = {}
+        o.download(Comp(), '1N1234.pdf', 'pp', '1N1234', None)
+        assert 'Invalid URL' in caplog.text
+        with monkeypatch.context() as m:
+            m.setattr('requests.get', mocked_requests_get)
+            caplog.clear()
+            o.download(Comp(), '1', 'pp', '1N1234', None)
+            assert 'Failed with status 666' in caplog.text
+            caplog.clear()
+            o.download(Comp(), '2', 'pp', '1N1234', None)
+            assert 'Timeout' in caplog.text
+            caplog.clear()
+            o.download(Comp(), '3', 'pp', '1N1234', None)
+            assert 'SSL Error' in caplog.text
+            caplog.clear()
+            o.download(Comp(), '4', 'pp', '1N1234', None)
+            assert 'More than 30 redirections' in caplog.text
+            caplog.clear()
+            o.download(Comp(), '5', 'pp', '1N1234', None)
+            assert 'Connection' in caplog.text
+            caplog.clear()
+            o.download(Comp(), '6', 'pp', '1N1234', None)
+            assert 'Hello!' in caplog.text
