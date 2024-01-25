@@ -862,3 +862,21 @@ def test_import_no_str_or_dict(test_dir):
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"`import` items must be strings or dicts")
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_download_datasheets_no_field(test_dir):
+    """ Download datasheet no field specified """
+    ctx = context.TestContext(test_dir, 'bom', 'error_download_datasheets_no_field')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Empty `field`")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_download_datasheets_no_output(test_dir):
+    """ Download datasheet no output specified """
+    ctx = context.TestContext(test_dir, 'bom', 'error_download_datasheets_no_output')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Empty `output`")
+    ctx.clean_up(keep_project=True)

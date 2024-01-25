@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'down_ds'
+    comment: "Datasheets"
+    type: download_datasheets
+    dir: DS
+    options:
+      field: ''
