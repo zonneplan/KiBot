@@ -872,8 +872,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use `${basename}` for the project name without extension.
-        # Use `${filename(LAYER)}` for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -1100,8 +1100,8 @@ outputs:
       create_gerber_job_file: true
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use `${basename}` for the project name without extension.
-        # Use `${filename(LAYER)}` for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -1176,8 +1176,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use `${basename}` for the project name without extension.
-        # Use `${filename(LAYER)}` for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -2626,8 +2626,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use `${basename}` for the project name without extension.
-        # Use `${filename(LAYER)}` for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -2891,8 +2891,8 @@ outputs:
       a4_output: true
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use `${basename}` for the project name without extension.
-        # Use `${filename(LAYER)}` for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -3375,8 +3375,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use `${basename}` for the project name without extension.
-        # Use `${filename(LAYER)}` for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
