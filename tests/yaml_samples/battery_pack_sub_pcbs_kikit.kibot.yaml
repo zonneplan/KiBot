@@ -1,0 +1,26 @@
+kibot:
+  version: 1
+
+variants:
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    sub_pcbs:
+      - name: charger
+        tlx: 175
+        tly: 50
+        brx: 245
+        bry: 90
+        tool: kikit
+      - name: battery
+        tlx: 20
+        tly: 20
+        brx: 90
+        bry: 118
+        tool: kikit
+      - name: connector
+        tlx: 116
+        tly: 52
+        brx: 146
+        bry: 88
+        tool: kikit
