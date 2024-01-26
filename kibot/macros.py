@@ -77,14 +77,15 @@ def document(sentences, **kw):
             # Reuse the s.value Str
             help_str = s.value
             doc_str = s.value.s.rstrip()
-            if type_hint and (doc_str.startswith(' [string') or doc_str.startswith(' [number') or
-                              doc_str.startswith(' [boolean')):
+            doc_str_2 = ' '+doc_str[2:] if doc_str.startswith(' *') else doc_str
+            if type_hint and (doc_str_2.startswith(' [string') or doc_str_2.startswith(' [number') or
+                              doc_str_2.startswith(' [boolean')):
                 # Hardcoded type hint, don't add one
                 type_hint = ''
             # The * marks this option as a basic (not advanced) option
             if doc_str.startswith(' *') and type_hint:
                 # Move the marker to the beginning
-                doc_str = ' '+doc_str[2:]
+                doc_str = doc_str_2
                 type_hint = '*'+type_hint
             help_str.s = type_hint+doc_str+post_hint
             sentences[n] = Assign(targets=[target], value=help_str)
