@@ -2025,7 +2025,7 @@ class SchematicV6(Schematic):
             if os.path.isfile(fname):
                 bkp = fname+'-bak'
                 os.replace(fname, bkp)
-            with open(fname, 'wt') as f:
+            with GS.create_file(fname) as f:
                 f.write(dumps(sch))
                 f.write('\n')
             saved.add(fname)
