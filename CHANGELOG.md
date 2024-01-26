@@ -120,7 +120,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - When *check_zone_fills* is enabled now we do a refill for the boards
 
 ### Fixed
-- Schematics: problems with deep nested and recycled sheets (#520)
+- Schematics:
+  - Problems with deep nested and recycled sheets (#520)
+  - Problems saving deep nested sheets
 - Rotated polygons and text used in the worksheet (#466)
 - The --log/-L didn't enabled full debug for all messages
 - BoM:

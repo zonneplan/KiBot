@@ -94,6 +94,8 @@ class KiCanvasOptions(VariantOptions):
         self.restore_title(sch=True)
 
     def run(self, out_dir):
+        for f in self._get_targets(out_dir):
+            logger.error(f)
         # Download KiCanvas
         if self.local_script:
             logger.debug(f'Downloading the script from `{self.url_script}`')

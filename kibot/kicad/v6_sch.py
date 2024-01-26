@@ -2031,7 +2031,7 @@ class SchematicV6(Schematic):
             saved.add(fname)
         for sch in self.sheets:
             if sch.sch:
-                sch.sch.save(sch.flat_file if exp_hierarchy else sch.file, dest_dir, base_sheet, saved, cross=cross,
+                sch.sch.save(sch.flat_file if exp_hierarchy else sch.sch.fname_rel, dest_dir, base_sheet, saved, cross=cross,
                              exp_hierarchy=exp_hierarchy)
 
     def save_variant(self, dest_dir):
@@ -2156,6 +2156,7 @@ class SchematicV6(Schematic):
             self.all_sheets = []
             self.root_sheet = self
             UUID_Validator.reset()
+            self.root_file_path = os.path.dirname(os.path.abspath(fname))
         else:
             self.fields = parent.fields
             self.fields_lc = parent.fields_lc
@@ -2165,9 +2166,11 @@ class SchematicV6(Schematic):
             self.sheet_names = parent.sheet_names
             self.all_sheets = parent.all_sheets
             self.root_sheet = parent.root_sheet
+            self.root_file_path = parent.root_file_path
         self.symbol_instances = []
         self.parent = parent
         self.fname = fname
+        self.fname_rel = os.path.relpath(fname, self.root_file_path)
         self.project = project
         self.lib_symbols = []
         self.symbols = []
