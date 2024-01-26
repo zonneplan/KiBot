@@ -831,7 +831,7 @@ class VariantOptions(BaseOptions):
         self.old_title = None
         if title:
             if sch:
-                self.old_title = GS.sch.get_title()
+                self.old_title = GS.sch.get_title() or ''
             else:
                 tb = GS.board.GetTitleBlock()
                 self.old_title = tb.GetTitle()
