@@ -87,6 +87,7 @@ The available values for *type* are:
    -  ``report`` generates a report about the PDF. Can include images
       from the above outputs.
    -  ``diff`` creates PDF files showing schematic or PCB changes.
+   -  ``kiri`` creates an interactive web page showing schematic or PCB changes.
 
 .. index::
    pair: supported; Bill of Materials
@@ -128,6 +129,7 @@ The available values for *type* are:
    -  ``kikit_present`` To create a project presentation web page.
    -  ``navigate_results`` generates web pages to navigate the generated
       outputs.
+   - ``kicanvas`` creates a web page to display the schematic and/or PCB
 
 .. index::
    pair: supported; fabrication helpers

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.6.4] - UNRELEASED
 ### Added
+- New outputs:
+  - KiRi: interactive diff
+  - KiCanvas: on-line schematic/PCB browser
 - General:
   - Operations that copies the project now also copies the PRL and the DRU
   - Files named *.kibot.yml are also detected as configuration files

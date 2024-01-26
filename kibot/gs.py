@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+from contextlib import contextmanager
 import os
 import re
 import json
@@ -52,6 +53,7 @@ class GS(object):
     pcb_no_ext = None    # /.../dir/pcb
     pcb_dir = None       # /.../dir
     pcb_basename = None  # pcb
+    pcb_fname = None     # pcb.kicad_pcb
     pcb_last_dir = None  # dir
     # SCH name and useful parts
     sch_file = None      # /.../dir/file.sch
@@ -59,12 +61,14 @@ class GS(object):
     sch_dir = None       # /.../dir
     sch_last_dir = None  # dir
     sch_basename = None  # file
+    sch_fname = None     # file.kicad_sch
     # Project and useful parts
     pro_file = None      # /.../dir/file.kicad_pro (or .pro)
     pro_no_ext = None    # /.../dir/file
     pro_dir = None       # /.../dir
     pro_last_dir = None  # dir
     pro_basename = None  # file
+    pro_fname = None     # file.kicad_pro (or .pro)
     pro_ext = '.pro'
     pro_variables = None  # KiCad 6 text variables defined in the project
     vars_regex = re.compile(r'\$\{([^\}]+)\}')
@@ -199,7 +203,8 @@ class GS(object):
         if name:
             name = os.path.abspath(name)
             GS.sch_file = name
-            GS.sch_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.sch_fname = os.path.basename(name)
+            GS.sch_basename = os.path.splitext(GS.sch_fname)[0]
             GS.sch_no_ext = os.path.splitext(name)[0]
             GS.sch_dir = os.path.dirname(name)
             GS.sch_last_dir = os.path.basename(GS.sch_dir)
@@ -209,7 +214,8 @@ class GS(object):
         if name:
             name = os.path.abspath(name)
             GS.pcb_file = name
-            GS.pcb_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.pcb_fname = os.path.basename(name)
+            GS.pcb_basename = os.path.splitext(GS.pcb_fname)[0]
             GS.pcb_no_ext = os.path.splitext(name)[0]
             GS.pcb_dir = os.path.dirname(name)
             GS.pcb_last_dir = os.path.basename(GS.pcb_dir)
@@ -219,7 +225,8 @@ class GS(object):
         if name:
             name = os.path.abspath(name)
             GS.pro_file = name
-            GS.pro_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.pro_fname = os.path.basename(name)
+            GS.pro_basename = os.path.splitext(GS.pro_fname)[0]
             GS.pro_no_ext = os.path.splitext(name)[0]
             GS.pro_dir = os.path.dirname(name)
             GS.pro_last_dir = os.path.basename(GS.pro_dir)
@@ -484,6 +491,11 @@ class GS(object):
             GS.exit_with_error('No SCH file found (*.sch), use -e to specify one.', EXIT_BAD_ARGS)
 
     @staticmethod
+    def check_pro():
+        if not GS.pro_file:
+            GS.exit_with_error('No project file found (*.kicad_pro/*.pro).', EXIT_BAD_ARGS)
+
+    @staticmethod
     def copy_project(new_pcb_name, dry=False):
         pro_name = GS.pro_file
         if pro_name is None or not os.path.isfile(pro_name):
@@ -509,6 +521,18 @@ class GS(object):
                 logger.debug(f'Copying project custom design rules `{dru_name}` to `{dru_copy}`')
                 copy2(dru_name, dru_copy)
         return pro_copy, prl_copy, dru_copy
+
+    @staticmethod
+    def copy_project_names(pcb_name):
+        pro_copy, prl_copy, dru_copy = GS.copy_project(pcb_name, dry=True)
+        files = []
+        if pro_copy:
+            files.append(pro_copy)
+        if prl_copy:
+            files.append(prl_copy)
+        if dru_copy:
+            files.append(dru_copy)
+        return files
 
     @staticmethod
     def copy_project_sch(sch_dir):
@@ -819,3 +843,15 @@ class GS(object):
         # This is why we just use os.makedirs
         os.makedirs(lib_name, exist_ok=True)
         return lib_name
+
+    @staticmethod
+    @contextmanager
+    def create_file(name, bin=False):
+        os.makedirs(os.path.dirname(name), exist_ok=True)
+        with open(name, 'wb' if bin else 'w') as f:
+            yield f
+
+    @staticmethod
+    def write_to_file(content, name):
+        with GS.create_file(name, bin=isinstance(content, bytes)) as f:
+            f.write(content)

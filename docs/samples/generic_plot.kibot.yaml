@@ -1517,6 +1517,36 @@ outputs:
       # variants with the ';' (semicolon) character.
       # This isn't related to the KiBot concept of variants
       variant: ''
+  # KiCanvas:
+  # 
+  - name: 'kicanvas_example'
+    comment: 'Generates an interactive web page to browse the schematic and/or PCB.'
+    type: 'kicanvas'
+    dir: 'Example/kicanvas_dir'
+    options:
+      # [string='full'] [full,basic,none] Which controls are displayed
+      controls: 'full'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Show the download button
+      download: true
+      # [boolean=true] Download the script and use a copy
+      local_script: true
+      # [boolean=true] Show the overlay asking to click
+      overlay: true
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string|list(string)] [schematic,pcb,project] Source to display
+      source: 'schematic'
+      # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      # If it starts with `+` the text is concatenated
+      title: ''
+      # URL for the KiCanvas script
+      url_script: 'https://kicanvas.org/kicanvas/kicanvas.js'
+      # [string=''] Board variant to apply
+      variant: ''
   # KiCost (KiCad Cost calculator):
   # For more information: https://github.com/INTI-CMNB/KiCost
   # This output is what you get from the KiCost plug-in (eeschema).

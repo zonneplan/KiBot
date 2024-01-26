@@ -29,6 +29,7 @@ Notes:
    outputs/ibom
    outputs/info
    outputs/kibom
+   outputs/kicanvas
    outputs/kicost
    outputs/kikit_present
    outputs/kiri
