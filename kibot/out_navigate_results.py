@@ -196,7 +196,7 @@ class Navigate_ResultsOptions(BaseOptions):
     def copy(self, img, width):
         """ Copy an SVG icon to the images/ dir.
             Tries to convert it to PNG. """
-        img_w = "{}_{}".format(img, width)
+        img_w = "{}_{}".format(os.path.basename(img), width)
         if img_w in self.copied_images:
             # Already copied, just return its name
             return self.copied_images[img_w]
