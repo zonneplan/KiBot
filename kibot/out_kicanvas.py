@@ -175,5 +175,4 @@ class KiCanvas(BaseOutput):  # noqa: F821
         return outs
 
     def get_navigate_targets(self, out_dir):
-        return (self.options.get_navigate_targets(out_dir), None)
-        # [os.path.join(GS.get_resource_path('kicanvas'), 'images', 'icon.svg')]
+        return (self.options.get_navigate_targets(out_dir), [os.path.join(GS.get_resource_path('kicanvas'), 'kicanvas.svg')])

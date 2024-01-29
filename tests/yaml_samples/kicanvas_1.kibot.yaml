@@ -13,3 +13,6 @@ outputs:
       # local_script: false
       # source: ['schematic', 'pcb', 'project', 'pp']
       # source: pp
+
+  - name: 'Navigate'
+    type: navigate_results
