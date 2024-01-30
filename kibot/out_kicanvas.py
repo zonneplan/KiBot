@@ -62,9 +62,7 @@ class KiCanvasOptions(VariantOptions):
             elif s == 'schematic' and GS.sch_file:
                 files.extend(GS.sch.file_names_variant(out_dir))
             elif s == 'project' and (GS.sch_file or GS.pcb_file):
-                prj_files = GS.copy_project_names(GS.sch_file or GS.pcb_file)
-                for f in prj_files:
-                    files.append(os.path.join(out_dir, os.path.basename(f)))
+                files.extend(GS.copy_project_names(GS.sch_file or GS.pcb_file, ref_dir=out_dir))
         return files
 
     def get_targets(self, out_dir):

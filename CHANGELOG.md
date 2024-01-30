@@ -166,6 +166,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Quick Start:
   - Problems with KiCad 6+ files using KiCad 5 names for layers
   - Problems scanning dirs without enough privileges
+- PCB/SCH Variant
+  - Makefile/compress targets (missing project)
 
 ## [1.6.3] - 2023-06-26
 ### Added

@@ -21,7 +21,10 @@ class Sch_Variant_Options(VariantOptions):
         super().__init__()
 
     def get_targets(self, out_dir):
-        return GS.sch.file_names_variant(out_dir)
+        targets = list(GS.sch.file_names_variant(out_dir))
+        if self.copy_project:
+            targets.extend(GS.copy_project_names(GS.sch_file, ref_dir=out_dir))
+        return targets
 
     def run(self, output_dir):
         super().run(output_dir)

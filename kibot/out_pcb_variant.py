@@ -29,7 +29,10 @@ class PCB_Variant_Options(VariantOptions):
         self._expand_ext = 'kicad_pcb'
 
     def get_targets(self, out_dir):
-        return [self._parent.expand_filename(out_dir, self.output)]
+        targets = [self._parent.expand_filename(out_dir, self.output)]
+        if self.copy_project:
+            targets.extend(GS.copy_project_names(targets[0], ref_dir=out_dir))
+        return targets
 
     def run(self, output):
         super().run(output)

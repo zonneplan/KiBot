@@ -523,15 +523,15 @@ class GS(object):
         return pro_copy, prl_copy, dru_copy
 
     @staticmethod
-    def copy_project_names(pcb_name):
+    def copy_project_names(pcb_name, ref_dir):
         pro_copy, prl_copy, dru_copy = GS.copy_project(pcb_name, dry=True)
         files = []
         if pro_copy:
-            files.append(pro_copy)
+            files.append(os.path.join(ref_dir, os.path.basename(pro_copy)))
         if prl_copy:
-            files.append(prl_copy)
+            files.append(os.path.join(ref_dir, os.path.basename(prl_copy)))
         if dru_copy:
-            files.append(dru_copy)
+            files.append(os.path.join(ref_dir, os.path.basename(dru_copy)))
         return files
 
     @staticmethod
