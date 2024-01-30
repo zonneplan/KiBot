@@ -194,7 +194,7 @@ label#layers, label#pages {
 	vertical-align:top;
 }
 
-#server_offline {
+#server_offline, #no_file_access {
 	position: fixed;
 	display: none;
 	width: 100%;
@@ -213,7 +213,7 @@ label#layers, label#pages {
 	line-height: 100%;
 }
 
-#server_offline span {
+#server_offline, #no_file_access span {
   display: inline-block;
   vertical-align: middle;
   line-height: normal;

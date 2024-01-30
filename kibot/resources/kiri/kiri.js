@@ -1040,6 +1040,15 @@ var old_server_status = -1;
 
 function check_server_status()
 {
+    try {
+        loadFile("project");
+    } catch(error) {
+        if (window.location.protocol === "file:") {
+            no_file_access();
+        }
+        throw(error);
+    }
+
     var img;
 
     img = document.getElementById("server_status_img");
@@ -1079,6 +1088,11 @@ function server_is_offline() {
         old_server_status = server_status;
         console.log("Server is Offline");
     }
+}
+
+function no_file_access() {
+    document.getElementById("no_file_access").style.display = "block";
+    console.log("Failed to load local files, enable access to them");
 }
 
 // ==================================================================
