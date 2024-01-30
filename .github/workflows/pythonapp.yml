@@ -37,7 +37,7 @@ jobs:
     container: ghcr.io/inti-cmnb/kicad_auto_test:${{ matrix.ki_release }}
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
     - name: Test ${{ matrix.ki_release }}
@@ -79,7 +79,7 @@ jobs:
         ./${{ matrix.w_tests }}.sh
     - name: Store coverage
       if: ${{ always() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test_Coverage_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         path: .coverage.*
@@ -90,7 +90,7 @@ jobs:
         python3-coverage html -d output/htmlcov_${{ matrix.w_tests }}
     - name: Store results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test_Output_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         # Important! empty directories are skipped!!!!
@@ -119,7 +119,7 @@ jobs:
     container: ghcr.io/inti-cmnb/kicad_auto_test:latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
     - name: Lint with flake8
@@ -141,7 +141,7 @@ jobs:
         ./g4.sh
     - name: Store coverage
       if: ${{ always() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test_Coverage_Independent
         path: .coverage.*
@@ -152,7 +152,7 @@ jobs:
         python3-coverage html -d output/htmlcov_independent
     - name: Store results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test_Output_Independent
         # Important! empty directories are skipped!!!!
@@ -192,42 +192,42 @@ jobs:
     if: github.ref == 'refs/heads/dev'
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         submodules: recursive
 
     - name: Download coverage k5 g1
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Test_Coverage_ki5_g1
 
     - name: Download coverage k5 g2
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Test_Coverage_ki5_g2
 
     - name: Download coverage k5 g3
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Test_Coverage_ki5_g3
 
     - name: Download coverage k6 g1
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Test_Coverage_ki6_g1
 
     - name: Download coverage k6 g2
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Test_Coverage_ki6_g2
 
     - name: Download coverage k6 g3
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Test_Coverage_ki6_g3
 
     - name: Download coverage independent
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: Test_Coverage_Independent
 
@@ -240,7 +240,7 @@ jobs:
         python3-coverage html -d htmlcov
 
     - name: Store result
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test_Coverage_combined
         path: htmlcov
