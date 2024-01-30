@@ -149,12 +149,13 @@ class KiCanvasOptions(VariantOptions):
             f.write(f'    <kicanvas-embed controls="{self.controls}"{controlslist}>\n')
             for s in self.source:
                 if s == 'pcb':
-                    source = GS.pcb_fname
+                    f.write(f'      <kicanvas-source src="{GS.pcb_fname}"></kicanvas-source>\n')
                 elif s == 'schematic':
-                    source = GS.sch_fname
+                    GS.sch_dir
+                    for s in sorted(GS.sch.all_sheets, key=lambda x: x.sheet_path_h):
+                        f.write(f'      <kicanvas-source src="{os.path.relpath(s.fname, GS.sch_dir)}"></kicanvas-source>\n')
                 else:
-                    source = GS.pro_fname
-                f.write(f'      <kicanvas-source src="{source}"></kicanvas-source>\n')
+                    f.write(f'      <kicanvas-source src="{GS.pro_fname}"></kicanvas-source>\n')
             f.write('    </kicanvas-embed>\n')
             f.write('  </body>\n')
             f.write('</html>\n')
