@@ -500,7 +500,7 @@ class GS(object):
         pro_name = GS.pro_file
         if pro_name is None or not os.path.isfile(pro_name):
             return None, None, None
-        pro_copy = new_pcb_name.replace('.kicad_pcb', GS.pro_ext)
+        pro_copy = os.path.splitext(new_pcb_name)[0]+GS.pro_ext
         if not dry:
             logger.debug(f'Copying project `{pro_name}` to `{pro_copy}`')
             copy2(pro_name, pro_copy)

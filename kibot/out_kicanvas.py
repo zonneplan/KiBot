@@ -7,6 +7,7 @@ import requests
 import os
 from .error import KiPlotConfigurationError
 from .gs import GS
+from .kiplot import load_sch, load_board
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -56,12 +57,14 @@ class KiCanvasOptions(VariantOptions):
         if self.local_script:
             files.append(os.path.join(out_dir, SCRIPT_NAME))
         for s in self.source:
-            if s == 'pcb':
+            if s == 'pcb' and GS.pcb_fname:
                 files.append(os.path.join(out_dir, GS.pcb_fname))
-            elif s == 'schematic':
+            elif s == 'schematic' and GS.sch_file:
                 files.extend(GS.sch.file_names_variant(out_dir))
-            else:
-                files.extend(GS.copy_project_names(GS.pcb_file))
+            elif s == 'project' and (GS.sch_file or GS.pcb_file):
+                prj_files = GS.copy_project_names(GS.sch_file or GS.pcb_file)
+                for f in prj_files:
+                    files.append(os.path.join(out_dir, os.path.basename(f)))
         return files
 
     def get_targets(self, out_dir):
@@ -94,8 +97,19 @@ class KiCanvasOptions(VariantOptions):
         self.restore_title(sch=True)
 
     def run(self, out_dir):
-        for f in self._get_targets(out_dir):
-            logger.error(f)
+        # We declare _none_related=True because we don't know if the PCB/SCH are needed until the output is configured.
+        # Now that we know it we can load the PCB and/or SCH.
+        for s in self.source:
+            if s == 'pcb':
+                load_board()
+            elif s == 'schematic':
+                load_sch()
+            else:
+                load_sch()
+                load_board()
+                GS.check_pro()
+        # Now that we loaded the needed stuff we can do the parent run
+        super().run(out_dir)
         # Download KiCanvas
         if self.local_script:
             logger.debug(f'Downloading the script from `{self.url_script}`')
@@ -114,15 +128,10 @@ class KiCanvasOptions(VariantOptions):
         for s in self.source:
             # Save the PCB/SCH/Project
             if s == 'pcb':
-                GS.check_pcb()
                 self.save_pcb(out_dir)
             elif s == 'schematic':
-                GS.check_sch()
                 self.save_sch(out_dir)
             else:
-                GS.check_sch()
-                GS.check_pcb()
-                GS.check_pro()
                 self.save_sch(out_dir)
                 GS.copy_project(self.save_pcb(out_dir))
         # Create the HTML file
@@ -161,12 +170,29 @@ class KiCanvas(BaseOutput):  # noqa: F821
     def __init__(self):
         super().__init__()
         self._category = ['PCB/docs', 'Schematic/docs']
-        self._both_related = True
+        self._none_related = True
         with document:
             self.output = GS.def_global_output
             """ *Filename for the output (%i=kicanvas, %x=html) """
             self.options = KiCanvasOptions
             """ *[dict] Options for the KiCanvas output """
+
+    def config(self, parent):
+        super().config(parent)
+        if self.get_user_defined('category'):
+            # The user specified a category, don't change it
+            return
+        # Adjust the category according to the selected output/s
+        cat = set()
+        for s in self.options.source:
+            if s == 'pcb':
+                cat.add('PCB/docs')
+            elif s == 'schematic':
+                cat.add('Schematic/docs')
+            else:
+                cat.add('PCB/docs')
+                cat.add('Schematic/docs')
+        self.category = list(cat)
 
     @staticmethod
     def get_conf_examples(name, layers):

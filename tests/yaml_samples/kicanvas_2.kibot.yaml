@@ -1,0 +1,16 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'KiCanvas'
+    comment: "Example of KiCanvas export"
+    type: kicanvas
+    dir: KiCanvas
+    # category: 'Una mia'
+    options:
+      source: 'schematic'
+      overlay: false
+
+  - name: 'Navigate'
+    type: navigate_results
