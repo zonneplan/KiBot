@@ -760,9 +760,14 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
     logging.debug('- Target `run_drc` OK')
     # fake_sch target
     deps = targets['fake_sch'].split(' ')
-    assert len(deps) == 6, deps
-    check_test_v5_sch_deps(ctx, deps, extra=[ctx.get_out_path('n.lib'), ctx.get_out_path('y.lib'),
-                                             ctx.get_out_path('sym-lib-table')], in_output=True)
+    if context.ki5():
+        # SCHs + 2 libs + symbols table
+        assert len(deps) == 6, deps
+        extra = [ctx.get_out_path('n.lib'), ctx.get_out_path('y.lib'), ctx.get_out_path('sym-lib-table')]
+    else:
+        assert len(deps) == 3, deps
+        extra = []
+    check_test_v5_sch_deps(ctx, deps, extra=extra, in_output=True)
     check_test_v5_sch_deps(ctx, targets[targets['fake_sch']].split(' '))
     logging.debug('- Target `fake_sch` OK')
     # 3D target
