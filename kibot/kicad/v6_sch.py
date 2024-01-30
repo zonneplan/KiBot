@@ -1916,7 +1916,7 @@ class SchematicV6(Schematic):
             f.write(dumps(lib))
             f.write('\n')
 
-    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None, cross=False, exp_hierarchy=False):
+    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None, cross=False, exp_hierarchy=False, dry=False):
         # Switch to the current version
         global version
         version = self.version
@@ -1946,7 +1946,7 @@ class SchematicV6(Schematic):
             # Save all in dest_dir (variant)
             fname = os.path.join(dest_dir, fname)
         # Save the sheet
-        if fname not in saved:
+        if fname not in saved and not dry:
             sch = [Symbol('kicad_sch')]
             sch.append(_symbol('version', [self.version]))
             sch.append(_symbol('generator', [Symbol(self.generator)]))
@@ -2028,16 +2028,24 @@ class SchematicV6(Schematic):
             with GS.create_file(fname) as f:
                 f.write(dumps(sch))
                 f.write('\n')
+        if fname not in saved:
             saved.add(fname)
         for sch in self.sheets:
             if sch.sch:
                 sch.sch.save(sch.flat_file if exp_hierarchy else sch.sch.fname_rel, dest_dir, base_sheet, saved, cross=cross,
-                             exp_hierarchy=exp_hierarchy)
+                             exp_hierarchy=exp_hierarchy, dry=dry)
 
     def save_variant(self, dest_dir):
         fname = os.path.basename(self.fname)
         self.save(fname, dest_dir, cross=True, exp_hierarchy=self.check_exp_hierarchy())
         return fname
+
+    def file_names_variant(self, dest_dir):
+        """ Returns a list of file names created by save_variant() """
+        saved = set()
+        fname = os.path.basename(self.fname)
+        self.save(fname, dest_dir, cross=True, exp_hierarchy=self.check_exp_hierarchy(), dry=True, saved=saved)
+        return saved
 
     def check_exp_hierarchy(self):
         """ Check if we really need to expand the hierarchy """
