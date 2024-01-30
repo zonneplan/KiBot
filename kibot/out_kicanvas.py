@@ -95,7 +95,7 @@ class KiCanvasOptions(VariantOptions):
         self.restore_title(sch=True)
 
     def run(self, out_dir):
-        # We declare _none_related=True because we don't know if the PCB/SCH are needed until the output is configured.
+        # We declare _any_related=True because we don't know if the PCB/SCH are needed until the output is configured.
         # Now that we know it we can load the PCB and/or SCH.
         for s in self.source:
             if s == 'pcb':
@@ -194,8 +194,13 @@ class KiCanvas(BaseOutput):  # noqa: F821
 
     @staticmethod
     def get_conf_examples(name, layers):
-        # TODO: implement
-        outs = []
+        outs = BaseOutput.simple_conf_examples(name, 'Web page to browse the schematic and/or PCB', 'Browse')  # noqa: F821
+        sources = []
+        if GS.sch_file:
+            sources.append('schematic')
+        if GS.pcb_file:
+            sources.append('pcb')
+        outs[0]['options'] = {'source': sources}
         return outs
 
     def get_navigate_targets(self, out_dir):

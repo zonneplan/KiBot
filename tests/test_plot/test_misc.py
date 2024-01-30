@@ -1389,7 +1389,7 @@ def test_quick_start_1(test_dir):
     ctx.run(extra=['-c', dest_conf_f, '-b', dest_file, '-l'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
     OUTS = ('boardview', 'dxf', 'excellon', 'gencad', 'gerb_drill', 'gerber', 'compress', 'hpgl', 'ibom',
             'navigate_results', 'netlist', 'pcb_print', 'pcbdraw', 'pdf', 'position', 'ps', 'render_3d',
-            'report', 'step', 'svg', 'kiri',   # 'kicanvas',
+            'report', 'step', 'svg', 'kiri', 'kicanvas',
             'bom', 'download_datasheets', 'pdf_sch_print', 'svg_sch_print')
     for o in OUTS:
         ctx.search_out(r'\['+o+r'\]')
