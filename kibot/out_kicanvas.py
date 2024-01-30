@@ -168,7 +168,7 @@ class KiCanvas(BaseOutput):  # noqa: F821
     def __init__(self):
         super().__init__()
         self._category = ['PCB/docs', 'Schematic/docs']
-        self._none_related = True
+        self._any_related = True
         with document:
             self.output = GS.def_global_output
             """ *Filename for the output (%i=kicanvas, %x=html) """

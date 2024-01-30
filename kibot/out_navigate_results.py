@@ -529,7 +529,7 @@ class Navigate_Results(BaseOutput):  # noqa: F821
             """ *[dict] Options for the `navigate_results` output """
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
-        self._none_related = True
+        self._any_related = True
 
     @staticmethod
     def get_conf_examples(name, layers):
