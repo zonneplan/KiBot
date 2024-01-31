@@ -16,6 +16,27 @@ logger = log.get_logger()
 VALID_SOURCE = {'schematic', 'pcb', 'project'}
 URL_SCRIPT = 'https://kicanvas.org/kicanvas/kicanvas.js'
 SCRIPT_NAME = 'kicanvas.js'
+JS_TEST = """
+function ready()
+{
+ try
+   {
+    var xmlhttp = new XMLHttpRequest();
+    xmlhttp.open('GET', 'fname', false);
+    xmlhttp.send();
+   }
+ catch (error)
+   {
+    if (window.location.protocol === 'file:')
+      {
+       document.getElementById('no_file_access').style.display = 'block';
+      }
+    throw(error);
+   }
+}
+
+window.addEventListener('DOMContentLoaded', ready);
+"""
 
 
 class KiCanvasOptions(VariantOptions):
@@ -146,17 +167,32 @@ class KiCanvasOptions(VariantOptions):
             f.write('<html lang="en">\n')
             f.write('  <body>\n')
             f.write(f'    <script type="module" src="{script_src}"></script>\n')
+            # Message to inform we can't read the local files
+            f.write('    <div id="no_file_access" style="display: none; ">\n')
+            f.write("      <span>The browser can't read local files. Enable it to continue."
+                    " I.e. use <i>--allow-file-access-from-files</i> on Chrome</span>\n")
+            f.write('    </div>\n')
+            # End of message
             f.write(f'    <kicanvas-embed controls="{self.controls}"{controlslist}>\n')
+            fname = None
             for s in self.source:
                 if s == 'pcb':
                     f.write(f'      <kicanvas-source src="{GS.pcb_fname}"></kicanvas-source>\n')
+                    fname = GS.pcb_fname
                 elif s == 'schematic':
                     GS.sch_dir
                     for s in sorted(GS.sch.all_sheets, key=lambda x: x.sheet_path_h):
-                        f.write(f'      <kicanvas-source src="{os.path.relpath(s.fname, GS.sch_dir)}"></kicanvas-source>\n')
+                        fname = os.path.relpath(s.fname, GS.sch_dir)
+                        f.write(f'      <kicanvas-source src="{fname}"></kicanvas-source>\n')
                 else:
                     f.write(f'      <kicanvas-source src="{GS.pro_fname}"></kicanvas-source>\n')
+                    fname = GS.pro_fname
             f.write('    </kicanvas-embed>\n')
+            # Add test to check if we can read the files
+            f.write('    <script>\n')
+            f.write(JS_TEST.replace('fname', fname))
+            f.write('    </script>\n')
+            # End of test
             f.write('  </body>\n')
             f.write('</html>\n')
 
