@@ -2027,3 +2027,12 @@ def test_info_1(test_dir):
     ctx.run()
     ctx.expect_out_file(prj+'-info.txt')
     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Just v7 test")
+def test_kicanvas_1(test_dir):
+    prj = 'resistor_tht'
+    ctx = context.TestContext(test_dir, prj, 'kicanvas_1', 'KiCanvas')
+    ctx.run(extra=['KiCanvas'])
+    ctx.expect_out_file_d(['kicanvas.js', prj+'-kicanvas.html', prj+'.kicad_pcb', prj+'.kicad_sch', prj+'.kicad_pro'])
+    ctx.clean_up(keep_project=True)
