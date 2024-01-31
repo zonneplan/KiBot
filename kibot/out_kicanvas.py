@@ -201,6 +201,12 @@ class KiCanvasOptions(VariantOptions):
 class KiCanvas(BaseOutput):  # noqa: F821
     """ KiCanvas
         Generates an interactive web page to browse the schematic and/or PCB.
+        Note that this tool is in alpha stage, so be ready to face some issues.
+        Also note that most browsers won't allow Java Script to read local files,
+        needed to load the SCH/PCB. So you must use a web server or enable the
+        access to local files. In the case of Google Chrome you can use the
+        `--allow-file-access-from-files` command line option.
+        For more information visit the [KiCanvas web](https://github.com/theacodes/kicanvas)
     """
     def __init__(self):
         super().__init__()

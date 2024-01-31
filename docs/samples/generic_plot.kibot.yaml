@@ -1518,6 +1518,12 @@ outputs:
       # This isn't related to the KiBot concept of variants
       variant: ''
   # KiCanvas:
+  # Note that this tool is in alpha stage, so be ready to face some issues.
+  # Also note that most browsers won't allow Java Script to read local files,
+  # needed to load the SCH/PCB. So you must use a web server or enable the
+  # access to local files. In the case of Google Chrome you can use the
+  # `--allow-file-access-from-files` command line option.
+  # For more information visit the [KiCanvas web](https://github.com/theacodes/kicanvas)
   # 
   - name: 'kicanvas_example'
     comment: 'Generates an interactive web page to browse the schematic and/or PCB.'
@@ -1691,7 +1697,13 @@ outputs:
       template: 'default'
   # KiRi:
   # Must be applied to a git repository.
-  # Recursive git submodules aren't supported (submodules inside submodules)
+  # Recursive git submodules aren't supported (submodules inside submodules).
+  # Note that most browsers won't allow Java Script to read local files,
+  # needed to load the SCH/PCB. So you must use a web server or enable the
+  # access to local files. In the case of Google Chrome you can use the
+  # `--allow-file-access-from-files` command line option.
+  # This output generates a simple Python web server called `kiri-server` that you can use.
+  # For more information visit the [KiRi web](https://github.com/leoheck/kiri)
   - name: 'kiri_example'
     comment: 'Generates an interactive web page to browse the schematic and/or PCB differences between git commits.'
     type: 'kiri'

@@ -8,7 +8,13 @@ KiRi
 
 Generates an interactive web page to browse the schematic and/or PCB differences between git commits.
 Must be applied to a git repository. |br|
-Recursive git submodules aren't supported (submodules inside submodules)
+Recursive git submodules aren't supported (submodules inside submodules). |br|
+Note that most browsers won't allow Java Script to read local files,
+needed to load the SCH/PCB. So you must use a web server or enable the
+access to local files. In the case of Google Chrome you can use the
+`--allow-file-access-from-files` command line option. |br|
+This output generates a simple Python web server called `kiri-server` that you can use. |br|
+For more information visit the `KiRi web <https://github.com/leoheck/kiri>`__
 
 Type: ``kiri``
 
