@@ -55,6 +55,8 @@ Parameters:
                   -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - layers; plot_footprint_values>` [boolean=true] Include the footprint values.
                   -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
                      A default can be specified using the `layer_defaults` global option.
+                  -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - layers; use_for_center>` [boolean=true] Use this layer for centering purposes.
+                     You can invert the meaning using the `invert_use_for_center` option.
 
             -  **scaling** :index:`: <pair: output - pcb_print - options - pages; scaling>` [number=1.0] Scale factor (0 means autoscaling).
             -  **sort_layers** :index:`: <pair: output - pcb_print - options - pages; sort_layers>` [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
@@ -91,6 +93,8 @@ Parameters:
                   -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; plot_footprint_values>` [boolean=true] Include the footprint values.
                   -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
                      A default can be specified using the `layer_defaults` global option.
+                  -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; use_for_center>` [boolean=true] Use this layer for centering purposes.
+                     You can invert the meaning using the `invert_use_for_center` option.
 
             -  ``sheet`` :index:`: <pair: output - pcb_print - options - pages; sheet>` [string='Assembly'] Text to use for the `sheet` in the title block.
                Pattern (%*) and text variables are expanded.
@@ -121,6 +125,8 @@ Parameters:
          like the the solder mask are handled as images by the conversion tools.
       -  ``drill_marks`` :index:`: <pair: output - pcb_print - options; drill_marks>` [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
       -  ``forced_edge_cuts_color`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_color>` [string=''] Color used for the `force_edge_cuts` option.
+      -  ``forced_edge_cuts_use_for_center`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_use_for_center>` [boolean=true] Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
+         layer.
       -  ``frame_plot_mechanism`` :index:`: <pair: output - pcb_print - options; frame_plot_mechanism>` [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
          This option selects a workaround strategy.
          gui: uses KiCad GUI to do it. Is slow but you get the correct frame.
@@ -133,6 +139,9 @@ Parameters:
          Affected by global options.
       -  ``individual_page_scaling`` :index:`: <pair: output - pcb_print - options; individual_page_scaling>` [boolean=true] Tell KiCad to apply the scaling for each page as a separated entity.
          Disabling it the pages are coherent and can be superposed.
+      -  ``invert_use_for_center`` :index:`: <pair: output - pcb_print - options; invert_use_for_center>` [boolean=false] Invert the meaning of the `use_for_center` layer option.
+         This can be used to just select the edge cuts for centering, in this case enable this option
+         and disable the `use_for_center` option of the edge cuts layer.
       -  ``keep_temporal_files`` :index:`: <pair: output - pcb_print - options; keep_temporal_files>` [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
       -  ``micro_via_color`` :index:`: <pair: output - pcb_print - options; micro_via_color>` [string=''] Color used for micro `colored_vias`.
       -  ``pad_color`` :index:`: <pair: output - pcb_print - options; pad_color>` [string=''] Color used for `colored_pads`.

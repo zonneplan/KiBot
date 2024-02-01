@@ -135,6 +135,9 @@ class LayerOptions(Layer):
             """ Include the footprint values """
             self.force_plot_invisible_refs_vals = False
             """ Include references and values even when they are marked as invisible """
+            self.use_for_center = True
+            """ Use this layer for centering purposes.
+                You can invert the meaning using the `invert_use_for_center` option """
 
     def config(self, parent):
         super().config(parent)
@@ -327,6 +330,9 @@ class PCB_PrintOptions(VariantOptions):
             """ Store the temporal page and layer files in the output dir and don't delete them """
             self.force_edge_cuts = False
             """ *Add the `Edge.Cuts` to all the pages """
+            self.forced_edge_cuts_use_for_center = True
+            """ Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
+                layer """
             self.forced_edge_cuts_color = ''
             """ Color used for the `force_edge_cuts` option """
             self.scaling = 1.0
@@ -352,6 +358,10 @@ class PCB_PrintOptions(VariantOptions):
             """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
+            self.invert_use_for_center = False
+            """ Invert the meaning of the `use_for_center` layer option.
+                This can be used to just select the edge cuts for centering, in this case enable this option
+                and disable the `use_for_center` option of the edge cuts layer """
         add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
@@ -1164,8 +1174,9 @@ class PCB_PrintOptions(VariantOptions):
             vis_layers = LSET()
             for p in self.pages:
                 for la in p.layers:
-                    vis_layers.addLayer(la._id)
-            if self.force_edge_cuts:
+                    if la.use_for_center ^ self.invert_use_for_center:
+                        vis_layers.addLayer(la._id)
+            if self.force_edge_cuts and (self.forced_edge_cuts_use_for_center ^ self.invert_use_for_center):
                 vis_layers.addLayer(edge_id)
             GS.board.SetVisibleLayers(vis_layers)
         # Generate the output, page by page
@@ -1176,8 +1187,9 @@ class PCB_PrintOptions(VariantOptions):
             if self.individual_page_scaling:
                 vis_layers = LSET()
                 for la in p.layers:
-                    vis_layers.addLayer(la._id)
-                if self.force_edge_cuts:
+                    if la.use_for_center ^ self.invert_use_for_center:
+                        vis_layers.addLayer(la._id)
+                if self.force_edge_cuts and (self.forced_edge_cuts_use_for_center ^ self.invert_use_for_center):
                     vis_layers.addLayer(edge_id)
                 GS.board.SetVisibleLayers(vis_layers)
             needs_ki7_scale_workaround = p.scaling != 1.0 and self.check_ki7_scale_issue()

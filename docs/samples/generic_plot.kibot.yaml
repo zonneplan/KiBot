@@ -2342,6 +2342,9 @@ outputs:
       force_edge_cuts: false
       # [string=''] Color used for the `force_edge_cuts` option
       forced_edge_cuts_color: ''
+      # [boolean=true] Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
+      # layer
+      forced_edge_cuts_use_for_center: true
       # [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
       # Note that for PS you need `ghostscript` which isn't part of the default docker images
       format: 'PDF'
@@ -2360,6 +2363,10 @@ outputs:
       # [boolean=true] Tell KiCad to apply the scaling for each page as a separated entity.
       # Disabling it the pages are coherent and can be superposed
       individual_page_scaling: true
+      # [boolean=false] Invert the meaning of the `use_for_center` layer option.
+      # This can be used to just select the edge cuts for centering, in this case enable this option
+      # and disable the `use_for_center` option of the edge cuts layer
+      invert_use_for_center: false
       # [boolean=false] Store the temporal page and layer files in the output dir and don't delete them
       keep_temporal_files: false
       # [string=''] Color used for micro `colored_vias`
@@ -2407,6 +2414,9 @@ outputs:
               # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
               # A default can be specified using the `layer_defaults` global option
               suffix: ''
+              # [boolean=true] Use this layer for centering purposes.
+              # You can invert the meaning using the `invert_use_for_center` option
+              use_for_center: true
           # [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5)
           line_width: 0.1
           # [boolean=false] Print mirrored (X axis inverted)
@@ -2449,6 +2459,9 @@ outputs:
               # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
               # A default can be specified using the `layer_defaults` global option
               suffix: ''
+              # [boolean=true] Use this layer for centering purposes.
+              # You can invert the meaning using the `invert_use_for_center` option
+              use_for_center: true
           # [number=1.0] Scale factor (0 means autoscaling)
           scaling: 1.0
           # [string='Assembly'] Text to use for the `sheet` in the title block.

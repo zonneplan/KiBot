@@ -84,6 +84,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for CURRENT_DATE text variable
   - Options to mirror the text in the user layers when creating a mirrored page
     (#561)
+  - Options to select which layers are used for centering purposes (#573)
 - Populate:
   - Basic support for regular list items (#480)
 - Position:
