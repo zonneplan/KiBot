@@ -556,7 +556,7 @@ class Diff(BaseOutput):  # noqa: F821
     def __init__(self):
         super().__init__()
         self._category = ['PCB/docs', 'Schematic/docs']
-        self._both_related = True
+        self._any_related = True
         with document:
             self.options = DiffOptions
             """ *[dict] Options for the `diff` output """
@@ -564,6 +564,14 @@ class Diff(BaseOutput):  # noqa: F821
             """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
                 List of PCB layers to use. When empty all available layers are used.
                 Note that if you want to support adding/removing layers you should specify a list here """
+
+    def config(self, parent):
+        super().config(parent)
+        if self.get_user_defined('category'):
+            # The user specified a category, don't change it
+            return
+        # Adjust the category according to the selected output/s
+        self.category = ['PCB/docs' if self.options.pcb else 'Schematic/docs']
 
     @staticmethod
     def layer2dict(la):
