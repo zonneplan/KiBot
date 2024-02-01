@@ -268,3 +268,6 @@ class IBoM(BaseOutput):  # noqa: F821
         if tool is None:
             return None
         return BaseOutput.simple_conf_examples(name, 'Interactive HTML BoM', 'Assembly')  # noqa: F821
+
+    def get_navigate_targets(self, out_dir):
+        return (self.options.get_targets(out_dir), ['ibom'])
