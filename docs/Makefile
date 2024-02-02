@@ -50,6 +50,11 @@ source/rotations.rst: ../kibot/misc.py ../kibot/config_reader.py
 source/offsets.rst: ../kibot/misc.py ../kibot/config_reader.py
 	../src/kibot --help-list-offsets > $@
 
+source/Changelog.rst: ../CHANGELOG.md
+	pandoc -o tmp.rst $<
+	cat changelog_pre.rst tmp.rst > $@
+	rm tmp.rst
+
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
@@ -57,7 +62,7 @@ help:
 # "make mode" option.  $(O) is meant as a shortcut for $(SPHINXOPTS).
 $(SPHINXTARGETS): Makefile source/configuration/sup_outputs.rst source/dependencies.rst source/usage.txt source/configuration/sup_preflights.rst \
 	source/configuration/sup_filters.rst source/configuration/sup_variants.rst source/configuration/sup_globals.rst source/errors.rst \
-	source/rotations.rst source/offsets.rst
+	source/rotations.rst source/offsets.rst source/Changelog.rst
 	@$(SPHINXBUILD) -M $@ "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
 

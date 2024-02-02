@@ -39,6 +39,7 @@ KiBot (formerly KiPlot)
    notes_3d
    propose
    KiPlotYAML
+   Changelog
 
 .. toctree::
    :maxdepth: 2

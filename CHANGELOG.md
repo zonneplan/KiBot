@@ -279,8 +279,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for time stamp in the date (i.e. 2023-04-02T09:22-03:00)
   - Support to pass variables to the 3D models download URL (#414)
   - Support for netclass flags (#418)
-  - Export KICADn_* environment variables for the older versions
-    So you can use KICAD6_* variables on KiCad 7.
+  - Export *KICADn_* environment variables for the older versions
+    So you can use *KICAD6_* variables on KiCad 7.
 - Expansion patterns:
   - **%M** directory where the pcb/sch resides. Only the last component
     i.e. /a/b/c/name.kicad_pcb -> c  (#421)
@@ -503,7 +503,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gerber: Extension used for JLCPCB inner layers. (#329)
 - BoM:
   - The length of the CSV separator is now validated.
-  - Using \t, \n, \r and \\ is now supported. (See #334)
+  - Using the escaped t, n, r and \ is now supported. (See #334)
   - Digi-key link in the HTML output.
 - KiBoM: User defined fields wasn't available as column names. (#344)
 - Imports:

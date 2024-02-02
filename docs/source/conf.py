@@ -78,7 +78,7 @@ if branch == 'HEAD':
 
 if branch != "master":
     doc_id = ("**This is the documentation for the current development KiBot, not yet released. "
-              "To know what changed see the**  `changelog <CHANGELOG.md>`__")
+              "To know what changed see the**  :ref:`Changelog`")
 else:
     doc_id = (f"**This is the documentation for KiBot v{release} for the current development read** "
               "`here <https://github.com/INTI-CMNB/KiBot/tree/dev>`__")
