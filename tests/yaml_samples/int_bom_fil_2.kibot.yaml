@@ -12,11 +12,13 @@ filters:
     type: 'generic'
     comment: 'Remove components with through-hole attribute'
     exclude_tht: true
+    exclude_refs: [R3]
 
   - name: 'no virtual'
     type: 'generic'
     comment: 'Remove components with virtual attribute'
     exclude_virtual: true
+    exclude_refs: [R3]
 
 outputs:
   - name: 'no smd'

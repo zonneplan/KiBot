@@ -3,4 +3,3 @@ kibot:
 
 import:
   - file: P-Ban
-    is_internal: true

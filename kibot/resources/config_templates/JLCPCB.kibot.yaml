@@ -12,6 +12,15 @@ filters:
       - column: _field_lcsc_part
         regex: '^C\d+'
 
+  # Used to remove extra stuff added by KiKit for the panel
+  # If you need to keep them just specify a different filter matching only the thing you want
+  - name: _remove_extra
+    comment: 'Remove KiKit auxiliary stuff'
+    type: generic
+    exclude_any:
+      - column: References
+        regex: "^KiKit_"
+
 groups:
   - name: _JLCPCB_fab@_KIBOT_IMPORT_ID@
     outputs:
@@ -35,8 +44,8 @@ outputs:
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
       plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: false
+      plot_footprint_refs: @_KIBOT_PLOT_FOOTPRINT_REFS@
+      plot_footprint_values: @_KIBOT_PLOT_FOOTPRINT_VALUES@
       force_plot_invisible_refs_vals: false
       tent_vias: true
       use_protel_extensions: true
@@ -73,6 +82,7 @@ outputs:
     run_by_default: @_KIBOT_POS_ENABLED@
     options:
       pre_transform: @_KIBOT_POS_PRE_TRANSFORM@
+      dnf_filter: @_KIBOT_POS_DNF_FILTER@
       output: '%f_cpl_jlc.%x'
       format: CSV
       units: millimeters
@@ -121,14 +131,11 @@ outputs:
     options:
       # Position and BoM can be disabled
       skip_not_run: true
+      move_files: @_KIBOT_COMPRESS_MOVE@
       files:
         - from_output: _JLCPCB_gerbers@_KIBOT_IMPORT_ID@
           dest: /
         - from_output: _JLCPCB_drill@_KIBOT_IMPORT_ID@
-          dest: /
-        - from_output: _JLCPCB_position@_KIBOT_IMPORT_ID@
-          dest: /
-        - from_output: _JLCPCB_bom@_KIBOT_IMPORT_ID@
           dest: /
 
 ...
@@ -140,9 +147,13 @@ definitions:
   _KIBOT_IMPORT_DIR: 'JLCPCB'
   _KIBOT_MANF_DIR: '@_KIBOT_IMPORT_DIR@'
   _KIBOT_MANF_DIR_COMP: '@_KIBOT_IMPORT_DIR@'
-  _KIBOT_POS_PRE_TRANSFORM: _rot_footprint
+  _KIBOT_POS_PRE_TRANSFORM: _rot_footprint_jlcpcb
+  _KIBOT_POS_DNF_FILTER: _remove_extra
   _KIBOT_POS_ENABLED: true
   _KIBOT_BOM_ENABLED: true
+  _KIBOT_PLOT_FOOTPRINT_REFS: true
+  _KIBOT_PLOT_FOOTPRINT_VALUES: false
+  _KIBOT_COMPRESS_MOVE: true
   _KIBOT_GERBER_LAYERS: |
       - copper
             - F.SilkS

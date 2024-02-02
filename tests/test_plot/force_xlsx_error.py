@@ -19,5 +19,9 @@ logger.debug("Testing bom_writer without xlsxwriter")
 
 # Import the module to test
 from kibot.bom.bom_writer import write_bom
+from kibot.error import KiPlotError
 # Run it
-write_bom('bogus', 'xlsx', [], [], {})
+try:
+    write_bom('bogus', 'xlsx', [], [], {})
+except KiPlotError as e:
+    logger.error(e)

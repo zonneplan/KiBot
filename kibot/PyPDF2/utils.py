@@ -34,18 +34,12 @@ __author_email__ = "biziqe@mathieu.fenniak.net"
 
 import sys
 
-try:
-    import __builtin__ as builtins
-except ImportError:  # Py3
-    import builtins
+xrange_fn = range
+_basestring = str
 
-
-xrange_fn = getattr(builtins, "xrange", range)
-_basestring = getattr(builtins, "basestring", str)
-
-bytes_type = type(bytes()) # Works the same in Python 2.X and 3.X
-string_type = getattr(builtins, "unicode", str)
-int_types = (int, long) if sys.version_info[0] < 3 else (int,)
+bytes_type = bytes
+string_type = str
+int_types = (int,)
 
 
 # Make basic type tests more consistent
@@ -222,70 +216,51 @@ class PdfStreamError(PdfReadError):
     pass
 
 
-if sys.version_info[0] < 3:
-    def b_(s):
-        return s
-else:
-    B_CACHE = {}
+B_CACHE = {}
 
-    def b_(s):
-        bc = B_CACHE
-        if s in bc:
-            return bc[s]
-        if type(s) == bytes:
-            return s
-        else:
-            r = s.encode('latin-1')
-            if len(s) < 2:
-                bc[s] = r
-            return r
+def b_(s):
+    bc = B_CACHE
+    if s in bc:
+        return bc[s]
+    if type(s) == bytes:
+        return s
+    else:
+        r = s.encode('latin-1')
+        if len(s) < 2:
+            bc[s] = r
+        return r
 
 
 def u_(s):
-    if sys.version_info[0] < 3:
-        return unicode(s, 'unicode_escape')
-    else:
-        return s
+    return s
 
 
 def str_(b):
-    if sys.version_info[0] < 3:
-        return b
+    if type(b) == bytes:
+        return b.decode('latin-1')
     else:
-        if type(b) == bytes:
-            return b.decode('latin-1')
-        else:
-            return b
+        return b
 
 
 def ord_(b):
-    if sys.version_info[0] < 3 or type(b) == str:
+    if type(b) == str:
         return ord(b)
     else:
         return b
 
 
 def chr_(c):
-    if sys.version_info[0] < 3:
-        return c
-    else:
-        return chr(c)
+    return chr(c)
 
 
 def barray(b):
-    if sys.version_info[0] < 3:
-        return b
-    else:
-        return bytearray(b)
+    return bytearray(b)
 
 
 def hexencode(b):
-    if sys.version_info[0] < 3:
-        return b.encode('hex')
-    else:
-        import codecs
-        coder = codecs.getencoder('hex_codec')
-        return coder(b)[0]
+    import codecs
+    coder = codecs.getencoder('hex_codec')
+    return coder(b)[0]
 
 
 def hexStr(num):

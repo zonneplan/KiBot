@@ -18,11 +18,17 @@ from kibot.mcpyrate import activate  # noqa: F401
 import kibot.dep_downloader as downloader
 import kibot.out_compress as compress
 import kibot.out_kibom as kibom
+from kibot.misc import MISSING_TOOL
 import kibot.log as log
 
 cov = coverage.Coverage()
 bin_dir = os.path.join('.local', 'share', 'kibot', 'bin')
 bin_dir_py = os.path.join('.local', 'bin')
+DEP_PYTHON_MODULE_FOOBAR = """
+  - name: FooBar
+    python_module: true
+    role: mandatory
+"""
 
 
 def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name, b_dir, use_wrapper=False):
@@ -53,20 +59,22 @@ def try_dependency(ctx, caplog, monkeypatch, docstring, name_dep, downloader_nam
         logging.debug('Result: {} Version: {}'.format(res, version))
         with open(ctx.get_out_path('caplog.txt'), 'wt') as f:
             f.write(caplog.text)
-        assert res == os.path.join(home, b_dir, dep.command)
+        full_name = os.path.join(home, b_dir, dep.command)
+        assert res == full_name or res == full_name.replace('/bin', '/local/bin')
         # We executed the file
 
 
 def try_dependency_module(ctx, caplog, monkeypatch, docstring, name_dep, downloader_name):
     # Note: every attempt to install in a chosen dir failed, even when the module was there and in the sys.path the
     # importlib call miserably failed.
-    caplog.set_level(logging.INFO)
+    caplog.set_level(logging.DEBUG)
     with monkeypatch.context():
         # Refresh the module with actual dependencies
         mod = importlib.reload(downloader)
         mod.register_deps('test', yaml.safe_load(docstring))
         # Get the dependency
         dep = mod.used_deps['test:'+name_dep]
+        logging.info(f"downloader_name: {downloader_name}")
         # Download it
         cov.load()
         cov.start()
@@ -155,7 +163,11 @@ def test_dep_python(test_dir, caplog, monkeypatch):
     try:
         import engineering_notation
         logging.debug('Test module is already installed, using pip to uninstall ...')
-        subprocess.run(['pip', 'uninstall', '-y', 'engineering-notation'])
+        cmd = ['pip', 'uninstall', '-y', 'engineering-notation']
+        res = subprocess.run(cmd, capture_output=True)
+        if res.returncode == 1 and b'externally-managed-environment' in res.stderr:
+            cmd.insert(-1, '--break-system-packages')
+            res = subprocess.run(cmd, capture_output=True)
         # Why pip does this???!!!
         dir_name = os.path.dirname(engineering_notation.__file__)
         if os.path.isdir(dir_name):
@@ -167,3 +179,73 @@ def test_dep_python(test_dir, caplog, monkeypatch):
         logging.error(e)
     dep = 'Dependencies:\n  - name: engineering_notation\n    role: mandatory\n    python_module: true\n'
     try_dependency_module(ctx, caplog, monkeypatch, dep, 'engineering_notation', 'check_tool_python')
+
+
+def try_function(ctx, caplog, monkeypatch, fun_to_test, dep='', dep2=None, disable_download=True):
+    log.debug_level = 10
+    # Refresh the module with actual dependencies
+    mod = importlib.reload(downloader)
+    mod.register_deps('test', yaml.safe_load(downloader.__doc__+dep))
+    if dep2 is not None:
+        mod.register_deps('test2', yaml.safe_load(dep2))
+    mod.disable_auto_download = disable_download
+    cov.load()
+    cov.start()
+    res = fun_to_test(mod)
+    cov.stop()
+    cov.save()
+    with open(ctx.get_out_path('caplog.txt'), 'wt') as f:
+        f.write(caplog.text)
+    return res
+
+
+def do_test_check_tool_dep_get_ver_fatal(mod):
+    with pytest.raises(SystemExit) as pytest_wrapped_e:
+        mod.check_tool_dep_get_ver('test', 'foobar', fatal=True)
+    return pytest_wrapped_e
+
+
+@pytest.mark.indep
+def test_check_tool_dep_get_ver_1(test_dir, caplog, monkeypatch):
+    """ Check for missing stuff in check_tool_dep_get_ver
+        Also checks show_roles, get_version and do_log_error """
+    # Create a context to get an output directory
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    dep = """
+  - name: FooBar
+    version: 1.3.0.4
+    extra_deb: ['foobar-extra-debian', 'deb2']
+    arch: foobar-arch (AUR)
+    extra_arch: ['foobar-extra-arch', 'aur2']
+    command: foobar
+    role: Do this and this
+"""
+    pytest_wrapped_e = try_function(ctx, caplog, monkeypatch, do_test_check_tool_dep_get_ver_fatal, dep=dep)
+    # Check the messages
+    assert "Missing `foobar` command (FooBar), install it" in caplog.text
+    assert "AUR package: foobar-arch (AUR)" in caplog.text
+    assert "Recommended extra Arch packages: foobar-extra-arch aur2" in caplog.text
+    assert "Recommended extra Debian packages: foobar-extra-debian deb2" in caplog.text
+    assert "Used to do this and this (v1.3.0.4)" in caplog.text
+    assert "This is not an official package" in caplog.text
+    assert pytest_wrapped_e.type == SystemExit
+    assert pytest_wrapped_e.value.code == MISSING_TOOL
+
+
+def do_check_tool_python(mod):
+    mod.python_downloader = lambda x: True
+    return mod.check_tool_python(mod.used_deps['test:foobar'])
+
+
+@pytest.mark.indep
+def test_check_tool_python_1(test_dir, caplog, monkeypatch):
+    """ Download disabled case """
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    try_function(ctx, caplog, monkeypatch, do_check_tool_python, dep=DEP_PYTHON_MODULE_FOOBAR)
+
+
+@pytest.mark.indep
+def test_check_tool_python_2(test_dir, caplog, monkeypatch):
+    """ Download enabled, but fails """
+    ctx = context.TestContext(test_dir, 'bom', 'bom')
+    try_function(ctx, caplog, monkeypatch, do_check_tool_python, dep=DEP_PYTHON_MODULE_FOOBAR, disable_download=False)

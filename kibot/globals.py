@@ -8,6 +8,7 @@ from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
 from .kicad.config import expand_env
+from .layer import Layer
 from .macros import macros, document  # noqa: F401
 from .pre_filters import FiltersOptions, FilterOptionsKiBot
 from .log import get_logger, set_filters
@@ -36,7 +37,6 @@ class OSVariables(Optionable):
             v0 = tuple(self._tree.values())[0]
             n0 = tuple(self._tree.keys())[0]
             if n0 != 'name' and n0 != 'value' and isinstance(v0, str):
-                logger.error(self._tree)
                 self.name = n0
                 self.value = v0
                 return
@@ -233,9 +233,12 @@ class Globals(FiltersOptions):
             """ When applying filters and variants remove the solder paste for components that won't be included """
             self.remove_adhesive_for_dnp = True
             """ When applying filters and variants remove the adhesive (glue) for components that won't be included """
+            self.remove_solder_mask_for_dnp = False
+            """ When applying filters and variants remove the solder mask apertures for components that won't be included """
             self.restore_project = False
             """ Restore the KiCad project after execution.
-                Note that this option will undo operations like `set_text_variables` """
+                Note that this option will undo operations like `set_text_variables`.
+                Starting with 1.6.4 it also restores the PRL (Project Local Settings) and DRU (Design RUles) files """
             self.set_text_variables_before_output = False
             """ Run the `set_text_variables` preflight before running each output that involves variants.
                 This can be used when a text variable uses the variant and you want to create more than
@@ -279,7 +282,7 @@ class Globals(FiltersOptions):
             """ [dict] Used to define environment variables used by KiCad.
                 The values defined here are exported as environment variables and has
                 more precedence than KiCad paths defined in the GUI.
-                You can make reference to any OS environment variable using ${VARIABLE}.
+                You can make reference to any OS environment variable using `${VARIABLE}`.
                 The KIPRJMOD is also available for expansion """
             self.field_lcsc_part = ''
             """ The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
@@ -321,7 +324,7 @@ class Globals(FiltersOptions):
                 Also note that the fonts are installed using a mechanism known to work on Debian,
                 which is used by the KiBot docker images, on other OSs *your mileage may vary* """
             self.use_os_env_for_expand = True
-            """ In addition to KiCad text variables also use the OS environment variables when expanding ${VARIABLE} """
+            """ In addition to KiCad text variables also use the OS environment variables when expanding `${VARIABLE}` """
             self.field_voltage = Optionable
             """ [string|list(string)] Name/s of the field/s used for the voltage raiting.
                 Used for the value split filter.
@@ -348,6 +351,12 @@ class Globals(FiltersOptions):
                 working state. The *worktree* mechanism creates a separated worktree, that then is just removed.
                 The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
                 is the preferred mechanism """
+            self.layer_defaults = Layer
+            """ [list(dict)] Used to indicate the default suffix and description for the layers.
+                Note that the name for the layer must match exactly, no aliases """
+            self.include_components_from_pcb = True
+            """ Include components that are only in the PCB, not in the schematic, for filter and variants processing.
+                Note that version 1.6.3 and older ignored them """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

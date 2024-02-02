@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
   - name: KiCad PCB/SCH Diff
-    version: 2.4.4
+    version: 2.5.3
     role: mandatory
     github: INTI-CMNB/KiDiff
     command: kicad-diff.py
@@ -25,15 +25,14 @@ import os
 import re
 from shutil import rmtree, copy2
 from subprocess import CalledProcessError
-from tempfile import mkdtemp, NamedTemporaryFile
+from tempfile import mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
 from .layer import Layer
 from .misc import DIFF_TOO_BIG, FAILED_EXECUTE
-from .optionable import BaseOptions
-from .out_base import VariantOptions
 from .registrable import RegOutput
+from .out_any_diff import AnyDiffOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -41,7 +40,7 @@ logger = log.get_logger()
 STASH_MSG = 'KiBot_Changes_Entry'
 
 
-class DiffOptions(BaseOptions):
+class DiffOptions(AnyDiffOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -75,9 +74,10 @@ class DiffOptions(BaseOptions):
             self.cache_dir = ''
             """ Directory to cache the intermediate files. Leave it blank to disable the cache """
             self.diff_mode = 'red_green'
-            """ [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
-                The `stats` mode is used to meassure the amount of difference. In this mode all
-                changes are red, but you can abort if the difference is bigger than certain threshold """
+            """ [red_green,stats,2color] In the `red_green` mode added stuff is green and red when removed.
+                The `stats` mode is used to measure the amount of difference. In this mode all
+                changes are red, but you can abort if the difference is bigger than certain threshold.
+                The '2color' mode is like 'red_green', but you can customize the colors """
             self.fuzz = 5
             """ [0,100] Color tolerance (fuzzyness) for the `stats` mode """
             self.threshold = 0
@@ -102,16 +102,19 @@ class DiffOptions(BaseOptions):
                 `file_id` instead of its name """
             self.only_different = False
             """ Only include the pages with differences in the output PDF.
-                Note that when no differeces are found we get a page saying *No diff* """
+                Note that when no differences are found we get a page saying *No diff* """
             self.only_first_sch_page = False
             """ Compare only the main schematic page (root page) """
             self.always_fail_if_missing = False
             """ Always fail if the old/new file doesn't exist. Currently we don't fail if they are from a repo.
                 So if you refer to a repo point where the file wasn't created KiBot will use an empty file.
                 Enabling this option KiBot will report an error """
+            self.color_added = '#00FF00'
+            """ Color used for the added stuff in the '2color' mode """
+            self.color_removed = '#FF0000'
+            """ Color used for the removed stuff in the '2color' mode """
         super().__init__()
-        self._expand_id = 'diff'
-        self._expand_ext = 'pdf'
+        self.add_to_doc("zones", "Be careful with the cache when changing this setting")
 
     def config(self, parent):
         super().config(parent)
@@ -126,6 +129,7 @@ class DiffOptions(BaseOptions):
                 raise KiPlotConfigurationError('`new` must be a single string for `{}` type'.format(self.new_type))
         if self.old_type == 'multivar' and self.new_type != 'multivar':
             raise KiPlotConfigurationError("`old_type` can't be `multivar` when `new_type` isn't (`{}`)".format(self.new_type))
+        self.validate_colors(['color_added', 'color_removed'])
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
@@ -142,18 +146,6 @@ class DiffOptions(BaseOptions):
                 self.h.update(chunk)
         return self.h.hexdigest()
 
-    def add_to_cache(self, name, hash):
-        cmd = [self.command, '--no_reader', '--only_cache', '--old_file_hash', hash, '--cache_dir', self.cache_dir]
-        if self.incl_file:
-            cmd.extend(['--layers', self.incl_file])
-        if not self.only_first_sch_page:
-            cmd.append('--all_pages')
-        if GS.debug_enabled:
-            cmd.insert(1, '-'+'v'*GS.debug_level)
-        cmd.extend([name, name])
-        self.name_used_for_cache = name
-        run_command(cmd)
-
     def cache_pcb(self, name, force_exist):
         if name:
             if not os.path.isfile(name) and not force_exist:
@@ -164,10 +156,8 @@ class DiffOptions(BaseOptions):
         if not os.path.isfile(name):
             if self.always_fail_if_missing:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-            with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False) as f:
-                f.write("(kicad_pcb (version 20171130) (host pcbnew 5.1.5))\n")
-                name = f.name
-                self._to_remove.append(name)
+            name, to_remove = self.write_empty_file(name, create_tmp=True)
+            self._to_remove.extend(to_remove)
         hash = self.get_digest(name)
         self.add_to_cache(name, hash)
         return hash
@@ -182,23 +172,8 @@ class DiffOptions(BaseOptions):
         if not os.path.isfile(name):
             if self.always_fail_if_missing:
                 raise KiPlotConfigurationError('Missing file to compare: `{}`'.format(name))
-            ext = os.path.splitext(name)[1]
-            with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
-                logger.debug('Creating empty schematic: '+f.name)
-                if ext == '.kicad_sch':
-                    f.write("(kicad_sch (version 20211123) (generator eeschema))\n")
-                else:
-                    f.write("EESchema Schematic File Version 4\nEELAYER 30 0\nEELAYER END\n$Descr A4 11693 8268\n"
-                            "$EndDescr\n$EndSCHEMATC\n")
-                name = f.name
-                self._to_remove.append(name)
-            if ext != '.kicad_sch':
-                lib_name = os.path.splitext(name)[0]+'-cache.lib'
-                if not os.path.isfile(lib_name):
-                    logger.debug('Creating dummy cache lib: '+lib_name)
-                    with open(lib_name, 'w') as f:
-                        f.write("EESchema-LIBRARY Version 2.4\n#\n#End Library\n")
-                    self._to_remove.append(lib_name)
+            name, to_remove = self.write_empty_file(name, create_tmp=True)
+            self._to_remove.extend(to_remove)
         # Schematics can have sub-sheets
         sch = load_any_sch(name, os.path.splitext(os.path.basename(name))[0])
         files = sch.get_files()
@@ -213,11 +188,6 @@ class DiffOptions(BaseOptions):
     def cache_file(self, name=None, force_exist=False):
         self.git_hash = 'Current' if not name else 'FILE'
         return self.cache_pcb(name, force_exist) if self.pcb else self.cache_sch(name, force_exist)
-
-    def run_git(self, cmd, cwd=None, just_raise=False):
-        if cwd is None:
-            cwd = self.repo_dir
-        return run_command([self.git_command]+cmd, change_to=cwd, just_raise=just_raise)
 
     def stash_pop(self, cwd=None):
         # We don't know if we stashed anything (push always returns 0)
@@ -340,9 +310,6 @@ class DiffOptions(BaseOptions):
                     name += '-dirty'
         return '{}({})'.format(self.run_git(['rev-parse', '--short', 'HEAD'], cwd=cwd), name)
 
-    def git_dirty(self):
-        return self.run_git(['status', '--porcelain', '-uno'])
-
     def cache_git_use_stash(self, name):
         self.stashed = False
         self.checkedout = False
@@ -406,7 +373,7 @@ class DiffOptions(BaseOptions):
             name = self.solve_git_name(name)
             git_tmp_wd = mkdtemp()
             logger.debug('Checking out '+name+' to '+git_tmp_wd)
-            self.run_git(['worktree', 'add', git_tmp_wd, name])
+            self.run_git(['worktree', 'add', '--detach', '--force', git_tmp_wd, name])
             self._worktrees_to_remove.append(git_tmp_wd)
             self.run_git(['submodule', 'update', '--init', '--recursive'], cwd=git_tmp_wd)
             name_copy = self.run_git(['ls-files', '--full-name', self.file])
@@ -422,10 +389,6 @@ class DiffOptions(BaseOptions):
         # A short version of the current hash
         self.git_hash = self.get_git_point_desc(name_ori, cwd)
         return hash
-
-    def remove_git_worktree(self, name):
-        logger.debug('Removing temporal checkout at '+name)
-        self.run_git(['worktree', 'remove', '--force', name])
 
     @staticmethod
     def check_output_type(out, must_be):
@@ -458,12 +421,20 @@ class DiffOptions(BaseOptions):
     def cache_current(self):
         """ The file as we interpreted it """
         if self.pcb:
-            fname, dir_name = VariantOptions.save_tmp_dir_board('diff')
+            fname, dir_name = self.save_tmp_dir_board('diff')
+            self.dirs_to_remove.append(dir_name)
         else:
-            dir_name = mkdtemp()
-            fname = GS.sch.save_variant(dir_name)
-            GS.copy_project_sch(dir_name)
-        self.dirs_to_remove.append(dir_name)
+            if self._comps:
+                # We have a variant/filter applied
+                dir_name = mkdtemp()
+                fname = GS.sch.save_variant(dir_name)
+                GS.copy_project_sch(dir_name)
+                self.dirs_to_remove.append(dir_name)
+            else:
+                # Just use the current file
+                # Note: The KiCad 7 DNP field needs some filter to be honored
+                dir_name = GS.sch_dir
+                fname = os.path.basename(GS.sch_file)
         res = self.cache_file(os.path.join(dir_name, fname))
         self.git_hash = 'Current'
         return res
@@ -478,16 +449,7 @@ class DiffOptions(BaseOptions):
         return self.cache_output(name)
 
     def create_layers_incl(self, layers):
-        incl_file = None
-        if self.pcb and not isinstance(layers, type):
-            layers = Layer.solve(layers)
-            logger.debug('Including layers:')
-            with NamedTemporaryFile(mode='w', suffix='.lst', delete=False) as f:
-                incl_file = f.name
-                for la in layers:
-                    logger.debug('- {} ({})'.format(la.layer, la.id))
-                    f.write(str(la.id)+'\n')
-        return incl_file
+        return self.save_layers_incl(Layer.solve(layers)) if self.pcb and not isinstance(layers, type) else None
 
     def do_compare(self, old, old_type, new, new_type, name, name_ori):
         dir_name = os.path.dirname(name)
@@ -502,7 +464,9 @@ class DiffOptions(BaseOptions):
         # Compute the diff using the cache
         cmd = [self.command, '--no_reader', '--new_file_hash', new_hash, '--old_file_hash', old_hash,
                '--cache_dir', self.cache_dir, '--output_dir', dir_name, '--output_name', file_name,
-               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz), '--no_exist_check']
+               '--diff_mode', self.diff_mode, '--fuzz', str(self.fuzz), '--no_exist_check',
+               '--added_2color', self.color_added, '--removed_2color', self.color_removed]
+        self.add_zones_ops(cmd)
         if self.incl_file:
             cmd.extend(['--layers', self.incl_file])
         if self.threshold:
@@ -518,12 +482,8 @@ class DiffOptions(BaseOptions):
             run_command(cmd, just_raise=True)
         except CalledProcessError as e:
             if e.returncode == 10:
-                logger.error('Diff above the threshold')
-                exit(DIFF_TOO_BIG)
-            logger.error('Running {} returned {}'.format(e.cmd, e.returncode))
-            if e.stdout:
-                logger.debug('- Output from command: '+e.stdout.decode())
-            exit(FAILED_EXECUTE)
+                GS.exit_with_error('Diff above the threshold', DIFF_TOO_BIG)
+            GS.exit_with_error(None, FAILED_EXECUTE, e)
         if self.add_link_id:
             name_comps = os.path.splitext(name_ori)
             target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]
@@ -596,14 +556,22 @@ class Diff(BaseOutput):  # noqa: F821
     def __init__(self):
         super().__init__()
         self._category = ['PCB/docs', 'Schematic/docs']
-        self._both_related = True
+        self._any_related = True
         with document:
             self.options = DiffOptions
             """ *[dict] Options for the `diff` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user]
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
                 List of PCB layers to use. When empty all available layers are used.
                 Note that if you want to support adding/removing layers you should specify a list here """
+
+    def config(self, parent):
+        super().config(parent)
+        if self.get_user_defined('category'):
+            # The user specified a category, don't change it
+            return
+        # Adjust the category according to the selected output/s
+        self.category = ['PCB/docs' if self.options.pcb else 'Schematic/docs']
 
     @staticmethod
     def layer2dict(la):

@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+		<link rel="stylesheet" href="./utils/bootstrap.min.css" integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn" crossorigin="anonymous">
+		<!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> -->
+		<link rel="shortcut icon" href="data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAAIAAAACABAMAAAAxEHz4AAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAD1BMVEUAAACbAAAGANJpli7///8s69hEAAAAAXRSTlMAQObYZgAAAAFiS0dEBI9o2VEAAAAHdElNRQfnDBwQNhSXSmLEAAABzElEQVRo3u3ZbZKDIAwG4AgXwBs4ewJmuP/dtlb5CKIkwWLZ2fyTwafyqmAV5rMyEEr9nBf8AzcCa8cWYOs5iQHfVQrEznXgtX0E1l7a4UFwgLWve5VND4ED7Pu/BQlg1uPfCopFANxdgBUBcQRp2a6AK9UfAGxPQH8EcGSgcCUWgOV4hV7cCxqNgQDoJgDNByLAQDYjZSFUgcOcaArAxVk4zspsIKwLkwdQCAQgX5n4QLY24hRJQL40Pw+kIQiA+QuANAQJYNoB3QagEB4CkhBEgDkDsvokEEMQAXM7AI1AEsJjQAhhXCCEMDDgQ3gO8GMYGdhDGBnYQ2gGQA7sY3geUGKgnmInAORANUUioMQA3AK4dgDkQC3FboASA7UUOwD6+jQQAdsOKDFQCaEfAHLgOsWOgBIDxxSXJBE6kOyTPv5SgCwEQH/l+EBoVlxA+fH7IgMoxXh/bg0SILxyYgJoRO9tMoDfa7nw1kuJgP0A/PMjCTh749kMgAfSvmtNtwO6KAwFFEPgZFADqqfx7PtBG8C5EouWFJDcTMVDAMbtnC4JECcU+oyUAssmWODMiWhRylr5wOJb6etCtiziRslH2yX+/ld9Nh4X+AUBg9CLMlCEqAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMy0xMi0yOFQxNjo0ODo1OCswMDowMGbztFMAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMjMtMTItMjZUMTE6MjY6MDUrMDA6MDCVFGlIAAAAAElFTkSuQmCC" type="image/x-icon">
+		<link rel="stylesheet" href="kiri.css" integrity="">
+		<link rel="stylesheet" href="layer_colors.css" integrity="">
+		<title>[PROJECT_TITLE]</title>
+	</head>
+	<body>
+
+		<div id="server_offline" style="display: none; ">
+			<span>Server is offline, waiting ...</span>
+		</div>
+
+		<div id="no_file_access" style="display: none; ">
+			<span>The browser can't read local files. Enable it to continue. I.e. use <i>--allow-file-access-from-files</i> on Chrome</span>
+		</div>
+
+		<!-- User Interface -->
+		<div id="main_ui" class="container fill no-gutters ui-style">
+			<div class="row fill align-items-start no-gutters ui-row-style">
+				<!-- Project info and commits -->
+				<div class="col align-self-start justify-content-start col-3 no-gutters ui-col-prjdata">
+					<div class="list-group 3 no-gutters ui-list-prjdata">
+						<span class="ui-list-topsep-prjdata"></span>
+						<h3 class="text-light ui-kiri-title">Kicad Revision Inspector</h3>
+						<div id="sch_title" class="ui-sch-title-m" style="display: inline;">
+							<h4 id="sch_title_text" class="text-warning text-bold ui-sch-title">[SCH_TITLE]</h4>
+							<p id="sch_rev" class="text-light text-sm" >Rev. [SCH_REVISION] ([SCH_DATE])</p>
+						</div>
+						<div id="pcb_title" class="ui-pcb-title-m" style="display: none;">
+							<h4 id="pcb_title_text" class="text-info text-bold ui-pcb-title">[PCB_TITLE]</h4>
+							<p id="pcb_rev" class="text-light text-sm">Rev. [PCB_REVISION] ([PCB_DATE])</p>
+						</div>
+						<!-- Commits -->
+						<p class="text-light">
+							<span class="icon-commits"></span> Commits
+						</p>
+						<div class="form-check scrollbox ui-commits-list">
+							<form id="commits_form" class="overflow-auto scrollbox-content">
+								<!-- FILL_COMMITS_HERE -->
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<!-- Controls, commit legends and diff -->
+				<div class="col align-self-start justify-content-start col-7 no-gutters ui-center">
+					<div class="row no-gutters ui-center-row">
+						<!-- Controls -->
+						<div class="container no-gutters ui-controls">
+							<div class="row no-gutters ui-controls-row">
+
+								<form class="inline ui-pcb-sch-sel">
+									<div id="view_mode" class="form-group row btn-group btn-group-toggle" data-toggle="buttons" role="group" aria-label="View Mode">
+										<label id="show_sch_lbl" data-toggle="tooltip" title="Schematic View (s)" class="btn btn-secondary active" onclick="show_sch()">
+											<input id="show_sch" type="radio" name="view_mode" value="show_sch" checked>
+											<div class="icon-control-sch"></div>
+										</label>
+										<label id="show_pcb_lbl" data-toggle="tooltip" title="Layout View (s)" class="btn btn-secondary" onclick="show_pcb()">
+											<input id="show_pcb" type="radio" name="view_mode" value="show_pcb" >
+											<div class="icon-control-pcb"></div>
+										</label>
+									</div>
+								</form>
+
+								<span class="ui-controls-sep1"></span>
+
+								<form class="inline ui-controls-svg">
+									<div id="svg_controls" class="form-group btn-group btn-group-toggle" role="group" aria-label="Zoom Level">
+										<button id="zoom-in" data-toggle="tooltip" title="Zoom In (+)" name="svg_controls" type="button" aria-pressed="false" class="btn btn-secondary" onclick="this.blur();">
+										<span class="icon-control-zin"></span>
+										</button>
+										<button id="zoom-out" data-toggle="tooltip" title="Zoom Out (-)" name="svg_controls" type="button" aria-pressed="false" class="btn btn-secondary" onclick="this.blur();">
+										<span class="icon-control-zout"></span>
+										</button>
+										<button id="zoom-fit" data-toggle="tooltip" title="Fit View (0)" name="svg_controls" type="button" aria-pressed="false" class="btn btn-secondary" onclick="this.blur();">
+										<span class="icon-control-center"></span>
+										</button>
+									</div>
+								</form>
+
+								<span class="ui-controls-sep2"></span>
+
+								<form class="inline ui-controls-info">
+									<div id="info_controls" class="form-group btn-group btn-group-toggle" role="group" aria-label="Info" >
+										<button id="info-btn" data-toggle="modal" title="Info (i)" name="info_controls" type="button" aria-pressed="false" class="btn btn-secondary" data-target="#shortcuts-modal" onclick="this.blur();">
+											<span class="icon-control-info"></span>
+										</button>
+									</div>
+								</form>
+
+							</div>
+						</div>
+					</div>
+					<!-- Commit legends -->
+					<div class="col no-gutters ui-canvas-out">
+						<div class="col no-gutters ui-canvas-in">
+							<div id="legend" class="rounded no-gutters ui-legend">
+								<iframe name="hidden_post_target" class="hidden_iframe"></iframe>
+								<div id="commit1" class="commit1" style="visibility: visible;">
+									<span id="commit1_legend" class="icon-commit1 icon-commit1-color"></span>
+									<small id="commit1_legend_text" class="text-sm text-light">
+										Newer
+										<span class="text-monospace">
+											<form id="KICAD_COMMIT_1" class="form-inline" style="display: inline;" action="index.html" method="post" target="hidden_post_target">
+												<input id="commit1_hash" type="hidden" name="hash" value="[KICAD_COMMIT_1]">
+												<input id="commit1_kicad_pro_path" type="hidden" name="kicad_pro_path" value="[COMMIT_1_KICAD_PRO]">
+												(<a data-toggle="tooltip" title="Launch Kicad at this Rev" id="commit1_legend_hash" href="javascript:{}" onclick="document.getElementById('KICAD_COMMIT_1').submit();">[COMMIT_1_HASH]</a>)
+											</form>
+										</span>
+									</small>
+								</div>
+								<span class="ui-legend-sep1"></span>
+								<div id="commit2" class="commit2" style="visibility: visible;">
+									<span id="commit2_legend" class="icon-commit2 icon-commit2-color"></span>
+									<small id="commit2_legend_text" class="text-sm text-light">
+										Older
+										<span class="text-monospace">
+											<form id="KICAD_COMMIT_2" class="form-inline" style="display: inline;" action="index.html" method="post" target="hidden_post_target">
+												<input id="commit2_hash" type="hidden" name="hash" value="[KICAD_COMMIT_2]">
+												<input id="commit2_kicad_pro_path" type="hidden" name="kicad_pro_path" value="[COMMIT_2_KICAD_PRO]">
+												(<a data-toggle="tooltip" title="Launch Kicad at this Rev" id="commit2_legend_hash" href="javascript:{}" onclick="document.getElementById('KICAD_COMMIT_2').submit();">[COMMIT_2_HASH]</a>)
+											</form>
+										</span>
+									</small>
+								</div>
+								<div id="commit3" class="commit3" style="visibility: visible;">
+									<span id="commit3_legend" class="icon-commit3"></span>
+									<small id="commit3_legend_text" class="text-sm text-light">
+										Unchanged
+									</small>
+								</div>
+								<span class="commit-standalone-color"></span>
+							</div>
+							<!-- Diff canvas -->
+							<div id="diff-container" class="position-relative ui-diff-container">
+								<!-- SVGS_GOES_HERE -->
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Sheets/Layers -->
+				<div class="col align-self-start justify-content-start col-1 no-gutters ui-sheets-col">
+					<div class="list-group no-gutters" id="pages_list" style="display: inline;">
+						<!-- Sheets form -->
+						<div class="form-check no-gutters ui-sheets-form">
+							<p class="text-light">
+								<span class="icon-sheets"></span> Pages
+							</p>
+							<div class="row ui-sheets-form-row">
+								<div class="col ui-sheets-form-col">
+									<div id="pages_list_div" class="form-check scrollbox ui-sheets-form-div">
+										<form id="pages_list_form" class="overflow-auto scrollbox-content">
+											<!-- FILL_PAGES_HERE -->
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="list-group no-gutters" id="layers_list" style="display: none;">
+						<div class="form-check no-gutters ui-sheets-form">
+							<p class="text-light">
+								<span class="icon-layers"></span> Layers
+							</p>
+							<div class="row ui-sheets-form-row">
+								<div class="col ui-sheets-form-col">
+									<div id="layers_list_div" class="form-check scrollbox ui-sheets-form-div">
+										<form id="layers_list_form" class="overflow-auto scrollbox-content">
+											<!-- FILL_LAYERS_HERE -->
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Help dialog -->
+		<div class="modal fade text-light" id="shortcuts-modal" tabindex="-1" role="dialog" aria-labelledby="shortcuts-modal-title" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h4 class="modal-title" id="shortcuts-modal-title">Shortcuts</h4>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+					<div class="modal-body">
+
+						<h5>Commits List</h5>
+
+						<table>
+							<tbody>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>&#x21E7;</kbd></small></td>
+								<td>Move commits par upwards</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>&#x21E9;</kbd></small></td>
+								<td>Move commits par downwards</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>[</kbd> or <kbd>Ctrl+&#x21E7;</kbd></small></td>
+								<td>Move 2nd commit upwards</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>]</kbd> or <kbd>Ctrl+&#x21E9;</kbd></small></td>
+								<td>Move 2nd commit downwards</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>r</kbd></small></td>
+								<td>Reset commit selection to the top 2 commits</td>
+							</tr>
+							</tbody>
+						</table>
+
+						<hr class="hr_shortcuts">
+						<h5>View, sheets and layers</h5>
+
+						<table>
+							<tbody>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>s</kbd></small></td>
+								<td>Switch Schematic/Layout view</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>q</kbd></small></td>
+								<td>Toggle visibility of newer commit</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>w</kbd></small></td>
+								<td>Toggle visibility of older commit</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>&#x21E8;</kbd></small></td>
+								<td>Select next page/layer</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>&#x21E6;</kbd></small></td>
+								<td>Select previous page/layer</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>Ctrl + &#x21E8;</kbd></small></td>
+								<td>Select next page/layer (cycling)</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>Ctrl + &#x21E6;</kbd></small></td>
+								<td>Select previous page/layer (cycling)</td>
+							</tr>
+							</tbody>
+						</table>
+
+						<hr class="hr_shortcuts">
+						<h5>Diff Pan and Zoom</h5>
+
+						<table>
+							<tbody>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>+</kbd></small></td>
+								<td>Zoom in</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>-</kbd></small></td>
+								<td>Zoom out</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>0</kbd></small></td>
+								<td>Zoom fit</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>Alt + &#x21E7;</kbd></small></td>
+								<td>Pan svg up</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>Alt + &#x21E9;</kbd></small></td>
+								<td>Pan svg down</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>Alt + &#x21E8;</kbd></small></td>
+								<td>Pan svg left</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>Alt + &#x21E6;</kbd></small></td>
+								<td>Pan svg right</td>
+							</tr>
+							</tbody>
+						</table>
+
+						<hr class="hr_shortcuts">
+						<h5>Miscellaneous</h5>
+
+						<table>
+							<tbody>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>f</kbd></small></td>
+								<td>Toggle full screen view</td>
+							</tr>
+							<tr>
+								<td class="shortcut_col"><small class="text-sm text-muted"><kbd>i</kbd></small></td>
+								<td>Shows this info view</td>
+							</tr>
+							</tbody>
+						</table>
+
+					</div>
+					<div class="modal-footer">
+						<small class="text-sm">
+							<a href="https://github.com/leoheck/kiri" target="_blank">Kicad Revision Inspector (KiRI)</a> by Leandro Heck + <a href="https://github.com/INTI-CMNB/KiBot" target="_blank">KiBot</a>
+						</small>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="./utils/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+		<script src="./utils/bootstrap.bundle.min.js" integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF" crossorigin="anonymous"></script>
+		<script src="./utils/svg-pan-zoom.min.js" integrity=""></script>
+		<script src="./kiri.js" integrity="" crossorigin="anonymous"></script>
+	</body>
+</html>

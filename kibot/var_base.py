@@ -43,7 +43,7 @@ class Edge(object):
         self.end = GS.get_end_point(shape)
         self.r_end = round_point(self.end)
         self.shape = shape
-        self.cls = shape.ShowShape()
+        self.cls = GS.get_shape(shape)
         self.used = False
 
     def get_other_end(self, point):
@@ -287,10 +287,10 @@ class SubPCBOptions(PanelOptions):
     def move_objects(self):
         """ Move all objects by self._moved """
         logger.debug('Moving all PCB elements by '+point_str(self._moved))
-        any(map(lambda x: x.Move(self._moved), GS.get_modules()))
-        any(map(lambda x: x.Move(self._moved), GS.board.GetDrawings()))
-        any(map(lambda x: x.Move(self._moved), GS.board.GetTracks()))
-        any(map(lambda x: x.Move(self._moved), GS.board.Zones()))
+        any((x.Move(self._moved) for x in GS.get_modules()))
+        any((x.Move(self._moved) for x in GS.board.GetDrawings()))
+        any((x.Move(self._moved) for x in GS.board.GetTracks()))
+        any((x.Move(self._moved) for x in GS.board.Zones()))
 
     def center_objects(self):
         """ Move all objects in the PCB so it gets centered """

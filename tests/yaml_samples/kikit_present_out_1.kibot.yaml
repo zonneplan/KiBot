@@ -1,0 +1,95 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: KiKit_present_files
+    comment: "Present test using full auto mode"
+    type: kikit_present
+    dir: Present/Out
+    options:
+      description: 'tests/data/silly_project.md'
+      repository: 'https://github.com/INTI-CMNB/KiBot/'
+      boards:
+        - gerbers: gerbers
+          pcb_from_output: panel
+
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      format: svg
+      vcuts: true
+      warnings: visible
+      dpi: 600
+
+  - name: 'gerbers'
+    comment: "Gerbers for the Gerber god"
+    type: gerber
+    dir: gerberdir
+    layers: copper
+
+  - name: 'panel'
+    comment: "Create a 2x2 panel"
+    type: panelize
+    options:
+      title: '+ (Panel)'
+      units: mm
+      configs:
+        - layout:
+            rows: 2
+            cols: 2
+            space: 2
+            hbackbone: 5
+            vbackbone: 5
+            hboneskip: 1
+            vboneskip: 1
+          page:
+            size: A3
+          tabs:
+            type: fixed
+            width: 3
+            vcount: 2
+            hcount: 0
+          cuts:
+            type: mousebites
+            drill: 0.5
+            spacing: 1mm
+            offset: 0.2
+            prolong: 0.5
+          framing:
+            type: railstb
+            width: 5
+            space: 3
+          copperfill:
+            type: hatched
+            clearance: 2
+            spacing: 0.5
+            width: 0.5
+          tooling:
+            type: 3hole
+            hoffset: 2.5
+            voffset: 2.5
+            size: 1.5
+          fiducials:
+            type: 3fid
+            hoffset: 5
+            voffset: 2.5
+            coppersize: 2
+            opening: 1
+          text:
+            type: simple
+            text: My panel
+            anchor: mt
+            voffset: 2.5
+            hjustify: center
+            vjustify: center
+          post:
+            millradius: 1
+
+  - name: result
+    comment: Compress the gerbers
+    type: compress
+    options:
+      files:
+        - from_output: gerbers

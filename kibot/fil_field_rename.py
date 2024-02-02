@@ -15,7 +15,7 @@ logger = log.get_logger()
 
 @filter_class
 class Field_Rename(BaseFilter):  # noqa: F821
-    """ Field_Rename
+    """ Field Renamer
         This filter implements a field renamer.
         The internal `_kicost_rename` filter emulates the KiCost behavior """
     def __init__(self):

@@ -1,0 +1,93 @@
+KiBot: KiCad automation tool for documents generation
+
+Usage:
+  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
+         [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
+         [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--banner N]
+         [TARGET...]
+  kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
+         [-E DEF] ... [--defs-from-env] [--config-outs]
+         [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
+  kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
+         --list-variants
+  kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
+  kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
+         [-t, --type TYPE]... --quick-start
+  kibot [-v...] [--rst] --help-filters
+  kibot [-v...] [--markdown|--json|--rst] --help-dependencies
+  kibot [-v...] [--rst] --help-global-options
+  kibot [-v...] --help-list-offsets
+  kibot [-v...] [--rst] --help-list-outputs
+  kibot [-v...] --help-list-rotations
+  kibot [-v...] --help-output=HELP_OUTPUT
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-outputs
+  kibot [-v...] [--rst] --help-preflights
+  kibot [-v...] [--rst] --help-variants
+  kibot [-v...] --help-banners
+  kibot [-v...] [--rst] --help-errors
+  kibot -h | --help
+  kibot --version
+
+Arguments:
+  TARGET    Outputs to generate, default is all
+
+Options:
+  -A, --no-auto-download           Disable dependencies auto-download
+  -b BOARD, --board-file BOARD     The PCB .kicad-pcb board file
+  --banner N                       Display banner number N (-1 == random)
+  -c CONFIG, --plot-config CONFIG  The plotting config file to use
+  -C, --cli-order                  Generate outputs using the indicated order
+  --config-outs                    Configure all outputs before listing them
+  -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
+  -D, --dont-stop                  Try to continue if an output fails
+  --defs-from-env                  Use the environment vars as preprocessor
+                                   values
+  -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
+  -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
+  -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
+  -i, --invert-sel                 Generate the outputs not listed as targets
+  -l, --list                       List available outputs, preflights and
+                                   groups (in the config file).
+                                   You don't need to specify an SCH/PCB unless
+                                   using --config-outs
+  --list-variants                  List the available variants and exit
+  -L, --log LOGFILE                Log to LOGFILE using maximum debug level.
+                                   Is independent of what is logged to stderr
+  -m MKFILE, --makefile MKFILE     Generate a Makefile (no targets created)
+  -n, --no-priority                Don't sort targets by priority
+  -p, --copy-options               Copy plot options from the PCB file
+  --only-names                     Print only the names. Note that for --list
+                                   if no other --only-* option is provided it
+                                   also acts as a virtual --only-outputs
+  --only-groups                    Print only the groups.
+  --only-pre                       Print only the preflights
+  --output-name-first              Use the output name first when listing
+  -P, --copy-and-expand            As -p but expand the list of layers
+  -q, --quiet                      Remove information logs
+  -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
+  -v, --verbose                    Show debugging information
+  -V, --version                    Show program's version number and exit
+  -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
+  -W, --stop-on-warnings           Stop on warnings
+  -x, --example                    Create a template configuration file
+
+Quick start options:
+  --quick-start                    Generates demo config files and their outputs
+  --dry                            Just generate the config files
+  --start PATH                     Starting point for the search [default: .]
+  -t, --type TYPE                  Generate examples only for the indicated type/s
+
+Help options:
+  -h, --help                       Show this help message and exit
+  --help-banners                   Show all available banners
+  --help-dependencies              List dependencies in human readable format
+  --help-errors                    List of error levels
+  --help-filters                   List supported filters and details
+  --help-global-options            List supported global variables
+  --help-list-offsets              List footprint offsets (JLCPCB)
+  --help-list-outputs              List supported outputs
+  --help-list-rotations            List footprint rotations (JLCPCB)
+  --help-output HELP_OUTPUT        Help for this particular output
+  --help-outputs                   List supported outputs and details
+  --help-preflights                List supported preflights and details
+  --help-variants                  List supported variants and details

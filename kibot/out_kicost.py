@@ -11,7 +11,6 @@ Dependencies:
 """
 import os
 from os.path import isfile, abspath, join, dirname
-from subprocess import check_output, STDOUT, CalledProcessError
 from tempfile import mkdtemp
 from shutil import rmtree
 from .misc import (BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
@@ -22,6 +21,7 @@ from .gs import GS
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from .fil_base import FieldRename
+from .kiplot import run_command
 from . import log
 
 logger = log.get_logger()
@@ -166,9 +166,8 @@ class KiCostOptions(VariantOptions):
             # Currently we only support the XML mechanism.
             netlist = GS.sch_no_ext+'.xml'
             if not isfile(netlist):
-                logger.error('Missing netlist in XML format `{}`'.format(netlist))
-                logger.error('You can generate it using the `update_xml` preflight')
-                exit(BOM_ERROR)
+                GS.exit_with_error([f'Missing netlist in XML format `{netlist}`',
+                                    'You can generate it using the `update_xml` preflight'], BOM_ERROR)
         # Check KiCost is available
         cmd_kicost = abspath(join(dirname(__file__), KICOST_SUBMODULE))
         if not isfile(cmd_kicost):
@@ -214,20 +213,12 @@ class KiCostOptions(VariantOptions):
             cmd.append('--translate_fields')
             cmd.extend(self.translate_fields)
         # Run the command
-        logger.debug('Running: '+str(cmd))
         try:
-            cmd_output = check_output(cmd, stderr=STDOUT)
-            cmd_output_dec = cmd_output.decode()
-        except CalledProcessError as e:
-            logger.error('Failed to create costs spreadsheet, error %d', e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(BOM_ERROR)
+            run_command(cmd, err_msg='Failed to create costs spreadsheet, error {ret}', err_lvl=BOM_ERROR)
         finally:
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
                 rmtree(net_dir)
-        logger.debug('Output from command:\n'+cmd_output_dec+'\n')
 
 
 @output_class

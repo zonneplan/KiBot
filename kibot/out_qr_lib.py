@@ -102,7 +102,8 @@ class QR_LibOptions(BaseOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ *Filename for the output (%i=qr, %x=lib) """
+            """ *Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
+                You must use %x in the name to get a symbols lib and a footprints lib """
             self.lib = 'QR'
             """ *Short name for the library """
             self.reference = 'QR'
@@ -176,6 +177,7 @@ class QR_LibOptions(BaseOptions):
 
     def qr_draw_fp(self, size, size_rect, center, qrc, negative, layer, do_sep=True):
         mod = []
+        is_bottom = layer[0] == 'B'
         for y in range(size):
             for x in range(size):
                 if qrc.get_module(x-negative, y-negative) ^ negative:
@@ -185,6 +187,9 @@ class QR_LibOptions(BaseOptions):
                     y_pos2 = round(y_pos+size_rect, 2)
                     rect = [Symbol('fp_poly')]  # fp_rect not in v5
                     pts = [Symbol('pts')]
+                    if is_bottom:
+                        y_pos = -y_pos
+                        y_pos2 = -y_pos2
                     pts.append([Symbol('xy'), x_pos, y_pos])
                     pts.append([Symbol('xy'), x_pos, y_pos2])
                     pts.append([Symbol('xy'), x_pos2, y_pos2])
@@ -226,7 +231,16 @@ class QR_LibOptions(BaseOptions):
         mod.append([Symbol('layer'), Symbol(qr.layer)])
         mod.append([Symbol('tedit'), 0])
         mod.append(Sep())
-        mod.append([Symbol('attr'), Symbol('virtual')])
+        attrs = [Symbol('attr')]
+        if not GS.ki6:
+            # KiCad 5
+            attrs.append(Symbol('virtual'))
+        else:
+            attrs.append(Symbol('exclude_from_pos_files'))
+            attrs.append(Symbol('exclude_from_bom'))
+            if GS.ki7:
+                attrs.append(Symbol('allow_missing_courtyard'))
+        mod.append(attrs)
         mod.append(Sep())
         mod.append(self.fp_field(center, 'reference', self.reference+'***', qr.layer, 0))
         mod.append(Sep())
@@ -249,9 +263,7 @@ class QR_LibOptions(BaseOptions):
             f.write(dumps(mod))
             f.write('\n')
 
-    def symbol_lib_k5(self):
-        self._expand_ext = 'lib'
-        output = os.path.join(self._odir_sch, self.expand_filename_sch(self.output))
+    def symbol_lib_k5(self, output):
         logger.debug('Creating KiCad 5 symbols library: '+output)
         with open(output, 'wt') as f:
             f.write("EESchema-LIBRARY Version 2.4\n")
@@ -272,9 +284,7 @@ class QR_LibOptions(BaseOptions):
             f.effects.hide = True
         return f.write()+[Sep()]
 
-    def symbol_lib_k6(self):
-        self._expand_ext = 'kicad_sym'
-        output = os.path.join(self._odir_sch, self.expand_filename_sch(self.output))
+    def symbol_lib_k6(self, output):
         logger.debug('Creating KiCad 6 symbols library: '+output)
         # Lib header
         lib = [Symbol('kicad_symbol_lib')]
@@ -312,6 +322,9 @@ class QR_LibOptions(BaseOptions):
             sym.append(Sep())
             sym.append(self.sym_field(center, 'qr_text', qr._text_sch, 8))
             sym.append(Sep())
+            if GS.ki7:
+                sym.append(self.sym_field(center, 'Sim.Enable', "0", 9))
+                sym.append(Sep())
             sym.extend(self.qr_draw_sym(size, size_rect, center, qrc))
             lib.append(sym)
             lib.append(Sep())
@@ -389,6 +402,8 @@ class QR_LibOptions(BaseOptions):
                 f.write(dumps(separated))
                 f.write('\n')
                 tmp_pcb = f.name
+            # Also copy the project
+            GS.copy_project(tmp_pcb)
             # Reload it
             logger.debug('- Loading the temporal PCB')
             load_board(tmp_pcb, forced=True)
@@ -396,17 +411,9 @@ class QR_LibOptions(BaseOptions):
             logger.debug('- Replacing the old PCB')
             os.remove(tmp_pcb)
             GS.make_bkp(GS.pcb_file)
-            prl = None
-            if GS.ki6:
-                # KiCad 6 is destroying the PRL ...
-                prl_name = GS.pcb_no_ext+'.kicad_prl'
-                if os.path.isfile(prl_name):
-                    with open(prl_name, 'rt') as f:
-                        prl = f.read()
             GS.board.Save(GS.pcb_file)
-            if prl:
-                with open(prl_name, 'wt') as f:
-                    f.write(prl)
+            # After saving the file the name isn't changed, we must force it!!!
+            GS.board.SetFileName(GS.pcb_file)
 
     def update_symbol(self, name, c_name, sexp, qr):
         logger.debug('- Updating QR symbol: '+name)
@@ -507,6 +514,12 @@ class QR_LibOptions(BaseOptions):
             self._odir_pcb = GS.pcb_dir
         else:
             self._odir_pcb = self._odir_sch = self._parent.output_dir
+        self._expand_ext = 'pretty'
+        dir_pretty = os.path.join(self._odir_pcb, self.expand_filename_pcb(self.output))
+        self._expand_ext = 'lib' if GS.ki5 else 'kicad_sym'
+        sch_output = os.path.join(self._odir_sch, self.expand_filename_sch(self.output))
+        if sch_output == dir_pretty:
+            raise KiPlotConfigurationError(f'The symbol and footprint outputs are the same, use %x to solve it ({sch_output})')
         # Create the QR codes
         for qr in self.qrs:
             qr._text_sch = self.expand_filename_both(qr.text, make_safe=False)
@@ -515,12 +528,10 @@ class QR_LibOptions(BaseOptions):
             qr._code_pcb = qrcodegen.QrCode.encode_text(qr._text_pcb, QR_ECCS[qr.correction_level])
         # Create the symbols
         if GS.ki5:
-            self.symbol_lib_k5()
+            self.symbol_lib_k5(sch_output)
         else:
-            self.symbol_lib_k6()
+            self.symbol_lib_k6(sch_output)
         # Create the footprints
-        self._expand_ext = 'pretty'
-        dir_pretty = os.path.join(self._odir_pcb, self.expand_filename_pcb(self.output))
         logger.debug('Creating footprints library: '+dir_pretty)
         os.makedirs(dir_pretty, exist_ok=True)
         for qr in self.qrs:

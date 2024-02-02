@@ -15,7 +15,7 @@ logger = log.get_logger()
 
 @filter_class
 class Value_Split(BaseFilter):  # noqa: F821
-    """ Value_Split
+    """ Value Splitter
         This filter extracts information from the value and fills other fields.
         I.e. extracts the tolerance and puts it in the `tolerance` field.
         Usage [example](https://inti-cmnb.github.io/kibot-examples-1/value_split/) """

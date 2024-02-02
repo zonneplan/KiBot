@@ -1,0 +1,27 @@
+kiplot:
+  version: 1
+
+outputs:
+  - name: PcbDraw
+    comment: "How to draw a step"
+    type: pcbdraw
+    run_by_default: false
+    options:
+      format: png
+
+  - name: Populate
+    comment: "Populate example"
+    type: populate
+    dir: PopulateSimple
+    options:
+      renderer: PcbDraw
+      input: tests/data/populate_with_toc.md
+
+  - name: Populate MD
+    comment: "Populate example"
+    type: populate
+    dir: PopulateSimple
+    options:
+      renderer: PcbDraw
+      input: tests/data/populate_with_toc.md
+      format: md

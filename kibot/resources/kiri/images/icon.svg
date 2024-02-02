@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24mm" height="24mm" version="1.1" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<marker id="a" overflow="visible" orient="auto">
+<path transform="matrix(.2 0 0 .2 1.48 .2)" d="m-2.5-1c0 2.76-2.24 5-5 5s-5-2.24-5-5 2.24-5 5-5 5 2.24 5 5z" fill="context-stroke" fill-rule="evenodd" stroke="context-stroke" stroke-width="1pt"/>
+</marker>
+<marker id="b" overflow="visible" orient="auto">
+<path transform="matrix(.2 0 0 .2 1.48 .2)" d="m-2.5-1c0 2.76-2.24 5-5 5s-5-2.24-5-5 2.24-5 5-5 5 2.24 5 5z" fill="context-stroke" fill-rule="evenodd" stroke="context-stroke" stroke-width="1pt"/>
+</marker>
+</defs>
+<g transform="translate(-88.574 -63.285)">
+<g transform="translate(1.6027 2.5516)">
+<g transform="matrix(.92003 0 0 .91312 7.8135 6.3011)" stroke-width="1.091">
+<rect x="87.08" y="60.753" width="10.945" height="24" rx="4.3477" ry="4.3806" fill="#f00" style="paint-order:stroke fill markers"/>
+<rect x="100.14" y="60.753" width="10.945" height="24" rx="4.3477" ry="4.3806" fill="#00f" style="paint-order:stroke fill markers"/>
+<text transform="scale(1.0793 .92654)" x="95.398567" y="73.798309" fill="#ffff00" font-family="sans-serif" font-size="9.8059px" letter-spacing="0px" stroke="#ffff00" stroke-linejoin="round" stroke-width=".83463" word-spacing="0px" style="line-height:1.25" xml:space="preserve"><tspan x="95.398567" y="73.798309" fill="#ffff00" font-family="'Ubuntu Mono'" font-size="9.8059px" font-weight="bold" stroke="#ffff00" stroke-linejoin="round" stroke-width=".83463">+</tspan></text>
+<text transform="scale(1.1504 .8693)" x="77.457642" y="95.737411" fill="#ffff00" font-family="sans-serif" font-size="11.994px" letter-spacing="0px" stroke="#ffff00" stroke-linejoin="round" stroke-width=".83463" word-spacing="0px" style="line-height:1.25" xml:space="preserve"><tspan x="77.457642" y="95.737411" fill="#ffff00" font-family="'Ubuntu Mono'" font-size="11.994px" font-weight="bold" stroke="#ffff00" stroke-linejoin="round" stroke-width=".83463">-</tspan></text>
+<g transform="translate(-.20955)" stroke-width="1.091">
+<path d="m92.111 66.123h4.5103l5.3394 14.393 4.4187 0.04975" fill-opacity="0" stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="3.7095"/>
+<path d="m105.03 78.19a2.7378 2.7379 0 0 1 3.7212 1.0451 2.7378 2.7379 0 0 1-1.0323 3.7249 2.7378 2.7379 0 0 1-3.7282-1.0196 2.7378 2.7379 0 0 1 1.0068-3.7319" fill="#fff" style="paint-order:stroke fill markers"/>
+<path d="m90.732 63.791a2.7379 2.7379 0 0 1 3.7213 1.0451 2.7379 2.7379 0 0 1-1.0324 3.7249 2.7379 2.7379 0 0 1-3.7284-1.0196 2.7379 2.7379 0 0 1 1.0068-3.7319" fill="#fff" style="paint-order:stroke fill markers"/>
+</g>
+<path d="m91.944 66.123 4.4678-0.04253 5.3394 14.393 4.3337 0.09228" fill="none" marker-end="url(#b)" marker-start="url(#a)" stroke="#69962e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7456"/>
+</g>
+</g>
+</g>
+</svg>

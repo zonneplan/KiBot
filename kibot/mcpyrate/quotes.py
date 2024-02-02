@@ -274,7 +274,7 @@ def capture_value(value, name):
     # whether the captured value is used in the current process, or in another
     # Python process later.
     #
-    # If the macro expansion result is to remain available for re-use from a
+    # If the macro expansion result is to remain available for reuse from a
     # `.pyc`, we must serialize and store the captured value to disk, so that
     # values from "macro expansion time last week" are still available when the
     # `.pyc` is loaded in another Python process later.

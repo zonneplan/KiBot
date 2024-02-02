@@ -1,0 +1,8 @@
+# Here we import a group ... hoping its outputs are also imported
+kibot:
+  version: 1
+
+import:
+  - file: Elecrow
+    groups:
+     - _Elecrow

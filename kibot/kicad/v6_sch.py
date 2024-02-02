@@ -869,10 +869,10 @@ class LibComponent(object):
                 comp.unit_count = max(unit, comp.unit_count)
             # UNIT_NAMES...
             elif i_type == 'unit_name':
-                # Units can have custom labels 
-                # The format is not documented but as of V7 is: 
+                # Units can have custom labels
+                # The format is not documented but as of V7 is:
                 # (unit_name "<NAME>")
-                comp.unit_name = i[1] 
+                comp.unit_name = i[1]
             else:
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
             if vis_obj:
@@ -941,6 +941,9 @@ class LibComponent(object):
             sdata.append(_symbol('in_bom', [Symbol(NO_YES[s.in_bom])]))
             sdata.append(_symbol('on_board', [Symbol(NO_YES[s.on_board])]))
         sdata.append(Sep())
+        if s.unit_name is not None:
+            sdata.append(_symbol('unit_name', [s.unit_name]))
+            sdata.append(Sep())
         # Properties
         for f in s.fields:
             fdata = f.write()
@@ -1188,7 +1191,7 @@ class SchematicComponentV6(SchematicComponent):
 
     def write(self, exp_hierarchy, cross):
         lib_id = self.lib_id
-        is_crossed = not(self.fitted or not self.included)
+        is_crossed = not (self.fitted or not self.included)
         native_cross = GS.ki7 and GS.global_cross_using_kicad
         dnp = False if native_cross else self.kicad_dnp
         if cross and (self.lib or self.local_name) and is_crossed:
@@ -1647,7 +1650,7 @@ class Sheet(object):
         self.sheet = sheet
         parent_dir = os.path.dirname(parent_file)
         sheet.sheet_path = path_join(parent_obj.sheet_path, self.uuid)
-        sheet.sheet_path_ori = path_join(parent_obj.sheet_path, self.uuid_ori)
+        sheet.sheet_path_ori = path_join(parent_obj.sheet_path_ori, self.uuid_ori)
         sheet.sheet_path_h = path_join(parent_obj.sheet_path_h, self.name)
         parent_obj.sheet_paths[sheet.sheet_path_ori] = sheet
         sheet.load(os.path.join(parent_dir, self.file), project, parent_obj)
@@ -1894,7 +1897,27 @@ class SchematicV6(Schematic):
                 data.extend([s.write(cross), Sep()])
         return [Sep(), Sep(), _symbol('lib_symbols', data), Sep()]
 
-    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None, cross=False, exp_hierarchy=False):
+    def write_lib(self, path, name, comps, do_back_up=False):
+        """ Creates a lib path/name containing the specified comps """
+        lib = [Symbol('kicad_symbol_lib')]
+        # TODO: How do I know which is the valid version? Doesn't match the schematic version!
+        lib.append(_symbol('version', [20220914]))
+        lib.append(_symbol('generator', [Symbol("KiBot")]))
+        lib.append(Sep())
+        for s in comps:
+            lib.extend([self.lib_symbol_names[name+':'+s].write(False), Sep()])
+        # Keep a back-up of existing files
+        fname = os.path.join(path, name+'.kicad_sym')
+        if do_back_up and os.path.isfile(fname):
+            bkp = fname+'-bak'
+            os.replace(fname, bkp)
+        dirname = os.path.dirname(fname)
+        os.makedirs(dirname, exist_ok=True)
+        with open(fname, 'wt') as f:
+            f.write(dumps(lib))
+            f.write('\n')
+
+    def save(self, fname=None, dest_dir=None, base_sheet=None, saved=None, cross=False, exp_hierarchy=False, dry=False):
         # Switch to the current version
         global version
         version = self.version
@@ -1924,7 +1947,7 @@ class SchematicV6(Schematic):
             # Save all in dest_dir (variant)
             fname = os.path.join(dest_dir, fname)
         # Save the sheet
-        if fname not in saved:
+        if fname not in saved and not dry:
             sch = [Symbol('kicad_sch')]
             sch.append(_symbol('version', [self.version]))
             sch.append(_symbol('generator', [Symbol(self.generator)]))
@@ -2003,19 +2026,27 @@ class SchematicV6(Schematic):
             if os.path.isfile(fname):
                 bkp = fname+'-bak'
                 os.replace(fname, bkp)
-            with open(fname, 'wt') as f:
+            with GS.create_file(fname) as f:
                 f.write(dumps(sch))
                 f.write('\n')
+        if fname not in saved:
             saved.add(fname)
         for sch in self.sheets:
             if sch.sch:
-                sch.sch.save(sch.flat_file if exp_hierarchy else sch.file, dest_dir, base_sheet, saved, cross=cross,
-                             exp_hierarchy=exp_hierarchy)
+                sch.sch.save(sch.flat_file if exp_hierarchy else sch.sch.fname_rel, dest_dir, base_sheet, saved, cross=cross,
+                             exp_hierarchy=exp_hierarchy, dry=dry)
 
     def save_variant(self, dest_dir):
         fname = os.path.basename(self.fname)
         self.save(fname, dest_dir, cross=True, exp_hierarchy=self.check_exp_hierarchy())
         return fname
+
+    def file_names_variant(self, dest_dir):
+        """ Returns a list of file names created by save_variant() """
+        saved = set()
+        fname = os.path.basename(self.fname)
+        self.save(fname, dest_dir, cross=True, exp_hierarchy=self.check_exp_hierarchy(), dry=True, saved=saved)
+        return saved
 
     def check_exp_hierarchy(self):
         """ Check if we really need to expand the hierarchy """
@@ -2031,7 +2062,7 @@ class SchematicV6(Schematic):
                 # 0 or 1 can't be different
                 continue
             ref_c = l_ins[0]
-            if any(map(lambda c: self.compare_component(ref_c, c), l_ins[1:])):
+            if any((self.compare_component(ref_c, c) for c in l_ins[1:])):
                 return True
         # No variant
         return False
@@ -2134,6 +2165,7 @@ class SchematicV6(Schematic):
             self.all_sheets = []
             self.root_sheet = self
             UUID_Validator.reset()
+            self.root_file_path = os.path.dirname(os.path.abspath(fname))
         else:
             self.fields = parent.fields
             self.fields_lc = parent.fields_lc
@@ -2143,9 +2175,11 @@ class SchematicV6(Schematic):
             self.sheet_names = parent.sheet_names
             self.all_sheets = parent.all_sheets
             self.root_sheet = parent.root_sheet
+            self.root_file_path = parent.root_file_path
         self.symbol_instances = []
         self.parent = parent
         self.fname = fname
+        self.fname_rel = os.path.relpath(fname, self.root_file_path)
         self.project = project
         self.lib_symbols = []
         self.symbols = []

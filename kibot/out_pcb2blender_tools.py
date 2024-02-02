@@ -5,6 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 # Some code is adapted from: https://github.com/30350n/pcb2blender
 from dataclasses import dataclass, field
+from enum import IntEnum
 import json
 import os
 import re
@@ -37,6 +38,34 @@ class BoardDef:
     stacked_boards: List[StackedBoard] = field(default_factory=list)
 
 
+class KiCadColor(IntEnum):
+    CUSTOM = 0
+    GREEN = 1
+    RED = 2
+    BLUE = 3
+    PURPLE = 4
+    BLACK = 5
+    WHITE = 6
+    YELLOW = 7
+
+
+class SurfaceFinish(IntEnum):
+    HASL = 0
+    ENIG = 1
+    NONE = 2
+
+
+SURFACE_FINISH_MAP = {
+    "ENIG": SurfaceFinish.ENIG,
+    "ENEPIG": SurfaceFinish.ENIG,
+    "Hard gold": SurfaceFinish.ENIG,
+    "ImAu": SurfaceFinish.ENIG,
+    "Immersion Gold": SurfaceFinish.ENIG,
+    "Immersion Au": SurfaceFinish.ENIG,
+    "HT_OSP": SurfaceFinish.NONE,
+    "OSP": SurfaceFinish.NONE}
+
+
 def sanitized(name):
     """ Replace character that aren't alphabetic by _ """
     return re.sub(r"[\W]+", "_", name)
@@ -59,11 +88,13 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             self.pads_info_dir = 'pads'
             """ Sub-directory where the pads info files are stored """
             self.stackup_create = False
-            """ Create a JSON file containing the board stackup """
+            """ Create a file containing the board stackup """
             self.stackup_file = 'board.yaml'
-            """ Name for the stackup file """
+            """ Name for the stackup file. Use 'stackup' for 2.7+ """
             self.stackup_dir = '.'
-            """ Directory for the stackup file """
+            """ Directory for the stackup file. Use 'layers' for 2.7+ """
+            self.stackup_format = 'JSON'
+            """ [JSON,BIN] Format for the stackup file. Use 'BIN' for 2.7+ """
             self.sub_boards_create = True
             """ Extract sub-PCBs and their Z axis position """
             self.sub_boards_dir = 'boards'
@@ -81,6 +112,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
 
     def config(self, parent):
         super().config(parent)
+        self._filters_to_expand = False
         # List of components
         self._show_all_components = False
         if isinstance(self.show_components, str):
@@ -146,30 +178,52 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                                         pad.GetDrillShape(),
                                         *map(GS.to_mm, pad.GetDrillSize())))
 
+    def parse_kicad_color(self, string):
+        if string[0] == "#":
+            return KiCadColor.CUSTOM, self.parse_one_color(string, scale=1)[:3]
+        else:
+            return KiCadColor[string.upper()], (0, 0, 0)
+
     def do_stackup(self, dir_name):
         if not self.stackup_create or (not GS.global_pcb_finish and not GS.stackup):
             return
         dir_name = os.path.join(dir_name, self.stackup_dir)
         os.makedirs(dir_name, exist_ok=True)
         fname = os.path.join(dir_name, self.stackup_file)
-        # Create the board_info
-        board_info = {}
-        if GS.global_pcb_finish:
-            board_info['copper_finish'] = GS.global_pcb_finish
-        if GS.stackup:
-            layers_parsed = []
-            for la in GS.stackup:
-                parsed_layer = {'name': la.name, 'type': la.type}
-                if la.color is not None:
-                    parsed_layer['color'] = la.color
-                if la.thickness is not None:
-                    parsed_layer['thickness'] = la.thickness/1000
-                layers_parsed.append(parsed_layer)
-            board_info['stackup'] = layers_parsed
-        data = json.dumps(board_info, indent=3)
-        logger.debug('Stackup: '+str(data))
-        with open(fname, 'wt') as f:
-            f.write(data)
+        if self.stackup_format == 'JSON':
+            # This is for the experimental "haschtl" fork
+            # Create the board_info
+            board_info = {}
+            if GS.global_pcb_finish:
+                board_info['copper_finish'] = GS.global_pcb_finish
+            if GS.stackup:
+                layers_parsed = []
+                for la in GS.stackup:
+                    parsed_layer = {'name': la.name, 'type': la.type}
+                    if la.color is not None:
+                        parsed_layer['color'] = la.color
+                    if la.thickness is not None:
+                        parsed_layer['thickness'] = la.thickness/1000
+                    layers_parsed.append(parsed_layer)
+                board_info['stackup'] = layers_parsed
+            data = json.dumps(board_info, indent=3)
+            logger.debug('Stackup: '+str(data))
+            with open(fname, 'wt') as f:
+                f.write(data)
+        else:  # self.stackup_format == 'BIN':
+            # This is for 2.7+
+            # Map the surface finish
+            if GS.global_pcb_finish:
+                surface_finish = SURFACE_FINISH_MAP.get(GS.global_pcb_finish, SurfaceFinish.HASL)
+            else:
+                surface_finish = SurfaceFinish.NONE
+            ds = GS.board.GetDesignSettings()
+            thickness_mm = GS.to_mm(ds.GetBoardThickness())
+            mask_color, mask_color_custom = self.parse_kicad_color(GS.global_solder_mask_color.upper())
+            silks_color, silks_color_custom = self.parse_kicad_color(GS.global_silk_screen_color.upper())
+            with open(fname, 'wb') as f:
+                f.write(struct.pack("!fbBBBbBBBb", thickness_mm, mask_color, *mask_color_custom, silks_color,
+                                    *silks_color_custom, surface_finish))
 
     def get_boarddefs(self):
         """ Extract the sub-PCBs and their positions using texts.
@@ -262,8 +316,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
     def run(self, output):
         super().run(output)
         if GS.ki5:
-            logger.error("`pcb2blender_tools` needs KiCad 6+")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("`pcb2blender_tools` needs KiCad 6+", MISSING_TOOL)
         dir_name = os.path.dirname(output)
         self.apply_show_components()
         self.filter_pcb_components(do_3D=True)

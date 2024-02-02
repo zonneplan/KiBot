@@ -201,10 +201,10 @@ class ComponentGroup(object):
     def get_count(self, project=None):
         if project is None:
             # Total components
-            qty = sum(map(lambda c: c.qty, self.components))
+            qty = sum((c.qty for c in self.components))
         else:
             # Only for the specified project
-            qty = sum(map(lambda c: c.qty if c.project == project else 0, self.components))
+            qty = sum((c.qty for c in self.components if c.project == project))
         return self.round_qty(qty)
 
     def get_build_count(self):
@@ -213,10 +213,10 @@ class ComponentGroup(object):
             return 0
         if len(self.cfg.aggregate) == 1:
             # Just one project
-            qty = sum(map(lambda c: c.qty, self.components))*self.cfg.number
+            qty = sum((c.qty for c in self.components))*self.cfg.number
         else:
             # Multiple projects, count them using the number of board for each project
-            qty = sum(map(lambda c: self.cfg.qtys[c.project]*c.qty, self.components))
+            qty = sum((self.cfg.qtys[c.project]*c.qty for c in self.components))
         return self.round_qty(qty)
 
     def get_sources(self):
@@ -431,8 +431,8 @@ def group_components(cfg, components):
         if not c.included:  # Skip components marked as excluded from BoM
             continue
         # Cache the value used to sort
-        if c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
-            c.value_sort = comp_match(c.value, c.ref_prefix, c.ref)
+        if cfg.parse_value and c.ref_prefix in RLC_PREFIX and c.value.lower() not in DNF:
+            c.value_sort = comp_match(c.value, c.ref_prefix, c.ref, warn_extra=True)
         else:
             c.value_sort = None
         # Try to add the component to an existing group
@@ -533,7 +533,7 @@ def do_bom(file_name, ext, comps, cfg):
     # Create the BoM
     logger.debug("Saving BOM File: "+file_name)
     number = cfg.number
-    cfg.number = sum(map(lambda prj: prj.number, cfg.aggregate))
+    cfg.number = sum((prj.number for prj in cfg.aggregate))
     # Pre-format the total and fitted strings
     cfg.total_str = smd_tht(cfg, cfg.n_total, cfg.n_total_smd, cfg.n_total_tht)
     cfg.fitted_str = smd_tht(cfg, cfg.n_fitted, cfg.n_fitted_smd, cfg.n_fitted_tht)

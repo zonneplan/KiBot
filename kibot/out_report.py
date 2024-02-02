@@ -18,16 +18,14 @@ Dependencies:
 import os
 import re
 import pcbnew
-import shlex
-from subprocess import check_output, STDOUT, CalledProcessError
 
 from .gs import GS
-from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, FAILED_EXECUTE, W_WRONGEXT,
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT,
                    W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
 from .out_base import BaseOptions
 from .error import KiPlotConfigurationError
-from .kiplot import config_output
+from .kiplot import config_output, run_command
 from .dep_downloader import get_dep_data
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -238,7 +236,7 @@ class ReportOptions(BaseOptions):
         self._ec_drl = ord(m.group(2))-ord('A')
 
     def do_replacements(self, line, defined):
-        """ Replace ${VAR} patterns """
+        """ Replace `${VAR}` patterns """
         for var in re.findall(r'\$\{([^\s\}]+)\}', line):
             if var[0] == '_':
                 # Prevent access to internal data
@@ -285,10 +283,10 @@ class ReportOptions(BaseOptions):
                     rep = str(val)
                 line = line.replace('${'+var_ori+'}', rep)
             else:
-                logger.error('Unable to expand `{}`'.format(var))
+                logger.non_critical_error('Unable to expand `{}`'.format(var))
                 if not self._shown_defined:
                     self._shown_defined = True
-                    logger.error('Defined values: {}'.format([v for v in defined.keys() if v[0] != '_']))
+                    logger.non_critical_error('Defined values: {}'.format([v for v in defined.keys() if v[0] != '_']))
         return line
 
     def context_defined_tracks(self, line):
@@ -851,14 +849,7 @@ class ReportOptions(BaseOptions):
         if not out.endswith('.'+self.convert_to):
             logger.warning(W_WRONGEXT+'The conversion tool detects the output format using the extension')
         cmd = [command, '--from', self.convert_from, resources, fname, '-o', out]
-        logger.debug('Executing: '+shlex.join(cmd))
-        try:
-            check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e:
-            logger.error('{} error: {}'.format(command, e.returncode))
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(FAILED_EXECUTE)
+        run_command(cmd)
 
     def run(self, fname):
         self.pcb_material = GS.global_pcb_material

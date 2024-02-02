@@ -13,12 +13,11 @@ Dependencies:
     role: Automatically crop images
 """
 import os
-import shlex
-import subprocess
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
                    KICAD_VERSION_6_0_2, MISSING_TOOL)
 from .gs import GS
 from .out_base_3d import Base3DOptionsWithHL, Base3D
+from .kiplot import run_command
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -26,16 +25,7 @@ logger = log.get_logger()
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+shlex.join(cmd))
-    try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
-        if e.output:
-            logger.debug('Output from command: '+e.output.decode())
-        exit(RENDER_3D_ERR)
-    if cmd_output.strip():
-        logger.debug('- Output from command:\n'+cmd_output.decode())
+    run_command(cmd, err_lvl=RENDER_3D_ERR)
 
 
 class Render3DOptions(Base3DOptionsWithHL):
@@ -264,9 +254,8 @@ class Render3DOptions(Base3DOptionsWithHL):
     def run(self, output):
         super().run(output)
         if GS.ki6 and GS.kicad_version_n < KICAD_VERSION_6_0_2:
-            logger.error("3D Viewer not supported for KiCad 6.0.0/1\n"
-                         "Please upgrade KiCad to 6.0.2 or newer")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("3D Viewer not supported for KiCad 6.0.0/1\n"
+                               "Please upgrade KiCad to 6.0.2 or newer", MISSING_TOOL)
         command = self.ensure_tool('KiAuto')
         if self.transparent_background:
             # Use the chroma key color

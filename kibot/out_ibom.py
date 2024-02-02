@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2023 Salvador E. Tropea
+# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -15,7 +15,7 @@ Dependencies:
       - InteractiveHtmlBom/InteractiveHtmlBom
       - org_openscopeproject_InteractiveHtmlBom
       - org_openscopeproject_InteractiveHtmlBom/InteractiveHtmlBom
-    version: 2.4.1.4
+    version: 2.7.0
     downloader: pytool
     id: ibom
 """
@@ -47,7 +47,7 @@ class IBoMOptions(VariantOptions):
             self.hide_silkscreen = False
             """ Hide silkscreen by default """
             self.highlight_pin1 = False
-            """ Highlight pin1 by default """
+            """ [boolean|none,all,selected] Highlight pin1 by default """
             self.no_redraw_on_drag = False
             """ Do not redraw pcb on drag by default """
             self.board_rotation = 0
@@ -120,6 +120,9 @@ class IBoMOptions(VariantOptions):
             self.hide_excluded = False
             """ Hide components in the Fab layer that are marked as excluded by a variant.
                 Affected by global options """
+            self.forced_name = ''
+            """ Name to be used for the PCB/project (no file extension).
+                This will affect the name iBoM displays in the generated HTML """
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
         self.add_to_doc('dnf_filter', WARNING_MIX)
@@ -142,6 +145,8 @@ class IBoMOptions(VariantOptions):
             self._extra_data_file_guess = True
         if self.extra_data_file:
             self.extra_data_file = self.expand_filename('', self.extra_data_file, 'ibom', 'xml')
+        if isinstance(self.highlight_pin1, bool):
+            self.highlight_pin1 = 'all' if self.highlight_pin1 else 'none'
 
     def get_targets(self, out_dir):
         if self.output:
@@ -177,15 +182,17 @@ class IBoMOptions(VariantOptions):
         pcb_name = GS.pcb_file
         if self.will_filter_pcb_components():
             # Write a custom netlist to a temporal dir
+            prj_name = os.path.basename(self.expand_filename('', self.forced_name, 'ibom', '')) if self.forced_name \
+                       else GS.pcb_basename
             net_dir = mkdtemp(prefix='tmp-kibot-ibom-')
-            netlist = os.path.join(net_dir, GS.pcb_basename+'.xml')
+            netlist = os.path.join(net_dir, prj_name+'.xml')
             self.extra_data_file = netlist
             logger.debug('Creating variant netlist `{}`'.format(netlist))
             with open(netlist, 'wb') as f:
                 GS.sch.save_netlist(f, self._comps)
             # Write a board with the filtered values applied
             self.filter_pcb_components()
-            pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir)
+            pcb_name, _ = self.save_tmp_dir_board('ibom', force_dir=net_dir, forced_name=prj_name)
             self.unfilter_pcb_components()
         else:
             # Check if the user wants extra_fields but there is no data about them (#68)
@@ -208,7 +215,7 @@ class IBoMOptions(VariantOptions):
         self.blacklist += to_remove
         # Convert attributes into options
         for k, v in self.get_attrs_gen():
-            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform', 'hide_excluded']:
+            if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform', 'hide_excluded', 'forced_name']:
                 continue
             if k == 'offset_back_rotation' and version < (2, 5, 0, 2):
                 continue
@@ -224,12 +231,9 @@ class IBoMOptions(VariantOptions):
             if 'ERROR Parsing failed' in cmd_output_dec:
                 raise CalledProcessError(1, cmd, cmd_output)
         except CalledProcessError as e:
-            logger.error('Failed to create BoM, error %d', e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-                if "'PCB_SHAPE' object has no attribute 'GetAngle'" in e.output.decode():
-                    logger.error("Update Interactive HTML BoM your version doesn't support KiCad 6 files")
-            exit(BOM_ERROR)
+            GS.exit_with_error(f'Failed to create BoM, error {e.returncode}', BOM_ERROR, e,
+                               ("'PCB_SHAPE' object has no attribute 'GetAngle'",
+                                "Update Interactive HTML BoM your version doesn't support KiCad 6 files"))
         finally:
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
@@ -264,3 +268,6 @@ class IBoM(BaseOutput):  # noqa: F821
         if tool is None:
             return None
         return BaseOutput.simple_conf_examples(name, 'Interactive HTML BoM', 'Assembly')  # noqa: F821
+
+    def get_navigate_targets(self, out_dir):
+        return (self.options.get_targets(out_dir), ['ibom'])

@@ -133,6 +133,11 @@ class Base3DOptions(VariantOptions):
                 They are downloaded to a temporal directory and discarded.
                 If you want to cache the downloaded files specify a directory using the
                 KIBOT_3D_MODELS environment variable """
+            self.download_lcsc = True
+            """ In addition to try to download the 3D models from KiCad git also try to get
+                them from LCSC database. In order to work you'll need to provide the LCSC
+                part number. The field containing the LCSC part number is defined by the
+                `field_lcsc_part` global variable """
             self.kicad_3d_url = 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
             """ Base URL for the KiCad 3D models """
             self.kicad_3d_url_suffix = ''
@@ -147,6 +152,7 @@ class Base3DOptions(VariantOptions):
         super().copy_options(ref)
         self.no_virtual = ref.no_virtual
         self.download = ref.download
+        self.download_lcsc = ref.download_lcsc
         self.kicad_3d_url = ref.kicad_3d_url
         self.kicad_3d_url_suffix = ref.kicad_3d_url_suffix
 
@@ -201,14 +207,14 @@ class Base3DOptions(VariantOptions):
         # Successfully downloaded
         downloaded.add(full_name)
         # If this is a .wrl also download the .step
-        if url.endswith('.wrl'):
-            url = url[:-4]+'.step'
-            fname = fname[:-4]+'.step'
-            self.download_model(url, fname, rel_dirs)
+        extra_fname = None
+        if fname.endswith('.wrl'):
+            extra_fname = fname[:-4]+'.step'
         elif force_wrl:  # This should be a .step, so we download the wrl
-            url = os.path.splitext(url)[0]+'.wrl'
-            fname = os.path.splitext(fname)[0]+'.wrl'
-            self.download_model(url, fname, rel_dirs)
+            extra_fname = os.path.splitext(fname)[0]+'.wrl'
+        if extra_fname is not None:
+            url = self.kicad_3d_url+urllib.parse.quote_plus(extra_fname)+self.kicad_3d_url_suffix
+            self.download_model(url, extra_fname, rel_dirs)
         return replace
 
     def try_download_easyeda(self, model, full_name, downloaded, sch_comp, lcsc_field):
@@ -227,7 +233,11 @@ class Base3DOptions(VariantOptions):
             logger.debug('Using cached model `{}`'.format(cache_name))
             return cache_name
         logger.debug('- Trying to download {} component as {}/{}'.format(lcsc_id, self._tmp_dir, fname))
-        replace = download_easyeda_3d_model(lcsc_id, self._tmp_dir, fname)
+        try:
+            replace = download_easyeda_3d_model(lcsc_id, self._tmp_dir, fname)
+        except Exception as e:
+            logger.non_critical_error(f'Error downloading 3D model for LCSC part {lcsc_id} (model: {model} problem: {e})')
+            replace = None
         if not replace:
             return None
         # Successfully downloaded
@@ -299,6 +309,7 @@ class Base3DOptions(VariantOptions):
             prev_ln = None
             points = None
             axis = None
+            os.makedirs(os.path.dirname(name), exist_ok=True)
             with open(name, "wt") as d:
                 colors_defined = False
                 for ln in f:
@@ -308,7 +319,7 @@ class Base3DOptions(VariantOptions):
                     m = coo_re.match(ln)
                     if m:
                         index = prev_ln
-                        points = list(map(lambda x: tuple(map(float, x.split(' '))), m.group(1).split(',')))
+                        points = [tuple(float(v) for v in x.split(' ')) for x in m.group(1).split(',')]
                         x_len = (points[0][X]-points[2][X])*2.54*2
                         if abs(x_len-r_len) < 0.01:
                             logger.debug('  - Found horizontal: {}'.format(round(x_len, 2)))
@@ -408,7 +419,7 @@ class Base3DOptions(VariantOptions):
             bars[bar] = ord(val_str[bar])-ord('0')
         # Make sure we don't have digits that can't be represented
         rest = val_str[dig_bars:]
-        if rest and not all(map(lambda x: x == '0', rest)):
+        if rest and not all((x == '0' for x in rest)):
             logger.warning(W_RESVALISSUE+'Digits not represented in {} {} ({} %)'.format(c.ref, c.value, tol))
         bars[nbars-1] = tol_color
         # For 20% remove the last bar
@@ -494,7 +505,7 @@ class Base3DOptions(VariantOptions):
                     # Missing 3D model
                     if self.download:
                         replace = self.try_download_kicad(m3d.m_Filename, full_name, downloaded, rel_dirs, force_wrl)
-                        if replace is None:
+                        if replace is None and self.download_lcsc:
                             replace = self.try_download_easyeda(m3d.m_Filename, full_name, downloaded, sch_comp, lcsc_field)
                         if replace:
                             replace = self.do_colored_tht_resistor(replace, sch_comp, used_extra)
@@ -539,8 +550,7 @@ class Base3DOptions(VariantOptions):
             if GS.sch_file:
                 GS.load_sch()
                 all_comps = GS.sch.get_components()
-                if (GS.global_kicad_dnp_applies_to_3D and
-                   any(map(lambda c: c.kicad_dnp is not None and c.kicad_dnp, all_comps))):
+                if (GS.global_kicad_dnp_applies_to_3D and any((c.kicad_dnp is not None and c.kicad_dnp for c in all_comps))):
                     # One or more components are DNP, remove them
                     reset_filters(all_comps)
                     all_comps_hash = {c.ref: c for c in all_comps}

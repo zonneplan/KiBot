@@ -94,31 +94,7 @@ class SExpData(Exception):
     pass
 
 
-# ** Python 3 compatibility
-
-try:
-    unicode
-    PY3 = False
-except NameError:
-    basestring = unicode = str  # Python 3
-    PY3 = True
-
-
-def uformat(s, *args, **kwds):
-    """Alias of ``unicode(s).format(...)``."""
-    return tounicode(s).format(*args, **kwds)
-
-
 # ** Utility
-
-def tounicode(string):
-    """
-    Decode `string` if it is not unicode.  Do nothing in Python 3.
-    """
-    if not isinstance(string, unicode):
-        string = unicode(string, 'utf-8')
-    return string
-
 
 def return_as(converter):
     """
@@ -274,7 +250,7 @@ def dump(obj, filelike, **kwds):
     (a b)
 
     """
-    filelike.write(unicode(dumps(obj)))
+    filelike.write(dumps(obj))
 
 
 def dumps(obj, **kwds):
@@ -404,7 +380,7 @@ def tosexp(obj, str_as='string', tuple_as='list',
         elif tuple_as == 'array':
             res = Bracket(obj, '[').tosexp(_tosexp)
         else:
-            raise ValueError(uformat("tuple_as={0!r} is not valid", tuple_as))
+            raise ValueError("tuple_as={0!r} is not valid".format(tuple_as))
         indent -= c
     elif obj is True:  # must do this before ``isinstance(obj, int)``
         res = true_as
@@ -414,13 +390,13 @@ def tosexp(obj, str_as='string', tuple_as='list',
         res = none_as
     elif isinstance(obj, (int, float)):
         res = str(obj)
-    elif isinstance(obj, basestring):
+    elif isinstance(obj, str):
         if str_as == 'symbol':
             res = obj
         elif str_as == 'string':
             res = String(obj).tosexp()
         else:
-            raise ValueError(uformat("str_as={0!r} is not valid", str_as))
+            raise ValueError("str_as={0!r} is not valid".format(str_as))
     elif isinstance(obj, dict):
         res = _tosexp(dict_to_plist(obj))
     elif isinstance(obj, SExpBase):
@@ -428,16 +404,16 @@ def tosexp(obj, str_as='string', tuple_as='list',
     elif isinstance(obj, Sep):
         res = '\n' + ' '*indent
     else:
-        raise TypeError(uformat(
+        raise TypeError(
             "Object of type '{0}' cannot be converted by `tosexp`. "
-            "It's value is '{1!r}'", type(obj), obj))
+            "It's value is '{1!r}'".format(type(obj), obj))
     return res
 
 
 @return_as(list)
 def dict_to_plist(obj):
     for key in obj:
-        yield Symbol(uformat(":{0}", key))
+        yield Symbol(":{0}".format(key))
         yield obj[key]
 
 
@@ -447,7 +423,7 @@ class SExpBase(object):
         self._val = val
 
     def __repr__(self):
-        return uformat("{0}({1!r})", self.__class__.__name__, self._val)
+        return "{0}({1!r})".format(self.__class__.__name__, self._val)
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -471,7 +447,7 @@ class SExpBase(object):
     def quote(cls, string):
         for (s, q) in cls._lisp_quoted_specials:
             string = string.replace(s, q)
-        return tounicode(string)
+        return string
 
     @classmethod
     def unquote(cls, string):
@@ -504,13 +480,13 @@ class String(SExpBase):
     _lisp_quoted_to_raw = {q: r for (r, q) in _lisp_quoted_specials}
 
     def tosexp(self, tosexp=None):
-        return uformat('"{0}"', self.quote(self._val))
+        return '"{0}"'.format(self.quote(self._val))
 
 
 class Quoted(SExpBase):
 
     def tosexp(self, tosexp=tosexp):
-        return uformat("'{0}", tosexp(self._val))
+        return "'{0}".format(tosexp(self._val))
 
 
 class Bracket(SExpBase):
@@ -521,8 +497,7 @@ class Bracket(SExpBase):
         self._bra = bra
 
     def __repr__(self):
-        return uformat("{0}({1!r}, {2!r})",
-                       self.__class__.__name__, self._val, self._bra)
+        return "{0}({1!r}, {2!r})".format(self.__class__.__name__, self._val, self._bra)
 
     def tosexp(self, tosexp=tosexp):
         bra = self._bra
@@ -537,7 +512,7 @@ class Bracket(SExpBase):
                 # Avoid spaces at the end of lines
                 c = c.rstrip(' ')
             c += v
-        return uformat("{0}{1}{2}", bra, c, ke)
+        return "{0}{1}{2}".format(bra, c, ke)
 
 
 def bracket(val, bra):
@@ -550,19 +525,19 @@ def bracket(val, bra):
 class ExpectClosingBracket(Exception):
 
     def __init__(self, got, expect):
-        super(ExpectClosingBracket, self).__init__(uformat(
+        super(ExpectClosingBracket, self).__init__(
             "Not enough closing brackets. "
             "Expected {0!r} to be the last letter in the sexp. "
-            "Got: {1!r}", expect, got))
+            "Got: {1!r}".format(expect, got))
 
 
 class ExpectNothing(Exception):
 
     def __init__(self, got):
-        super(ExpectNothing, self).__init__(uformat(
+        super(ExpectNothing, self).__init__(
             "Too many closing brackets. "
             "Expected no character left in the sexp. "
-            "Got: {0!r}", got))
+            "Got: {0!r}".format(got))
 
 
 class Parser(object):

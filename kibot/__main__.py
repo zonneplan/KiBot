@@ -8,26 +8,30 @@
 """KiBot: KiCad automation tool for documents generation
 
 Usage:
-  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE] [-D]
+  kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [-w LIST] [--banner N] [TARGET...]
+         [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--banner N]
+         [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
-         [-E DEF] ... [--config-outs] [--only-pre|--only-groups] [--only-names]
-         [--output-name-first] --list
+         [-E DEF] ... [--defs-from-env] [--config-outs]
+         [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
          --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
-  kibot [-v...] --help-filters
-  kibot [-v...] [--markdown|--json] --help-dependencies
-  kibot [-v...] --help-global-options
-  kibot [-v...] --help-list-outputs
+  kibot [-v...] [--rst] --help-filters
+  kibot [-v...] [--markdown|--json|--rst] --help-dependencies
+  kibot [-v...] [--rst] --help-global-options
+  kibot [-v...] --help-list-offsets
+  kibot [-v...] [--rst] --help-list-outputs
+  kibot [-v...] --help-list-rotations
   kibot [-v...] --help-output=HELP_OUTPUT
-  kibot [-v...] --help-outputs
-  kibot [-v...] --help-preflights
-  kibot [-v...] --help-variants
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-outputs
+  kibot [-v...] [--rst] --help-preflights
+  kibot [-v...] [--rst] --help-variants
   kibot [-v...] --help-banners
+  kibot [-v...] [--rst] --help-errors
   kibot -h | --help
   kibot --version
 
@@ -43,6 +47,8 @@ Options:
   --config-outs                    Configure all outputs before listing them
   -d OUT_DIR, --out-dir OUT_DIR    The output directory [default: .]
   -D, --dont-stop                  Try to continue if an output fails
+  --defs-from-env                  Use the environment vars as preprocessor
+                                   values
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
@@ -69,6 +75,7 @@ Options:
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
   -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
+  -W, --stop-on-warnings           Stop on warnings
   -x, --example                    Create a template configuration file
 
 Quick start options:
@@ -81,9 +88,12 @@ Help options:
   -h, --help                       Show this help message and exit
   --help-banners                   Show all available banners
   --help-dependencies              List dependencies in human readable format
+  --help-errors                    List of error levels
   --help-filters                   List supported filters and details
   --help-global-options            List supported global variables
+  --help-list-offsets              List footprint offsets (JLCPCB)
   --help-list-outputs              List supported outputs
+  --help-list-rotations            List footprint rotations (JLCPCB)
   --help-output HELP_OUTPUT        Help for this particular output
   --help-outputs                   List supported outputs and details
   --help-preflights                List supported preflights and details
@@ -125,7 +135,8 @@ from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_std
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
-                            print_filters_help, print_global_options_help, print_dependencies, print_variants_help)
+                            print_filters_help, print_global_options_help, print_dependencies, print_variants_help,
+                            print_errors, print_list_rotations, print_list_offsets)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
                      solve_board_file, solve_project_file, check_board_file)
 from .registrable import RegOutput
@@ -208,7 +219,7 @@ def list_variants(logger, only_names):
 def solve_config(a_plot_config, quiet=False):
     plot_config = a_plot_config
     if not plot_config:
-        plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')
+        plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')+glob('*.kibot.yml')
         if len(plot_configs) == 1:
             plot_config = plot_configs[0]
             if not quiet:
@@ -218,11 +229,9 @@ def solve_config(a_plot_config, quiet=False):
             logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
                            '  Using '+plot_config+' if you want to use another use -c option.')
         else:
-            logger.error('No config file found (*.kibot.yaml), use -c to specify one.')
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error('No config file found (*.kibot.yaml), use -c to specify one.', EXIT_BAD_ARGS)
     if not os.path.isfile(plot_config):
-        logger.error("Plot config file not found: "+plot_config)
-        sys.exit(EXIT_BAD_ARGS)
+        GS.exit_with_error("Plot config file not found: "+plot_config, EXIT_BAD_ARGS)
     logger.debug('Using configuration file: `{}`'.format(plot_config))
     return plot_config
 
@@ -246,11 +255,10 @@ def detect_kicad():
     try:
         import pcbnew
     except ImportError:
-        logger.error("Failed to import pcbnew Python module."
-                     " Is KiCad installed?"
-                     " Do you need to add it to PYTHONPATH?")
-        logger.error(TRY_INSTALL_CHECK)
-        sys.exit(NO_PCBNEW_MODULE)
+        GS.exit_with_error(["Failed to import pcbnew Python module."
+                            " Is KiCad installed?"
+                            " Do you need to add it to PYTHONPATH?",
+                            TRY_INSTALL_CHECK], NO_PCBNEW_MODULE)
     try:
         GS.kicad_version = pcbnew.GetBuildVersion()
     except AttributeError:
@@ -266,8 +274,7 @@ def detect_kicad():
 
     m = re.search(r'(\d+)\.(\d+)\.(\d+)(?:\.(\d+))?', GS.kicad_version)
     if m is None:
-        logger.error("Unable to detect KiCad version, got: `{}`".format(GS.kicad_version))
-        sys.exit(NO_PCBNEW_MODULE)
+        GS.exit_with_error(f"Unable to detect KiCad version, got: `{GS.kicad_version}`", NO_PCBNEW_MODULE)
     GS.kicad_version_major = int(m.group(1))
     GS.kicad_version_minor = int(m.group(2))
     GS.kicad_version_patch = int(m.group(3))
@@ -336,10 +343,11 @@ def detect_kicad():
 
 
 def parse_defines(args):
+    if args.defs_from_env:
+        GS.cli_defines.update(os.environ)
     for define in args.define:
         if '=' not in define:
-            logger.error('Malformed `define` option, must be VARIABLE=VALUE ({})'.format(define))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'Malformed `define` option, must be VARIABLE=VALUE ({define})', EXIT_BAD_ARGS)
         var = define.split('=')[0]
         GS.cli_defines[var] = define[len(var)+1:]
 
@@ -347,8 +355,7 @@ def parse_defines(args):
 def parse_global_redef(args):
     for redef in args.global_redef:
         if '=' not in redef:
-            logger.error('Malformed global-redef option, must be VARIABLE=VALUE ({})'.format(redef))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'Malformed global-redef option, must be VARIABLE=VALUE ({redef})', EXIT_BAD_ARGS)
         var = redef.split('=')[0]
         GS.cli_global_defs[var] = redef[len(var)+1:]
 
@@ -365,8 +372,7 @@ def apply_warning_filter(args):
         try:
             log.set_filters([SimpleFilter(int(n)) for n in args.no_warn.split(',')])
         except ValueError:
-            logger.error('-w/--no-warn must specify a comma separated list of numbers ({})'.format(args.no_warn))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'-w/--no-warn must specify a comma separated list of numbers ({args.no_warn})', EXIT_BAD_ARGS)
 
 
 def debug_arguments(args):
@@ -375,7 +381,7 @@ def debug_arguments(args):
         logger.debug('Command line parsed:\n'+str(args))
 
 
-def detect_windows():
+def detect_windows():  # pragma: no cover (Windows)
     if platform.system() != 'Windows':
         return
     # Note: We assume this is the Python from KiCad, but we should check it ...
@@ -399,10 +405,11 @@ def main():
         else:
             os.makedirs(os.path.dirname(os.path.abspath(args.log)), exist_ok=True)
         log.set_file_log(args.log)
-        GS.debug_level = 10
+        log.debug_level = GS.debug_level = 10
     # The log setup finished, this is our first log message
     logger.debug('KiBot {} verbose level: {} started on {}'.format(__version__, args.verbose, datetime.now()))
     apply_warning_filter(args)
+    log.stop_on_warnings = args.stop_on_warnings
     # Now we have the debug level set we can check (and optionally inform) KiCad info
     detect_kicad()
     detect_windows()
@@ -428,41 +435,48 @@ def main():
         try:
             id = int(args.banner)
         except ValueError:
-            logger.error('The banner option needs an integer ({})'.format(id))
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error(f'The banner option needs an integer ({id})', EXIT_BAD_ARGS)
         logger.info(get_banner(id))
 
     if args.help_outputs or args.help_list_outputs:
-        print_outputs_help(details=args.help_outputs)
+        print_outputs_help(args.rst, details=args.help_outputs)
         sys.exit(0)
     if args.help_output:
         print_output_help(args.help_output)
         sys.exit(0)
     if args.help_preflights:
-        print_preflights_help()
+        print_preflights_help(args.rst)
         sys.exit(0)
     if args.help_variants:
-        print_variants_help()
+        print_variants_help(args.rst)
         sys.exit(0)
     if args.help_filters:
-        print_filters_help()
+        print_filters_help(args.rst)
         sys.exit(0)
     if args.help_global_options:
-        print_global_options_help()
+        print_global_options_help(args.rst)
         sys.exit(0)
     if args.help_dependencies:
-        print_dependencies(args.markdown, args.json)
+        print_dependencies(args.markdown, args.json, args.rst)
+        sys.exit(0)
+    if args.help_list_rotations:
+        print_list_rotations()
+        sys.exit(0)
+    if args.help_list_offsets:
+        print_list_offsets()
         sys.exit(0)
     if args.help_banners:
         for c, b in enumerate(BANNERS):
             logger.info('Banner '+str(c))
             logger.info(b)
         sys.exit(0)
+    if args.help_errors:
+        print_errors(args.rst)
+        sys.exit(0)
     if args.example:
         check_board_file(args.board_file)
         if args.copy_options and not args.board_file:
-            logger.error('Asked to copy options but no PCB specified.')
-            sys.exit(EXIT_BAD_ARGS)
+            GS.exit_with_error('Asked to copy options but no PCB specified.', EXIT_BAD_ARGS)
         create_example(args.board_file, GS.out_dir, args.copy_options, args.copy_and_expand)
         sys.exit(0)
     if args.quick_start:

@@ -19,12 +19,10 @@ Dependencies:
     role: Automatically adjust SVG margin
 """
 import os
-import shlex
-import subprocess
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
-from .kiplot import load_sch, get_board_comps_data
+from .kiplot import load_sch, get_board_comps_data, run_command
 from .misc import (PCBDRAW_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS, W_PCBDRAW)
 from .gs import GS
 from .layer import Layer
@@ -52,17 +50,7 @@ def _get_tmp_name(ext):
 
 
 def _run_command(cmd):
-    logger.debug('Executing: '+shlex.join(cmd))
-    try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
-        if e.output:
-            logger.debug('Output from command: '+e.output.decode())
-        exit(PCBDRAW_ERR)
-    out = cmd_output.decode()
-    if out.strip():
-        logger.debug('Output from command:\n'+out)
+    run_command(cmd, err_lvl=PCBDRAW_ERR)
 
 
 class PcbDrawStyle(Optionable):
@@ -242,7 +230,7 @@ class PcbDrawOptions(VariantOptions):
             self.show_solderpaste = True
             """ Show the solder paste layers """
             self.resistor_remap = PcbDrawResistorRemap
-            """ [list(dict)] List of resitors to be remapped. You can change the value of the resistors here """
+            """ [list(dict)] List of resistors to be remapped. You can change the value of the resistors here """
             self.resistor_flip = Optionable
             """ [string|list(string)=''] List of resistors to flip its bands """
             self.size_detection = 'kicad_edge'
@@ -497,8 +485,7 @@ class PcbDrawOptions(VariantOptions):
         # When the PCB can't be loaded we get IOError
         # When the SVG contains errors we get SyntaxError
         except (RuntimeError, SyntaxError, IOError) as e:
-            logger.error('PcbDraw error: '+str(e))
-            exit(PCBDRAW_ERR)
+            GS.exit_with_error('PcbDraw error: '+str(e), PCBDRAW_ERR)
 
         # Save the result
         logger.debug('Saving output to '+svg_save_output_name)

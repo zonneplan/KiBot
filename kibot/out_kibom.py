@@ -15,9 +15,9 @@ Dependencies:
 import os
 from re import search
 from tempfile import NamedTemporaryFile
-from subprocess import (check_output, STDOUT, CalledProcessError)
 from .misc import BOM_ERROR, W_EXTNAME
 from .gs import GS
+from .kiplot import run_command
 from .optionable import Optionable, BaseOptions
 from .error import KiPlotConfigurationError
 from .bom.columnlist import ColumnList
@@ -118,7 +118,7 @@ class KiBoMConfig(Optionable):
             self.group_connectors = True
             """ Connectors with the same footprints will be grouped together, independent of the name of the connector """
             self.test_regex = True
-            """ Each component group will be tested against a number of regular-expressions (see ``). """
+            """ Each component group will be tested against a number of regular-expressions """
             self.merge_blank_fields = True
             """ Component groups with blank fields will be merged into the most compatible group, where possible """
             self.fit_field = 'Config'
@@ -135,6 +135,10 @@ class KiBoMConfig(Optionable):
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
             self.mouser_link = Optionable
             """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page (HTML only) """
+            # Upcoming release
+            #  self.lcsc_link = Optionable
+            #  """ [string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page (HTML only) """
+            #   ???   Use **true** to copy the value indicated by the `field_lcsc_part` global option """
             self.group_fields = GroupFields
             """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
@@ -209,21 +213,14 @@ class KiBoMConfig(Optionable):
             with NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
                 csv = f.name
             cmd = [command, '--cfg', config, '-d', os.path.dirname(csv), '-s', ',', xml, csv]
-            logger.debug('Running: '+str(cmd))
-            cmd_output = check_output(cmd, stderr=STDOUT)
+            run_command(cmd, err_msg='Failed to get the column names for `'+xml+'`, error {ret}', err_lvl=BOM_ERROR)
             with open(csv, 'rt') as f:
                 columns = f.readline().rstrip().split(',')
-        except CalledProcessError as e:
-            logger.error('Failed to get the column names for `{}`, error {}'.format(xml, e.returncode))
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(BOM_ERROR)
         finally:
             if config:
                 os.remove(config)
             if csv:
                 os.remove(csv)
-        logger.debug('Output from command:\n'+cmd_output.decode())
         return GS.sch.get_field_names(columns)
 
     def config(self, parent):
@@ -238,6 +235,11 @@ class KiBoMConfig(Optionable):
             self.mouser_link = None
         elif isinstance(self.mouser_link, list):
             self.mouser_link = '\t'.join(self.mouser_link)
+        # lcsc_link
+        # if isinstance(self.lcsc_link, type):
+        #     self.lcsc_link = None
+        # elif isinstance(self.lcsc_link, list):
+        #     self.lcsc_link = '\t'.join(self.lcsc_link)
         # group_fields
         if isinstance(self.group_fields, type):
             self.group_fields = None
@@ -335,6 +337,7 @@ class KiBoMConfig(Optionable):
             self.write_str('ref_separator')
             self.write_str('digikey_link')
             self.write_str('mouser_link')
+            # self.write_str('lcsc_link')
             # Ask to keep the output name
             f.write('output_file_name = %O\n')
             self.write_vector(self.group_fields, 'GROUP_FIELDS')
@@ -419,23 +422,15 @@ class KiBoMOptions(BaseOptions):
         if self.variant:
             cmd.extend(['-r', self.variant])
         cmd.extend([prj+'.xml', output])
-        logger.debug('Running: '+str(cmd))
-        try:
-            cmd_output = check_output(cmd, stderr=STDOUT)
-        except CalledProcessError as e:
-            logger.error('Failed to create BoM, error %d', e.returncode)
-            if e.output:
-                logger.debug('Output from command: '+e.output.decode())
-            exit(BOM_ERROR)
+        cmd_output = run_command(cmd, err_msg='Failed to create BoM, error {ret}', err_lvl=BOM_ERROR)
         if force_output:
             # When we create the .ini we can control the name.
             # But when the user does it we can trust the settings.
-            m = search(r'Saving BOM File: (.*)', cmd_output.decode())
+            m = search(r'Saving BOM File: (.*)', cmd_output)
             if m and m.group(1) != output:
                 cur = m.group(1)
                 logger.debug('Renaming output file: {} -> {}'.format(cur, output))
                 os.replace(cur, output)
-        logger.debug('Output from command:\n'+cmd_output.decode())
 
 
 @output_class

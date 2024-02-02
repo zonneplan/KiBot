@@ -3,15 +3,15 @@ kibot:
   version: 1
 
 import:
-  - file: PCB2Blender_2_1
+  - file: PCB2Blender_2_7
 
 outputs:
   - name: '3d_export'
     comment: "Exports the PCB in blender format"
     type: blender_export
-    disable_run_by_default: _PCB2Blender_2_1
+    disable_run_by_default: _PCB2Blender_2_7
     options:
-      pcb3d: _PCB2Blender_2_1
+      pcb3d: _PCB2Blender_2_7
 #       camera:
 #         name: MyCamera
 #         pos_x: 0.3

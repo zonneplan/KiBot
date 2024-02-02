@@ -341,12 +341,14 @@ class KiKit_PresentOptions(BaseOptions):
             except subprocess.CalledProcessError:
                 pass
 
-    def get_targets(self, out_dir):
+    def _get_targets(self, out_dir, only_index=False):
         self.ensure_tool('markdown2')
         from .PcbDraw.present import readTemplate
         # The web page
         out_dir = self._parent.expand_dirname(out_dir)
         res = [os.path.join(out_dir, 'index.html')]
+        if only_index:
+            return res
         # The resources
         template = readTemplate(self.template)
         for r in self.resources:
@@ -356,23 +358,11 @@ class KiKit_PresentOptions(BaseOptions):
         res.append(os.path.join(out_dir, 'boards'))
         return res
 
-    def generate_images(self, dir_name, content):
-        # Memorize the current options
-        self.save_options()
-        dir = os.path.dirname(os.path.join(dir_name, self.imgname))
-        if not os.path.exists(dir):
-            os.makedirs(dir)
-        counter = 0
-        for item in content:
-            if item["type"] != "steps":
-                continue
-            for x in item["steps"]:
-                counter += 1
-                filename = self.imgname.replace('%d', str(counter))
-                x["img"] = self.generate_image(x["side"], x["components"], x["active_components"], filename)
-        # Restore the options
-        self.restore_options()
-        return content
+    def get_targets(self, out_dir):
+        return self._get_targets(out_dir)
+
+    def get_navigate_targets(self, out_dir):
+        return self._get_targets(out_dir, True)
 
     def run(self, dir_name):
         self.ensure_tool('markdown2')
@@ -417,6 +407,9 @@ class KiKit_Present(BaseOutput):
             self.options = KiKit_PresentOptions
             """ *[dict] Options for the `kikit_present` output """
         self._category = 'PCB/docs'
+
+    def get_navigate_targets(self, out_dir):
+        return self.options.get_navigate_targets(out_dir), None
 
     @staticmethod
     def get_conf_examples(name, layers):

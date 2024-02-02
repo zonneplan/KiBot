@@ -36,8 +36,8 @@ class CustomReport(Optionable):
             self.output = 'Custom_report.txt'
             """ File name for the custom report """
             self.content = ''
-            """ Content for the report. Use ${basename} for the project name without extension.
-                Use ${filename(LAYER)} for the file corresponding to LAYER """
+            """ Content for the report. Use ``${basename}`` for the project name without extension.
+                Use ``${filename(LAYER)}`` for the file corresponding to LAYER """
 
 
 class AnyLayerOptions(VariantOptions):
@@ -76,7 +76,7 @@ class AnyLayerOptions(VariantOptions):
             self.custom_reports = CustomReport
             """ [list(dict)] A list of customized reports for the manufacturer """
             self.sketch_pads_on_fab_layers = False
-            """ Draw only the outline of the pads on the *.Fab layers (KiCad 6+) """
+            r""" Draw only the outline of the pads on the \*.Fab layers (KiCad 6+) """
             self.sketch_pad_line_width = 0.1
             """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                 Note that this value is currently ignored by KiCad (6.0.9) """
@@ -151,9 +151,8 @@ class AnyLayerOptions(VariantOptions):
     def run(self, output_dir, layers):
         super().run(output_dir)
         if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1 and not self.exclude_edge_layer:
-            logger.error("Plotting the edge layer is not supported by KiCad 7.0.0\n"
-                         "Please upgrade KiCad to 7.0.1 or newer")
-            exit(MISSING_TOOL)
+            GS.exit_with_error("Plotting the edge layer is not supported by KiCad 7.0.0\n"
+                               "Please upgrade KiCad to 7.0.1 or newer", MISSING_TOOL)
         # Memorize the list of visible layers
         old_visible = GS.board.GetVisibleLayers()
         # Apply the variants and filters
@@ -184,7 +183,7 @@ class AnyLayerOptions(VariantOptions):
             desc = la.description
             id = la.id
             if not GS.board.IsLayerEnabled(id):
-                logger.warning(W_NOLAYER+'Layer "{}" isn\'t used'.format(desc))
+                logger.warning(W_NOLAYER+f'Layer "{desc}" ({la.suffix}) isn\'t used')
                 continue
             if self._plot_format != PLOT_FORMAT_GERBER and self.individual_page_scaling:
                 # Only this layer is visible
@@ -299,7 +298,7 @@ class AnyLayer(BaseOutput):
         super().__init__()
         with document:
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user]
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
                 List of PCB layers to plot """
 
     def config(self, parent):

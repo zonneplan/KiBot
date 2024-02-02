@@ -1,0 +1,23 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'kiri'
+    comment: "Test for KiRi interface"
+    type: kiri
+    layers: ['F.Cu', 'In1.Cu', 'F.SilkS']
+    options:
+      color_theme: _builtin_classic
+      keep_generated: true
+      background_color: "#E0E0E0"
+      branch: 3b3741c
+      zones: unfill
+      # max_commits: 1
+
+  - name: arch
+    comment: ZIP file
+    type: compress
+    options:
+      files:
+        - from_output: kiri
+

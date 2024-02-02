@@ -29,7 +29,8 @@ preflight:
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
-  # [boolean=false] Option for `run_erc`. ERC warnings are considered errors.
+  # [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
+  # Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
   # [boolean=false] Fill all zones again and save the PCB.
   fill_zones: true
@@ -40,7 +41,8 @@ preflight:
     - filter: 'Filter description'
       error: '10'
       regex: 'Regular expression to match'
-  # [boolean=false] Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+  # [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`.
+  # Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
   # It will also ignore KiCad 6 warnings.
   ignore_unconnected: false
   # [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
@@ -53,14 +55,15 @@ preflight:
         command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
         before: 'Git hash: <'
         after: '>'
-  # [boolean=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
   # Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
   # If you need to check the parity use the `update_xml` preflight.
   # KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
   # This will change in the future.
+  # If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
   run_drc: true
-  # [boolean=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).
   run_erc: true
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
@@ -73,10 +76,11 @@ preflight:
         command: 'git log -1 --format="%h" "$KIBOT_SCH_NAME"'
         before: 'Git hash: <'
         after: '>'
-  # [dict|list(dict)] Defines KiCad 6 variables.
-  # They are expanded using ${VARIABLE}, and stored in the project file.
+  # [dict|list(dict)] Defines KiCad 6+ variables.
+  # They are expanded using `${VARIABLE}`, and stored in the project file.
   # This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
   # The KiCad project file is modified.
+  # Warning: don't use `-s all` or this preflight will be skipped.
   set_text_variables:
     - name: 'git_hash'
       command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
@@ -93,7 +97,7 @@ preflight:
   update_xml: true
 
 outputs:
-  # Blender Export **Experimental**:
+  # Blender Export:
   # Also renders the PCB with high-quality.
   # Needs KiCad 6 or newer.
   # This output is complex to setup and needs very big dependencies.
@@ -110,10 +114,19 @@ outputs:
       # [boolean=true] Add a default light when none specified.
       # The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB
       add_default_light: true
+      # [number=1.1] Value to multiply the Z axis coordinate after computing the automatically generated camera.
+      # Used to avoid collision of the camera and the object
+      auto_camera_z_axis_factor: 1.1
       # [dict] Options for the camera.
       # If none specified KiBot will create a suitable camera.
       # If no position is specified for the camera KiBot will look for a suitable position
       camera:
+        # [number=-1] Minimum distance for objects to the camera. Any object closer than this distance won't be visible.
+        # Only positive values have effect. A negative value has a special meaning.
+        # For a camera with defined position, a negative value means to use Blender defaults (i.e. 0.1 m).
+        # For cameras without position KiBot will ask Blender to compute its position and the use a clip
+        # distance that is 1/10th of the Z distance
+        clip_start: -1
         # [string=''] Name for the camera
         name: ''
         # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
@@ -124,6 +137,12 @@ outputs:
         pos_z: 0
         # [string='perspective'] [perspective,orthographic,panoramic] Type of camera
         type: 'perspective'
+      # [string=''] Default value for the `file_id` in the `point_of_view` options.
+      # Use something like '_%03d' for animations
+      default_file_id: ''
+      # [boolean=false] When using the automatically generated camera and multiple points of view this option computes the camera
+      # position just once. Suitable for videos
+      fixed_auto_camera: false
       # [dict|list(dict)] Options for the light/s
       light:
         # [number=0] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful
@@ -136,13 +155,15 @@ outputs:
           pos_y: 0
           # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_z: 0
-          # [string='POINT'] [POINT, SUN, SPOT, HEMI, AREA] Type of light. SUN lights will illuminate more evenly
+          # [string='POINT'] [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly
           type: 'POINT'
       # [dict|list(dict)] Outputs to generate in the same run
       outputs:
-        # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
-        # The extension is selected from the type. Affected by global options
-        - output: '%f-%i%I%v.%x'
+        # [string=''] Subdirectory for this output
+        - dir: ''
+          # [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
+          # The extension is selected from the type. Affected by global options
+          output: '%f-%i%I%v.%x'
           # [string='render'] [fbx,obj,x3d,gltf,stl,ply,blender,render] The format for the output.
           # The `render` type will generate a PNG image of the render result.
           # `fbx` is Kaydara's Filmbox, 'obj' is the Wavefront, 'x3d' is the new ISO/IEC standard
@@ -153,7 +174,7 @@ outputs:
           type: 'render'
       # [string|dict] Options to export the PCB to Blender.
       # You can also specify the name of the output that generates the PCB3D file.
-      # See the `PCB2Blender_2_1` and  `PCB2Blender_2_1_haschtl` templates
+      # See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates
       pcb3d:
         # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
         # A short-cut to use for simple cases where a variant is an overkill
@@ -164,6 +185,11 @@ outputs:
         # If you want to cache the downloaded files specify a directory using the
         # KIBOT_3D_MODELS environment variable
         download: true
+        # [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+        # them from LCSC database. In order to work you'll need to provide the LCSC
+        # part number. The field containing the LCSC part number is defined by the
+        # `field_lcsc_part` global variable
+        download_lcsc: true
         # [list(string)=[]] List of components to highlight
         highlight: []
         # [boolean=false] Highlight over the component (not under)
@@ -190,8 +216,8 @@ outputs:
         solder_paste_for_populated: true
         # [string=''] Board variant to apply
         variant: ''
-        # [string='2.1'] [2.1,2.1_haschtl] Variant of the format used
-        version: '2.1'
+        # [string='2.7'] [2.1,2.1_haschtl,2.7] Variant of the format used
+        version: '2.7'
       # Options to configure how Blender imports the PCB.
       # The default values are good for most cases
       pcb_import:
@@ -214,8 +240,8 @@ outputs:
         texture_dpi: 1016.0
       # [dict|list(dict)] How the object is viewed by the camera
       point_of_view:
-        # [string=''] String to diferentiate the name of this view.
-        # When empty we use the `view`
+        # [string=''] String to differentiate the name of this point of view.
+        # When empty we use the `default_file_id` or the `view`
         - file_id: ''
           # [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees]
           rotate_x: 0
@@ -223,6 +249,11 @@ outputs:
           rotate_y: 0
           # [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees]
           rotate_z: 0
+          # [number=1] [1-1000] Generate this amount of steps using the rotation angles as increments.
+          # Use a value of 1 (default) to interpret the angles as absolute.
+          # Used for animations. You should define the `default_file_id` to something like
+          # '_%03d' to get the animation frames
+          steps: 1
           # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
           # Compatible with `render_3d`
           view: 'top'
@@ -236,6 +267,9 @@ outputs:
         # [string='#CCCCE5'] Second color for the background gradient
         background2: '#CCCCE5'
         # `height` is an alias for `resolution_y`
+        # [boolean=false] Used to disable the render denoiser on old hardware, or when the functionality isn't compiled.
+        # Note that the impact in quality is huge, you should increase the amount of samples 10 times
+        no_denoiser: false
         # [number=1280] Width of the image
         resolution_x: 1280
         # [number=720] Height of the image
@@ -421,6 +455,11 @@ outputs:
       # [list(string)] List of fields used for sorting individual components into groups.
       # Components which match (comparing *all* fields) will be grouped together.
       # Field names are case-insensitive.
+      # For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
+      # `merge_both_blank` options.
+      # Note that for resistors, capacitors and inductors the _Value_ field is parsed and qualifiers, like
+      # tolerance, are discarded. Please use a separated field and disable `merge_blank_fields` if this
+      # information is important. You can also disable `parse_value`.
       # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
       #            'Voltage', 'Tolerance', 'Current', 'Power'] is used
       group_fields: ['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']
@@ -459,6 +498,9 @@ outputs:
         hide_stats_info: false
         # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
         highlight_empty: true
+        # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+        # Use **true** to copy the value indicated by the `field_lcsc_part` global option
+        lcsc_link: ''
         # [string|boolean=''] PNG file to use as logo, use false to remove
         logo: ''
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
@@ -491,6 +533,11 @@ outputs:
       number: 1
       # [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [boolean=true] Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
+      # Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
+      # extra information split it in separated fields, add the fields to `group_fields` and disable
+      # `merge_blank_fields`
+      parse_value: true
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # This option is for simple cases, consider using a full variant for complex cases
       pre_transform: '_none'
@@ -545,6 +592,9 @@ outputs:
         kicost_config: ''
         # [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component
         kicost_dist_desc: false
+        # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+        # Use **true** to copy the value indicated by the `field_lcsc_part` global option
+        lcsc_link: ''
         # [string|boolean=''] PNG file to use as logo, use false to remove
         logo: ''
         # [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software
@@ -556,8 +606,8 @@ outputs:
         # [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
         # Works with only some KiCost APIs
         specs: false
-        # [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
-        # 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+        # [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+        # references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
         # Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
         # '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'
         specs_columns:
@@ -646,28 +696,38 @@ outputs:
       # If you want to cache the downloaded files specify a directory using the
       # KIBOT_3D_MODELS environment variable
       download: true
+      # [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+      # them from LCSC database. In order to work you'll need to provide the LCSC
+      # part number. The field containing the LCSC part number is defined by the
+      # `field_lcsc_part` global variable
+      download_lcsc: true
       # [list(dict)] Which files will be included
       files:
         # [string=''] Destination directory inside the output dir, empty means the same of the file
         # relative to the source directory.
+        # Note that when you specify a name here files are copied to this destination
+        # without creating subdirs. The `project` mode is an exception.
         # For the `3d_models` type you can use DIR+ to create subdirs under DIR
         - dest: ''
-          # [string='.*'] A regular expression that source files must match
+          # [string='.*'] A regular expression that source files must match.
+          # Not used for the `project` mode
           filter: '.*'
           # [boolean=false] Only usable for the `3d_models` mode.
-          # Save a PCB copy modified to use the copied 3D models
+          # Save a PCB copy modified to use the copied 3D models.
+          # You don't need to specify it for `project` mode
           save_pcb: false
-          # [string='*'] File names to add, wildcards allowed. Use ** for recursive match.
-          # By default this pattern is applied to the current working dir.
-          # See the `from_outdir` option
+          # [string='*'] For the `files` and `out_files` mode this is th file names to add,
+          # wildcards allowed. Use ** for recursive match.
+          # For the `output` mode this is the name of the output.
+          # For the `3d_models` is a pattern to match the name of the 3D models extracted from the PCB.
+          # Not used for the `project` mode
           source: '*'
-          # [string='files'] [files,out_files,output,3d_models] How to interpret `source`.
-          # `files`: is a pattern for files relative to the working directory.
-          # `out_files`: is a pattern for files relative to output dir specified
-          # with `-d` command line option.
-          # `output`: is the name of an `output`.
-          # `3d_models`: is a pattern to match the name of the 3D models extracted
-          # from the PCB.
+          # [string='files'] [files,out_files,output,3d_models,project] From where do we get the files to be copied.
+          # `files`: files relative to the current working directory.
+          # `out_files`: files relative to output dir specified with `-d` command line option.
+          # `output`: files generated by the output specified by `source`.
+          # `3d_models`: 3D models used in the project.
+          # `project`: schematic, PCB, footprints, symbols, 3D models and project files (KiCad 6+)
           source_type: 'files'
       # [boolean=true] Store the file pointed by symlinks, not the symlink
       follow_links: true
@@ -702,13 +762,21 @@ outputs:
       always_fail_if_missing: false
       # [string=''] Directory to cache the intermediate files. Leave it blank to disable the cache
       cache_dir: ''
+      # [string='#00FF00'] Color used for the added stuff in the '2color' mode
+      color_added: '#00FF00'
+      # [string='#FF0000'] Color used for the removed stuff in the '2color' mode
+      color_removed: '#FF0000'
       # [boolean=false] Modifies the behavior of `add_link_id` to create a copy of the file instead of a
       # symlink. Useful for some Windows setups
       copy_instead_of_link: false
-      # [string='red_green'] [red_green,stats] In the `red_green` mode added stuff is green and red when removed.
-      # The `stats` mode is used to meassure the amount of difference. In this mode all
-      # changes are red, but you can abort if the difference is bigger than certain threshold
+      # [string='red_green'] [red_green,stats,2color] In the `red_green` mode added stuff is green and red when removed.
+      # The `stats` mode is used to measure the amount of difference. In this mode all
+      # changes are red, but you can abort if the difference is bigger than certain threshold.
+      # The '2color' mode is like 'red_green', but you can customize the colors
       diff_mode: 'red_green'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
       # [boolean=false] When `old_type` and/or `new_type` are `git` KiBot will checkout the indicated point.
       # Before doing it KiBot will stash any change. Under some circumstances git could fail
       # to do a checkout, even after stashing, this option can workaround the problem.
@@ -742,7 +810,7 @@ outputs:
       # Use `multivar` to specify a reference file when `new_type` is also `multivar`
       old_type: 'git'
       # [boolean=false] Only include the pages with differences in the output PDF.
-      # Note that when no differeces are found we get a page saying *No diff*
+      # Note that when no differences are found we get a page saying *No diff*
       only_different: false
       # [boolean=false] Compare only the main schematic page (root page)
       only_first_sch_page: false
@@ -750,6 +818,9 @@ outputs:
       output: '%f-%i%I%v.%x'
       # [boolean=true] Compare the PCB, otherwise compare the schematic
       pcb: true
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [number=0] [0,1000000] Error threshold for the `stats` mode, 0 is no error. When specified a
       # difference bigger than the indicated value will make the diff fail.
       # KiBot will return error level 29 and the diff generation will be aborted
@@ -757,6 +828,13 @@ outputs:
       # [boolean=false] When creating the link name of an output file related to a variant use the variant
       # `file_id` instead of its name
       use_file_id: false
+      # [string=''] Board variant to apply
+      variant: ''
+      # [string='global'] [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
+      # fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
+      # a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
+      # Be careful with the cache when changing this setting
+      zones: 'global'
     layers: all
   # Datasheets downloader:
   - name: 'download_datasheets_example'
@@ -774,7 +852,7 @@ outputs:
       # [boolean=true] Instead of download things we already downloaded use symlinks
       link_repeated: true
       # [string='${VALUE}.pdf'] Name used for the downloaded datasheet.
-      # ${FIELD} will be replaced by the FIELD content
+      # `${FIELD}` will be replaced by the FIELD content
       output: '${VALUE}.pdf'
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
@@ -786,7 +864,7 @@ outputs:
       variant: ''
   # DXF (Drawing Exchange Format):
   # This output is what you get from the File/Plot menu in pcbnew.
-  #     If you use custom fonts and/or colors please consult the `resources_dir` global variable.
+  # If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   - name: 'dxf_example'
     comment: 'Exports the PCB to 2D mechanical EDA tools (like AutoCAD).'
     type: 'dxf'
@@ -794,8 +872,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use ${basename} for the project name without extension.
-        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -1022,8 +1100,8 @@ outputs:
       create_gerber_job_file: true
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use ${basename} for the project name without extension.
-        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -1098,8 +1176,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use ${basename} for the project name without extension.
-        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -1235,6 +1313,9 @@ outputs:
       # [string=''] Comma separated list of extra fields to pull from netlist or xml file.
       # Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y'
       extra_fields: ''
+      # [string=''] Name to be used for the PCB/project (no file extension).
+      # This will affect the name iBoM displays in the generated HTML
+      forced_name: ''
       # [string=''] Comma separated list of fields that components will be grouped by.
       # Value and Footprint are used when nothing is specified
       group_fields: ''
@@ -1245,7 +1326,7 @@ outputs:
       hide_pads: false
       # [boolean=false] Hide silkscreen by default
       hide_silkscreen: false
-      # [boolean=false] Highlight pin1 by default
+      # [boolean|none,all,selected] Highlight pin1 by default
       highlight_pin1: false
       # [boolean=false] Include netlist information in output.
       include_nets: false
@@ -1418,7 +1499,7 @@ outputs:
         number_rows: true
         # [string=' '] Separator used for the list of references
         ref_separator: ' '
-        # [boolean=true] Each component group will be tested against a number of regular-expressions (see ``).
+        # [boolean=true] Each component group will be tested against a number of regular-expressions
         test_regex: true
         # [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18
         use_alt: false
@@ -1435,6 +1516,42 @@ outputs:
       # with a BOM file exported for each variant, separate
       # variants with the ';' (semicolon) character.
       # This isn't related to the KiBot concept of variants
+      variant: ''
+  # KiCanvas:
+  # Note that this tool is in alpha stage, so be ready to face some issues.
+  # Also note that most browsers won't allow Java Script to read local files,
+  # needed to load the SCH/PCB. So you must use a web server or enable the
+  # access to local files. In the case of Google Chrome you can use the
+  # `--allow-file-access-from-files` command line option.
+  # For more information visit the [KiCanvas web](https://github.com/theacodes/kicanvas)
+  # 
+  - name: 'kicanvas_example'
+    comment: 'Generates an interactive web page to browse the schematic and/or PCB.'
+    type: 'kicanvas'
+    dir: 'Example/kicanvas_dir'
+    options:
+      # [string='full'] [full,basic,none] Which controls are displayed
+      controls: 'full'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=true] Show the download button
+      download: true
+      # [boolean=true] Download the script and use a copy
+      local_script: true
+      # [boolean=true] Show the overlay asking to click
+      overlay: true
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string|list(string)] [schematic,pcb,project] Source to display
+      source: 'schematic'
+      # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      # If it starts with `+` the text is concatenated
+      title: ''
+      # URL for the KiCanvas script
+      url_script: 'https://kicanvas.org/kicanvas/kicanvas.js'
+      # [string=''] Board variant to apply
       variant: ''
   # KiCost (KiCad Cost calculator):
   # For more information: https://github.com/INTI-CMNB/KiCost
@@ -1578,6 +1695,47 @@ outputs:
       # [string='default'] Path to a template directory or a name of built-in one.
       # See KiKit's doc/present.md for template specification
       template: 'default'
+  # KiRi:
+  # Must be applied to a git repository.
+  # Recursive git submodules aren't supported (submodules inside submodules).
+  # Note that most browsers won't allow Java Script to read local files,
+  # needed to load the SCH/PCB. So you must use a web server or enable the
+  # access to local files. In the case of Google Chrome you can use the
+  # `--allow-file-access-from-files` command line option.
+  # This output generates a simple Python web server called `kiri-server` that you can use.
+  # For more information visit the [KiRi web](https://github.com/leoheck/kiri)
+  - name: 'kiri_example'
+    comment: 'Generates an interactive web page to browse the schematic and/or PCB differences between git commits.'
+    type: 'kiri'
+    dir: 'Example/kiri_dir'
+    options:
+      # [string='#FFFFFF'] Color used for the background of the diff canvas
+      background_color: '#FFFFFF'
+      # [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
+      # To use the KiCad 6 default colors select `_builtin_default`.
+      # Usually user colors are stored as `user`, but you can give it another name
+      color_theme: '_builtin_classic'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
+      # [boolean=false] Avoid PCB and SCH images regeneration. Useful for incremental usage
+      keep_generated: false
+      # [number=0] Maximum number of commits to include. Use 0 for all available commits
+      max_commits: 0
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
+      # [string='HEAD'] Starting point for the commits, can be a branch, a hash, etc.
+      # Note that this can be a revision-range, consult the gitrevisions manual for more information
+      revision: 'HEAD'
+      # [string=''] Board variant to apply
+      variant: ''
+      # [string='global'] [global,fill,unfill,none] How to handle PCB zones. The default is *global* and means that we
+      # fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
+      # a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
+      # Be careful with the *keep_generated* option when changing this setting
+      zones: 'global'
+    layers: all
   # Navigate Results:
   - name: 'navigate_results_example'
     comment: 'Generates a web page to navigate the generated outputs'
@@ -1690,6 +1848,8 @@ outputs:
             drawtabfail: false
             # [boolean=false] Trace
             trace: false
+          # [boolean=true] Expand text variables and KiBot %X markers in text objects
+          expand_text: true
           # [string=''] A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`
           extends: ''
           # [dict] Used to add fiducial marks to the (rail/frame of) the panel
@@ -1825,6 +1985,8 @@ outputs:
           post:
             # [boolean=false] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels)
             copperfill: false
+            # [boolean=false] Draw dimensions with the panel size.
+            dimensions: false
             # `mill_radius` is an alias for `millradius`
             # [number|string] Simulate the milling operation (add fillets to the internal corners).
             # Specify mill radius (usually 1 mm). 0 radius disables the functionality
@@ -1871,7 +2033,7 @@ outputs:
             tly: 0
             # [number|string] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*
             tolerance: 1
-            # [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
+            # [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB used for the panelization.
             # *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
             # *annotation* selects a contour marked by a kikit:Board footprint
             type: 'auto'
@@ -1881,8 +2043,8 @@ outputs:
             arg: ''
             # [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*
             code: ''
-            # [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
-            # ensure that a sharp corner of the pocket can be milled. Used for *full*
+            # [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
+            # depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full*
             cutout: 1
             # [number=1] Number of tabs in the horizontal direction. Used for *fixed*
             hcount: 1
@@ -2124,12 +2286,14 @@ outputs:
       # [list(string)|string=all] [none,all] List of components to include in the pads list,
       # can be also a string for `none` or `all`. The default is `all`
       show_components: all
-      # [boolean=false] Create a JSON file containing the board stackup
+      # [boolean=false] Create a file containing the board stackup
       stackup_create: false
-      # [string='.'] Directory for the stackup file
+      # [string='.'] Directory for the stackup file. Use 'layers' for 2.7+
       stackup_dir: '.'
-      # [string='board.yaml'] Name for the stackup file
+      # [string='board.yaml'] Name for the stackup file. Use 'stackup' for 2.7+
       stackup_file: 'board.yaml'
+      # [string='JSON'] [JSON,BIN] Format for the stackup file. Use 'BIN' for 2.7+
+      stackup_format: 'JSON'
       # [string='bounds'] File name for the sub-PCBs bounds
       sub_boards_bounds_file: 'bounds'
       # [boolean=true] Extract sub-PCBs and their Z axis position
@@ -2180,6 +2344,9 @@ outputs:
       force_edge_cuts: false
       # [string=''] Color used for the `force_edge_cuts` option
       forced_edge_cuts_color: ''
+      # [boolean=true] Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
+      # layer
+      forced_edge_cuts_use_for_center: true
       # [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
       # Note that for PS you need `ghostscript` which isn't part of the default docker images
       format: 'PDF'
@@ -2198,6 +2365,10 @@ outputs:
       # [boolean=true] Tell KiCad to apply the scaling for each page as a separated entity.
       # Disabling it the pages are coherent and can be superposed
       individual_page_scaling: true
+      # [boolean=false] Invert the meaning of the `use_for_center` layer option.
+      # This can be used to just select the edge cuts for centering, in this case enable this option
+      # and disable the `use_for_center` option of the edge cuts layer
+      invert_use_for_center: false
       # [boolean=false] Store the temporal page and layer files in the output dir and don't delete them
       keep_temporal_files: false
       # [string=''] Color used for micro `colored_vias`
@@ -2228,9 +2399,11 @@ outputs:
           # Order is important, the last goes on top.
           # You can reuse other layers lists, some options aren't used here, but they are valid
           layers:
-            # [string=''] Color used for this layer
+            # [string=''] Color used for this layer.
+            # KiCad 6+: don't forget the alpha channel for layers like the solder mask
             - color: ''
-              # [string=''] A description for the layer, for documentation purposes
+              # [string=''] A description for the layer, for documentation purposes.
+              # A default can be specified using the `layer_defaults` global option
               description: ''
               # [boolean=false] Include references and values even when they are marked as invisible
               force_plot_invisible_refs_vals: false
@@ -2240,12 +2413,20 @@ outputs:
               plot_footprint_refs: true
               # [boolean=true] Include the footprint values
               plot_footprint_values: true
-              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified
+              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+              # A default can be specified using the `layer_defaults` global option
               suffix: ''
+              # [boolean=true] Use this layer for centering purposes.
+              # You can invert the meaning using the `invert_use_for_center` option
+              use_for_center: true
           # [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5)
           line_width: 0.1
           # [boolean=false] Print mirrored (X axis inverted)
           mirror: false
+          # [boolean=true] Mirror text in the footprints when mirror option is enabled and we plot a user layer
+          mirror_footprint_text: true
+          # [boolean=true] Mirror text in the PCB when mirror option is enabled and we plot a user layer
+          mirror_pcb_text: true
           # [boolean=false] Print in gray scale
           monochrome: false
           # [boolean=false] Invert black and white. Only useful for a single layer
@@ -2263,9 +2444,11 @@ outputs:
           # [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
           # This can be used to generate a page for each copper layer, here you put `copper`
           repeat_layers:
-            # [string=''] Color used for this layer
+            # [string=''] Color used for this layer.
+            # KiCad 6+: don't forget the alpha channel for layers like the solder mask
             - color: ''
-              # [string=''] A description for the layer, for documentation purposes
+              # [string=''] A description for the layer, for documentation purposes.
+              # A default can be specified using the `layer_defaults` global option
               description: ''
               # [boolean=false] Include references and values even when they are marked as invisible
               force_plot_invisible_refs_vals: false
@@ -2275,8 +2458,12 @@ outputs:
               plot_footprint_refs: true
               # [boolean=true] Include the footprint values
               plot_footprint_values: true
-              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified
+              # [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+              # A default can be specified using the `layer_defaults` global option
               suffix: ''
+              # [boolean=true] Use this layer for centering purposes.
+              # You can invert the meaning using the `invert_use_for_center` option
+              use_for_center: true
           # [number=1.0] Scale factor (0 means autoscaling)
           scaling: 1.0
           # [string='Assembly'] Text to use for the `sheet` in the title block.
@@ -2425,7 +2612,7 @@ outputs:
           # `reference` is an alias for `ref`
       # [string|list(string)=''] List of resistors to flip its bands
       resistor_flip: ''
-      # [list(dict)] List of resitors to be remapped. You can change the value of the resistors here
+      # [list(dict)] List of resistors to be remapped. You can change the value of the resistors here
       resistor_remap:
         # [string=''] Reference for the resistor to change
         - ref: ''
@@ -2496,8 +2683,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use ${basename} for the project name without extension.
-        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -2717,15 +2904,19 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
-      # [string='ASCII'] [ASCII,CSV] Format for the position file
+      # [string='ASCII'] [ASCII,CSV,GBR] Format for the position file.
+      # Note that the gerber format (GBR) needs KiCad 7+ and doesn't support most of the options.
+      # Only the options that explicitly say the format is supported
       format: 'ASCII'
+      # [boolean=false] Include the board edge in the gerber output
+      gerber_board_edge: false
       # [boolean=false] Include virtual components. For special purposes, not pick & place.
       # Note that virtual components is a KiCad 5 concept.
       # For KiCad 6+ we replace this concept by the option to exclude from position file
       include_virtual: false
       # [boolean=true] Only include the surface mount components
       only_smd: true
-      # [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv').
+      # [string='%f-%i%I%v.%x'] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
       # Important: when using separate files you must use `%i` to differentiate them. Affected by global options
       output: '%f-%i%I%v.%x'
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
@@ -2739,7 +2930,8 @@ outputs:
       separate_files_for_front_and_back: true
       # [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options
       units: 'millimeters'
-      # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default)
+      # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default).
+      # Supported by the gerber format
       use_aux_axis_as_origin: true
       # [string=''] Board variant to apply
       variant: ''
@@ -2756,8 +2948,8 @@ outputs:
       a4_output: true
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use ${basename} for the project name without extension.
-        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -2872,7 +3064,8 @@ outputs:
     options:
       # [string='QR'] Short name for the library
       lib: 'QR'
-      # [string='%f-%i%I%v.%x'] Filename for the output (%i=qr, %x=lib). Affected by global options
+      # [string='%f-%i%I%v.%x'] Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
+      # You must use %x in the name to get a symbols lib and a footprints lib. Affected by global options
       output: '%f-%i%I%v.%x'
       # [list(dict)] QR codes to include in the library
       qrs:
@@ -2924,6 +3117,11 @@ outputs:
       # If you want to cache the downloaded files specify a directory using the
       # KIBOT_3D_MODELS environment variable
       download: true
+      # [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+      # them from LCSC database. In order to work you'll need to provide the LCSC
+      # part number. The field containing the LCSC part number is defined by the
+      # `field_lcsc_part` global variable
+      download_lcsc: true
       # [number=720] Image height (aprox.)
       height: 720
       # [list(string)=[]] List of components to highlight
@@ -3193,6 +3391,11 @@ outputs:
       # If you want to cache the downloaded files specify a directory using the
       # KIBOT_3D_MODELS environment variable
       download: true
+      # [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+      # them from LCSC database. In order to work you'll need to provide the LCSC
+      # part number. The field containing the LCSC part number is defined by the
+      # `field_lcsc_part` global variable
+      download_lcsc: true
       # [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models
       kicad_3d_url: 'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'
       # [string=''] Text added to the end of the download URL.
@@ -3229,8 +3432,8 @@ outputs:
     options:
       # [list(dict)] A list of customized reports for the manufacturer
       custom_reports:
-        # [string=''] Content for the report. Use ${basename} for the project name without extension.
-        # Use ${filename(LAYER)} for the file corresponding to LAYER
+        # [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+        # Use ``${filename(LAYER)}`` for the file corresponding to LAYER
         - content: ''
           # [string='Custom_report.txt'] File name for the custom report
           output: 'Custom_report.txt'
@@ -3421,6 +3624,11 @@ outputs:
       # If you want to cache the downloaded files specify a directory using the
       # KIBOT_3D_MODELS environment variable
       download: true
+      # [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+      # them from LCSC database. In order to work you'll need to provide the LCSC
+      # part number. The field containing the LCSC part number is defined by the
+      # `field_lcsc_part` global variable
+      download_lcsc: true
       # [list(string)=[]] List of components to highlight
       highlight: []
       # [boolean=false] Highlight over the component (not under)

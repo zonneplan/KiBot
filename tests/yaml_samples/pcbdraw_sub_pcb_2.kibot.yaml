@@ -1,0 +1,39 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  hide_excluded: true
+  pcb_finish: ENIG
+  solder_mask_color: blue
+
+variants:
+  - name: 'default'
+    comment: 'Default variant'
+    type: ibom
+    sub_pcbs:
+      - name: charger
+        reference: B1
+      - name: battery
+        reference: B2
+      - name: connector
+        reference: B3
+
+outputs:
+  - name: draw_charger
+    comment: "Draw PCB charger"
+    type: pcbdraw
+    options:
+      variant: default[charger]
+
+  - name: draw_battery
+    comment: "Draw PCB battery"
+    type: pcbdraw
+    options:
+      variant: default[battery]
+
+  - name: draw_connector
+    comment: "Draw PCB connector"
+    type: pcbdraw
+    options:
+      variant: default[connector]

@@ -1,0 +1,10 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'do_info'
+    comment: "Information about the run"
+    type: info
+    options:
+      environment: full

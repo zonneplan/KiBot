@@ -32,7 +32,7 @@ CSV_EXPR = r'^"%s",[^,]+,[^,]+,([-\d\.]+),([-\d\.]+),([-\d\.]+),(\S+)$'
 ASCII_EXPR = r'^%s\s+\S+\s+\S+\s+([-\d\.]+)\s+([-\d\.]+)\s+([-\d\.]+)\s+(\S+)\s*$'
 
 
-def expect_position(ctx, file, comp, no_comp=(), inches=False, csv=False, neg_x=False):
+def expect_position(ctx, file, comp, no_comp=(), inches=False, csv=False, neg_x=False, a_pos=positions):
     """
     Check if a list of components are or aren't in the file
     """
@@ -45,17 +45,17 @@ def expect_position(ctx, file, comp, no_comp=(), inches=False, csv=False, neg_x=
             texts.append(ASCII_EXPR % k)
     res = ctx.search_in_file(file, texts)
     for k in comp:
-        x, y, side, angle = positions[k]
+        x, y, side, angle = a_pos[k]
         if inches:
             x = x/25.4
             y = y/25.4
         if neg_x:
             x = -x
         matches = res.pop(0)
-        assert(abs(float(x) - float(matches[0])) < 0.001), k
-        assert(abs(float(y) + float(matches[1])) < 0.001), k
-        assert(angle == float(matches[2]) % 360), k
-        assert(side == matches[3]), k
+        assert abs(float(x) - float(matches[0])) < 0.001, k
+        assert abs(float(y) + float(matches[1])) < 0.001, k
+        assert angle == float(matches[2]) % 360, k
+        assert side == matches[3], k
 
     # Components that must not be found
     texts = []
@@ -217,7 +217,7 @@ def test_position_variant_t2i(test_dir):
     rows, header, info = ctx.load_csv(files[0])
     check_comps(rows, ['R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(files[1])
-    check_comps(rows, ['R1', 'R2', 'R3'])
+    check_comps(rows, ['R1', 'R2'])
     rows, header, info = ctx.load_csv(files[2])
     check_comps(rows, ['C2', 'R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(files[3])
@@ -228,6 +228,8 @@ def test_position_variant_t2i(test_dir):
 
 
 def test_position_rot_1(test_dir):
+    """ Rotation filter inside a variant.
+        Also testing the import mechanism for them """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'simple_position_rot_1', POS_DIR)
     ctx.run()
@@ -235,6 +237,8 @@ def test_position_rot_1(test_dir):
     ctx.expect_out_file(output)
     ctx.compare_txt(output)
     ctx.compare_txt(prj+'_bom_jlc.csv')
+    ctx.search_err(r"can't import `foobar` filter")
+    ctx.search_err(r"can't import `foobar` variant")
     ctx.clean_up(keep_project=True)
 
 
@@ -250,6 +254,7 @@ def test_position_rot_2(test_dir):
 
 
 def test_position_rot_3(test_dir):
+    """ Aux origin """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'simple_position_rot_3', POS_DIR)
     ctx.run(extra_debug=True)
@@ -260,6 +265,7 @@ def test_position_rot_3(test_dir):
 
 
 def test_position_rot_4(test_dir):
+    """ Importing the variant and filter with a simple import """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'simple_position_rot_4', POS_DIR)
     ctx.run(extra_debug=True)
@@ -297,6 +303,36 @@ def test_position_rot_bottom(test_dir):
     pos_bot = ctx.get_pos_both_filename()
     ctx.expect_out_file(pos_bot)
     expect_position(ctx, pos_bot, ['U1'], neg_x=True)
+    ctx.clean_up()
+
+
+positions_a = {'Q1': (122, 77, 'top', 180),
+               # Rotated and moved using *rotations_and_offsets*
+               'Q2': (133, 78, 'top', 90),
+               # Manually rotated 270
+               'Q3': (122, 86, 'top', 270),
+               # Manually moved 1,1
+               'Q4': (133, 85, 'top', 180),
+               'Q5': (122, 77, 'bottom', 0),
+               # Offset using *offsets*
+               'Q6': (131, 78, 'bottom', 0),
+               # Manually rotated 270
+               'Q7': (122, 86, 'bottom', 90),
+               # Manually moved 1,1
+               'Q8': (131, 87, 'bottom', 0)}
+POS_TRS = ('Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8')
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_position_rot_a(test_dir):
+    """  """
+    prj = 'rotations'
+    ctx = context.TestContext(test_dir, prj, 'simple_position_rot_a', POS_DIR)
+    ctx.run(extra_debug=True)
+    output = prj+'-both_pos.csv'
+    ctx.expect_out_file(output)
+    expect_position(ctx, output, POS_TRS, csv=True, a_pos=positions_a)
+    # ctx.compare_txt(output)
     ctx.clean_up()
 
 
@@ -339,3 +375,36 @@ def test_position_flags_3(test_dir):
     ctx.run()
     check_comp_list(ctx.load_csv(prj+'-both_pos.csv')[0], {'R1', 'R2', 'R3'})
     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="needs kicad-cli")
+def test_position_gerber_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'simple_position_gbr', POS_DIR)
+    ctx.run()
+    ctx.expect_out_file_d(prj+'-top_pos.gbr')
+    ctx.expect_out_file_d(prj+'-bottom_pos.gbr')
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiKit currently supports KiCad 6 only")
+def test_position_sub_pcb_bp_1(test_dir):
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'position_sub_pcb_bp', POS_DIR)
+    ctx.run(extra=['-g', 'variant=default[charger]'])
+    expect_position(ctx, os.path.join(POS_DIR, prj+'-both_pos_charger.pos'), ['J13'], ['J2', 'J3'],
+                    a_pos={'J13': (126.5, 95, 'top', 90)})
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(context.ki5(), reason="KiKit currently supports KiCad 6 only")
+def test_position_sub_pcb_bp_2(test_dir):
+    prj = 'batteryPack'
+    ctx = context.TestContext(test_dir, prj, 'position_sub_pcb_bp_kikit', POS_DIR)
+    ctx.run(extra=['-g', 'variant=default[charger]'])
+    # KiKit just sends the PCB to 150,100; not centered, A4 page is 270x210:
+    # 297/2-150 = -1.5 -> 126.5+1.5
+    # 210/2-100 = 5 -> 95-5
+    expect_position(ctx, os.path.join(POS_DIR, prj+'-both_pos_charger.pos'), ['J13'], ['J2', 'J3'],
+                    a_pos={'J13': (126.5+1.5, 95-5, 'top', 90)})
+    ctx.clean_up(keep_project=True)

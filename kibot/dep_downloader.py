@@ -70,10 +70,13 @@ Dependencies:
     arch: python-lxml
     downloader: python
   - name: KiKit
-    github: yaqwsx/KiKit
+    github: INTI-CMNB/KiKit
     pypi: KiKit
     downloader: pytool
     version: 1.3.0.4
+    comments:
+      - Official 1.3.0 release does not work, use my fork if 1.3.0 is the latest
+      - You can also try the official 1.4.0 release
   - from: KiKit
     role: Separate multiboard projects
   - name: Xvfbwrapper
@@ -302,20 +305,28 @@ def pip_install(pip_command, dest=None, name='.'):
                     # If we have an older version installed don't remove it
                     '--ignore-installed'])
     cmd.append(name)
-    logger.debug('- Running: {}'.format(cmd))
-    try:
-        res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
-        logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
-    except subprocess.CalledProcessError as e:
-        logger.debug('- Failed to install `{}` using pip (cmd: {} code: {})'.format(name, e.cmd, e.returncode))
-        if e.output:
-            logger.debug('- Output from command: '+e.output.decode())
-        if e.stderr:
-            logger.debug('- StdErr from command: '+e.stderr.decode())
-        return False
-    except Exception as e:
-        logger.debug('- Failed to install `{}` using pip ({})'.format(name, e))
-        return False
+    retry = True
+    while retry:
+        logger.debug('- Running: {}'.format(cmd))
+        retry = False
+        try:
+            res_run = subprocess.run(cmd, check=True, capture_output=True, cwd=dest)
+            logger.debugl(3, '- Output from pip:\n'+res_run.stdout.decode())
+        except subprocess.CalledProcessError as e:
+            logger.debug('- Failed to install `{}` using pip (cmd: {} code: {})'.format(name, e.cmd, e.returncode))
+            if e.output:
+                logger.debug('- Output from command: '+e.output.decode())
+            if e.stderr:
+                logger.debug('- StdErr from command: '+e.stderr.decode())
+            if not retry and b'externally-managed-environment' in e.stderr:
+                # PEP 668 ... and the broken Python packaging concept
+                retry = True
+                cmd.insert(-1, '--break-system-packages')
+            else:
+                return False
+        except Exception as e:
+            logger.debug('- Failed to install `{}` using pip ({})'.format(name, e))
+            return False
     return True
 
 
@@ -356,8 +367,11 @@ def pytool_downloader(dep, system, plat):
     if not pip_install(pip_command, dest=dest):
         return None, None
     rmtree(dest)
+    full_name = os.path.join(site.USER_BASE, 'bin', dep.command)
+    if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
+        full_name = os.path.join(site.USER_BASE, 'local', 'bin', dep.command)
     # Check it was successful
-    return check_tool_binary_version(os.path.join(site.USER_BASE, 'bin', dep.command), dep, no_cache=True)
+    return check_tool_binary_version(full_name, dep, no_cache=True)
 
 
 def python_downloader(dep):
@@ -365,6 +379,7 @@ def python_downloader(dep):
     # Check if we have pip and wheel
     pip_command = check_pip()
     if pip_command is None:
+        logger.non_critical_error('No pip command available!')
         return False
     # Try to pip install it
     if not pip_install(pip_command, name=dep.pypi_name.lower()):
@@ -634,9 +649,9 @@ def check_tool_binary_version(full_name, dep, no_cache=False):
         return full_name, None
     # Do we need a particular version?
     needs = (0, 0, 0)
-    for r in dep.roles:
-        if r.version and r.version > needs:
-            needs = r.version
+    ver = dep.role.version
+    if ver and ver > needs:
+        needs = ver
     if needs == (0, 0, 0):
         # Any version is Ok
         logger.debugl(2, '- No particular version needed')
@@ -691,7 +706,11 @@ def check_tool_binary_python(dep):
     logger.debugl(2, '- Looking for tool `{}` at Python user site ({})'.format(dep.command, base))
     full_name = os.path.join(base, dep.command)
     if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
-        return None, None
+        base = os.path.join(site.USER_BASE, 'local', 'bin')
+        full_name = os.path.join(base, dep.command)
+        if not os.path.isfile(full_name) or not os.access(full_name, os.X_OK):
+            return None, None
+        # WTF! ~/.local/local/bin??!! Looks like a Debian bug
     return check_tool_binary_version(full_name, dep)
 
 
@@ -700,6 +719,7 @@ def try_download_tool_binary(dep):
         return None, None
     logger.info('- Trying to download {} ({})'.format(dep.name, dep.url_down))
     res = None
+    ver = None
     # Determine the platform
     system = platform.system()
     plat = platform.platform()
@@ -713,13 +733,13 @@ def try_download_tool_binary(dep):
         plat = 'unk'
     logger.debug('- System: {} platform: {}'.format(system, plat))
     # res = dep.downloader(dep, system, plat)
-    # return res
+    # return res, ver
     try:
         res, ver = dep.downloader(dep, system, plat)
         if res:
             using_downloaded(dep)
     except Exception as e:
-        logger.error('- Failed to download {}: {}'.format(dep.name, e))
+        logger.non_critical_error(f'- Failed to download {dep.name}: {e}')
     return res, ver
 
 
@@ -746,9 +766,9 @@ def check_tool_python_version(mod, dep):
     version_check_fail = False
     # Do we need a particular version?
     needs = (0, 0, 0)
-    for r in dep.roles:
-        if r.version and r.version > needs:
-            needs = r.version
+    ver = dep.role.version
+    if ver and ver > needs:
+        needs = ver
     if needs == (0, 0, 0):
         # Any version is Ok
         logger.debugl(2, '- No particular version needed')
@@ -781,14 +801,13 @@ def check_tool_python(dep, reload=False):
         importlib.invalidate_caches()
         mod = importlib.import_module(dep.module_name)
         if mod.__file__ is None:
-            logger.error(mod)
             return None, None
         res, ver = check_tool_python_version(mod, dep)
         if res is not None and reload:
             res = importlib.reload(reload)
         return res, ver
     except ModuleNotFoundError:
-        pass
+        logger.non_critical_error(f'Pip failed for {dep.module_name}')
     return None, None
 
 
@@ -805,23 +824,12 @@ def get_version(role):
     return ''
 
 
-def show_roles(roles, fatal):
-    optional = []
-    for r in roles:
-        if not r.mandatory:
-            optional.append(r)
-        output = r.output
-    if output != 'global':
-        do_log_err('Output that needs it: '+output, fatal)
-    if optional:
-        if len(optional) == 1:
-            o = optional[0]
-            desc = o.desc[0].lower()+o.desc[1:]
-            do_log_err('Used to {}{}'.format(desc, get_version(o)), fatal)
-        else:
-            do_log_err('Used to:', fatal)
-            for o in optional:
-                do_log_err('- {}{}'.format(o.desc, get_version(o)), fatal)
+def show_roles(role, fatal):
+    if role.output != 'global':
+        do_log_err('Output that needs it: '+role.output, fatal)
+    if not role.mandatory:
+        desc = role.desc[0].lower()+role.desc[1:]
+        do_log_err('Used to {}{}'.format(desc, get_version(role)), fatal)
 
 
 def get_dep_data(context, dep):
@@ -849,6 +857,8 @@ def check_tool_dep_get_ver(context, dep, fatal=False):
             do_log_err('Download page: '+dep.url_down, fatal)
         if dep.deb_package:
             do_log_err('Debian package: '+dep.deb_package, fatal)
+            if not dep.in_debian:
+                do_log_err('- This is not an official package, use KiBot repo (https://github.com/set-soft/debian)', fatal)
             if dep.extra_deb:
                 do_log_err('- Recommended extra Debian packages: '+' '.join(dep.extra_deb), fatal)
         if dep.arch:
@@ -862,7 +872,7 @@ def check_tool_dep_get_ver(context, dep, fatal=False):
                 do_log_err('- Recommended extra Arch packages: '+' '.join(dep.extra_arch), fatal)
         for comment in dep.comments:
             do_log_err(comment, fatal)
-        show_roles(dep.roles, fatal)
+        show_roles(dep.role, fatal)
         do_log_err(TRY_INSTALL_CHECK, fatal)
         if fatal:
             exit(MISSING_TOOL)
@@ -896,7 +906,7 @@ class ToolDependencyRole(object):
 class ToolDependency(object):
     """ Class used to define tools needed for an output """
     def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
-                 roles=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
+                 role=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
                  help_option=None, no_cmd_line_version_old=False, downloader=None, arch=None, extra_arch=None, tests=None):
         # The associated output
         self.output = output
@@ -904,10 +914,11 @@ class ToolDependency(object):
         self.name = name
         # Name of the .deb
         if deb is None:
-            if is_python:
-                self.deb_package = 'python3-'+name.lower()
-            else:
+            if not is_python:
                 self.deb_package = name.lower()
+            # We don't use it for python modules:
+            #  else:
+            #      self.deb_package = 'python3-'+name.lower()
         else:
             self.deb_package = deb
         self.is_python = is_python
@@ -937,13 +948,10 @@ class ToolDependency(object):
         self.help_option = help_option if help_option is not None else '--version'
         self.tests = tests
         # Roles
-        if roles is None:
-            roles = [ToolDependencyRole()]
-        elif not isinstance(roles, list):
-            roles = [roles]
-        for r in roles:
-            r.output = output
-        self.roles = roles
+        if role is None:
+            role = ToolDependencyRole()
+        role.output = output
+        self.role = role
 
 
 def register_dep(context, dep):
@@ -952,7 +960,7 @@ def register_dep(context, dep):
     if parent:
         parent_data = base_deps.get(parent.lower(), None)
         if parent_data is None:
-            logger.error('{} dependency unkwnown parent {}'.format(context, parent))
+            logger.non_critical_error(f'{context} dependency unkwnown parent {parent}')
             return
         new_dep = deepcopy(parent_data)
         new_dep.update(dep)
@@ -998,7 +1006,7 @@ def register_dep(context, dep):
     tests = dep.get('tests', [])
     # logger.error('{}:{} {} {}'.format(context, name, downloader, pypi_name))
     # TODO: Make it *ARGS
-    td = ToolDependency(context, name, roles=role, url=url, url_down=url_down, deb=deb, in_debian=in_debian,
+    td = ToolDependency(context, name, role=role, url=url, url_down=url_down, deb=deb, in_debian=in_debian,
                         extra_deb=extra_deb, is_python=is_python, module_name=module_name, plugin_dirs=plugin_dirs,
                         command=command, help_option=help_option, pypi_name=pypi_name,
                         no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader, arch=arch,

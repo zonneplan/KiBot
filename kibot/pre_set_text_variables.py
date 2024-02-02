@@ -13,9 +13,7 @@ Dependencies:
 import json
 import os
 import re
-import shlex
 from subprocess import run, PIPE
-import sys
 from .error import KiPlotConfigurationError
 from .misc import FAILED_EXECUTE, W_EMPTREP
 from .optionable import Optionable
@@ -77,10 +75,11 @@ class Set_Text_VariablesOptions(Optionable):
 
 @pre_class
 class Set_Text_Variables(BasePreFlight):  # noqa: F821
-    """ [dict|list(dict)] Defines KiCad 6 variables.
-        They are expanded using ${VARIABLE}, and stored in the project file.
+    """ [dict|list(dict)] Defines KiCad 6+ variables.
+        They are expanded using `${VARIABLE}`, and stored in the project file.
         This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
-        The KiCad project file is modified """
+        The KiCad project file is modified.
+        Warning: don't use `-s all` or this preflight will be skipped """
     def __init__(self, name, value):
         f = Set_Text_VariablesOptions()
         f.set_tree({'variables': value})
@@ -132,15 +131,15 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 if not bash_command:
                     bash_command = self.ensure_tool('Bash')
                 cmd = [bash_command, '-c', command]
-                logger.debug('Executing: '+shlex.join(command))
+                logger.debug('Executing: '+GS.pasteable_cmd(command))
                 result = run(cmd, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 if result.returncode:
-                    logger.error('Failed to execute:\n{}\nreturn code {}'.format(r.command, result.returncode))
+                    msgs = [f'Failed to execute:\n{r.command}\nreturn code {result.returncode}']
                     if result.stdout:
-                        logger.error('stdout:\n{}'.format(result.stdout))
+                        msgs.append(f'stdout:\n{result.stdout}')
                     if result.stderr:
-                        logger.error('stderr:\n{}'.format(result.stderr))
-                    sys.exit(FAILED_EXECUTE)
+                        msgs.append(f'stderr:\n{result.stderr}')
+                    GS.exit_with_error(msgs, FAILED_EXECUTE)
                 if not result.stdout:
                     logger.warning(W_EMPTREP+"Empty value from `{}`".format(r.command))
                 text = result.stdout.strip()

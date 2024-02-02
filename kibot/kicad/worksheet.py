@@ -50,8 +50,9 @@ from .. import log
 
 logger = log.get_logger()
 setup = None
-# The version of "kicad_wks" used for all tests
-SUP_VERSION = 20210606
+# The version of "kicad_wks" used for all tests is 20210606
+# 20220228 seems to be fully supported
+SUP_VERSION = 20220228
 # Hash to convert KiCad 5 "%X" markers to KiCad 6 "${XXX}" text variables
 KI5_2_KI6 = {'K': 'KICAD_VERSION', 'S': '#', 'N': '##', 'C0': 'COMMENT1', 'C1': 'COMMENT2', 'C2': 'COMMENT3',
              'C3': 'COMMENT4', 'C4': 'COMMENT5', 'C5': 'COMMENT6', 'C6': 'COMMENT7', 'C7': 'COMMENT8',
@@ -315,7 +316,7 @@ class WksText(WksDrawing):
             if e.font.italic:
                 s.SetItalic(True)
             if e.rotate:
-                s.SetTextAngle(e.rotate*10)
+                s.SetTextAngle(GS.angle(e.rotate))
             # Adjust the text size to the maximum allowed
             if e.max_len > 0:
                 w = s.GetBoundingBox().GetWidth()
@@ -381,7 +382,7 @@ class WksPolygon(WksDrawing):
                 s.SetWidth(e.line_width)
                 s.SetLayer(p.layer)
                 if e.rotate:
-                    s.Rotate(pos, e.rotate*10)
+                    s.Rotate(GS.p2v_k7(pos), GS.angle(e.rotate))
                 p.board.Add(s)
                 p.pcb_items.append(s)
             pos += posi

@@ -18,7 +18,7 @@ from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import run_command, config_output, register_xmp_import
 from .layer import Layer
-from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES
+from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES, W_KEEPTMP
 from .optionable import PanelOptions
 from .out_base import VariantOptions
 from .registrable import RegOutput
@@ -174,8 +174,8 @@ class PanelizeTabs(PanelOptionsWithPlugin):
             self.spacing = 10
             """ [number|string] The maximum spacing of the tabs. Used for *spacing* """
             self.cutout = 1
-            """ [number|string] When your design features open pockets on the side, this parameter specifies extra cutout depth in order to
-                ensure that a sharp corner of the pocket can be milled. Used for *full* """
+            """ [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
+                depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full* """
             self.tabfootprints = 'kikit:Tab'
             """ The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma """
             self.tab_footprints = None
@@ -361,6 +361,8 @@ class PanelizeText(PanelOptions):
         res = Layer.solve(self.layer)
         if len(res) > 1:
             raise KiPlotConfigurationError('Must select only one layer for the text ({})'.format(self.layer))
+        if parent.expand_text:
+            self.text = parent.expand_filename_both(self.text, is_sch=False, make_safe=False)
 
 
 class PanelizeCopperfill(PanelOptions):
@@ -461,7 +463,7 @@ class PanelizeSource(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'auto'
-            """ *[auto,rectangle,annotation] How we select the area of the PCB tu used for the panelization.
+            """ *[auto,rectangle,annotation] How we select the area of the PCB used for the panelization.
                 *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
                 *annotation* selects a contour marked by a kikit:Board footprint """
             self.stack = 'inherit'
@@ -523,6 +525,8 @@ class PanelizeConfig(PanelOptions):
             """ [dict] Debug options """
             self.source = PanelizeSource
             """ [dict] Used to adjust details of which part of the PCB is panelized """
+            self.expand_text = True
+            """ Expand text variables and KiBot %X markers in text objects """
         super().__init__()
 
     def config(self, parent):
@@ -719,7 +723,7 @@ class PanelizeOptions(VariantOptions):
         finally:
             if GS.debug_enabled and not remove_tmps:
                 if self._files_to_remove:
-                    logger.error('Keeping temporal files: '+str(self._files_to_remove))
+                    logger.warning(W_KEEPTMP+'Keeping temporal files: '+str(self._files_to_remove))
             else:
                 self.remove_temporals()
 

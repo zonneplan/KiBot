@@ -15,6 +15,7 @@ Dependencies:
     python_module: true
     debian: python3-xlsxwriter
     arch: python-xlsxwriter
+    version: 1.1.2
     downloader: python
 """
 import csv
@@ -26,7 +27,7 @@ from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DIS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
-from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import
+from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import, expand_fields
 from .kicad.v5_sch import SchematicComponent, SchematicField
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
@@ -188,6 +189,9 @@ class BoMLinkable(Optionable):
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
             self.mouser_link = Optionable
             """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page """
+            self.lcsc_link = Optionable
+            """ [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+                Use **true** to copy the value indicated by the `field_lcsc_part` global option """
             self.generate_dnf = True
             """ *Generate a separated section for DNF (Do Not Fit) components """
             self.hide_pcb_info = False
@@ -208,6 +212,9 @@ class BoMLinkable(Optionable):
         # *_link
         self.digikey_link = self.force_list(self.digikey_link, comma_sep=False, lower_case=True)
         self.mouser_link = self.force_list(self.mouser_link, comma_sep=False, lower_case=True)
+        if isinstance(self.lcsc_link, bool):
+            self.lcsc_link = self.field_lcsc_part if self.lcsc_link else ''
+        self.lcsc_link = self.force_list(self.lcsc_link, comma_sep=False, lower_case=True)
         # Logo
         if isinstance(self.logo, type):
             self.logo = ''
@@ -326,8 +333,8 @@ class BoMXLSX(BoMLinkable):
             """ *Enable Specs worksheet creation. Contains specifications for the components.
                 Works with only some KiCost APIs """
             self.specs_columns = BoMColumns
-            """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the references,
-                'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
+            """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+                references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                 Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
                 '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size' """
             self.logo_scale = 2
@@ -501,6 +508,11 @@ class BoMOptions(BaseOptions):
             """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
+                For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
+                `merge_both_blank` options.
+                Note that for resistors, capacitors and inductors the _Value_ field is parsed and qualifiers, like
+                tolerance, are discarded. Please use a separated field and disable `merge_blank_fields` if this
+                information is important. You can also disable `parse_value`.
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
                 .          'Voltage', 'Tolerance', 'Current', 'Power'] is used """
             self.group_fields_fallbacks = Optionable
@@ -517,6 +529,11 @@ class BoMOptions(BaseOptions):
                 - ['sw', 'switch']
                 - ['zener', 'zenersmall']
                 - ['d', 'diode', 'd_small'] """
+            self.parse_value = True
+            """ Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
+                Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
+                extra information split it in separated fields, add the fields to `group_fields` and disable
+                `merge_blank_fields` """
             self.no_conflict = NoConflict
             """ [list(string)] List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.
@@ -867,7 +884,7 @@ class BoMOptions(BaseOptions):
                 prj.sch = load_any_sch(prj.file, prj.name)
             else:
                 prj.sch = self.load_csv(prj.file, prj.name, prj.delimiter)
-            new_comps = prj.sch.get_components()
+            new_comps = expand_fields(prj.sch.get_components(), dont_copy=True)
             for c in new_comps:
                 c.ref = prj.ref_id+c.ref
                 c.ref_id = prj.ref_id
@@ -889,7 +906,8 @@ class BoMOptions(BaseOptions):
         self.kicad_version = GS.kicad_version
         self.conv_units = GS.unit_name_to_scale_factor(self.units)
         # Get the components list from the schematic
-        comps = GS.sch.get_components()
+        # We use a copy because we could expand the field values using ${VAR}
+        comps = expand_fields(GS.sch.get_components())
         get_board_comps_data(comps)
         if self.count_smd_tht and not GS.pcb_file:
             logger.warning(W_NEEDSPCB+"`count_smd_tht` is enabled, but no PCB provided")
@@ -1012,7 +1030,7 @@ class BoM(BaseOutput):  # noqa: F821
         fld_names_l = [f.lower() for f in fld_names]
         fld_set = set(fld_names_l)
         logger.debug(' - Available fields {}'.format(fld_names_l))
-        # Look for the manufaturer part number
+        # Look for the manufacturer part number
         mpn_set = {k for k, v in KICOST_NAME_TRANSLATIONS.items() if v == 'manf#'}
         mpn_set.add('manf#')
         mpn_fields = fld_set.intersection(mpn_set)

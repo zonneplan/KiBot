@@ -4,6 +4,7 @@ import re
 import pytest
 import coverage
 import logging
+import requests
 import subprocess
 import sys
 from . import context
@@ -23,11 +24,13 @@ from kibot.__main__ import detect_kicad
 from kibot.kicad.config import KiConf
 from kibot.globals import Globals
 from kibot.PcbDraw.unit import read_resistance
+from kibot.out_download_datasheets import Download_Datasheets_Options
 
 cov = coverage.Coverage()
 mocked_check_output_FNF = True
 mocked_check_output_retOK = ''
 mocked_call_enabled = False
+subprocess_run = None
 
 
 # Important note:
@@ -45,6 +48,13 @@ def mocked_check_output(cmd, stderr=None, text=False):
         e = subprocess.CalledProcessError(10, 'rar')
         e.output = b'THE_ERROR'
         raise e
+
+
+def mocked_run(command, change_to):
+    logging.error('mocked_run')
+    e = subprocess.CalledProcessError(10, 'rar')
+    e.output = b'THE_ERROR'
+    raise e
 
 
 def mocked_call(cmd, exit_with=None):
@@ -118,6 +128,7 @@ def test_rar_fail(test_dir, caplog, monkeypatch):
     # We will patch subprocess.check_output to make rar fail
     with monkeypatch.context() as m:
         patch_functions(m)
+        m.setattr('kibot.kiplot._run_command', mocked_run)
         pytest_wrapped_e = run_compress(ctx)
         pytest_wrapped_e2 = run_compress(ctx, test_import_fail=True)
     # Check we exited because rar isn't installed
@@ -550,3 +561,73 @@ def test_electro_grammar_1():
                 res = parse(c)
                 assert res == ref, "For `{}` got:\n{}\nExpected:\n{}".format(c, res, ref)
                 logging.debug(c+" Ok")
+
+
+class Comp:
+    def __init__(self):
+        self.ref = 'R1'
+
+
+def mocked_requests_get(url, allow_redirects=True, headers=None, timeout=20):
+    res = requests.Response()
+    if url == '1':
+        res.status_code = 666
+        return res
+    elif url == '2':
+        raise requests.exceptions.ReadTimeout()
+    elif url == '3':
+        raise requests.exceptions.SSLError()
+    elif url == '4':
+        raise requests.exceptions.TooManyRedirects()
+    elif url == '5':
+        raise requests.exceptions.ConnectionError()
+    elif url == '6':
+        raise requests.exceptions.RequestException("Hello!")
+    elif url == 'ok':
+        res.status_code = 200
+        return res
+    logging.error(url)
+    return res
+
+
+@pytest.mark.indep
+def test_ds_net_error(test_dir, caplog, monkeypatch):
+    ctx = context.TestContext(test_dir, 'test_v5', 'empty_zip', '')
+    dummy = ctx.get_out_path('dummy')
+    with open(dummy, 'wt') as f:
+        f.write('Hello!')
+    with context.cover_it(cov):
+        o = Download_Datasheets_Options()
+        o._downloaded = {'dnl'}
+        o._created = []
+        c = Comp()
+        o.download(c, '1N1234.pdf', 'pp', '1N1234', None)
+        assert 'Invalid URL' in caplog.text
+        with monkeypatch.context() as m:
+            caplog.clear()
+            o.download(c, 'x', 'pp', 'dnl', None)
+            assert 'already downloaded' in caplog.text
+            caplog.clear()
+            o._dry = True
+            o.download(c, 'ok', '', dummy, None)
+            o._dry = False
+            assert dummy in o._created
+            m.setattr('requests.get', mocked_requests_get)
+            caplog.clear()
+            o.download(c, '1', 'pp', '1N1234', None)
+            assert 'Failed with status 666' in caplog.text
+            caplog.clear()
+            o.download(c, '2', 'pp', '1N1234', None)
+            assert 'Timeout' in caplog.text
+            caplog.clear()
+            o.download(c, '3', 'pp', '1N1234', None)
+            assert 'SSL Error' in caplog.text
+            caplog.clear()
+            o.download(c, '4', 'pp', '1N1234', None)
+            assert 'More than 30 redirections' in caplog.text
+            caplog.clear()
+            o.download(c, '5', 'pp', '1N1234', None)
+            assert 'Connection' in caplog.text
+            caplog.clear()
+            o.download(c, '6', 'pp', '1N1234', None)
+            assert 'Hello!' in caplog.text

@@ -49,6 +49,14 @@ is_debian = os.path.isfile('/etc/debian_version') and not os.path.isfile('/etc/l
 # If we are not running on Debian skip the text part at the top of diff PDFs
 OFFSET_Y = '0' if is_debian else '80'
 DIFF_TOL = 0 if is_debian else 1200
+# The 3D models in copy_files
+MODELS = ['3d_models/3d/1/test.wrl', '3d_models/3d/2/test.wrl',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.step',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.wrl',
+          '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.step',
+          '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.wrl',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.step',
+          '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl']
 
 
 def test_skip_pre_and_outputs(test_dir):
@@ -273,14 +281,26 @@ def test_auto_pcb_and_cfg_5(test_dir):
     ctx.clean_up()
 
 
-def test_list(test_dir):
+def test_list_full(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--list'], no_verbose=True, no_out_dir=True)
-    assert ctx.search_out('run_erc: True')
-    assert ctx.search_out('run_drc: True')
-    assert ctx.search_out('update_xml: True')
-    assert ctx.search_out(r'Pick and place file.? \(position\) \[position\]')
-    assert ctx.search_out(r'Pick and place file.? \(pos_ascii\) \[position\]')
+    ctx.search_out(['run_erc: True', 'run_drc: True', 'update_xml: True', r'Pick and place file.? \(position\) \[position\]',
+                    r'Pick and place file.? \(pos_ascii\) \[position\]'])
+    ctx.clean_up()
+
+
+def test_list_only_names(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--list', '--only-names'], no_verbose=True, no_out_dir=True)
+    ctx.search_out(['position', 'pos_ascii'])
+    ctx.search_out('Pick and place file', invert=True)
+    ctx.clean_up()
+
+
+def test_list_variants(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'test_list_variants')
+    ctx.run(extra=['--list-variants'], no_verbose=True, no_out_dir=True, no_board_file=True)
+    ctx.search_out(['Default variant', 'Production variant', 'Test variant'])
     ctx.clean_up()
 
 
@@ -293,10 +313,31 @@ def test_help(test_dir):
     ctx.clean_up()
 
 
+def test_help_errors(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-errors'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('1: INTERNAL_ERROR')
+    ctx.clean_up()
+
+
+def test_help_list_rotations(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-list-rotations'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('SOT-223(.*)180')
+    ctx.clean_up()
+
+
+def test_help_list_offsets(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-list-offsets'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out(r'Footprint\s+Offset X')
+    ctx.clean_up()
+
+
 def test_help_list_outputs(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-list-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('Supported outputs:')
+    assert ctx.search_out('Supported outputs')
     assert ctx.search_out('Gerber format')
     ctx.clean_up()
 
@@ -324,6 +365,20 @@ def test_help_filters(test_dir):
     ctx.clean_up()
 
 
+def test_help_variants(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-variants'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('KiCost variant style')
+    ctx.clean_up()
+
+
+def test_help_global(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-global-options', '--rst'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('allow_blind_buried_vias')
+    ctx.clean_up()
+
+
 def test_help_output_plugin_1(test_dir, monkeypatch):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.home_local_link()
@@ -331,7 +386,7 @@ def test_help_output_plugin_1(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out(r'\* Undocumented')
+    assert ctx.search_out(r'- Undocumented')
     assert ctx.search_out('Description: No description')
     assert ctx.search_out('Type: .?test.?')
     assert ctx.search_out('nothing')
@@ -361,7 +416,7 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('- `pre_test`: Undocumented')
+    assert ctx.search_out(r'- \*\*pre_test\*\*: Undocumented')
     ctx.clean_up()
 
 
@@ -372,11 +427,11 @@ def test_help_output_plugin_4(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('- filter_test: Undocumented')
+    assert ctx.search_out(r'- \*\*filter_test\*\*: Undocumented')
     ctx.clean_up()
 
 
-def test_help_outputs(test_dir):
+def test_help_outputs_md(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-outputs'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
     assert ctx.search_out('Gerber format')
@@ -384,25 +439,42 @@ def test_help_outputs(test_dir):
     ctx.clean_up()
 
 
+def test_help_outputs_rst_1(test_dir):
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-outputs', '--rst'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_out('Gerber format')
+    assert ctx.search_out('Type: .?.?gerber.?.?')
+    ctx.clean_up()
+
+
+def test_help_outputs_rst_2(test_dir):
+    """ Separated files """
+    ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
+    ctx.run(extra=['--help-outputs', '--rst'], no_verbose=True, no_yaml_file=True, no_board_file=True)
+    ctx.search_out('outputs/gerber')
+    ctx.expect_out_file('gerber.rst', sub=True)
+    ctx.clean_up()
+
+
 def test_help_preflights(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
     ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out('Supported preflight options')
+    assert ctx.search_out('Supported preflights')
     ctx.clean_up()
 
 
 def test_example_1(test_dir):
-    """ Example without board """
+    """ Example without board + Banner """
     ctx = context.TestContext(test_dir, '3Rs', 'pre_and_position')
-    ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True, no_board_file=True)
+    ctx.run(extra=['--example', '--banner', '1'], no_verbose=True, no_yaml_file=True, no_board_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.clean_up()
 
 
 def test_example_2(test_dir):
-    """ Example with board """
+    """ Example with board + Random Banner """
     ctx = context.TestContext(test_dir, 'good-project', 'pre_and_position')
-    ctx.run(extra=['--example'], no_verbose=True, no_yaml_file=True)
+    ctx.run(extra=['--example', '--banner', '-1'], no_verbose=True, no_yaml_file=True)
     assert ctx.expect_out_file(EXAMPLE_CFG)
     ctx.search_in_file(EXAMPLE_CFG, ['layers: all'])
     ctx.clean_up()
@@ -688,9 +760,14 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
     logging.debug('- Target `run_drc` OK')
     # fake_sch target
     deps = targets['fake_sch'].split(' ')
-    assert len(deps) == 6, deps
-    check_test_v5_sch_deps(ctx, deps, extra=[ctx.get_out_path('n.lib'), ctx.get_out_path('y.lib'),
-                                             ctx.get_out_path('sym-lib-table')], in_output=True)
+    if context.ki5():
+        # SCHs + 2 libs + symbols table
+        assert len(deps) == 6, deps
+        extra = [ctx.get_out_path('n.lib'), ctx.get_out_path('y.lib'), ctx.get_out_path('sym-lib-table')]
+    else:
+        assert len(deps) == 3, deps
+        extra = []
+    check_test_v5_sch_deps(ctx, deps, extra=extra, in_output=True)
     check_test_v5_sch_deps(ctx, targets[targets['fake_sch']].split(' '))
     logging.debug('- Target `fake_sch` OK')
     # 3D target
@@ -720,7 +797,7 @@ def check_makefile(ctx, mkfile, prj, dbg, txt):
     assert len(deps) == 1, deps
     assert ctx.get_out_path(prj+'-archive.zip') in deps
     deps = targets[targets['archive']].split(' ')
-    assert len(deps) == 16, deps
+    assert len(deps) == 18, deps
     # - position
     assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-top_pos.csv')) in deps
     assert ctx.get_out_path(os.path.join(POS_DIR, prj+'-bottom_pos.csv')) in deps
@@ -802,13 +879,44 @@ def test_import_1(test_dir):
     ctx.clean_up()
 
 
-def test_import_2(test_dir):
+def test_import_g_1(test_dir):
     """ Import a global option """
     prj = 'test_v5'
-    ctx = context.TestContext(test_dir, prj, 'import_test_2')
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_1')
     ctx.run()
-    ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos).pos')
-    ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos).pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos)_2024_01_19.pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos)_2024_01_19.pos')
+    ctx.clean_up()
+
+
+def test_import_g_2(test_dir):
+    """ Import a particular global option """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_2')
+    ctx.run()
+    ctx.expect_out_file(POS_DIR+'/test_v5_(bottom_pos)_2024-01-19.pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(top_pos)_2024-01-19.pos')
+    ctx.search_err(r"can't import `foobar`")
+    ctx.clean_up()
+
+
+def test_import_g_3(test_dir):
+    """ Import a global option: not a dict """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_3')
+    ctx.run(EXIT_BAD_CONFIG)
+    ctx.search_err(r"Incorrect `global` section")
+    ctx.clean_up()
+
+
+def test_import_g_4(test_dir):
+    """ Import a global option: no globals """
+    prj = 'test_v5'
+    ctx = context.TestContext(test_dir, prj, 'import_test_g_4')
+    ctx.run()
+    ctx.expect_out_file(POS_DIR+'/test_v5-bottom_pos.pos')
+    ctx.expect_out_file(POS_DIR+'/test_v5-top_pos.pos')
+    ctx.search_err(r"No globals found")
     ctx.clean_up()
 
 
@@ -817,7 +925,7 @@ def test_import_3(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'import_test_3')
     ctx.run(extra=['position_mine'])
-    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos)_2024_01_19.csv')
     ctx.clean_up()
 
 
@@ -826,8 +934,8 @@ def test_import_4(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'import_test_4')
     ctx.run(extra=[])
-    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
-    ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos).csv')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos)_2024_01_19.csv')
+    ctx.dont_expect_out_file(POS_DIR+'/test_v5_(bottom_pos)_2024_01_19.csv')
     ctx.clean_up()
 
 
@@ -845,29 +953,57 @@ def test_import_6(test_dir):
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'import_test_6')
     ctx.run(extra=['position_mine'])
-    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos).csv')
+    ctx.expect_out_file(POS_DIR+'/test_v5_(both_pos)_2024_01_19.csv')
+    ctx.clean_up()
+
+
+def create_rules_project(ctx):
+    if context.ki7():
+        with open(ctx.board_file.replace('kicad_pcb', 'kicad_pro'), 'wt') as f:
+            f.write(json.dumps({"board": {"design_settings": {"rule_severities": {"lib_footprint_issues": "ignore",
+                               "lib_footprint_mismatch": "ignore"}}}}))
+
+
+# Isn't really slow, just avoid to run it in parallel
+@pytest.mark.slow
+@pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
+def test_import_p_1(test_dir):
+    """ Import a preflight """
+    prj = '3Rs'
+    ctx = context.TestContext(test_dir, prj, 'import_test_p_1')
+    create_rules_project(ctx)
+    ctx.run()
+    ctx.expect_out_file('3Rs-drc.txt')
     ctx.clean_up()
 
 
 # Isn't really slow, just avoid to run it in parallel
 @pytest.mark.slow
 @pytest.mark.skipif(context.ki5(), reason="too slow on KiCad 5")
-def test_import_7(test_dir):
-    """ Import a preflight """
+def test_import_p_2(test_dir):
+    """ Import a particular preflight """
     prj = '3Rs'
-    ctx = context.TestContext(test_dir, prj, 'import_test_7')
-    if context.ki7():
-        ctx.board_file.replace('kicad_pcb', 'kicad_pro')
-        with open(ctx.board_file.replace('kicad_pcb', 'kicad_pro'), 'wt') as f:
-            f.write(json.dumps({"board": {"design_settings": {"rule_severities": {"lib_footprint_issues": "ignore",
-                               "lib_footprint_mismatch": "ignore"}}}}))
-    ctx.run(extra=[])
+    ctx = context.TestContext(test_dir, prj, 'import_test_p_2')
+    create_rules_project(ctx)
+    ctx.run()
     ctx.expect_out_file('3Rs-drc.txt')
+    ctx.dont_expect_out_file('3Rs-erc.txt')
+    ctx.search_err(r"can't import `foobar`")
+    ctx.clean_up()
+
+
+def test_import_p_3(test_dir):
+    """ Import preflight: no preflights """
+    prj = '3Rs'
+    ctx = context.TestContext(test_dir, prj, 'import_test_p_3')
+    create_rules_project(ctx)
+    ctx.run()
+    ctx.search_err(r"No preflights found")
     ctx.clean_up()
 
 
 def test_import_8(test_dir):
-    """ Import a preflight """
+    """ Import at the end """
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'import_test_8')
     ctx.run(extra=[])
@@ -914,7 +1050,7 @@ def test_compress_sources_1(test_dir):
 
 
 def test_date_format_1(test_dir):
-    """ Date from SCH reformated """
+    """ Date from SCH reformatted """
     prj = 'test_v5'
     ctx = context.TestContext(test_dir, prj, 'date_format_1')
     ctx.run(extra=[])
@@ -923,7 +1059,7 @@ def test_date_format_1(test_dir):
 
 
 def test_date_format_2(test_dir):
-    """ Date from SCH reformated """
+    """ Date from SCH reformatted """
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'date_format_1')
     ctx.run(extra=[])
@@ -1044,7 +1180,7 @@ def test_report_simple_2(test_dir):
 
 
 def test_report_edge_1(test_dir):
-    """ Meassures the PCB size when using a component that contains the real PCB edges #164 """
+    """ Measures the PCB size when using a component that contains the real PCB edges #164 """
     prj = 'comp_edge'
     ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
     ctx.run()
@@ -1055,7 +1191,7 @@ def test_report_edge_1(test_dir):
 
 @pytest.mark.skipif(context.ki5(), reason="Example in KiCad 6 format")
 def test_report_edge_2(test_dir):
-    """ Meassures the PCB size when using circles in the PCB edge #375 """
+    """ Measures the PCB size when using circles in the PCB edge #375 """
     prj = 'circle_edge'
     ctx = context.TestContext(test_dir, prj, 'report_edge_1', POS_DIR)
     ctx.run()
@@ -1233,28 +1369,37 @@ def test_quick_start_1(test_dir):
     dest_file = os.path.join(dest_dir, board_file)
     os.makedirs(dest_dir, exist_ok=True)
     shutil.copy2(ctx.board_file, dest_file)
+    shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.PRO_EXT), dest_file.replace('.kicad_pcb', context.PRO_EXT))
     sch_file = os.path.basename(ctx.sch_file)
     dest_file_sch = os.path.join(dest_dir, sch_file)
     shutil.copy2(ctx.sch_file, dest_file_sch)
+    # Create a git repo
+    git_init(ctx)
+    # Add the files to the repo
+    ctx.run_command(['git', 'add', board_file, sch_file], chdir_out=dest_dir)
+    ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=dest_dir)
+    # Modify the PCB
+    shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), dest_file)
+    # 1) Run the Quick Start
     ctx.run(extra=['--quick-start', '--dry', '--start', dest_dir], no_board_file=True, no_yaml_file=True)
     dest_conf = os.path.join(dir_o, generated)
-    ctx.expect_out_file(dest_conf)
-    # 2) Generate one output that we can use as image for a category
-    logging.debug('Creating `basic_pcb_print_pdf`')
     dest_conf_f = os.path.join(dest_dir, 'kibot_generated.kibot.yaml')
-    ctx.run(extra=['-c', dest_conf_f, 'basic_pcb_print_pdf'], no_yaml_file=True)
-    ctx.expect_out_file(os.path.join('PCB', 'PDF', prj+'-assembly.pdf'))
-    # 3) List the generated outputs
-    logging.debug('Creating the web pages')
-    ctx.run(extra=['-c', dest_conf_f, '-l'], no_out_dir=True, no_yaml_file=True)
+    ctx.expect_out_file(dest_conf)
+    # 2) List the generated outputs
+    ctx.run(extra=['-c', dest_conf_f, '-b', dest_file, '-l'], no_out_dir=True, no_yaml_file=True, no_board_file=True)
     OUTS = ('boardview', 'dxf', 'excellon', 'gencad', 'gerb_drill', 'gerber', 'compress', 'hpgl', 'ibom',
             'navigate_results', 'netlist', 'pcb_print', 'pcbdraw', 'pdf', 'position', 'ps', 'render_3d',
-            'report', 'step', 'svg',
+            'report', 'step', 'svg', 'kiri', 'kicanvas',
             'bom', 'download_datasheets', 'pdf_sch_print', 'svg_sch_print')
     for o in OUTS:
         ctx.search_out(r'\['+o+r'\]')
-    # 3) Generate the navigate_results stuff
-    ctx.run(extra=['-c', dest_conf_f, 'basic_navigate_results'], no_yaml_file=True)
+    # 3) Generate one output that we can use as image for a category
+    logging.debug('Creating `basic_pcb_print_pdf`')
+    ctx.run(extra=['-c', dest_conf_f, '-b', dest_file, 'basic_pcb_print_pdf'], no_yaml_file=True, no_board_file=True)
+    ctx.expect_out_file(os.path.join('PCB', 'PDF', prj+'-assembly.pdf'))
+    # 4) Generate the navigate_results stuff
+    logging.debug('Creating the web pages')
+    ctx.run(extra=['-c', dest_conf_f, '-b', dest_file, 'basic_navigate_results'], no_yaml_file=True, no_board_file=True)
     ctx.expect_out_file('index.html')
     ctx.expect_out_file(os.path.join('Browse', 'light_control-navigate.html'))
 
@@ -1290,6 +1435,8 @@ def test_dependencies_1(test_dir):
     with open(ctx.get_out_path('output.txt'), 'rt') as f:
         data = json.load(f)
     assert dep in data
+    ctx.run(extra=['--help-dependencies', '--rst'], no_board_file=True, no_out_dir=True, no_yaml_file=True)
+    ctx.search_out('`'+dep+' <')
 
 
 def test_dont_stop_1(test_dir):
@@ -1307,7 +1454,7 @@ def test_dont_stop_1(test_dir):
 def test_diff_file_1(test_dir):
     """ Difference between the current PCB and a reference file """
     prj = 'light_control_diff'
-    yaml = 'diff_file_'+('k5' if context.ki5() else 'k6')
+    yaml = f'diff_file_k{context.kicad_major}'
     ctx = context.TestContext(test_dir, prj, yaml)
     ctx.run()
     ctx.compare_pdf(prj+'-diff_pcb.pdf', reference='light_control-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
@@ -1341,6 +1488,34 @@ def test_diff_git_1(test_dir):
     # Run the test
     ctx.run(extra=['-b', file], no_board_file=True)
     ctx.compare_pdf(prj+'-diff_pcb.pdf', off_y=OFFSET_Y, tol=DIFF_TOL)
+    ctx.clean_up(keep_project=True)
+
+
+def test_diff_kiri_1(test_dir):
+    """ Difference between the current PCB and the git HEAD """
+    prj = 'light_control'
+    yaml = 'kiri_1'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    # Create a git repo
+    git_init(ctx)
+    # Copy the "old" file
+    pcb = prj+'.kicad_pcb'
+    sch = prj+context.KICAD_SCH_EXT
+    file = ctx.get_out_path(pcb)
+    shutil.copy2(ctx.board_file, file)
+    shutil.copy2(ctx.board_file.replace('.kicad_pcb', context.KICAD_SCH_EXT),
+                 file.replace('.kicad_pcb', context.KICAD_SCH_EXT))
+    # Add it to the repo
+    ctx.run_command(['git', 'add', pcb, sch], chdir_out=True)
+    ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=True)
+    hash = ctx.run_command(['git', 'log', '--pretty=format:%h', '-n', '1'], chdir_out=True)
+    # Copy the "new" file
+    shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), file)
+    # Run the test
+    ctx.run(extra=['-b', file], no_board_file=True)
+    ctx.expect_out_file(['_local_/_KIRI_/pcb_layers', hash+'/_KIRI_/pcb_layers',
+                         '_local_/_KIRI_/sch_sheets', hash+'/_KIRI_/sch_sheets',
+                         'index.html', 'commits', 'project'])
     ctx.clean_up(keep_project=True)
 
 
@@ -1408,7 +1583,7 @@ def test_diff_git_2(test_dir):
 def test_diff_git_3(test_dir):
     """ Difference between the two repo points, no changes to stash """
     prj = 'light_control'
-    yaml = 'diff_git_2'
+    yaml = 'diff_git_3'
     ctx = context.TestContext(test_dir, prj, yaml)
     # Create a git repo
     git_init(ctx)
@@ -1535,14 +1710,18 @@ def test_diff_git_5(test_dir):
 @pytest.mark.slow
 @pytest.mark.eeschema
 def test_diff_file_sch_1(test_dir):
-    """ Difference between the current Schematic and a reference file """
+    """ Difference between the current Schematic and a reference file
+        Also test definitions (from CLI and env)
+        Also log file """
     prj = 'light_control_diff'
     yaml = 'diff_file_sch'
     ctx = context.TestContext(test_dir, prj, yaml)
-    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '-E', 'SCHExt='+context.KICAD_SCH_EXT])
+    os.environ['SCHExt'] = context.KICAD_SCH_EXT
+    ctx.run(extra=['-E', 'KiVer='+str(context.kicad_major), '--defs-from-env', '-L', ctx.get_out_path('log')])
     ctx.expect_out_file(prj+'-diff_sch_FILE-Current.pdf')
     if is_debian:
         ctx.compare_pdf(prj+'-diff_sch.pdf')
+    ctx.expect_out_file('log')
     ctx.clean_up(keep_project=True)
 
 
@@ -1591,13 +1770,6 @@ def test_copy_files_2(test_dir):
     # The modified PCB
     ctx.expect_out_file(prj+'.kicad_pcb', sub=True)
     # The 3D models
-    MODELS = ['3d_models/3d/1/test.wrl', '3d_models/3d/2/test.wrl',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.step',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metrico.wrl',
-              '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.step',
-              '3d_models/Capacitor_SMD.3dshapes/C_0805_2012Metric.wrl',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.step',
-              '3d_models/Resistor_SMD.3dshapes/R_0805_2012Metric.wrl']
     for m in MODELS:
         ctx.expect_out_file(m, sub=True)
     # Make sure the PCB points to them
@@ -1606,6 +1778,28 @@ def test_copy_files_2(test_dir):
     # Some warnings
     ctx.search_err(r'WARNING:\(W098\)  2 3D models downloaded')   # 2 models are missing and they are downloaded
     ctx.search_err(r'WARNING:\(W100\)', invert=True)   # 2 models has the same name, but goes to different target
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_copy_files_3(test_dir):
+    """ Copy files and 3D models """
+    prj = 'copy_files'
+    ctx = context.TestContext(test_dir, prj, 'copy_files_3', 'test.files')
+    os.environ['KIBOT_3D_MODELS'] = '/tmp'
+    ctx.run(kicost=True)  # We use the fake web server
+    del os.environ['KIBOT_3D_MODELS']
+    # The modified PCB
+    prj_s = os.path.join('prj', prj)
+    ctx.expect_out_file([prj_s+'.kicad_pcb', prj_s+'.kicad_sch', prj_s+'.kicad_pro', prj_s+'.kicad_prl',
+                         'prj/fp-lib-table', 'prj/sym-lib-table', 'prj/symbols/Device.kicad_sym',
+                         'prj/footprints/Capacitor_SMD.pretty/C_0805_2012Metric.kicad_mod',
+                         'prj/footprints/Resistor_SMD.pretty/R_0805_2012Metric.kicad_mod'], sub=True)
+    ctx.expect_out_file(['prj/'+m for m in MODELS], sub=True)
+    # Make sure the PCB points to them
+    ctx.search_in_file(prj_s+'.kicad_pcb', ['model "{}"'.format(r'\$\{KIPRJMOD\}/'+m) for m in MODELS if m.endswith('wrl')],
+                       sub=True)
     ctx.clean_up()
 
 
@@ -1644,13 +1838,21 @@ def test_lcsc_field_unknown(test_dir):
 
 @pytest.mark.skipif(context.ki5(), reason="Needs porting")
 def test_lcsc_field_specified(test_dir):
-    """ Test we select the field """
+    """ Test we select the field
+        Also log to existing file """
     prj = 'lcsc_field_unknown'
     ctx = context.TestContextSCH(test_dir, prj, 'lcsc_field_specified', 'JLCPCB')
-    ctx.run(extra=['_JLCPCB_bom'])
+    log_file = ctx.get_out_path('log')
+    with open(log_file, 'w') as f:
+        f.write('already there')
+    ctx.run(extra=['-L', log_file, '_JLCPCB_bom'])
     assert ctx.search_err('User selected.*Cryptic')
     r, _, _ = ctx.load_csv(prj+'_bom_jlc.csv')
     assert r[0][3] == 'C1234'
+    ctx.expect_out_file('log')
+    with open(log_file) as f:
+        v = f.read()
+    assert not v.startswith('already')
 
 
 @pytest.mark.skipif(context.ki5(), reason="KiKit is v6+")
@@ -1723,3 +1925,114 @@ def test_definitions_1(test_dir):
         for copy in range(2):
             ctx.expect_out_file(f'{prj}-{la}_silk_{copy+1}.gbr')
     ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_populate_1(test_dir):
+    """ Using PcbDraw as renderer """
+    prj = 'simple_2layer'  # Fake
+    ctx = context.TestContext(test_dir, prj, 'populate', 'Populate')
+    ctx.run(no_board_file=True, extra=['-b', 'tests/data/ArduinoLearningKitStarter.kicad_pcb', 'Populate'])
+    ctx.compare_image('Populate/img/populating_4.png', 'populating_4.png')
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_populate_2(test_dir):
+    """ Using Blender as renderer """
+    prj = 'simple_2layer'  # Fake
+    ctx = context.TestContext(test_dir, prj, 'populate_blender', 'PopulateSimple')
+    ctx.run(no_board_file=True, extra=['-b', 'tests/data/ArduinoLearningKitStarter.kicad_pcb'])
+    ctx.expect_out_file_d(['img/populating_1.png', 'img/populating_2.png',
+                           'ArduinoLearningKitStarter-blender_export.pcb3d', 'index.html'])
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_present_1(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'kikit_present_external_1', 'Present/Files')
+    ctx.run()
+    ctx.expect_out_file_d(['boards/light_control-back.svg', 'boards/light_control-front.svg',
+                           'boards/light_control-gerbers.zip', 'boards/light_control.kicad_pcb',
+                           'css/styles.css', 'index.html'])
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_present_2(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'kikit_present_local_1', 'Present/Local_1')
+    ctx.run()
+    ctx.expect_out_file_d(['boards/light_control-back.svg', 'boards/light_control-front.svg',
+                           'boards/light_control-gerbers.zip', 'boards/light_control.kicad_pcb',
+                           'css/styles.css', 'index.html'])
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_present_3(test_dir):
+    prj = 'light_control'
+    ctx = context.TestContext(test_dir, prj, 'kikit_present_file_1', 'Present/Files')
+    ctx.run()
+    ctx.expect_out_file_d(['boards/light_control-back.png', 'boards/light_control-front.png',
+                           'boards/light_control-gerbers.png', 'boards/light_control.kicad_pcb',
+                           'css/styles.css', 'index.html'])
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.skipif(not context.ki7(), reason="Just testing with 7")
+def test_present_4(test_dir):
+    """ Gerbers from output, PCB from panel """
+    prj = 'simple_2layer'
+    ctx = context.TestContext(test_dir, prj, 'kikit_present_out_1', 'Present/Out')
+    ctx.run()
+    ctx.expect_out_file_d(['boards/simple_2layer-panel-back.svg', 'boards/simple_2layer-panel-front.svg',
+                           'boards/simple_2layer-panel-gerbers.zip', 'boards/simple_2layer-panel.kicad_pcb',
+                           'css/styles.css', 'index.html'])
+    ctx.clean_up(keep_project=True)
+
+
+def test_groups_1(test_dir):
+    """ Groups definitions """
+    prj = 'simple_2layer'  # fake
+    ctx = context.TestContext(test_dir, prj, 'groups_1')
+    ctx.run(no_board_file=True, no_out_dir=True, extra=['--list'])
+    ctx.search_out(['fab: gerbers, excellon_drill, position', 'plot: PcbDraw, PcbDraw2, SVG', 'fab_svg: fab, SVG'])
+    ctx.clean_up()
+
+
+def test_groups_2(test_dir):
+    """ Imported groups and outputs """
+    prj = 'simple_2layer'  # fake
+    ctx = context.TestContext(test_dir, prj, 'import_test_internal_group')
+    ctx.run(no_board_file=True, no_out_dir=True, extra=['--only-groups', '--only-names', '--list'])
+    ctx.search_out('_Elecrow')
+    ctx.run(no_board_file=True, no_out_dir=True, extra=['--only-names', '--list'])
+    ctx.search_out(['_Elecrow_compress', '_Elecrow_drill', '_Elecrow_gerbers'])
+    ctx.clean_up()
+
+
+@pytest.mark.indep
+def test_info_1(test_dir):
+    """ System information """
+    prj = 'simple_2layer'  # fake
+    ctx = context.TestContext(test_dir, prj, 'info_1')
+    ctx.run()
+    ctx.expect_out_file(prj+'-info.txt')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Just v7 test")
+def test_kicanvas_1(test_dir):
+    prj = 'resistor_tht'
+    ctx = context.TestContext(test_dir, prj, 'kicanvas_1', 'KiCanvas')
+    ctx.run(extra=['KiCanvas'])
+    ctx.expect_out_file_d(['kicanvas.js', prj+'-kicanvas.html', prj+'.kicad_pcb', prj+'.kicad_sch', prj+'.kicad_pro'])
+    ctx.clean_up(keep_project=True)

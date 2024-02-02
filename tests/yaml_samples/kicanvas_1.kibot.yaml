@@ -1,0 +1,18 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'KiCanvas'
+    comment: "Example of KiCanvas export"
+    type: kicanvas
+    dir: KiCanvas
+    options:
+      source: ['schematic', 'pcb', 'project']
+      overlay: false
+      # local_script: false
+      # source: ['schematic', 'pcb', 'project', 'pp']
+      # source: pp
+
+  - name: 'Navigate'
+    type: navigate_results

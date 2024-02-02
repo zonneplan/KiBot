@@ -30,7 +30,10 @@ KICAD_VERSION_5_99 = 5099000
 KICAD_VERSION_6_0_0 = 6000000
 KICAD_VERSION_7_0_0 = 7000000
 KICAD_VERSION_7_0_3 = 7000003
-KICAD_VERSION_7_0_5 = 7000005
+KICAD_VERSION_7_0_6 = 7000006
+KICAD_VERSION_7_0_7 = 7000007
+KICAD_VERSION_7_0_10 = 7000010
+KICAD_VERSION_7_0_11 = 7000011
 KICAD_VERSION_8_0_0 = 7099000
 MODE_SCH = 1
 MODE_PCB = 0
@@ -53,8 +56,12 @@ if kicad_version >= KICAD_VERSION_5_99:
     BOARDS_DIR = '../board_samples/kicad_'+str(kicad_major+(0 if kicad_minor < 99 else 1))
     if kicad_version >= KICAD_VERSION_8_0_0:
         REF_DIR = 'tests/reference/8_0_0'
-    elif kicad_version >= KICAD_VERSION_7_0_5 and 'unknown' in build_version:
+    elif kicad_version >= KICAD_VERSION_7_0_11 and 'rc' in build_version:
         REF_DIR = 'tests/reference/stable_nightly'
+    elif kicad_version >= KICAD_VERSION_7_0_10:
+        REF_DIR = 'tests/reference/7_0_10'
+    elif kicad_version >= KICAD_VERSION_7_0_6:
+        REF_DIR = 'tests/reference/7_0_6'
     elif kicad_version >= KICAD_VERSION_7_0_3:
         REF_DIR = 'tests/reference/7_0_3'
     elif kicad_version >= KICAD_VERSION_7_0_0:
@@ -114,6 +121,16 @@ def quote(s):
 
 def usable_cmd(cmd):
     return ' '.join(cmd)
+
+
+def move_existant(name):
+    if not os.path.isfile(name):
+        return
+    for n in range(9):
+        new_name = name+f'_{n+1}'
+        if not os.path.isfile(new_name):
+            break
+    os.rename(name, new_name)
 
 
 @contextmanager
@@ -283,14 +300,21 @@ class TestContext(object):
         return os.path.join(self.sub_dir, self.board_name+'-NPTH-drl_map.pdf')
 
     def expect_out_file(self, filename, sub=False):
-        file = self.get_out_path(filename, sub)
-        assert os.path.isfile(file), file
-        assert os.path.getsize(file) > 0
-        logging.debug(filename+' OK')
-        return file
+        if isinstance(filename, str):
+            filename = [filename]
+        files = []
+        for f in filename:
+            file = self.get_out_path(f, sub)
+            assert os.path.isfile(file), file
+            assert os.path.getsize(file) > 0
+            logging.debug(f+' OK')
+            files.append(file)
+        return files[0] if len(files) == 1 else files
 
     def expect_out_file_d(self, filename):
-        return self.expect_out_file(os.path.join(self.sub_dir, filename))
+        if isinstance(filename, str):
+            filename = [filename]
+        return self.expect_out_file([os.path.join(self.sub_dir, f) for f in filename])
 
     def dont_expect_out_file(self, filename):
         file = self.get_out_path(filename)
@@ -317,6 +341,8 @@ class TestContext(object):
             f_err = slave
             f_out = slave
         else:
+            move_existant(out_filename)
+            move_existant(err_filename)
             # Redirect stdout and stderr to files
             f_out = os.open(out_filename, os.O_RDWR | os.O_CREAT)
             f_err = os.open(err_filename, os.O_RDWR | os.O_CREAT)
@@ -419,6 +445,10 @@ class TestContext(object):
                 server = None
             else:
                 os.environ['KICOST_KITSPACE_URL'] = 'http://localhost:8000'
+                os.environ['KIBOT_EASYEDA_API'] = 'http://localhost:8000/api/{lcsc_id}'
+                os.environ['KIBOT_EASYEDA_MODEL'] = 'http://localhost:8000/model/{uuid}'
+                os.environ['KIBOT_EASYEDA_STEP'] = 'http://localhost:8000/step/{uuid}'
+
                 f_o = open(self.get_out_path('server_stdout.txt'), 'at')
                 f_e = open(self.get_out_path('server_stderr.txt'), 'at')
                 server = subprocess.Popen('./tests/utils/dummy-web-server.py', stdout=f_o, stderr=f_e)
@@ -441,33 +471,33 @@ class TestContext(object):
             else:
                 del os.environ['LANG']
 
-    def search_out(self, text):
-        m = re.search(text, self.out, re.MULTILINE)
-        assert m is not None, text
-        logging.debug('output match: `{}` OK'.format(text))
-        return m
-
-    def search_err(self, text, invert=False):
+    def _search_txt(self, text, msgs, where, invert=False):
         if isinstance(text, list):
             res = []
             for t in text:
-                m = re.search(t, self.err, re.MULTILINE)
+                m = re.search(t, msgs, re.MULTILINE)
                 if invert:
                     assert m is None, t
-                    logging.debug('error no match: `{}` OK'.format(t))
+                    logging.debug(f'{where} no match: `{t}` OK')
                 else:
                     assert m is not None, t
-                    logging.debug('error match: `{}` (`{}`) OK'.format(t, m.group(0)))
+                    logging.debug(f'{where} match: `{t}` (`{m.group(0)}`) OK')
                     res.append(m)
             return res
-        m = re.search(text, self.err, re.MULTILINE)
+        m = re.search(text, msgs, re.MULTILINE)
         if invert:
             assert m is None, text
-            logging.debug('error no match: `{}` OK'.format(text))
+            logging.debug(f'{where} no match: `{text}` OK')
         else:
             assert m is not None, text
-            logging.debug('error match: `{}` (`{}`) OK'.format(text, m.group(0)))
+            logging.debug(f'{where} match: `{text}` (`{m.group(0)}`) OK')
         return m
+
+    def search_out(self, text, invert=False):
+        return self._search_txt(text, self.out, 'output', invert)
+
+    def search_err(self, text, invert=False):
+        return self._search_txt(text, self.err, 'error', invert)
 
     def search_in_file(self, file, texts, sub=False):
         logging.debug('Searching in "'+file+'" output')
@@ -484,6 +514,8 @@ class TestContext(object):
         return res
 
     def search_in_file_d(self, file, texts):
+        if isinstance(texts, str):
+            texts = [texts]
         return self.search_in_file(os.path.join(self.sub_dir, file), texts)
 
     def search_not_in_file(self, file, texts):
@@ -543,8 +575,8 @@ class TestContext(object):
         # logging.debug('MSE={} ({})'.format(m.group(1), m.group(2)))
         s = res.decode()
         # Remove error messages generated by KiCad 7 plotted PDFs
-        s = re.sub(r'^\s+\*+.*', '', s, 0, re.M)
-        s = re.sub(r'^\s+Output may be incorrect.*', '', s, 0, re.M)
+        s = re.sub(r'^\s+\*+.*', '', s, count=0, flags=re.M)
+        s = re.sub(r'^\s+Output may be incorrect.*', '', s, count=0, flags=re.M)
         s = s.strip()
         ae = int(s)
         logging.debug('AE=%d' % ae)
@@ -673,6 +705,21 @@ class TestContext(object):
                 if r:
                     info.append(r)
         return rows, header, info
+
+    def load_hrtxt(self, filename):
+        nm = self.expect_out_file(os.path.join(self.sub_dir, filename))
+        nm_csv = nm.replace('.txt', '.csv')
+        with open(nm) as f:
+            with open(nm_csv, 'wt') as d:
+                for ln in f:
+                    if ln.startswith('I---'):
+                        continue
+                    if ln[0] == 'I':
+                        ln = ln[1:-2]
+                    ln = ln.strip()
+                    d.write(','.join(re.split(r'\s*I', ln)))
+                    d.write('\n')
+        return self.load_csv(filename.replace('.txt', '.csv'))
 
     def load_html(self, filename):
         file = self.expect_out_file(os.path.join(self.sub_dir, filename))

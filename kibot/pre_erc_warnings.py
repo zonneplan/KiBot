@@ -9,7 +9,8 @@ from .error import (KiPlotConfigurationError)
 
 @pre_class
 class ERC_Warnings(BasePreFlight):  # noqa: F821
-    """ [boolean=false] Option for `run_erc`. ERC warnings are considered errors """
+    """ [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
+        Option for `run_erc`. ERC warnings are considered errors """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):

@@ -18,13 +18,11 @@ import re
 import os
 import glob
 import sys
-from sys import exit
-from subprocess import check_output, STDOUT, CalledProcessError
 from zipfile import ZipFile, ZIP_STORED, ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA
 from tarfile import open as tar_open
 from collections import OrderedDict
 from .gs import GS
-from .kiplot import config_output, run_output, get_output_targets
+from .kiplot import config_output, run_output, get_output_targets, run_command
 from .misc import WRONG_INSTALL, W_EMPTYZIP, INTERNAL_ERROR
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
@@ -122,14 +120,7 @@ class CompressOptions(BaseOptions):
         for fname, dest in files.items():
             logger.debugl(2, 'Adding '+fname+' as '+dest)
             cmd = [command, 'a', '-m5', '-ep', '-ap'+os.path.dirname(dest), output, fname]
-            logger.debugl(2, '- Running {}'.format(cmd))
-            try:
-                check_output(cmd, stderr=STDOUT)
-            except CalledProcessError as e:
-                logger.error('Failed to invoke rar command, error {}'.format(e.returncode))
-                if e.output:
-                    logger.debug('Output from command: '+e.output.decode())
-                exit(WRONG_INSTALL)
+            run_command(cmd, err_msg='Failed to invoke rar command, error {ret}', err_lvl=WRONG_INSTALL)
 
     def solve_extension(self):
         if self.format == 'ZIP':
@@ -172,15 +163,14 @@ class CompressOptions(BaseOptions):
                                 run_output(out)
                             if not os.path.exists(file):
                                 # Still missing, something is wrong
-                                logger.error('Unable to generate `{}` from {}'.format(file, out))
-                                exit(INTERNAL_ERROR)
+                                GS.exit_with_error(f'Unable to generate `{file}` from {out}', INTERNAL_ERROR)
                         if os.path.isdir(file):
                             # Popultate output adds the image dirs
                             # Computing its content is complex:
                             # - We must parse the input markdown
                             # - We must coinfigure and use the renderer output to do the file name expansion
                             # This is almost as complex as generating the whole output, so it adds the dir
-                            extra_files = glob.iglob(os.path.join(file, '**'))
+                            extra_files += glob.glob(os.path.join(file, '**'), recursive=True)
                     if extra_files:
                         files_list += extra_files
             else:

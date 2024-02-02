@@ -567,6 +567,8 @@ def copy_specs_to_components(parts, groups):
     for p in parts:
         for c in p.kibot_group.components:
             c.kicost_part = p
+            if hasattr(c, 'original_copy'):
+                c.original_copy.kicost_part = p
 
 
 def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head, fmt_cols, cfg):
@@ -720,7 +722,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     cfg = BoMOptions object with all the configuration
     """
     if not XLSX_SUPPORT:
-        logger.error('Python xlsxwriter module not installed')
+        logger.non_critical_error('Python xlsxwriter module not installed')
         return False
 
     link_datasheet = -1
@@ -728,6 +730,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         link_datasheet = col_fields.index(cfg.xlsx.datasheet_as_link)
     link_digikey = cfg.xlsx.digikey_link
     link_mouser = cfg.xlsx.mouser_link
+    link_lcsc = cfg.xlsx.lcsc_link
     hl_empty = cfg.xlsx.highlight_empty
 
     workbook = Workbook(filename)
@@ -810,6 +813,10 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
                 # A link to Mouser?
                 elif link_mouser and col_fields[i] in link_mouser:
                     url = 'https://www.mouser.com/ProductDetail/' + cell
+                    worksheet.write_url(row_count, i, url, fmt, cell)
+                # A link to LCSC?
+                elif link_lcsc and col_fields[i] in link_lcsc:
+                    url = 'https://www.lcsc.com/product-detail/' + cell + '.html'
                     worksheet.write_url(row_count, i, url, fmt, cell)
                 else:
                     worksheet.write_string(row_count, i, cell, fmt)

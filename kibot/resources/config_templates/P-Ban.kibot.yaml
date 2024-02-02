@@ -19,8 +19,8 @@ outputs:
       exclude_edge_layer: true
       exclude_pads_from_silkscreen: true
       plot_sheet_reference: false
-      plot_footprint_refs: true
-      plot_footprint_values: true
+      plot_footprint_refs: @_KIBOT_PLOT_FOOTPRINT_REFS@
+      plot_footprint_values: @_KIBOT_PLOT_FOOTPRINT_VALUES@
       force_plot_invisible_refs_vals: false
       tent_vias: true
       use_protel_extensions: true
@@ -61,6 +61,7 @@ outputs:
     type: compress
     dir: @_KIBOT_MANF_DIR_COMP@
     options:
+      move_files: @_KIBOT_COMPRESS_MOVE@
       files:
         - from_output: _P-Ban_gerbers@_KIBOT_IMPORT_ID@
           dest: /
@@ -75,15 +76,11 @@ definitions:
   _KIBOT_IMPORT_DIR: 'P-Ban'
   _KIBOT_MANF_DIR: '@_KIBOT_IMPORT_DIR@'
   _KIBOT_MANF_DIR_COMP: '@_KIBOT_IMPORT_DIR@'
+  _KIBOT_PLOT_FOOTPRINT_REFS: true
+  _KIBOT_PLOT_FOOTPRINT_VALUES: true
+  _KIBOT_COMPRESS_MOVE: true
   _KIBOT_GERBER_LAYERS: |
-      - F.Cu
-            - B.Cu
-            - In1.Cu
-            - In2.Cu
-            - In3.Cu
-            - In4.Cu
-            - In5.Cu
-            - In6.Cu
+      - copper
             - F.SilkS
             - B.SilkS
             - F.Mask

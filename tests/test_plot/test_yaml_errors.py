@@ -694,7 +694,7 @@ def test_error_rot_not_number(test_dir):
 def test_error_rot_no_rotations(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_rot_no_rotations')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("No rotations provided")
+    assert ctx.search_err("No rotations and/or offsets provided")
     ctx.clean_up()
 
 
@@ -807,4 +807,76 @@ def test_pre_list_instead_of_dict(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_list_instead_of_dict_issue_360')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Found .*list.* instead of dict")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_not_list(test_dir):
+    """ Import preflights, but give a number """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_not_list')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`preflights` must be a string or a list")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_item_not_str(test_dir):
+    """ Import preflights, but give a number in the list """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_item_not_str')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`preflights` items must be strings")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_defs_not_dict(test_dir):
+    """ Import definitions, but not a dict """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_defs_not_dict')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"definitions must be a dict")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_unk_entry(test_dir):
+    """ Import unknown entry (pre-flight) """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_unk_entry')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Unknown import entry `pre-flights` .* in .unnamed. import")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_no_file(test_dir):
+    """ Import no file name """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_no_file')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`import` entry without `file`")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_import_no_str_or_dict(test_dir):
+    """ Import no file name """
+    ctx = context.TestContext(test_dir, PRJ, 'error_import_no_str_or_dict')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`import` items must be strings or dicts")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_download_datasheets_no_field(test_dir):
+    """ Download datasheet no field specified """
+    ctx = context.TestContext(test_dir, 'bom', 'error_download_datasheets_no_field')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Empty `field`")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_download_datasheets_no_output(test_dir):
+    """ Download datasheet no output specified """
+    ctx = context.TestContext(test_dir, 'bom', 'error_download_datasheets_no_output')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"Empty `output`")
     ctx.clean_up(keep_project=True)

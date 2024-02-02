@@ -17,7 +17,7 @@ logger = log.get_logger()
 
 @filter_class
 class Var_Rename_KiCost(BaseFilter):  # noqa: F821
-    """ Var_Rename_KiCost
+    """ Variant Renamer KiCost style
         This filter implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
         It applies the KiCost concept of variants (a regex to match the VARIANT).
         The internal `_var_rename_kicost` filter emulates the KiCost behavior """

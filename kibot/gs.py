@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
+from contextlib import contextmanager
 import os
 import re
 import json
@@ -14,6 +15,7 @@ except ImportError:
         IU_PER_MM = 1
         IU_PER_MILS = 1
 from datetime import datetime
+import shlex
 from shutil import copy2
 from sys import exit, exc_info
 from traceback import extract_stack, format_list, print_tb
@@ -51,6 +53,7 @@ class GS(object):
     pcb_no_ext = None    # /.../dir/pcb
     pcb_dir = None       # /.../dir
     pcb_basename = None  # pcb
+    pcb_fname = None     # pcb.kicad_pcb
     pcb_last_dir = None  # dir
     # SCH name and useful parts
     sch_file = None      # /.../dir/file.sch
@@ -58,12 +61,14 @@ class GS(object):
     sch_dir = None       # /.../dir
     sch_last_dir = None  # dir
     sch_basename = None  # file
+    sch_fname = None     # file.kicad_sch
     # Project and useful parts
     pro_file = None      # /.../dir/file.kicad_pro (or .pro)
     pro_no_ext = None    # /.../dir/file
     pro_dir = None       # /.../dir
     pro_last_dir = None  # dir
     pro_basename = None  # file
+    pro_fname = None     # file.kicad_pro (or .pro)
     pro_ext = '.pro'
     pro_variables = None  # KiCad 6 text variables defined in the project
     vars_regex = re.compile(r'\$\{([^\}]+)\}')
@@ -115,6 +120,8 @@ class GS(object):
     kikit_units_to_kicad = {'mm': IU_PER_MM, 'cm': 10*IU_PER_MM, 'dm': 100*IU_PER_MM,
                             'm': 1000*IU_PER_MM, 'mil': IU_PER_MILS, 'inch': 1000*IU_PER_MILS,
                             'in': 1000*IU_PER_MILS}
+    # Maximum recursive replace
+    MAXDEPTH = 20
     #
     # Global defaults
     #
@@ -156,6 +163,8 @@ class GS(object):
     global_invalidate_pcb_text_cache = None
     global_kiauto_time_out_scale = None
     global_kiauto_wait_start = None
+    global_layer_defaults = None
+    global_include_components_from_pcb = None
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.
@@ -163,6 +172,7 @@ class GS(object):
     global_pcb_finish = None
     global_pcb_material = None
     global_remove_solder_paste_for_dnp = None
+    global_remove_solder_mask_for_dnp = None
     global_remove_adhesive_for_dnp = None
     global_resources_dir = None
     global_restore_project = None
@@ -186,13 +196,15 @@ class GS(object):
     global_kicad_dnp_applied = None
     global_kicad_dnp_applies_to_3D = None
     global_cross_using_kicad = None
+    pasteable_cmd = shlex.join if hasattr(shlex, 'join') else lambda x: str(x)   # novermin
 
     @staticmethod
     def set_sch(name):
         if name:
             name = os.path.abspath(name)
             GS.sch_file = name
-            GS.sch_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.sch_fname = os.path.basename(name)
+            GS.sch_basename = os.path.splitext(GS.sch_fname)[0]
             GS.sch_no_ext = os.path.splitext(name)[0]
             GS.sch_dir = os.path.dirname(name)
             GS.sch_last_dir = os.path.basename(GS.sch_dir)
@@ -202,7 +214,8 @@ class GS(object):
         if name:
             name = os.path.abspath(name)
             GS.pcb_file = name
-            GS.pcb_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.pcb_fname = os.path.basename(name)
+            GS.pcb_basename = os.path.splitext(GS.pcb_fname)[0]
             GS.pcb_no_ext = os.path.splitext(name)[0]
             GS.pcb_dir = os.path.dirname(name)
             GS.pcb_last_dir = os.path.basename(GS.pcb_dir)
@@ -212,7 +225,8 @@ class GS(object):
         if name:
             name = os.path.abspath(name)
             GS.pro_file = name
-            GS.pro_basename = os.path.splitext(os.path.basename(name))[0]
+            GS.pro_fname = os.path.basename(name)
+            GS.pro_basename = os.path.splitext(GS.pro_fname)[0]
             GS.pro_no_ext = os.path.splitext(name)[0]
             GS.pro_dir = os.path.dirname(name)
             GS.pro_last_dir = os.path.basename(GS.pro_dir)
@@ -236,17 +250,36 @@ class GS(object):
 
     @staticmethod
     def read_pro():
-        if GS.pro_file:
-            # Note: We use binary mode to preserve the original end of lines
-            # Otherwise git could see changes in the file
-            with open(GS.pro_file, 'rb') as f:
-                return f.read()
+        if not GS.pro_file:
+            return None
+        # Note: We use binary mode to preserve the original end of lines
+        # Otherwise git could see changes in the file
+        with open(GS.pro_file, 'rb') as f:
+            pro = f.read()
+        prl_name = GS.pro_file[:-3]+'prl'
+        prl = None
+        if os.path.isfile(prl_name):
+            with open(prl_name, 'rb') as f:
+                prl = f.read()
+        dru_name = GS.pro_file[:-3]+'dru'
+        dru = None
+        if os.path.isfile(dru_name):
+            with open(dru_name, 'rb') as f:
+                dru = f.read()
+        return (pro, prl, dru)
 
     @staticmethod
-    def write_pro(prj):
-        if GS.pro_file and prj:
-            with open(GS.pro_file, 'wb') as f:
-                f.write(prj)
+    def write_pro(data):
+        if not GS.pro_file or data is None:
+            return
+        with open(GS.pro_file, 'wb') as f:
+            f.write(data[0])
+        if data[1] is not None:
+            with open(GS.pro_file[:-3]+'prl', 'wb') as f:
+                f.write(data[1])
+        if data[2] is not None:
+            with open(GS.pro_file[:-3]+'dru', 'wb') as f:
+                f.write(data[2])
 
     @staticmethod
     def load_sch_title_block():
@@ -298,6 +331,12 @@ class GS(object):
         elif GS.ki7:
             return pcbnew.VECTOR2I(point)
         return point
+
+    def angle(ang):
+        if hasattr(pcbnew, 'EDA_ANGLE'):
+            # Here we can't use KiCad version because the nasty pcb_transition can be patching it
+            return pcbnew.EDA_ANGLE(ang*10, pcbnew.TENTHS_OF_A_DEGREE_T)
+        return ang*10
 
     @staticmethod
     def get_modules():
@@ -452,14 +491,48 @@ class GS(object):
             GS.exit_with_error('No SCH file found (*.sch), use -e to specify one.', EXIT_BAD_ARGS)
 
     @staticmethod
-    def copy_project(new_pcb_name):
+    def check_pro():
+        if not GS.pro_file:
+            GS.exit_with_error('No project file found (*.kicad_pro/*.pro).', EXIT_BAD_ARGS)
+
+    @staticmethod
+    def copy_project(new_pcb_name, dry=False):
         pro_name = GS.pro_file
         if pro_name is None or not os.path.isfile(pro_name):
-            return None
-        pro_copy = new_pcb_name.replace('.kicad_pcb', GS.pro_ext)
-        logger.debug('Copying project `{}` to `{}`'.format(pro_name, pro_copy))
-        copy2(pro_name, pro_copy)
-        return pro_copy
+            return None, None, None
+        pro_copy = os.path.splitext(new_pcb_name)[0]+GS.pro_ext
+        if not dry:
+            logger.debug(f'Copying project `{pro_name}` to `{pro_copy}`')
+            copy2(pro_name, pro_copy)
+        # Also copy the PRL
+        prl_name = pro_name[:-3]+'prl'
+        prl_copy = None
+        if os.path.isfile(prl_name):
+            prl_copy = pro_copy[:-3]+'prl'
+            if not dry:
+                logger.debug(f'Copying project local settings `{prl_name}` to `{prl_copy}`')
+                copy2(prl_name, prl_copy)
+        # ... and the DRU
+        dru_name = pro_name[:-3]+'dru'
+        dru_copy = None
+        if os.path.isfile(dru_name):
+            dru_copy = pro_copy[:-3]+'dru'
+            if not dry:
+                logger.debug(f'Copying project custom design rules `{dru_name}` to `{dru_copy}`')
+                copy2(dru_name, dru_copy)
+        return pro_copy, prl_copy, dru_copy
+
+    @staticmethod
+    def copy_project_names(pcb_name, ref_dir):
+        pro_copy, prl_copy, dru_copy = GS.copy_project(pcb_name, dry=True)
+        files = []
+        if pro_copy:
+            files.append(os.path.join(ref_dir, os.path.basename(pro_copy)))
+        if prl_copy:
+            files.append(os.path.join(ref_dir, os.path.basename(prl_copy)))
+        if dru_copy:
+            files.append(os.path.join(ref_dir, os.path.basename(dru_copy)))
+        return files
 
     @staticmethod
     def copy_project_sch(sch_dir):
@@ -535,6 +608,8 @@ class GS(object):
 
     @staticmethod
     def reload_project(pro_name):
+        if pro_name is None:
+            return
         sm = pcbnew.GetSettingsManager()
         sm.UnloadProject(GS.board.GetProject(), False)
         assert sm.LoadProject(pro_name)
@@ -576,7 +651,7 @@ class GS(object):
             For tuples we assume the result is SVG coordinates, for 1 value a scale """
         if GS.ki5:
             if isinstance(values, tuple):
-                return tuple(map(lambda x: int(round(x*KICAD5_SVG_SCALE)), values))
+                return tuple(int(round(x*KICAD5_SVG_SCALE)) for x in values)
             return values*KICAD5_SVG_SCALE
         if GS.ki7:
             if isinstance(values, tuple):
@@ -585,7 +660,7 @@ class GS(object):
         # KiCad 6
         mult = 10.0 ** (svg_precision - 6)
         if isinstance(values, tuple):
-            return tuple(map(lambda x: int(round(x*mult)), values))
+            return tuple(int(round(x*mult)) for x in values)
         return values*mult
 
     @staticmethod
@@ -604,16 +679,22 @@ class GS(object):
         return g.GetShape() != pcbnew.S_SEGMENT or g.GetLength() > 0
 
     @staticmethod
+    def v2p(v):
+        if GS.ki7:
+            return pcbnew.wxPoint(v.x, v.y)
+        return v
+
+    @staticmethod
     def get_start_point(g):
         shape = g.GetShape()
         if GS.ki6:
             if shape == pcbnew.S_CIRCLE:
                 # Circle start is circle center
-                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
-            return g.GetStart()
+                return GS.v2p(g.GetStart())+pcbnew.wxPoint(g.GetRadius(), 0)
+            return GS.v2p(g.GetStart())
         if shape in [pcbnew.S_ARC, pcbnew.S_CIRCLE]:
-            return g.GetArcStart()
-        return g.GetStart()
+            return GS.v2p(g.GetArcStart())
+        return GS.v2p(g.GetStart())
 
     @staticmethod
     def get_end_point(g):
@@ -621,16 +702,16 @@ class GS(object):
         if GS.ki6:
             if shape == pcbnew.S_CIRCLE:
                 # This is closed start == end
-                return g.GetStart()+pcbnew.wxPoint(g.GetRadius(), 0)
+                return GS.v2p(g.GetStart())+pcbnew.wxPoint(g.GetRadius(), 0)
             if shape == pcbnew.S_RECT:
                 # Also closed start == end
-                return g.GetStart()
-            return g.GetEnd()
+                return GS.v2p(g.GetStart())
+            return GS.v2p(g.GetEnd())
         if shape == pcbnew.S_ARC:
-            return g.GetArcEnd()
+            return GS.v2p(g.GetArcEnd())
         if shape == pcbnew.S_CIRCLE:
-            return g.GetArcStart()
-        return g.GetEnd()
+            return GS.v2p(g.GetArcStart())
+        return GS.v2p(g.GetEnd())
 
     @staticmethod
     def get_shape_bbox(s):
@@ -724,11 +805,53 @@ class GS(object):
                 print_tb(traceback)
 
     @staticmethod
-    def exit_with_error(msg, level):
+    def exit_with_error(msg, level, run_error=None, hints=None):
         GS.trace_dump()
-        if isinstance(msg, tuple):
+        if isinstance(msg, (tuple, list)):
             for m in msg:
                 logger.error(m)
-        else:
+        elif msg:
             logger.error(msg)
-        exit(level)
+        if run_error:
+            if not msg:
+                logger.error('Running {} returned {}'.format(run_error.cmd, run_error.returncode))
+            if run_error.output:
+                out = run_error.output.decode()
+                logger.debug('- Output from command: '+out)
+                if hints:
+                    for h in hints:
+                        if h[0] in out:
+                            logger.error(h[1])
+        if level >= 0:
+            exit(level)
+
+    @staticmethod
+    def get_shape(shape):
+        if GS.ki6:
+            return shape.ShowShape()
+        return shape.ShowShape(shape.GetShape())
+
+    @staticmethod
+    def create_fp_lib(lib_name):
+        """ Create a new footprints lib. You must provide a path.
+            Doesn't fail if the lib is there.
+            .pretty extension is forced. """
+        if not lib_name.endswith('.pretty'):
+            lib_name += '.pretty'
+        # FootprintLibCreate(PATH) doesn't check if the lib is there and aborts (no Python exception) if the directory exists
+        # So you must check it first and hence the abstraction is lost.
+        # This is why we just use os.makedirs
+        os.makedirs(lib_name, exist_ok=True)
+        return lib_name
+
+    @staticmethod
+    @contextmanager
+    def create_file(name, bin=False):
+        os.makedirs(os.path.dirname(name), exist_ok=True)
+        with open(name, 'wb' if bin else 'w') as f:
+            yield f
+
+    @staticmethod
+    def write_to_file(content, name):
+        with GS.create_file(name, bin=isinstance(content, bytes)) as f:
+            f.write(content)

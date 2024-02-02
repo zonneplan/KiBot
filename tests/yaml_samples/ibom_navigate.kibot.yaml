@@ -1,0 +1,36 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'interactive_bom'
+    comment: "Interactive Bill of Materials (HTML)"
+    type: ibom
+    dir: BoM
+    options:
+      hide_pads: false
+      show_fabrication: false
+      hide_silkscreen: false
+      highlight_pin1: false
+      no_redraw_on_drag: false
+      board_rotation: 0
+      checkboxes: 'Sourced,Placed'
+      bom_view: 'left-right'
+      layer_view: 'FB'
+      name_format: '%f_iBoM'
+      include_tracks: false
+      include_nets: false
+      sort_order: 'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'
+      blacklist: 'DNF*'
+      no_blacklist_virtual: false
+      blacklist_empty_val: false
+      netlist_file: ''
+      extra_fields: ''
+      normalize_field_case: false
+      variant_field: ''
+      variants_whitelist: ''
+      variants_blacklist: ''
+      dnp_field: ''
+
+  - name: 'Navigate'
+    type: navigate_results

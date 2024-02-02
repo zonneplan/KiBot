@@ -349,7 +349,7 @@ class Optionable(object):
         # Replace KiCad 6 variables first
         name = GS.expand_text_variables(name)
         # Determine if we need to expand SCH and/or PCB related data
-        has_dep_exp = any(map(lambda x: x in name, PATTERNS_DEP))
+        has_dep_exp = any((x in name for x in PATTERNS_DEP))
         do_sch = is_sch and has_dep_exp
         # logger.error(name + '  is_sch ' +str(is_sch)+"   "+ str(do_sch))
         # raise
@@ -451,12 +451,12 @@ class Optionable(object):
         for color in names:
             self.validate_color(color)
 
-    def parse_one_color(self, color):
+    def parse_one_color(self, color, scale=1/255.0):
         res = self._color_re_component.findall(color)
         alpha = 1.0
         if len(res) > 3:
-            alpha = int(res[3], 16)/255.0
-        return (int(res[0], 16)/255.0, int(res[1], 16)/255.0, int(res[2], 16)/255.0, alpha)
+            alpha = int(res[3], 16)*scale
+        return (int(res[0], 16)*scale, int(res[1], 16)*scale, int(res[2], 16)*scale, alpha)
 
     def color_to_rgb(self, color):
         index = 4 if len(color) > 4 else 0

@@ -99,10 +99,10 @@ class Subparts(BaseFilter):  # noqa: F821
             # Search for numbers, matching with simple, frac and decimal ones.
             string0_test = re.match(self._num_format, strings[0])
             string1_test = re.match(self._num_format, strings[1])
-            if string0_test and not(string1_test):
+            if string0_test and not string1_test:
                 qty = strings[0].strip()
                 part = strings[1].strip()
-            elif not(string0_test) and string1_test:
+            elif not string0_test and string1_test:
                 qty = strings[1].strip()
                 part = strings[0].strip()
             elif string0_test and string1_test:
@@ -135,7 +135,7 @@ class Subparts(BaseFilter):  # noqa: F821
                 return float(vals[0])/float(vals[1])
             return float(qty)
         except ValueError:
-            logger.error('Internal error qty_to_float("{}"), please report'.format(qty))
+            logger.non_critical_error(f'Internal error qty_to_float("{qty}"), please report')
 
     def do_split(self, comp, max_num_subparts, split_fields):
         """ Split `comp` according to the detected subparts """

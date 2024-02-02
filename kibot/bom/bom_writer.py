@@ -18,6 +18,7 @@ from .csv_writer import write_csv
 from .html_writer import write_html
 from .xml_writer import write_xml
 from .. import log
+from .. import error
 
 logger = log.get_logger()
 
@@ -49,6 +50,6 @@ def write_bom(filename, ext, groups, headings, cfg):
     if result:
         logger.debug("{} Output -> {}".format(ext.upper(), filename))
     else:
-        logger.error("writing {} output".format(ext.upper()))
+        raise error.KiPlotError(f"Fail writing {ext.upper()} output")
 
     return result

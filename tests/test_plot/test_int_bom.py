@@ -88,7 +88,8 @@ KIBOM_STATS = [KIBOM_TEST_GROUPS+len(KIBOM_TEST_EXCLUDE),
                len(KIBOM_TEST_COMPONENTS)]
 LINKS_STATS = [3, '4 (2 SMD/ 2 THT)', '3 (1 SMD/ 2 THT)', 1, 3]
 VARIANTE_PRJ_INFO = ['kibom-variante', 'default', 'A', '2020-03-12', None]
-LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'digikey_alt#', 'mouser#', 'mouser_alt#', 'manf#']
+LINK_HEAD = ['References', 'Part', 'Value', 'Quantity Per PCB', 'digikey#', 'digikey_alt#', 'mouser#', 'mouser_alt#', 'LCSC#',
+             'manf#']
 LINKS_COMPONENTS = ['J1', 'J2', 'R1']
 LINKS_EXCLUDE = ['C1']
 LINKS_GROUPS = 2
@@ -284,6 +285,15 @@ def test_int_bom_simple_csv(test_dir):
     kibom_verif(rows, header)
     # Check not quoted and comma as delimiter
     ctx.search_in_file_d(out, [KIBOM_TEST_HEAD[0]+','+KIBOM_TEST_HEAD[1]])
+    ctx.clean_up()
+
+
+def test_int_bom_simple_hrtxt(test_dir):
+    ctx, out = kibom_setup(test_dir, 'int_bom_simple_hrtxt', ext='txt')
+    ctx.expect_out_file(out, sub=True)
+    rows, header, info = ctx.load_hrtxt(out)
+    check_csv_info(info, KIBOM_PRJ_INFO, KIBOM_STATS)
+    kibom_verif(rows, header)
     ctx.clean_up()
 
 
@@ -576,6 +586,7 @@ def test_int_bom_digikey_link(test_dir):
     ref_column = headers[0].index(REF_COLUMN_NAME)
     dk_column = headers[0].index('digikey#')
     mo_column = headers[0].index('mouser#')
+    lcsc_column = headers[0].index('LCSC#')
     # Check the normal table
     check_kibom_test_netlist(rows[0], ref_column, LINKS_GROUPS, LINKS_EXCLUDE, LINKS_COMPONENTS)
     # Check the DNF table
@@ -590,6 +601,11 @@ def test_int_bom_digikey_link(test_dir):
     for c in parts:
         assert c.strip().startswith('<a href')
         assert 'mouser' in c
+        logging.debug(c + ' OK')
+    parts = get_column(rows[0]+rows[1], lcsc_column, False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'lcsc.com' in c
         logging.debug(c + ' OK')
     ctx.clean_up()
 
@@ -1212,6 +1228,16 @@ def test_int_bom_digikey_link_xlsx(test_dir):
         assert c.strip().startswith('<a href')
         assert 'digikey' in c
         logging.debug(c + ' OK')
+    parts = get_column(rows+rows2, headers.index('LCSC#'), False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'lcsc.com' in c
+        logging.debug(c + ' OK')
+    parts = get_column(rows+rows2, headers.index('mouser#'), False)
+    for c in parts:
+        assert c.strip().startswith('<a href')
+        assert 'mouser' in c
+        logging.debug(c + ' OK')
     ctx.clean_up()
 
 
@@ -1394,13 +1420,13 @@ def test_int_bom_variant_t2if(test_dir):
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    check_kibom_test_netlist(rows, ref_column, 2, ['C1', 'C2'], ['R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_[2].csv')
     check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
     rows, header, info = ctx.load_csv(prj+'-bom_(production).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['C1'], ['R1', 'R2', 'C2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['R2'], ['R1', 'C1', 'C2', 'R3'])
     ctx.clean_up(keep_project=True)
 
 
@@ -1412,13 +1438,13 @@ def test_int_bom_variant_t2it(test_dir):
     ctx.run()
     rows, header, info = ctx.load_csv(prj+'-bom.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
+    check_kibom_test_netlist(rows, ref_column, 2, ['C1', 'C2'], ['R1', 'R2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_[2].csv')
     check_kibom_test_netlist(rows, ref_column, 1, ['C1', 'C2'], ['R1', 'R2'])
     rows, header, info = ctx.load_csv(prj+'-bom_(production).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['C1'], ['R1', 'R2', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['C1'], ['R1', 'R2', 'C2', 'R3'])
     rows, header, info = ctx.load_csv(prj+'-bom_(test).csv')
-    check_kibom_test_netlist(rows, ref_column, 2, ['R2'], ['R1', 'C1', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 3, ['R2'], ['R1', 'C1', 'C2', 'R3'])
     ctx.clean_up(keep_project=True)
 
 
@@ -1429,7 +1455,7 @@ def test_int_bom_variant_t2is(test_dir):
     ctx.run(extra_debug=True)
     rows, header, info = ctx.load_csv('filter_R1.csv')
     ref_column = header.index(REF_COLUMN_NAME)
-    check_kibom_test_netlist(rows, ref_column, 1, ['R2', 'R1'], ['C1', 'C2'])
+    check_kibom_test_netlist(rows, ref_column, 2, ['R2', 'R1'], ['C1', 'C2', 'R3'])
     ctx.clean_up(keep_project=True)
 
 

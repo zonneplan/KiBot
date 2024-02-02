@@ -138,6 +138,24 @@ def test_step_rel_dir_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+# @pytest.mark.indep But we use KiCad 5 ...
+@pytest.mark.skipif(not context.ki7(), reason="Is indep, but needs KiCad 7")
+def test_step_ea_dl_1(test_dir):
+    prj = 'easyeda_3d_dl'
+    ctx = context.TestContext(test_dir, prj, 'step_simple', STEP_DIR)
+    os.environ['KIBOT_3D_MODELS'] = os.path.join(ctx.output_dir, STEP_DIR)
+    ctx.run(kicost=True)
+    del os.environ['KIBOT_3D_MODELS']
+    # Check all outputs are there
+    name = prj+'-3D.step'
+    step = 'SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.step'
+    wrl = 'SOT-23-3P_L2.9-W1.3-H1.0-LS2.4-P0.95.wrl'
+    ctx.expect_out_file_d([name, step, wrl])
+    ctx.search_in_file_d(step, 'This is a STEP file')
+    ctx.compare_txt(os.path.join(STEP_DIR, wrl))
+    ctx.clean_up(keep_project=True)
+
+
 @pytest.mark.slow
 @pytest.mark.pcbnew
 def test_render_3d_variant_1(test_dir):
@@ -156,17 +174,19 @@ def test_render_3d_variant_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
-# @pytest.mark.slow
-# @pytest.mark.pcbnew
-# def test_render_3d_res_tht_1(test_dir):
-#     prj = 'resistor_tht'
-#     yaml = 'render_3d_tht_res_1'
-#     ctx = context.TestContext(test_dir, prj, yaml)
-#     ctx.run()  # extra_debug=True
-#     # Check all outputs are there
-#     name = prj+'-3D_top.png'
-#     ctx.expect_out_file(name)
-#     ctx.clean_up(keep_project=True)
+@pytest.mark.slow
+@pytest.mark.pcbnew
+@pytest.mark.skipif(not context.ki7(), reason="slow")
+def test_render_3d_res_tht_1(test_dir):
+    """ Very naive test, just check if working """
+    prj = 'resistor_tht'
+    yaml = 'render_3d_tht_res_1'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    ctx.run()  # extra_debug=True
+    # Check all outputs are there
+    name = prj+'-3D_top.png'
+    ctx.expect_out_file(name)
+    ctx.clean_up(keep_project=True)
 
 
 @pytest.mark.slow
@@ -184,3 +204,17 @@ def test_blender_export_1(test_dir):
     ctx.expect_out_file(name, sub=True)
     # ctx.compare_image(name, fuzz='7%', tol=1000)
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
+@pytest.mark.skipif(context.ki5(), reason="uses pcb2blender")
+def test_blender_export_2(test_dir):
+    """ Stacked PCBs using the JSON stack-up """
+    prj = 'batteryPack'
+    yaml = 'pcb2blender_tools_3'
+    ctx = context.TestContext(test_dir, prj, yaml)
+    ctx.run(extra_debug=True)
+    name = prj+'.pcb3d'
+    ctx.expect_out_file(name, sub=True)
+    ctx.clean_up()

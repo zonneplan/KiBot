@@ -161,20 +161,24 @@ class TextElement(FigureElement):
         letterspacing=0,
         anchor="start",
         color="black",
+        lengthAdjust=None,
+        textLength=None,
     ):
-        txt = etree.Element(
-            SVG + "text",
-            {
-                "x": str(x),
-                "y": str(y),
-                "font-size": str(size),
-                "font-family": font,
-                "font-weight": weight,
-                "letter-spacing": str(letterspacing),
-                "text-anchor": str(anchor),
-                "fill": str(color),
-            },
-        )
+        attrs = {
+            "x": str(x),
+            "y": str(y),
+            "font-size": str(size),
+            "font-family": font,
+            "font-weight": weight,
+            "letter-spacing": str(letterspacing),
+            "text-anchor": str(anchor),
+            "fill": str(color),
+        }
+        if lengthAdjust is not None:
+            attrs['lengthAdjust'] = lengthAdjust
+        if textLength is not None:
+            attrs['textLength'] = textLength
+        txt = etree.Element(SVG + "text", attrs)
         txt.text = text
         FigureElement.__init__(self, txt)
 
@@ -182,7 +186,7 @@ class TextElement(FigureElement):
 class ImageElement(FigureElement):
     """Inline image element.
 
-    Correspoonds to SVG ``<image>`` tag. Image data encoded as base64 string.
+    Corresponds to SVG ``<image>`` tag. Image data encoded as base64 string.
     """
 
     def __init__(self, stream, width, height, format="png"):
@@ -202,7 +206,7 @@ class LineElement(FigureElement):
 
     def __init__(self, points, width=1, color="black"):
         linedata = "M{} {} ".format(*points[0])
-        linedata += " ".join(map(lambda x: "L{} {}".format(*x), points[1:]))
+        linedata += " ".join(("L{} {}".format(*x) for x in points[1:]))
         line = etree.Element(
             SVG + "path", {"d": linedata, "stroke-width": str(width), "stroke": color}
         )

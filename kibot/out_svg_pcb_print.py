@@ -60,7 +60,7 @@ class SVG_PCB_Print(BaseOutput):  # noqa: F821
             self.options = SVG_PCB_PrintOptions
             """ *[dict] Options for the `pdf_pcb_print` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user]
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
                 List of PCB layers to include in the PDF """
         self._category = 'PCB/docs'
 

@@ -4,6 +4,171 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.4] - 2024-02-02
+### Added
+- New outputs:
+  - KiRi: interactive diff
+  - KiCanvas: on-line schematic/PCB browser
+- General:
+  - Operations that copies the project now also copies the PRL and the DRU
+  - Files named *.kibot.yml are also detected as configuration files
+  - Mechanism to specify
+    - All inner layers (inners)
+    - All external copper layers (outers)
+- Command line:
+  - `--help-list-offsets` to list footprint offsets (JLCPCB)
+  - `--help-list-rotations` to list footprint rotations (JLCPCB)
+  - `--stop-on-warnings` (`-W`) to stop on warnings (#545)
+  - `--defs-from-env` allows using environment vars for substitution (#549)
+- Global options:
+  - `remove_solder_mask_for_dnp` similar to `remove_solder_paste_for_dnp` but
+    applied to the solder mask apertures. (#476)
+  - `layer_defaults` to specify the default suffix and description. (#504)
+  - `include_components_from_pcb` to disable the new behavior that includes
+    components from the PCB in the filter/variants processing
+  - `restore_project` now also restores the PRL
+- Schematic format:
+  - Support for *unit names* (#513)
+- Internal templates:
+  - 3DRender_top, 3DRender_top_straight, 3DRender_bottom and
+    3DRender_bottom_straight: to generate simple and quick 3D renders.
+  - _KIBOT_POS_DNF_FILTER option to JLCPCB. It now excludes components added
+    by KiKit to create panels and can be customized.
+  - _KIBOT_PLOT_FOOTPRINT_REFS and _KIBOT_PLOT_FOOTPRINT_VALUES to
+    manufacturer templates. (#523)
+  - _KIBOT_COMPRESS_MOVE to move gerber and drill files to the compressed
+    output, enabled by default. (#537)
+- Filters:
+  - New `_rot_footprint_jlcpcb` internal filter to fix the JLCPCB bottom
+    rotations.
+  - New options for the `rot_footprint` filters: (See #510)
+    - `mirror_bottom`: used to undo the KiCad mirroring of the bottom.
+    - `rot_fields`: list of fields to indicate arbitrary rotations.
+    - `offset_fields`: list of fields to indicate arbitrary offsets.
+    - `offsets`: a list of pairs containing regex and offset ("x, y")
+    - `bennymeg_mode`: used to provide compatibility with the
+      bennymeg/JLC-Plugin-for-KiCad tool.
+    - `rotations_and_offsets`: a more flexible mechanism to select
+      rotations and offsets. So you can have two different rotations
+      applied to the same footprint, i.e. different components with
+      the same footprint but different orientation in the reel.
+- 3D outputs:
+  - `download_lcsc` option to disable LCSC 3D model download (See #415)
+  - Problems when creating a colored resistor, but we didn't have a cache yet
+    (i.e. no model downloaded) #553
+- Preflights:
+  - Individual directory for the ERC and DRC reports (#562)
+- BoM:
+  - Support for ${field} expansion. (#471)
+  - LCSC links (SchrodingersGat/KiBoM#190)
+  - `parse_value` can be used to disable the *Value* parser (See #494)
+    Also added a warning about using extra data in the *Value* field.
+- iBoM:
+  - `forced_name` option to force the name displayed at the top left corner
+    (#470)
+- Blender export:
+  - Support for pcb2blender v2.6/2.7 (Blender 3.5.1/3.6)
+  - `auto_camera_z_axis_factor`: used to control the default camera distance
+  - Options to create simple animations:
+    - PoV `steps`: to create rotation angle increments
+    - `default_file_id`: can be used to create numbered PNGs
+    - `fixed_auto_camera`: to avoid adjusting the automatic camera on each frame
+  - Camera option to set the clip start (#484)
+  - Traceback dump when Blender output contains it
+  - Subdirectory for each output generated (#541)
+  - Option to disable the denoiser (#539)
+- KiKit
+  - Expand text variables and KiBot %X markers in text objects (see #497)
+- PCB Print:
+  - Support for CURRENT_DATE text variable
+  - Options to mirror the text in the user layers when creating a mirrored page
+    (#561)
+  - Options to select which layers are used for centering purposes (#573)
+- Populate:
+  - Basic support for regular list items (#480)
+- Position:
+  - Experimental support for gerber position files (#500)
+- Copy Files:
+  - Mode to export the whole project (SCH, PCB, symbols, footprints, 3D models
+    and project files) (#491)
+- Help for the error levels
+- Warnings:
+  - Explain about wrong dir/output separation (#493)
+- Diff:
+  - Added option to un/fill zones before doing the comparison (See #391)
+  - Added a new mode where we can control the added/removed colors (#551)
+
+### Changed
+- Documentation:
+  - Now you can search in the docs
+  - Indexed so you can search by topic
+  - With a navigation side bar
+- Variants and filters:
+  - Components only in the PCB are now processed
+- QR Lib:
+  - Footprints: now they are flagged with exclude from BoM and Pos, also
+    with no court yard requirements for KiCad 7
+  - Symbol: Excluded from simulation for KiCad 7
+- Elecrow, FusionPCB, JLCPCB, PCBWay and P-Ban templates now moves the files
+  to the compressed output by default.
+  - Note that JLCPCB BoM and Position files aren't included anymore, they are
+    uploaded separately.
+- Quick Start:
+  - Now we generate only for projects, not separated files.
+    This avoids problems for sub-sheets in separated dirs.
+- Diff:
+  - When *check_zone_fills* is enabled now we do a refill for the boards
+
+### Fixed
+- Schematics:
+  - Problems with deep nested and recycled sheets (#520)
+  - Problems saving deep nested sheets
+  - Makefile/compress targets
+- Rotated polygons and text used in the worksheet (#466)
+- The --log/-L didn't enabled full debug for all messages
+- BoM:
+  - Problems when trying to aggregate the datasheet field (#472)
+- kibot-check:
+  - Show 7.x as supported (#469)
+- Blender export:
+  - Rotations are now applied to the current view, not just the top view
+  - Board/components not visible for small boards (See #484)
+  - Light type names (extra space) (#505)
+  - Problems when no point of view was defined (#546)
+- update_xml with check_pcb_parity enabled:
+  - Avoid errors for KiCad 6 using "Exclude from BoM" components.
+    This limitation isn't found on KiCad 7. (#486)
+  - *exclude_from_bom* mismatch on KiCad 7
+  - *Sheetfile* mismatch on KiCad 7 when testing from different directory
+  - Honor the 'Not in schematic' (board_only) flag when doing a parity check
+- Dependencies downloader:
+  - Problems when connection timed-out
+- Sub PCB separation using annotation method for some edeges and KiCad
+  versions (#496)
+- Problems when using NET_NAME(n) for a value (#511)
+- JLCPCB rotations for bottom components
+- Copy Files:
+  - Warnings when using both, the STEP and WRL model, of the same component
+  - Fail to detect 3D models subdirs when running alone
+- QR Lib:
+  - When used from the preflight the name of the file changed to the name of a
+    temporal, generating problems with the plot outputs, like pcb_print
+  - Project options not preserved, i.e. set_text_variables failing
+  - Bottom QRs should be mirrored in the Y axis
+- Diff
+  - `current`: didn't apply global variants
+  - `current`: didn't honor KiCad native DNP flags, they need a filter
+  - Problems when trying to use an already existent worktree (#555)
+  - Avoid using unexpected branches for worktrees (#556)
+- PCB Print:
+  - Issues when forcing the board edge and using scaling (#532)
+  - Text not searchable when using newer rsvg-convert tools (#552)
+- Quick Start:
+  - Problems with KiCad 6+ files using KiCad 5 names for layers
+  - Problems scanning dirs without enough privileges
+- PCB/SCH Variant
+  - Makefile/compress targets (missing project)
+
 ## [1.6.3] - 2023-06-26
 ### Added
 - General:
@@ -77,7 +242,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     get the old behavior.
 - Git diff link file name:
   - Now we default to using worktrees instead of stash push/pop. As a side
-    effect the names of the git points are chnaged. This is because main/master
+    effect the names of the git points are changed. This is because main/master
     only applies to the main worktree. So the names now refer to the closest
     tag.
 - JLCPCB_stencil: Is now just like JLCPCB. The only difference is the added
@@ -833,7 +998,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   internal BoM. They are usually mistakes that prevents grouping components.
 
 ### Fixed
-- The variants logic for BoMs when a component resquested to be only added to
+- The variants logic for BoMs when a component requested to be only added to
   more than one variant.
 - Removed warnings about malformed values for DNF components indicating it in
   its value.

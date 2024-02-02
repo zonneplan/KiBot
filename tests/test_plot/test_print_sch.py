@@ -242,3 +242,20 @@ def test_sch_bizarre_cases(test_dir):
     cov.save()
     assert ok_pol is False
     assert ok_pin is False
+
+
+@pytest.mark.slow
+@pytest.mark.eeschema
+def test_sch_variant_diff(test_dir):
+    """ Diff between SCH variants, using a separated output and using mutivar """
+    prj = 'kibom-variant_3'
+    ctx = context.TestContext(test_dir, prj, 'sch_variant_1', '')
+    ctx.run()
+    ctx.expect_out_file(['kibom-variant_3-diff_sch_variant_sch_default.pdf',
+                         'kibom-variant_3-diff_sch_variant_sch_production.pdf',
+                         'kibom-variant_3-diff_sch_variant_sch_test.pdf',
+                         'kibom-variant_3-diff_sch_Current-default_variant.pdf',
+                         'kibom-variant_3-diff_sch_Current-production_variant.pdf',
+                         'kibom-variant_3-diff_sch_Current-test_variant.pdf',
+                         'kibom-variant_3-diff_sch.pdf'])
+    ctx.clean_up()

@@ -13,7 +13,7 @@ logger = log.get_logger()
 
 @filter_class
 class Var_Rename(BaseFilter):  # noqa: F821
-    """ Var_Rename
+    """ Variant Renamer
         This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use """
     def __init__(self):
         super().__init__()

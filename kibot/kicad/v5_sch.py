@@ -73,14 +73,14 @@ class DCMLineReader(LineReader):
         try:
             res = res.decode()
         except UnicodeDecodeError:
-            logger.error('Invalid UTF-8 sequence at line {} of file `{}`'.format(self.line+1, self.file))
+            logger.non_critical_error(f'Invalid UTF-8 sequence at line {self.line+1} of file `{self.file}`')
             nres = ''
             for c in res:
                 if c > 127:
                     c = 32
                 nres += chr(c)
             res = nres
-            logger.error('Using: '+res.rstrip())
+            logger.non_critical_error('Using: '+res.rstrip())
         return res
 
     def get_line(self):
@@ -769,7 +769,7 @@ class SchematicField(object):
         self.flags = "%04x" % ((int(self.flags) & 0xFFFE) | v)
 
     def is_visible(self):
-        return not(int(self.flags, 16) and 1)
+        return not (int(self.flags, 16) and 1)
 
     def get_height(self):
         """ Font height in mm """
@@ -906,6 +906,8 @@ class SchematicComponent(object):
         self.has_pcb_info = False
         self.qty = 1
         self.annotation_error = False
+        # Position offset i.e. from the rotation filter
+        self.pos_offset_x = self.pos_offset_y = None
         # KiCad 5 PCB flags (mutually exclusive)
         self.smd = False
         self.virtual = False
@@ -1925,7 +1927,7 @@ class Schematic(object):
     def save_netlist_components(self, root, comps, excluded, fitted, no_field):
         """ Generates the `components` section of the netlist """
         components = SubElement(root, 'components')
-        # Colapse units
+        # Collapse units
         real_comps = []
         tstamps = {}
         for c in comps:

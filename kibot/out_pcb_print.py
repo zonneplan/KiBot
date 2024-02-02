@@ -29,12 +29,11 @@ Dependencies:
 #     version: '2.40'
 #     id: rsvg2
 from copy import deepcopy
+import datetime
 import re
 import os
-import subprocess
 import importlib
 from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
-import shlex
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .error import KiPlotConfigurationError
@@ -47,11 +46,12 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
-                   VIATYPE_MICROVIA, FONT_HELP_TEXT)
+                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
 from .layer import Layer, get_priority
+from .kiplot import run_command
 from . import __version__
 from . import log
 
@@ -60,8 +60,6 @@ POLY_FILL_STYLE = ("fill:{0}; fill-opacity:1.0; stroke:{0}; stroke-width:1; stro
                    "stroke-linejoin:round;fill-rule:evenodd;")
 DRAWING_LAYERS = ['Dwgs.User', 'Cmts.User', 'Eco1.User', 'Eco2.User']
 EXTRA_LAYERS = ['F.Fab', 'B.Fab', 'F.CrtYd', 'B.CrtYd']
-# Opacity to make something invisible, but not removable
-ALMOST_TRANSPARENT = '0.01'
 # The following modules will be downloaded after we solve the dependencies
 # They are just helpers and we solve their dependencies
 svgutils = None  # Will be loaded during dependency check
@@ -73,16 +71,7 @@ def pcbdraw_warnings(tag, msg):
 
 
 def _run_command(cmd):
-    logger.debug('- Executing: '+shlex.join(cmd))
-    try:
-        cmd_output = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-    except subprocess.CalledProcessError as e:
-        logger.error('Failed to run %s, error %d', cmd[0], e.returncode)
-        if e.output:
-            logger.debug('Output from command: '+e.output.decode())
-        exit(PDF_PCB_PRINT)
-    if cmd_output.strip():
-        logger.debug('- Output from command:\n'+cmd_output.decode())
+    run_command(cmd, err_lvl=PDF_PCB_PRINT)
 
 
 def hex_to_rgb(value):
@@ -138,13 +127,17 @@ class LayerOptions(Layer):
         self._unknown_is_error = True
         with document:
             self.color = ""
-            """ Color used for this layer """
+            """ Color used for this layer.
+                KiCad 6+: don't forget the alpha channel for layers like the solder mask """
             self.plot_footprint_refs = True
             """ Include the footprint references """
             self.plot_footprint_values = True
             """ Include the footprint values """
             self.force_plot_invisible_refs_vals = False
             """ Include references and values even when they are marked as invisible """
+            self.use_for_center = True
+            """ Use this layer for centering purposes.
+                You can invert the meaning using the `invert_use_for_center` option """
 
     def config(self, parent):
         super().config(parent)
@@ -167,6 +160,10 @@ class PagesOptions(Optionable):
         with document:
             self.mirror = False
             """ Print mirrored (X axis inverted) """
+            self.mirror_pcb_text = True
+            """ Mirror text in the PCB when mirror option is enabled and we plot a user layer """
+            self.mirror_footprint_text = True
+            """ Mirror text in the footprints when mirror option is enabled and we plot a user layer """
             self.monochrome = False
             """ Print in gray scale """
             self.scaling = None
@@ -206,7 +203,7 @@ class PagesOptions(Optionable):
             self.page_id = '%02d'
             """ Text to differentiate the pages. Use %d (like in C) to get the page number """
             self.sketch_pads_on_fab_layers = False
-            """ Draw only the outline of the pads on the *.Fab layers (KiCad 6+) """
+            r""" Draw only the outline of the pads on the \*.Fab layers (KiCad 6+) """
             self.sketch_pad_line_width = 0.1
             """ Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                 Note that this value is currently ignored by KiCad (6.0.9) """
@@ -333,6 +330,9 @@ class PCB_PrintOptions(VariantOptions):
             """ Store the temporal page and layer files in the output dir and don't delete them """
             self.force_edge_cuts = False
             """ *Add the `Edge.Cuts` to all the pages """
+            self.forced_edge_cuts_use_for_center = True
+            """ Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
+                layer """
             self.forced_edge_cuts_color = ''
             """ Color used for the `force_edge_cuts` option """
             self.scaling = 1.0
@@ -358,6 +358,10 @@ class PCB_PrintOptions(VariantOptions):
             """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
+            self.invert_use_for_center = False
+            """ Invert the meaning of the `use_for_center` layer option.
+                This can be used to just select the edge cuts for centering, in this case enable this option
+                and disable the `use_for_center` option of the edge cuts layer """
         add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
@@ -480,6 +484,7 @@ class PCB_PrintOptions(VariantOptions):
         GS.load_pcb_title_block()
         for num in range(9):
             vars['COMMENT'+str(num+1)] = GS.pcb_com[num]
+        vars['CURRENT_DATE'] = datetime.datetime.now().strftime('%Y-%m-%d')
         vars['COMPANY'] = GS.pcb_comp
         vars['ISSUE_DATE'] = GS.pcb_date
         vars['REVISION'] = GS.pcb_rev
@@ -488,6 +493,7 @@ class PCB_PrintOptions(VariantOptions):
         vars['TITLE'] = tb.GetTitle()
         vars['FILENAME'] = GS.pcb_basename+'.kicad_pcb'
         vars['SHEETNAME'] = p.sheet
+        vars['SHEETPATH'] = ''  # Only relevant for an schematic
         layer = ''
         for la in p.layers:
             if len(layer):
@@ -774,39 +780,40 @@ class PCB_PrintOptions(VariantOptions):
             svg_out.insert([root])
         svg_out.insert(svgutils.RectElement(0, 0, width, height, color=self.background_color))
 
-    def fix_opacity_for_g(self, e):
-        contains_text = False
+    def search_text_for_g(self, e, texts):
+        transform = e.get('transform')
         for c in e:
             # Adjust the text opacity
             if c.tag.endswith('}text'):
                 opacity = c.get('opacity')
                 if opacity is not None and opacity == '0' and c.text is not None:
-                    c.set('opacity', ALMOST_TRANSPARENT)
-                    c.set('style', 'font-family:monospace')
-                    contains_text = True
+                    cp_text = svgutils.TextElement(c.get('x'), c.get('y'), c.text, font='monospace',
+                                                   color=self.background_color, anchor=c.get('text-anchor'),
+                                                   size=c.get('font-size'), lengthAdjust=c.get('lengthAdjust'),
+                                                   textLength=c.get('textLength'))
+                    if transform is None:
+                        texts.append(cp_text)
+                    else:
+                        # Rotated text
+                        texts.append(svgutils.GroupElement([cp_text], {'transform': transform}))
             elif c.tag.endswith('}g'):
                 # Process all text inside
-                self.fix_opacity_for_g(c)
-        # Adjust the graphic opacity
-        if contains_text:
-            style = e.get('style')
-            if style is not None:
-                e.set('style', style.replace('fill-opacity:0.0', 'fill-opacity:'+ALMOST_TRANSPARENT))
+                self.search_text_for_g(c, texts)
 
-    def fix_opacity(self, svg):
-        """ Transparent text is discarded by rsvg-convert.
-            So we make it almost invisible. """
-        logger.debug(' - Making text searchable')
+    def search_text(self, svg, texts):
+        """ Transparent text is discarded by rsvg-convert """
+        logger.debug(' - Looking for text tags')
         # Scan the SVG
         for e in svg.root:
             # Look for graphics
             if e.tag.endswith('}g'):
                 # Process all text inside
-                self.fix_opacity_for_g(e)
+                self.search_text_for_g(e, texts)
 
     def merge_svg(self, input_folder, input_files, output_folder, output_file, p):
         """ Merge all layers into one page """
         first = True
+        texts = []
         for (file, color) in input_files:
             logger.debug(' - Loading layer file '+file)
             file = os.path.join(input_folder, file)
@@ -817,8 +824,9 @@ class PCB_PrintOptions(VariantOptions):
                 if p.monochrome:
                     color = to_gray_hex(color)
                 self.fill_polygons(new_layer, color)
-            # Make text searchable
-            self.fix_opacity(new_layer)
+            if self.format == 'PDF':
+                # Look for transparent text that we will copy to a suitable place
+                self.search_text(new_layer, texts)
             if first:
                 svg_out = new_layer
                 # This is the width declared at the beginning of the file
@@ -835,6 +843,11 @@ class PCB_PrintOptions(VariantOptions):
                     for e in root:
                         e.scale(scale)
                 svg_out.append([root])
+        if self.format == 'PDF':
+            # Make the text searchable
+            # Add it before anything using the background color
+            for text in texts:
+                svg_out.insert(text)
         svg_out.save(os.path.join(output_folder, output_file))
 
     def find_paper_size(self):
@@ -876,8 +889,7 @@ class PCB_PrintOptions(VariantOptions):
             plotter.svg_precision = self.svg_precision
             image = plotter.plot()
         except (RuntimeError, SyntaxError, IOError) as e:
-            logger.error('PcbDraw error: '+str(e))
-            exit(PCBDRAW_ERR)
+            GS.exit_with_error('PcbDraw error: '+str(e), PCBDRAW_ERR)
 
         if GS.debug_level > 1:
             # Save the SVG only for debug purposes
@@ -885,6 +897,33 @@ class PCB_PrintOptions(VariantOptions):
         # Return the SVG as a string
         from lxml.etree import tostring
         return tostring(image).decode()
+
+#     def kicad7_scale_workaround(self, id, temp_dir, out_file, color, mirror, scale):
+#         logger.error(f'Fix {out_file}')
+#         svg = svgutils.fromfile(out_file)
+#         logger.error(self.get_view_box(svg))
+#         bbox = GS.board.GetBoundingBox()
+#         logger.error(bbox.GetSize())
+#         for f in GS.board.Footprints():
+#             logger.error('Pads')
+#             for p in f.Pads():
+#                 bbox = p.GetBoundingBox()
+#                 logger.error(bbox.GetSize())
+#             logger.error('Graphics')
+#             for gi in f.GraphicalItems():
+#                 bbox = gi.GetBoundingBox()
+#                 logger.error(bbox.GetSize())
+#         logger.error('Drawings')
+#         for d in GS.board.Drawings():
+#             bbox = d.GetBoundingBox()
+#             logger.error(bbox.GetSize())
+#         logger.error('Tracks')
+#         for t in GS.board.Tracks():
+#             bbox = t.GetBoundingBox()
+#             logger.error(bbox.GetSize())
+#
+#     def get_view_box(self, svg):
+#         return tuple(map(lambda x: float(x), svg.root.get('viewBox').split(' ')))
 
     def plot_realistic_solder_mask(self, id, temp_dir, out_file, color, mirror, scale):
         """ Plot the solder mask closer to reality, not the apertures """
@@ -901,8 +940,8 @@ class PCB_PrintOptions(VariantOptions):
         view_box = svg_kicad.root.get('viewBox')
         view_box_elements = view_box.split(' ')
         # This is the paper size using the SVG precision
-        paper_size_x = int(round(float(view_box_elements[2])))
-        paper_size_y = int(round(float(view_box_elements[3])))
+        paper_size_x = float(view_box_elements[2])
+        paper_size_y = float(view_box_elements[3])
         # Compute the coordinates translation for mirror
         transform = ''
         if scale != 1.0 and scale:
@@ -914,7 +953,7 @@ class PCB_PrintOptions(VariantOptions):
             offset_y = GS.svg_round((bcy*scale-(paper_size_y/2.0))/scale)
             if mirror:
                 scale_x = -scale_x
-                offset_x += round(paper_size_x/scale)
+                offset_x += paper_size_x/scale
             transform = 'scale({},{}) translate({},{})'.format(scale_x, scale_y, -offset_x, -offset_y)
         else:
             if mirror:
@@ -1045,6 +1084,46 @@ class PCB_PrintOptions(VariantOptions):
             if cur_name != user_name and os.path.isfile(cur_name):
                 os.replace(cur_name, user_name)
 
+    def check_ki7_scale_issue(self):
+        """ Check if all visible layers has scaling problems """
+        if not GS.ki7:
+            return False
+        cur_vis = GS.board.GetVisibleLayers()
+        # Copper layers are OK
+        if len(cur_vis.CuStack()):
+            return False
+        for la in ['Edge.Cuts', 'F.SilkS', 'B.SilkS']:
+            if cur_vis.Contains(Layer.DEFAULT_LAYER_NAMES[la]):
+                return False
+        return True
+
+    def mirror_text(self, page, id):
+        """ Mirror text in the user layers """
+        if not page.mirror:
+            return
+        extra_debug = GS.debug_level > 2
+        if extra_debug:
+            logger.debug('mirror_text processing')
+        if page.mirror_pcb_text:
+            for g in GS.board.GetDrawings():
+                if g.GetLayer() == id:
+                    if hasattr(g, 'GetShownText'):
+                        if extra_debug:
+                            logger.debug(f'- {g.GetClass()} {g.GetShownText()} @ {g.GetCenter()} mirrored: {g.IsMirrored()}'
+                                         f' just: {g.GetHorizJustify()}')
+                        g.SetMirrored(not g.IsMirrored())
+                        g.SetHorizJustify(-g.GetHorizJustify())
+        if page.mirror_footprint_text:
+            for m in GS.get_modules():
+                for g in m.GraphicalItems():
+                    if g.GetLayer() == id:
+                        if hasattr(g, 'GetShownText'):
+                            if extra_debug:
+                                logger.debug(f'- {g.GetClass()} {g.GetShownText()} @ {g.GetCenter()}'
+                                             f' mirrored: {g.IsMirrored()} just: {g.GetHorizJustify()}')
+                            g.SetMirrored(not g.IsMirrored())
+                            g.SetHorizJustify(-g.GetHorizJustify())
+
     def generate_output(self, output):
         self.check_tools()
         # Avoid KiCad 5 complaining about fake vias diameter == drill == 0
@@ -1091,10 +1170,14 @@ class PCB_PrintOptions(VariantOptions):
         # Make visible only the layers we need
         # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
         if not self.individual_page_scaling:
+            # Make all the layers in all the pages visible
             vis_layers = LSET()
             for p in self.pages:
                 for la in p.layers:
-                    vis_layers.addLayer(la._id)
+                    if la.use_for_center ^ self.invert_use_for_center:
+                        vis_layers.addLayer(la._id)
+            if self.force_edge_cuts and (self.forced_edge_cuts_use_for_center ^ self.invert_use_for_center):
+                vis_layers.addLayer(edge_id)
             GS.board.SetVisibleLayers(vis_layers)
         # Generate the output, page by page
         pages = []
@@ -1104,8 +1187,16 @@ class PCB_PrintOptions(VariantOptions):
             if self.individual_page_scaling:
                 vis_layers = LSET()
                 for la in p.layers:
-                    vis_layers.addLayer(la._id)
+                    if la.use_for_center ^ self.invert_use_for_center:
+                        vis_layers.addLayer(la._id)
+                if self.force_edge_cuts and (self.forced_edge_cuts_use_for_center ^ self.invert_use_for_center):
+                    vis_layers.addLayer(edge_id)
                 GS.board.SetVisibleLayers(vis_layers)
+            needs_ki7_scale_workaround = p.scaling != 1.0 and self.check_ki7_scale_issue()
+            if needs_ki7_scale_workaround:
+                logger.warning(f"{W_BUG16418}In output `{self._parent.name}` page {n+1}: "
+                               "KiCad 7 bug #16418 prevents correct page view. "
+                               "Add some copper, silk or edge layer")
             # Use a dir for each page, avoid overwriting files, just for debug purposes
             page_str = "%02d" % (n+1)
             temp_dir = os.path.join(temp_dir_base, page_str)
@@ -1128,6 +1219,7 @@ class PCB_PrintOptions(VariantOptions):
             filelist = []
             if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p.layers), None) is None:
                 p.layers.append(edge_layer)
+            user_layer_ids = set(Layer._get_user().values())
             for la in p.layers:
                 id = la._id
                 logger.debug('- Plotting layer {} ({})'.format(la.layer, id))
@@ -1137,12 +1229,18 @@ class PCB_PrintOptions(VariantOptions):
                 # Avoid holes on non-copper layers
                 po.SetDrillMarksType(self.drill_marks if IsCopperLayer(id) else 0)
                 pc.SetLayer(id)
+                if id in user_layer_ids:
+                    self.mirror_text(p, id)
                 pc.OpenPlotfile(la.suffix, PLOT_FORMAT_SVG, p.sheet)
                 pc.PlotLayer()
+                if id in user_layer_ids:
+                    self.mirror_text(p, id)
                 pc.ClosePlot()
                 filelist.append((pc.GetPlotFileName(), la.color))
                 self.plot_extra_cu(id, la, pc, p, filelist)
                 self.plot_realistic_solder_mask(id, temp_dir, filelist[-1][0], filelist[-1][1], p.mirror, p.scaling)
+#                 if needs_ki7_scale_workaround:
+#                     self.kicad7_scale_workaround(id, temp_dir, filelist[-1][0], filelist[-1][1], p.mirror, p.scaling)
             # 2) Plot the frame using an empty layer and 1.0 scale
             po.SetMirror(False)
             if self.plot_sheet_reference:

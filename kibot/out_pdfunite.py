@@ -6,11 +6,9 @@
 import re
 import os
 import glob
-from sys import exit
-from subprocess import check_output, STDOUT, CalledProcessError
 from .gs import GS
 from .error import KiPlotConfigurationError
-from .kiplot import config_output, get_output_dir, run_output
+from .kiplot import config_output, get_output_dir, run_output, run_command
 from .misc import MISSING_TOOL, WRONG_INSTALL, WRONG_ARGUMENTS, INTERNAL_ERROR, W_NOTPDF, MISSING_FILES, W_NOMATCH
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
@@ -70,8 +68,7 @@ class PDFUniteOptions(BaseOptions):
                     config_output(out)
                     files_list = out.get_targets(get_output_dir(out.dir, out, dry=True))
                 else:
-                    logger.error('Unknown output `{}` selected in {}'.format(f.from_output, self._parent))
-                    exit(WRONG_ARGUMENTS)
+                    GS.exit_with_error(f'Unknown output `{f.from_output}` selected in {self._parent}', WRONG_ARGUMENTS)
                 if not no_out_run:
                     for file in files_list:
                         if not os.path.isfile(file):
@@ -81,8 +78,7 @@ class PDFUniteOptions(BaseOptions):
                                 run_output(out)
                             if not os.path.isfile(file):
                                 # Still missing, something is wrong
-                                logger.error('Unable to generate `{}` from {}'.format(file, out))
-                                exit(INTERNAL_ERROR)
+                                GS.exit_with_error('Unable to generate `{file}` from {out}', INTERNAL_ERROR)
             else:
                 out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                 source = f.expand_filename_both(f.source, make_safe=False)
@@ -109,17 +105,10 @@ class PDFUniteOptions(BaseOptions):
 
     def run_external(self, files, output):
         cmd = ['pdfunite']+files+[output]
-        logger.debug('Running: {}'.format(cmd))
         try:
-            check_output(cmd, stderr=STDOUT)
+            run_command(cmd, err_msg='Failed to invoke pdfunite command, error {ret}', err_lvl=WRONG_INSTALL)
         except FileNotFoundError:
-            logger.error('Missing `pdfunite` command, install it (poppler-utils)')
-            exit(MISSING_TOOL)
-        except CalledProcessError as e:
-            logger.error('Failed to invoke pdfunite command, error {}'.format(e.returncode))
-            if e.output:
-                logger.error('Output from command: '+e.output.decode())
-            exit(WRONG_INSTALL)
+            GS.exit_with_error('Missing `pdfunite` command, install it (poppler-utils)', MISSING_TOOL)
 
     def run(self, output):
         # Output file name
@@ -132,8 +121,7 @@ class PDFUniteOptions(BaseOptions):
                 if sig != b'%PDF':
                     logger.warning(W_NOTPDF+'Joining a non PDF file `{}`, will most probably fail'.format(fn))
         if len(files) < 2:
-            logger.error('At least two files must be joined ({})'.format(files))
-            exit(MISSING_FILES)
+            GS.exit_with_error(f'At least two files must be joined ({files})', MISSING_FILES)
         logger.debug('Generating `{}` PDF'.format(output))
         if os.path.isfile(output):
             os.remove(output)

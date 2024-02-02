@@ -29,7 +29,7 @@ from ..gs import GS
 from .. import log
 from ..misc import (W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH, W_3DRESVER, W_LIBTVERSION,
                     W_LIBTUNK)
-from .sexpdata import load, SExpData
+from .sexpdata import load, SExpData, Symbol, dumps, Sep
 from .sexp_helpers import _check_is_symbol_list, _check_integer, _check_relaxed
 
 # Check python version to determine which version of ConfirParser to import
@@ -43,7 +43,6 @@ logger = log.get_logger()
 SYM_LIB_TABLE = 'sym-lib-table'
 FP_LIB_TABLE = 'fp-lib-table'
 KICAD_COMMON = 'kicad_common'
-MAXDEPTH = 20
 SUP_VERSION = 7
 reported = set()
 
@@ -73,10 +72,10 @@ def parse_len_str(val):
         c = int(val[:pos])
     except ValueError:
         c = None
-        logger.error('Malformed 3D alias entry: '+val)
+        logger.non_critical_error('Malformed 3D alias entry: '+val)
     value = val[pos+1:]
     if c is not None and c != len(value):
-        logger.error('3D alias entry error, expected len {}, but found {}'.format(c, len(value)))
+        logger.non_critical_error(f'3D alias entry error, expected len {c}, but found {len(value)}')
     return value
 
 
@@ -88,10 +87,10 @@ def expand_env(val, env, extra_env, used_extra=None):
     success = replaced = True
     depth = 0
     ori_val = val
-    while success and replaced and depth < MAXDEPTH:
+    while success and replaced and depth < GS.MAXDEPTH:
         replaced = False
         depth += 1
-        if depth == MAXDEPTH:
+        if depth == GS.MAXDEPTH:
             logger.warning(W_MAXDEPTH+'Too much nested variables replacements, possible loop ({})'.format(ori_val))
             success = False
         for var in re.findall(r'\$\{(\S+?)\}', val):
@@ -109,8 +108,9 @@ def expand_env(val, env, extra_env, used_extra=None):
                 replaced = True
             else:
                 success = False
-                if var not in reported:
-                    logger.error('Unable to expand `{}` in `{}`'.format(var, val))
+                # Note: We can't expand NET_NAME(n)
+                if var not in reported and not var.startswith('NET_NAME('):
+                    logger.non_critical_error(f'Unable to expand `{var}` in `{val}`')
                     reported.add(var)
     return val
 
@@ -124,6 +124,7 @@ class LibAlias(object):
         self.uri = None
         self.options = None
         self.descr = None
+        self.type = None
 
     @staticmethod
     def parse(items, env, extra_env):
@@ -142,6 +143,7 @@ class LibAlias(object):
                 s.descr = _check_relaxed(i, 1, i_type)
             else:
                 logger.warning(W_LIBTUNK+'Unknown lib table attribute `{}`'.format(i))
+        s.legacy = s.type is not None and s.type != 'Legacy'
         return s
 
     def __str__(self):
@@ -545,6 +547,29 @@ class KiConf(object):
             KiConf.fp_aliases = KiConf.load_all_lib_aliases(FP_LIB_TABLE, KiConf.footprint_dir, '*.pretty')
         return KiConf.fp_aliases
 
+    def save_fp_lib_aliases(fname, aliases, is_fp=True):
+        logger.debug(f'Writing lib table `{fname}`')
+        table = [Symbol('fp_lib_table' if is_fp else 'sym_lib_table'), Sep()]
+        for name in sorted(aliases.keys(), key=str.casefold):
+            alias = aliases[name]
+            cnt = [[Symbol('name'), alias.name],
+                   [Symbol('type'), alias.type],
+                   [Symbol('uri'), alias.uri]]
+            if alias.options is not None:
+                cnt.append([Symbol('options'), alias.options])
+            if alias.descr is not None:
+                cnt.append([Symbol('descr'), alias.descr])
+            table.append([Symbol('lib')] + cnt)
+            table.append(Sep())
+        with open(fname, 'wt') as f:
+            f.write(dumps(table))
+            f.write('\n')
+
+    def fp_nick_to_path(nick):
+        fp_aliases = KiConf.get_fp_lib_aliases()
+        alias = fp_aliases.get(str(nick))  # UTF8 -> str
+        return alias
+
     def load_3d_aliases():
         if not KiConf.config_dir:
             return
@@ -560,7 +585,7 @@ class KiConf(object):
                 logger.warning(W_3DRESVER, 'Unsupported 3D resolver version ({})'.format(head))
             for r in reader:
                 if len(r) != 3:
-                    logger.error("3D resolver doesn't contain three values ({})".format(r))
+                    logger.non_critical_error(f"3D resolver doesn't contain three values ({r})")
                     continue
                 name = parse_len_str(r[0])
                 value = parse_len_str(r[1])
@@ -579,11 +604,10 @@ class KiConf(object):
                     dest = os.path.join(dest_dir, key+'.kicad_wks')
                     logger.debug('Copying {} -> {}'.format(fname, dest))
                     copy2(fname, dest)
-                    data[key]['page_layout_descr_file'] = dest
+                    data[key]['page_layout_descr_file'] = key+'.kicad_wks'
                     return dest
                 else:
-                    logger.error('Missing page layout file: '+fname)
-                    exit(MISSING_WKS)
+                    GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
         return None
 
     def fix_page_layout_k6(project, dry):
@@ -601,10 +625,10 @@ class KiConf(object):
         else:
             aux = data.get('schematic', None)
             if aux:
-                layouts[0] = KiConf.expand_env(aux.get('page_layout_descr_file', None))
+                layouts[0] = KiConf.expand_env(aux.get('page_layout_descr_file', None), ref_dir=dest_dir)
             aux = data.get('pcbnew', None)
             if aux:
-                layouts[1] = KiConf.expand_env(aux.get('page_layout_descr_file', None))
+                layouts[1] = KiConf.expand_env(aux.get('page_layout_descr_file', None), ref_dir=dest_dir)
         return layouts
 
     def fix_page_layout_k5(project, dry):
@@ -630,13 +654,13 @@ class KiConf(object):
                             layouts[is_pcb_new] = dest
                         else:
                             layouts[is_pcb_new] = fname
+                        dest = str(order)+'.kicad_wks'
                         order = order+1
                     else:
-                        logger.error('Missing page layout file: '+fname)
-                        exit(MISSING_WKS)
+                        GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
                 else:
                     dest = ''
-                lns[c] = 'PageLayoutDescrFile='+dest+'\n'
+                lns[c] = f'PageLayoutDescrFile={dest}\n'
         if not dry:
             with open(project, 'wt') as f:
                 lns = f.writelines(lns)

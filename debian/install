@@ -5,3 +5,5 @@ kibot/resources/kicad_layouts/ /usr/share/kibot/
 kibot/resources/pcbdraw/ /usr/share/kibot/
 kibot/resources/report_templates/ /usr/share/kibot/
 kibot/resources/parsers/ /usr/share/kibot/
+kibot/resources/kiri/ /usr/share/kibot/
+kibot/resources/kicanvas/ /usr/share/kibot/

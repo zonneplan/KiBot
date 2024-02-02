@@ -56,15 +56,16 @@ class MdRenderer(BaseRenderer):
     def paragraph(self, text):
         return text + '\n\n'
 
-    def list(self, text, ordered=True):
-        r = ''
+    def list(self, text, ordered=True, level=None, start=None):
+        r = '\n'
+        indent = ' ' * ((level-1) * 2)
         while text:
             text, type, t = MdRenderer.get_block(text)
             if type == 'l':
-                r += (ordered and ('# ' + t) or ('* ' + t)) + '\n'
+                r += indent + (ordered and ('# ' + t) or ('* ' + t)) + '\n'
         return r
 
-    def list_item(self, text):
+    def list_item(self, text, level=None):
         return 'l' + str(len(text)) + ':' + text
 
     def block_text(self, text):
@@ -98,6 +99,9 @@ class MdRenderer(BaseRenderer):
         return '<' + link + '>'
 
     def link(self, link, title, text, image=False):
+        if text is None:
+            text = title
+            title = None
         r = (image and '!' or '') + '[' + text + '](' + link + ')'
         if title:
             r += '"' + title + '"'

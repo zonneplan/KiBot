@@ -14,6 +14,7 @@ import os
 import sys
 import traceback
 import logging
+from .misc import WARN_AS_ERROR
 no_colorama = False
 try:
     from colorama import init as colorama_init, Fore, Back, Style
@@ -30,6 +31,7 @@ filters = []
 root_logger = None
 visual_level = None
 debug_level = 0
+stop_on_warnings = False
 
 
 def get_logger(name=None, indent=None):
@@ -106,6 +108,12 @@ class MyLogger(logging.Logger):
             super().warning(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
         else:
             super().warning(buf, **kwargs)
+        self.check_warn_stop()
+
+    def check_warn_stop(self):
+        if stop_on_warnings:
+            self.error('Warnings treated as errors')
+            sys.exit(WARN_AS_ERROR)
 
     def log(self, level, msg, *args, **kwargs):
         if level < self.getEffectiveLevel():
@@ -113,7 +121,7 @@ class MyLogger(logging.Logger):
         if isinstance(msg, tuple):
             msg = ' '.join(map(str, msg))
         if sys.version_info >= (3, 8):
-            super(self.__class__, self).debug(msg, stacklevel=2, *args, **kwargs)  # pragma: no cover (Py38)
+            super(self.__class__, self).debug(msg, *args, **kwargs, stacklevel=2)  # pragma: no cover (Py38)
         else:
             super(self.__class__, self).debug(msg, *args, **kwargs)
 
@@ -132,7 +140,7 @@ class MyLogger(logging.Logger):
         if isinstance(msg, tuple):
             msg = ' '.join(map(str, msg))
         if sys.version_info >= (3, 8):
-            super(self.__class__, self).debug(msg, stacklevel=2, *args, **kwargs)  # pragma: no cover (Py38)
+            super(self.__class__, self).debug(msg, *args, **kwargs, stacklevel=2)  # pragma: no cover (Py38)
         else:
             super(self.__class__, self).debug(msg, *args, **kwargs)
 
@@ -142,6 +150,10 @@ class MyLogger(logging.Logger):
             if MyLogger.n_filtered:
                 filt_msg = ', {} filtered'.format(MyLogger.n_filtered)
             self.info('Found {} unique warning/s ({} total{})'.format(MyLogger.warn_cnt, MyLogger.warn_tcnt, filt_msg))
+
+    def non_critical_error(self, msg):
+        self.error(msg)
+        self.check_warn_stop()
 
     def findCaller(self, stack_info=False, stacklevel=1):
         f = sys._getframe(1)

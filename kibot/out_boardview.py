@@ -58,8 +58,8 @@ def convert(pcb, brd):
         pcb.GetBoardPolygonOutlines(outlines)
         outline = outlines.Outline(0)
         outline_points = [outline.GetPoint(n) for n in range(outline.GetPointCount())]
-    outline_maxx = max(map(lambda p: p.x, outline_points))
-    outline_maxy = max(map(lambda p: p.y, outline_points))
+    outline_maxx = max((p.x for p in outline_points))
+    outline_maxy = max((p.y for p in outline_points))
 
     brd.write("0\n")  # unknown
 
