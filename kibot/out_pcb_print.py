@@ -968,7 +968,7 @@ class PCB_PrintOptions(VariantOptions):
                 logger.debug(' - Found <defs>')
                 for df in child:
                     if df.get('id') not in ['cut-off', 'pads-mask-silkscreen']:
-                        child.remove(df)
+                        child.remove(df)  # noqa: B038
             elif child.tag.endswith('}g') and child.get('id') == "boardContainer":
                 # Keep the solder mask
                 g = child
@@ -979,7 +979,7 @@ class PCB_PrintOptions(VariantOptions):
                     g_mask.set('mask', "url(#pads-mask-silkscreen)")
                     for gf in g_mask:
                         if gf.get('id') != 'substrate-board':
-                            g_mask.remove(gf)
+                            g_mask.remove(gf)  # noqa: B038
                         else:
                             # Apply our color to the solder mask
                             alpha = 1.0
