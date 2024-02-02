@@ -5,7 +5,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 
-## [1.6.4] - UNRELEASED
+## [1.6.4] - 2024-02-02
 ### Added
 - New outputs:
   - KiRi: interactive diff
@@ -55,8 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       the same footprint but different orientation in the reel.
 - 3D outputs:
   - `download_lcsc` option to disable LCSC 3D model download (See #415)
-  - Problems when creating a colored resistor, but we didn't have a cache yet
-    (i.e. no model downloaded) #553
 - Preflights:
   - Individual directory for the ERC and DRC reports (#562)
 - BoM:
@@ -169,6 +167,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems scanning dirs without enough privileges
 - PCB/SCH Variant
   - Makefile/compress targets (missing project)
+- 3D outputs:
+  - Problems when creating a colored resistor, but we didn't have a cache yet
+    (i.e. no model downloaded) #553
 
 ## [1.6.3] - 2023-06-26
 ### Added

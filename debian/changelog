@@ -1,8 +1,136 @@
-kibot (1.6.4-1) UNRELEASED; urgency=medium
+kibot (1.6.4-1) stable; urgency=medium
 
-  * Next release
+  * Added KiRi output (interactive diff)
+  * Added KiCanvas output (on-line schematic/PCB browser)
+  * Now operations that copies the project now also copies the PRL and the DRU
+  * Now files named *.kibot.yml are also detected as configuration files
+  * Added mechanism to specify all inner layers (inners) and all external
+    copper layers (outers)
+  * New command line options:
+    - `--help-list-offsets` to list footprint offsets (JLCPCB)
+    - `--help-list-rotations` to list footprint rotations (JLCPCB)
+    - `--stop-on-warnings` (`-W`) to stop on warnings
+    - `--defs-from-env` allows using environment vars for substitution
+  * New global options:
+    - `remove_solder_mask_for_dnp` similar to `remove_solder_paste_for_dnp` but
+       applied to the solder mask apertures.
+    - `layer_defaults` to specify the default suffix and description.
+    - `include_components_from_pcb` to disable the new behavior that includes
+      components from the PCB in the filter/variants processing
+    - `restore_project` now also restores the PRL
+  * Added support for *unit names* in KiCad 7 schematics
+  * New internal templates 3DRender_top, 3DRender_top_straight, 3DRender_bottom
+    and 3DRender_bottom_straight: to generate simple and quick 3D renders.
+  * New internal templates options:
+    - _KIBOT_POS_DNF_FILTER option to JLCPCB. It now excludes components added
+      by KiKit to create panels and can be customized.
+    - _KIBOT_PLOT_FOOTPRINT_REFS and _KIBOT_PLOT_FOOTPRINT_VALUES to
+      manufacturer templates.
+    - _KIBOT_COMPRESS_MOVE to move gerber and drill files to the compressed
+      output, enabled by default.
+  * New `_rot_footprint_jlcpcb` internal filter to fix the JLCPCB bottom
+    rotations.
+  * New options for the `rot_footprint` filters:
+    - `mirror_bottom`: used to undo the KiCad mirroring of the bottom.
+    - `rot_fields`: list of fields to indicate arbitrary rotations.
+    - `offset_fields`: list of fields to indicate arbitrary offsets.
+    - `offsets`: a list of pairs containing regex and offset ("x, y")
+    - `bennymeg_mode`: used to provide compatibility with the
+      bennymeg/JLC-Plugin-for-KiCad tool.
+    - `rotations_and_offsets`: a more flexible mechanism to select
+      rotations and offsets. So you can have two different rotations
+      applied to the same footprint, i.e. different components with
+      the same footprint but different orientation in the reel.
+  * Added `download_lcsc` option to disable LCSC 3D model download
+  * Now the preflights has individual directory for the ERC and DRC reports
+  * Added support for ${field} expansion in the BoM.
+  * LCSC links to the BoM
+  * Added `parse_value` BoM option to disable the *Value* parser
+  * New iBoM option `forced_name` to force the name displayed at the top left
+    corner
+  * New on the Blender export:
+    - Support for pcb2blender v2.6/2.7 (Blender 3.5.1/3.6)
+    - `auto_camera_z_axis_factor`: used to control the default camera distance
+    - Options to create simple animations:
+      - PoV `steps`: to create rotation angle increments
+      - `default_file_id`: can be used to create numbered PNGs
+      - `fixed_auto_camera`: to avoid adjusting the automatic camera on each
+        frame
+    - Camera option to set the clip start
+    - Traceback dump when Blender output contains it
+    - Subdirectory for each output generated
+    - Option to disable the denoiser
+  * Added support to expand text variables and KiBot %X markers in text objects
+    of the KiKit outputs
+  * Added to the PCB Print:
+    - Support for CURRENT_DATE text variable
+    - Options to mirror the text in the user layers when creating a mirrored
+      page
+    - Options to select which layers are used for centering purposes
+  * Added basic support for regular list items to the populate output.
+  * Added experimental support for gerber position files
+  * Added a mode to export the whole project (SCH, PCB, symbols, footprints,
+    3D models and project files) to the Copy Files output.
+  * Diff output:
+    - Added option to un/fill zones before doing the comparison
+    - Added a new mode where we can control the colors used for added/removed
+  * Now components only in the PCB are now processed
+  * Footprints in the QR Lib output are flagged with exclude from BoM and Pos,
+    also with no court yard requirements, symbol are excluded from simulation
+  * Elecrow, FusionPCB, JLCPCB, PCBWay and P-Ban templates now moves the files
+    to the compressed output by default.
+  * Quick Start now generates configs only for projects, not separated files.
+    This avoids problems for sub-sheets in separated dirs.
+  * When *check_zone_fills* is enabled now we do a refill for the boards in
+    the diff output.
+  * Fixed problems with deep nested and recycled schematic sheets
+  * Fixed problems saving deep nested schematic sheets
+  * Fixed makefile/compress targets/dependencies for schematics
+  * Fixed rotated polygons and text used in the worksheet
+  * Fixed --log/-L didn't enabled full debug for all messages
+  * Fixed problems when trying to aggregate the datasheet field in the BoM
+  * Fixed the kibot-check to show 7.x as supported
+  * Fixed in the Blender export:
+    - Rotations are now applied to the current view, not just the top view
+    - Board/components not visible for small boards
+    - Light type names (extra space)
+    - Problems when no point of view was defined
+  * Fixed in update_xml with check_pcb_parity enabled:
+    - Avoid errors for KiCad 6 using "Exclude from BoM" components.
+      This limitation isn't found on KiCad 7.
+    - *exclude_from_bom* mismatch on KiCad 7
+    - *Sheetfile* mismatch on KiCad 7 when testing from different directory
+    - Honor the 'Not in schematic' (board_only) flag when doing a parity check
+  * Fixed problems when connection timed-out when downloading a dependency
+  * Fixed sub PCB separation using annotation method for some edeges and KiCad
+    versions
+  * Fixed problems when using NET_NAME(n) for a value
+  * Fixed JLCPCB rotations for bottom components (JLCPCB changes it from time
+    to time)
+  * Fixed in the Copy Files:
+    - Warnings when using both, the STEP and WRL model, of the same component
+    - Fail to detect 3D models subdirs when running alone
+  * Fixed in the QR Lib:
+    - When used from the preflight the name of the file changed to the name of
+      a temporal, generating problems with the plot outputs, like pcb_print
+    - Project options not preserved, i.e. set_text_variables failing
+    - Bottom QRs should be mirrored in the Y axis
+  * Fixed in the Diff:
+    - `current`: didn't apply global variants
+    - `current`: didn't honor KiCad native DNP flags, they need a filter
+    - Problems when trying to use an already existent worktree
+    - Avoid using unexpected branches for worktrees
+  * Fixed in PCB Print:
+    - Issues when forcing the board edge and using scaling
+    - Text not searchable when using newer rsvg-convert tools
+  * Fixed in Quick Start:
+    - Problems with KiCad 6+ files using KiCad 5 names for layers
+    - Problems scanning dirs without enough privileges
+  * Fixed makefile/compress targets (missing project) for PCB/SCH Variant
+  * Fixed problems when creating a colored resistor, but we didn't have a cache
+    yet (i.e. no model downloaded) for all 3D outputs
 
- -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Wed, 28 Jun 2023 06:35:51 -0300
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Fri, 2 Feb 2024 06:35:51 -0300
 
 kibot (1.6.3-1) stable; urgency=medium
 
