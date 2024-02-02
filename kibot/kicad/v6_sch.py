@@ -788,7 +788,6 @@ class LibComponent(object):
             if parent is None:
                 logger.warning(W_NOLIB + "Component `{}` with more than one `:`".format(comp.name))
         comp.units = []
-        comp.unit_name = ''
         comp.pins = []
         comp.all_pins = []
         comp.unit_count = 1
