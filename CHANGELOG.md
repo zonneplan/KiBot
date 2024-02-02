@@ -4,6 +4,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+
 ## [1.6.4] - 2024-02-02
 ### Added
 - New outputs:
@@ -54,8 +55,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       the same footprint but different orientation in the reel.
 - 3D outputs:
   - `download_lcsc` option to disable LCSC 3D model download (See #415)
-  - Problems when creating a colored resistor, but we didn't have a cache yet
-    (i.e. no model downloaded) #553
 - Preflights:
   - Individual directory for the ERC and DRC reports (#562)
 - BoM:
@@ -168,6 +167,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems scanning dirs without enough privileges
 - PCB/SCH Variant
   - Makefile/compress targets (missing project)
+- 3D outputs:
+  - Problems when creating a colored resistor, but we didn't have a cache yet
+    (i.e. no model downloaded) #553
 
 ## [1.6.3] - 2023-06-26
 ### Added
@@ -277,8 +279,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for time stamp in the date (i.e. 2023-04-02T09:22-03:00)
   - Support to pass variables to the 3D models download URL (#414)
   - Support for netclass flags (#418)
-  - Export KICADn_* environment variables for the older versions
-    So you can use KICAD6_* variables on KiCad 7.
+  - Export *KICADn_* environment variables for the older versions
+    So you can use *KICAD6_* variables on KiCad 7.
 - Expansion patterns:
   - **%M** directory where the pcb/sch resides. Only the last component
     i.e. /a/b/c/name.kicad_pcb -> c  (#421)
@@ -501,7 +503,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Gerber: Extension used for JLCPCB inner layers. (#329)
 - BoM:
   - The length of the CSV separator is now validated.
-  - Using \t, \n, \r and \\ is now supported. (See #334)
+  - Using the escaped t, n, r and \ is now supported. (See #334)
   - Digi-key link in the HTML output.
 - KiBoM: User defined fields wasn't available as column names. (#344)
 - Imports:
