@@ -279,6 +279,9 @@ class Navigate_ResultsOptions(BaseOptions):
         cmd = [self.convert_command, file,
                # Size for the big icons (width)
                '-resize', str(BIG_ICON)+'x']
+        if ext == 'ps':
+            # ImageMagick 6.9.11 (and also the one in Debian 11) rotates the PS
+            cmd.extend(['-rotate', '90'])
         if not no_icon:
             cmd.extend([  # Add the file type icon
                         icon,
