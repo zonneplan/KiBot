@@ -13,7 +13,7 @@ documentation files for your KiCad projects easily, repeatable, and most
 of all, scriptably. This means you can use a Makefile to export your
 KiCad PCBs just as needed, or do it in a CI/CD environment.
 
-For more information consult the [documentation](https://kibot.readthedocs.io/en/stable/) (hosted by Read the Docs)
+For more information consult the [documentation](https://kibot.readthedocs.io/en/master/) (hosted by Read the Docs)
 
 If you are looking for the last features and fixes visit the [dev branch](https://github.com/INTI-CMNB/KiBot/tree/dev)
 
