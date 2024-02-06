@@ -14,10 +14,12 @@ KiBot (formerly KiPlot)
 - If you are looking for the GitHub Actions documentation, and you already know how
   to use KiBot, or want a quick start, read: :ref:`usage-of-github-actions`
 
-**New on v1.6.3**
+**New on v1.6.4**
 
-- Parametrizable imports
-- ``value_split`` and ``spec_to_field`` filters
+- KiRi (interactive diff) and KiCanvas (on-line schematic/PCB browser) new outputs
+- New Internal templates: 3DRender_top, 3DRender_top_straight, 3DRender_bottom and
+  3DRender_bottom_straight: to generate simple and quick 3D renders.
+- Various fixes and new command line options
 
 
 .. toctree::
