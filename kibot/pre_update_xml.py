@@ -78,7 +78,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
         excluded = set()
         for m in GS.get_modules():
             ref = m.GetReference()
-            pcb_props = m.GetProperties()
+            pcb_props = GS.get_fields(m)
             found_comps.add(ref)
             if ref not in comps:
                 if GS.ki6_only and pcb_props.get('exclude_from_bom') is not None:

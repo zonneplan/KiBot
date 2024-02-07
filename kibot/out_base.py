@@ -869,22 +869,16 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             comp = comps_hash.get(ref, None)
             if comp is not None:
-                properties = {f.name: f.value for f in comp.fields}
                 old_value = m.GetValue()
-                m.SetValue(properties['Value'])
-                if GS.ki6:
-                    old_properties = m.GetProperties()
-                    m.SetProperties(properties)
-                    if has_GetFPIDAsString:
-                        # Introduced in 6.0.6
-                        old_fp = m.GetFPIDAsString()
-                        m.SetFPIDAsString(properties['Footprint'])
-                        data = (old_value, old_properties, old_fp)
-                    else:
-                        data = (old_value, old_properties)
-                else:
-                    data = old_value
-                self.sch_fields_to_pcb_bkp[ref] = data
+                old_fields = GS.get_fields(m)
+                # Introduced in 6.0.6
+                old_fp = m.GetFPIDAsString() if has_GetFPIDAsString else None
+                fields = {f.name: f.value for f in comp.fields}
+                GS.set_fields(m, fields)
+                m.SetValue(fields['Value'])
+                if has_GetFPIDAsString:
+                    m.SetFPIDAsString(fields['Footprint'])
+                self.sch_fields_to_pcb_bkp[ref] = (old_value, old_fields, old_fp)
         self._has_GetFPIDAsString = has_GetFPIDAsString
 
     def restore_sch_fields_to_pcb(self, board):
@@ -894,13 +888,10 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             data = self.sch_fields_to_pcb_bkp.get(ref, None)
             if data is not None:
-                if GS.ki6:
-                    m.SetValue(data[0])
-                    m.SetProperties(data[1])
-                    if has_GetFPIDAsString:
-                        m.SetFPIDAsString(data[2])
-                else:
-                    m.SetValue(data)
+                m.SetValue(data[0])
+                if has_GetFPIDAsString:
+                    m.SetFPIDAsString(data[2])
+                GS.set_fields(m, data[1])
 
     def save_tmp_board(self, dir=None):
         """ Save the PCB to a temporal file.

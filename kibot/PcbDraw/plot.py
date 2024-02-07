@@ -1109,7 +1109,7 @@ class PcbPlotter():
             value = footprint.GetValue().strip()
             if not LEGACY_KICAD:
                 # Look for a tolerance in the properties
-                prop = footprint.GetProperties()
+                prop = GS.get_fields(footprint)
                 tol = next(filter(lambda x: x, map(prop.get, GS.global_field_tolerance)), None)
                 if tol:
                     value = value+' '+tol.strip()
