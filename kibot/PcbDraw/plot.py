@@ -17,7 +17,7 @@ from typing import Callable, Dict, List, Optional, Tuple, TypeVar, Union, Any
 from . import np
 from .unit import read_resistance
 from lxml import etree, objectify # type: ignore
-from .pcbnew_transition import KICAD_VERSION, isV6, isV7, pcbnew # type: ignore
+from .pcbnew_transition import isV6, isV7, isV8, pcbnew # type: ignore
 from ..gs import GS
 
 T = TypeVar("T")
@@ -31,7 +31,7 @@ PKG_BASE = os.path.dirname(__file__)
 
 etree.register_namespace("xlink", "http://www.w3.org/1999/xlink")
 
-LEGACY_KICAD = not isV6() and not isV7()
+LEGACY_KICAD = not isV6() and not isV7() and not isV8()
 
 default_style = {
     "copper": "#417e5a",
@@ -103,7 +103,7 @@ class SvgPathItem:
         dx = p1[0] - p2[0]
         dy = p1[1] - p2[1]
         pseudo_distance = dx*dx + dy*dy
-        if isV7():
+        if isV7() or isV8():
             return pseudo_distance < 0.01 ** 2
         return pseudo_distance < 100 ** 2
 
@@ -122,6 +122,9 @@ class SvgPathItem:
         if self.type == "A":
             assert(self.args is not None)
             self.args[4] = 1 if self.args[4] < 0.5 else 0
+
+    def __str__(self) -> str:
+        return f"{self.start} - {self.end} {self.type}"
 
 def matrix(data: List[List[Numeric]]) -> Matrix:
     return np.array(data, dtype=np.float32)
@@ -358,7 +361,9 @@ def extract_svg_content(root: etree.Element) -> List[etree.Element]:
             el.tag = el.tag.split('}', 1)[1]
     return [ x for x in root if x.tag and x.tag not in ["title", "desc"]]
 
-def strip_style_svg(root: etree.Element, keys: List[str], forbidden_colors: List[str]) -> bool:
+def strip_style_svg(root: etree.Element, keys: List[str], forbidden_colors: List[str], new_val: str) -> bool:
+    """ Remove elements with fill and/or stoke using any *forbidden_colors*
+        Change attributes listed in keys """
     elements_to_remove = []
     for el in root.getiterator():
         if "style" in el.attrib:
@@ -375,8 +380,14 @@ def strip_style_svg(root: etree.Element, keys: List[str], forbidden_colors: List
             stroke = styles.get("stroke", "").lower()
             if fill in forbidden_colors or stroke in forbidden_colors:
                 elements_to_remove.append(el)
+            new_styles = {}
+            for key, val in styles.items():
+                if key not in keys or val == 'none':
+                    new_styles[key] = val
+                else:
+                    new_styles[key] = new_val
             el.attrib["style"] = ";" \
-                .join([f"{key}: {val}" for key, val in styles.items() if key not in keys]) \
+                .join([f"{key}: {val}" for key, val in new_styles.items()]) \
                 .replace("  ", " ") \
                 .strip()
     for el in elements_to_remove:
@@ -662,8 +673,9 @@ class PlotSubstrate(PlotInterface):
         self._plotter.append_board_element(self._container)
 
     def _process_layer(self,name: str, source_filename: str) -> None:
+        style = self._plotter.get_style(name)
         layer = etree.SubElement(self._container, "g", id="substrate-" + name,
-            style="fill:{0}; stroke:{0};".format(self._plotter.get_style(name)))
+            style="fill:{0}; stroke:{0};".format(style))
         if name == "pads":
             layer.attrib["mask"] = "url(#pads-mask)"
         if name == "silk":
@@ -672,15 +684,16 @@ class PlotSubstrate(PlotInterface):
             # Forbidden colors = workaround - KiCAD plots vias white
             # See https://gitlab.com/kicad/code/kicad/-/issues/10491
             if not strip_style_svg(element, keys=["fill", "stroke"],
-                                   forbidden_colors=["#ffffff"]):
+                                   forbidden_colors=["#ffffff"], new_val=style):
                 layer.append(element)
 
     def _process_outline(self, name: str, source_filename: str) -> None:
         if self.outline_width == 0:
             return
+        style = self._plotter.get_style(name)
         layer = etree.SubElement(self._container, "g", id="substrate-" + name,
             style="fill:{0}; stroke:{0}; stroke-width: {1}".format(
-                self._plotter.get_style(name),
+                style,
                 self._plotter.ki2svg(self.outline_width)))
         if name == "pads":
             layer.attrib["mask"] = "url(#pads-mask)"
@@ -690,7 +703,7 @@ class PlotSubstrate(PlotInterface):
             # Forbidden colors = workaround - KiCAD plots vias white
             # See https://gitlab.com/kicad/code/kicad/-/issues/10491
             if not strip_style_svg(element, keys=["fill", "stroke", "stroke-width"],
-                                   forbidden_colors=["#ffffff"]):
+                                   forbidden_colors=["#ffffff"], new_val=style):
                 layer.append(element)
         for hole in collect_holes(self._plotter.board):
             position = [self._plotter.ki2svg(coord) for coord in hole.position]
@@ -708,9 +721,9 @@ class PlotSubstrate(PlotInterface):
             get_board_polygon(
                 extract_svg_content(
                     read_svg_unique(source_filename, self._plotter.unique_prefix()))))
-
+        style = self._plotter.get_style(name)
         layer = etree.SubElement(self._container, "g", id="substrate-"+name,
-            style="fill:{0}; stroke:{0};".format(self._plotter.get_style(name)))
+            style="fill:{0}; stroke:{0};".format(style))
         layer.append(
             get_board_polygon(
                 extract_svg_content(
@@ -719,7 +732,7 @@ class PlotSubstrate(PlotInterface):
             # Forbidden colors = workaround - KiCAD plots vias white
             # See https://gitlab.com/kicad/code/kicad/-/issues/10491
             if not strip_style_svg(element, keys=["fill", "stroke"],
-                                  forbidden_colors=["#ffffff"]):
+                                  forbidden_colors=["#ffffff"], new_val=style):
                 layer.append(element)
 
     def _process_mask(self, name: str, source_filename: str) -> None:
@@ -980,13 +993,14 @@ class PlotVCuts(PlotInterface):
         ])
 
     def _process_vcuts(self, name: str, source_filename: str) -> None:
+        style = self._plotter.get_style("vcut")
         layer = etree.Element("g", id="substrate-vcuts",
-            style="fill:{0}; stroke:{0};".format(self._plotter.get_style("vcut")))
+            style="fill:{0}; stroke:{0};".format(style))
         for element in extract_svg_content(read_svg_unique(source_filename, self._plotter.unique_prefix())):
             # Forbidden colors = workaround - KiCAD plots vias white
             # See https://gitlab.com/kicad/code/kicad/-/issues/10491
             if not strip_style_svg(element, keys=["fill", "stroke"],
-                                   forbidden_colors=["#ffffff"]):
+                                   forbidden_colors=["#ffffff"], new_val=style):
                 layer.append(element)
         self._plotter.append_board_element(layer)
 
@@ -1002,11 +1016,12 @@ class PlotPaste(PlotInterface):
         self._plotter.execute_plot_plan(plan)
 
     def _process_paste(self, name: str, source_filename: str) -> None:
+        style = self._plotter.get_style("paste")
         layer = etree.Element("g", id="substrate-paste",
-            style="fill:{0}; stroke:{0};".format(self._plotter.get_style("paste")))
+            style="fill:{0}; stroke:{0};".format(style))
         for element in extract_svg_content(read_svg_unique(source_filename, self._plotter.unique_prefix())):
             if not strip_style_svg(element, keys=["fill", "stroke"],
-                                   forbidden_colors=["#ffffff"]):
+                                   forbidden_colors=["#ffffff"], new_val=style):
                 layer.append(element)
         self._plotter.append_board_element(layer)
 
@@ -1047,7 +1062,7 @@ class PcbPlotter():
 
         self.yield_warning: Callable[[str, str], None] = lambda tag, msg: None # Handle warnings
 
-        if isV7():
+        if isV7() or isV8():
             self.ki2svg = self._ki2svg_v7
             self.svg2ki = self._svg2ki_v7
         elif isV6():
@@ -1243,7 +1258,7 @@ class PcbPlotter():
             popt.SetTextMode(pcbnew.PLOT_TEXT_MODE_STROKE)
             if isV6():
                 popt.SetSvgPrecision(self.svg_precision, False)
-            elif isV7():
+            elif isV7() or isV8():
                 popt.SetSvgPrecision(self.svg_precision)
             for action in to_plot:
                 if len(action.layers) == 0:
@@ -1304,7 +1319,19 @@ class PcbPlotter():
 
             from lxml.etree import tostring as serializeXml # type: ignore
             from . import svgpathtools # type: ignore
-            paths = svgpathtools.document.flattened_paths(xmlParse(serializeXml(svg)))
+            tree = xmlParse(serializeXml(svg))
+
+            # As we cannot interpret mask cropping, we cannot simply take all paths
+            # from source document (as e.g., silkscreen outside PCB) would enlarge
+            # the canvas. Instead, we take bounding box of the substrate and
+            # components separately
+            paths = []
+            components = tree.find(".//*[@id='componentContainer']")
+            if components is not None:
+                paths += svgpathtools.document.flattened_paths(components)
+            substrate = tree.find(".//*[@id='cut-off']")
+            if substrate is not None:
+                paths += svgpathtools.document.flattened_paths(substrate)
 
             if len(paths) == 0:
                 return

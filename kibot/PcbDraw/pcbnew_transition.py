@@ -75,6 +75,12 @@ def patchRotate(item):
             newSetHatchOrientation = lambda self, angle: originalSetHatchOrientation(self, angle.AsTenthsOfADegree())
             setattr(newSetHatchOrientation, "patched", True)
             item.SetHatchOrientation = newSetHatchOrientation
+    if hasattr(item, "SetArcAngleAndEnd"):
+        originalSetArcAngleAndEnd = item.SetArcAngleAndEnd
+        if not getattr(originalSetArcAngleAndEnd, "patched", False):
+            newSetArcAngleAndEnd = lambda self, angle, check_neg: originalSetArcAngleAndEnd(self, angle.AsTenthsOfADegree(), check_neg)
+            setattr(newSetArcAngleAndEnd, "patched", True)
+            item.SetArcAngleAndEnd = newSetArcAngleAndEnd
 
 def pathGetItemDescription(item):
     if hasattr(item, "GetSelectMenuText") and not hasattr(item, "GetItemDescription"):
@@ -93,7 +99,12 @@ def isV7(version=KICAD_VERSION):
         return True
     return version[0] == 7
 
-if not isV6(KICAD_VERSION) and not isV7(KICAD_VERSION):
+def isV8(version=KICAD_VERSION):
+    if version[0] == 7 and version[1] == 99:
+        return True
+    return version[0] == 8
+
+if not isV6(KICAD_VERSION) and not isV7(KICAD_VERSION) and not isV8(KICAD_VERSION):
     # Introduce new functions
     pcbnew.NewBoard = NewBoard
 
@@ -150,7 +161,7 @@ except ImportError:
     pcbnew.RADIANS_T = EDA_ANGLE_T.RADIANS_T
     pcbnew.TENTHS_OF_A_DEGREE_T = EDA_ANGLE_T.TENTHS_OF_A_DEGREE_T
 
-if not isV7(KICAD_VERSION):
+if not isV7(KICAD_VERSION) and not isV8(KICAD_VERSION):
     # VECTOR2I & wxPoint
     class _transition_VECTOR2I(pcbnew.wxPoint):
         def __init__(self, *args, **kwargs):
@@ -181,17 +192,16 @@ if not isV7(KICAD_VERSION):
     for x in dir(pcbnew):
         patchRotate(getattr(pcbnew, x))
 
-    if isV6():
-        originalCalcArcAngles = pcbnew.EDA_SHAPE.CalcArcAngles
-        if not getattr(originalCalcArcAngles, "patched", False):
-            def newCalcArcAngles(self, start, end):
-                start.value = self.GetArcAngleStart() / 10
-                if self.GetShape() == pcbnew.SHAPE_T_CIRCLE:
-                    end.value = start.value + 360
-                else:
-                    end.value = start.value + self.GetArcAngle() / 10
-            setattr(newCalcArcAngles, "patched", True)
-            pcbnew.EDA_SHAPE.CalcArcAngles = newCalcArcAngles
+    originalCalcArcAngles = pcbnew.EDA_SHAPE.CalcArcAngles
+    if not getattr(originalCalcArcAngles, "patched", False):
+        def newCalcArcAngles(self, start, end):
+            start.value = self.GetArcAngleStart() / 10
+            if self.GetShape() == pcbnew.SHAPE_T_CIRCLE:
+                end.value = start.value + 360
+            else:
+                end.value = start.value + self.GetArcAngle() / 10
+        setattr(newCalcArcAngles, "patched", True)
+        pcbnew.EDA_SHAPE.CalcArcAngles = newCalcArcAngles
 
     # GetSelectMenuText
     for x in dir(pcbnew):
@@ -207,3 +217,7 @@ if not isV7(KICAD_VERSION):
 
     originalSetSize = pcbnew.PAD.SetSize
     pcbnew.PAD.SetSize = lambda self, size: originalSetSize(self, pcbnew.wxSize(size[0], size[1]))
+
+# There are some incompatibilites that cannot be monkeypatched in a right way;
+# let's export them as new types:
+pcbnew.FIELD_TYPE = pcbnew.PCB_FIELD if isV8() else pcbnew.FP_TEXT
