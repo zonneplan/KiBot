@@ -384,7 +384,7 @@ def strip_style_svg(root: etree.Element, keys: List[str], forbidden_colors: List
             for key, val in styles.items():
                 if key not in keys or val == 'none':
                     new_styles[key] = val
-                else:
+                elif isV8():
                     new_styles[key] = new_val
             el.attrib["style"] = ";" \
                 .join([f"{key}: {val}" for key, val in new_styles.items()]) \
@@ -1319,19 +1319,7 @@ class PcbPlotter():
 
             from lxml.etree import tostring as serializeXml # type: ignore
             from . import svgpathtools # type: ignore
-            tree = xmlParse(serializeXml(svg))
-
-            # As we cannot interpret mask cropping, we cannot simply take all paths
-            # from source document (as e.g., silkscreen outside PCB) would enlarge
-            # the canvas. Instead, we take bounding box of the substrate and
-            # components separately
-            paths = []
-            components = tree.find(".//*[@id='componentContainer']")
-            if components is not None:
-                paths += svgpathtools.document.flattened_paths(components)
-            substrate = tree.find(".//*[@id='cut-off']")
-            if substrate is not None:
-                paths += svgpathtools.document.flattened_paths(substrate)
+            paths = svgpathtools.document.flattened_paths(xmlParse(serializeXml(svg)))
 
             if len(paths) == 0:
                 return

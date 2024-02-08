@@ -192,16 +192,18 @@ if not isV7(KICAD_VERSION) and not isV8(KICAD_VERSION):
     for x in dir(pcbnew):
         patchRotate(getattr(pcbnew, x))
 
-    originalCalcArcAngles = pcbnew.EDA_SHAPE.CalcArcAngles
-    if not getattr(originalCalcArcAngles, "patched", False):
-        def newCalcArcAngles(self, start, end):
-            start.value = self.GetArcAngleStart() / 10
-            if self.GetShape() == pcbnew.SHAPE_T_CIRCLE:
-                end.value = start.value + 360
-            else:
-                end.value = start.value + self.GetArcAngle() / 10
-        setattr(newCalcArcAngles, "patched", True)
-        pcbnew.EDA_SHAPE.CalcArcAngles = newCalcArcAngles
+    # This is for v6 only, v5 fails
+    if isV6(KICAD_VERSION):
+        originalCalcArcAngles = pcbnew.EDA_SHAPE.CalcArcAngles
+        if not getattr(originalCalcArcAngles, "patched", False):
+            def newCalcArcAngles(self, start, end):
+                start.value = self.GetArcAngleStart() / 10
+                if self.GetShape() == pcbnew.SHAPE_T_CIRCLE:
+                    end.value = start.value + 360
+                else:
+                    end.value = start.value + self.GetArcAngle() / 10
+            setattr(newCalcArcAngles, "patched", True)
+            pcbnew.EDA_SHAPE.CalcArcAngles = newCalcArcAngles
 
     # GetSelectMenuText
     for x in dir(pcbnew):
