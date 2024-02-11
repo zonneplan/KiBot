@@ -274,6 +274,7 @@ def create_component_from_footprint(m, ref):
     c.name = m.GetValue()
     c.sheet_path_h = c.lib = ''
     c.project = GS.sch_basename
+    c.id = m.m_Uuid.AsString() if hasattr(m, 'm_Uuid') else ''
     # Basic fields
     # Reference
     f = SchematicField()
