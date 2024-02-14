@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.
   (#578)
+- Filters: _none filter not always honored (i.e. exclude in BoM) (#580)
 
 ## [1.6.4] - 2024-02-02
 ### Added

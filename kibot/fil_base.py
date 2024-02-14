@@ -342,7 +342,7 @@ class BaseFilter(RegFilter):
         elif isinstance(names, str):
             # User provided, but only one, make a list
             if names == '_none':
-                return None
+                return [DummyFilter()]
             names = [names]
         # Here we should have a list of strings
         filters = []
