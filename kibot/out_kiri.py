@@ -147,7 +147,7 @@ class KiRiOptions(AnyDiffOptions):
 
     def save_sch_sheet(self, hash, name_sch):
         # Load the schematic. Really worth?
-        sch = load_any_sch(name_sch, GS.sch_basename)
+        sch = load_any_sch(name_sch, GS.sch_basename, fatal=False, extra_msg=f'Commit: {hash}')
         with open(os.path.join(self.cache_dir, hash[:7], '_KIRI_', 'sch_sheets'), 'wt') as f:
             base_dir = os.path.dirname(name_sch)
             for s in sorted(sch.all_sheets, key=lambda x: x.sheet_path_h):
