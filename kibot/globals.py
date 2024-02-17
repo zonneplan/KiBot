@@ -296,8 +296,7 @@ class Globals(FiltersOptions):
             self.erc_grid = 50
             """ Grid size used for the ERC. This value must be in mils.
                 This is needed for KiCad 7 in order to run the off grid check.
-                Shouldn't be needed in KiCad 8.
-                https://gitlab.com/kicad/code/kicad/-/issues/14110 """
+                This value is stored in the project for KiCad 8, no need to specify it """
             self.kicad_dnp_applied = True
             """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter """
             self.kicad_dnp_applies_to_3D = True

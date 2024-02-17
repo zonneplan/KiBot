@@ -83,8 +83,7 @@
 
       -  ``erc_grid`` :index:`: <pair: global options; erc_grid>` [number=50] Grid size used for the ERC. This value must be in mils.
          This is needed for KiCad 7 in order to run the off grid check.
-         Shouldn't be needed in KiCad 8.
-         https://gitlab.com/kicad/code/kicad/-/issues/14110.
+         This value is stored in the project for KiCad 8, no need to specify it.
       -  ``extra_pth_drill`` :index:`: <pair: global options; extra_pth_drill>` [number=0.1] How many millimeters the manufacturer will add to plated holes.
          This is because the plating reduces the hole, so you need to use a bigger drill.
          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.
