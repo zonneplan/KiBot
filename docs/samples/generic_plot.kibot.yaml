@@ -2015,8 +2015,6 @@ outputs:
             scriptarg: ''
             # [string='auto'] [auto] Currently fixed
             type: 'auto'
-            # [boolean=false] Draw dimensions with the panel size.
-            dimensions: false
           # [dict] Used to adjust details of which part of the PCB is panelized
           source:
             # [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*
@@ -3214,7 +3212,8 @@ outputs:
       # [number=1280] Image width (aprox.)
       width: 1280
       # [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
-      # Same result as using the mouse wheel in the 3D viewer
+      # Same result as using the mouse wheel in the 3D viewer.
+      # Note that KiCad 8 starts with a zoom to fit, so you might not even need it
       zoom: 0
   # Design report:
   # Mainly oriented to be sent to the manufacturer or check PCB details.

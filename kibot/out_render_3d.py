@@ -89,7 +89,8 @@ class Render3DOptions(Base3DOptionsWithHL):
             """ *[top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view """
             self.zoom = 0
             """ *Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
-                Same result as using the mouse wheel in the 3D viewer """
+                Same result as using the mouse wheel in the 3D viewer.
+                Note that KiCad 8 starts with a zoom to fit, so you might not even need it """
             self.width = 1280
             """ Image width (aprox.) """
             self.height = 720

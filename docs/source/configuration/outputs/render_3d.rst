@@ -48,6 +48,7 @@ Parameters:
       -  **view** :index:`: <pair: output - render_3d - options; view>` [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
       -  **zoom** :index:`: <pair: output - render_3d - options; zoom>` [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
          Same result as using the mouse wheel in the 3D viewer.
+         Note that KiCad 8 starts with a zoom to fit, so you might not even need it.
       -  ``auto_crop`` :index:`: <pair: output - render_3d - options; auto_crop>` [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
          In this mode the `background2` is changed to be the same as `background1`.
       -  ``background1`` :index:`: <pair: output - render_3d - options; background1>` [string='#66667F'] First color for the background gradient.
