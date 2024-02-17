@@ -103,7 +103,7 @@ def test_erc_off_grid_1(test_dir):
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt', sub=True)
-    ctx.clean_up()
+    ctx.clean_up(keep_project=context.ki8())
 
 
 def test_drc_1(test_dir):
