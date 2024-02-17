@@ -13,6 +13,22 @@ Changelog <https://keepachangelog.com/en/1.0.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
+[1.6.5] - Unreleased
+--------------------
+
+Changed
+~~~~~~~
+
+-  KiRi: continue even on corrupted schematics (#583)
+
+Fixed
+~~~~~
+
+-  Netlist generation problems with components on the PCB but not in
+   schematic. (#578)
+-  Filters: \_none filter not always honored (i.e. exclude in BoM)
+   (#580)
+
 [1.6.4] - 2024-02-02
 --------------------
 
@@ -165,6 +181,8 @@ Added
    -  Added a new mode where we can control the added/removed colors
       (#551)
 
+.. _changed-1:
+
 Changed
 ~~~~~~~
 
@@ -199,6 +217,8 @@ Changed
 
    -  When *check_zone_fills* is enabled now we do a refill for the
       boards
+
+.. _fixed-1:
 
 Fixed
 ~~~~~
@@ -386,7 +406,7 @@ Added
    -  ``quote_all``: forces quotes to all values in the CSV output. (See
       #456)
 
-.. _changed-1:
+.. _changed-2:
 
 Changed
 ~~~~~~~
@@ -416,7 +436,7 @@ Changed
 -  JLCPCB_stencil: Is now just like JLCPCB. The only difference is the
    added layers.
 
-.. _fixed-1:
+.. _fixed-2:
 
 Fixed
 ~~~~~
@@ -526,7 +546,7 @@ Added
 
    -  Option to use the auxiliary origin as reference. (#420)
 
-.. _fixed-2:
+.. _fixed-3:
 
 Fixed
 ~~~~~
@@ -566,7 +586,7 @@ Fixed
 
    -  ref_y coordinate not used. (#419)
 
-.. _changed-2:
+.. _changed-3:
 
 Changed:
 ~~~~~~~~
@@ -613,7 +633,7 @@ Added
    -  ``cross_using_kicad`` global option to use KiCad to cross DNP
       components in the schematic. Enabled by default.
 
-.. _fixed-3:
+.. _fixed-4:
 
 Fixed
 ~~~~~
@@ -747,7 +767,7 @@ Added
 [1.5.1] - 2022-12-16
 --------------------
 
-.. _fixed-4:
+.. _fixed-5:
 
 Fixed
 ~~~~~
@@ -821,7 +841,7 @@ Added
 
    -  Option to control the *SVG precision* (units scale)
 
-.. _changed-3:
+.. _changed-4:
 
 Changed
 ~~~~~~~
@@ -834,7 +854,7 @@ Changed
 
    -  loss tangent decimals, added one more.
 
-.. _fixed-5:
+.. _fixed-6:
 
 Fixed
 ~~~~~
@@ -944,7 +964,7 @@ Added
 
 -  Position: option to set the resolution for floating values (#314)
 
-.. _fixed-6:
+.. _fixed-7:
 
 Fixed
 ~~~~~
@@ -966,7 +986,7 @@ Fixed
 -  Position: Components wrongly separated by side when the side column
    wasn’t the last column (#313)
 
-.. _changed-4:
+.. _changed-5:
 
 Changed
 ~~~~~~~
@@ -1034,7 +1054,7 @@ Added
 
 -  Installation checker: option to show the tool paths.
 
-.. _fixed-7:
+.. _fixed-8:
 
 Fixed
 ~~~~~
@@ -1069,7 +1089,7 @@ Fixed
    when VAR isn’t defined. The old code tried to make it an absolute
    path.
 
-.. _changed-5:
+.. _changed-6:
 
 Changed
 ~~~~~~~
@@ -1118,7 +1138,7 @@ Added
 -  GitHub discussions are now enabled. Comment about your KiBot
    experience `here <https://github.com/INTI-CMNB/KiBot/discussions>`__
 
-.. _fixed-8:
+.. _fixed-9:
 
 Fixed
 ~~~~~
@@ -1132,7 +1152,7 @@ Fixed
    orientation.
 -  svg_pcb_print: page orientation for portrait.
 
-.. _changed-6:
+.. _changed-7:
 
 Changed
 ~~~~~~~
@@ -1166,7 +1186,7 @@ Added
    -  Pattern and text variables expansion in the title (#198)
    -  Customizable extra info after the title (#199)
 
-.. _fixed-9:
+.. _fixed-10:
 
 Fixed
 ~~~~~
@@ -1292,7 +1312,7 @@ Added
 -  Support for ``--subst-models`` option for KiCad 6’s kicad2step.
    (#137)
 
-.. _changed-7:
+.. _changed-8:
 
 Changed
 ~~~~~~~
@@ -1314,7 +1334,7 @@ Changed
 -  The default output pattern now includes the ``output_id`` (%I)
 -  The ``source`` path for ``compress`` now has pattern expansion (#152)
 
-.. _fixed-10:
+.. _fixed-11:
 
 Fixed
 ~~~~~
@@ -1383,7 +1403,7 @@ Added
 -  Basic KiCost support (**experimental**).
 -  Basic internal BoM and KiCost integration (**experimental**).
 
-.. _changed-8:
+.. _changed-9:
 
 Changed
 ~~~~~~~
@@ -1396,7 +1416,7 @@ Changed
 -  Reference ranges of two elements no longer represented as ranges.
    Examples: “R1-R2” is now “R1 R2”, “R1-R3” remains unchanged.
 
-.. _fixed-11:
+.. _fixed-12:
 
 Fixed
 ~~~~~
@@ -1428,7 +1448,7 @@ Added
 [0.10.0-4] - 2021-02-16
 -----------------------
 
-.. _fixed-12:
+.. _fixed-13:
 
 Fixed
 ~~~~~
@@ -1440,7 +1460,7 @@ Fixed
 [0.10.0-3] - 2021-02-16
 -----------------------
 
-.. _fixed-13:
+.. _fixed-14:
 
 Fixed
 ~~~~~
@@ -1452,7 +1472,7 @@ Fixed
 [0.10.0-2] - 2021-02-12
 -----------------------
 
-.. _fixed-14:
+.. _fixed-15:
 
 Fixed
 ~~~~~
@@ -1495,7 +1515,7 @@ Added
 -  KiAuto time-out control.
 -  Now you can import outputs from another config file.
 
-.. _changed-9:
+.. _changed-10:
 
 Changed
 ~~~~~~~
@@ -1510,7 +1530,7 @@ Changed
    and error messages still use stderr.
 -  Now InteractiveHtmlBom can be installed just as a plugin.
 
-.. _fixed-15:
+.. _fixed-16:
 
 Fixed
 ~~~~~
@@ -1542,7 +1562,7 @@ Added
 -  A filter to rotate footprints in the position file (#28).
 -  The step output now can download missing 3D models.
 
-.. _changed-10:
+.. _changed-11:
 
 Changed
 ~~~~~~~
@@ -1551,7 +1571,7 @@ Changed
 -  Position files in CSV format quotes only the columns that could
    contain an space. Just like KiCad does.
 
-.. _fixed-16:
+.. _fixed-17:
 
 Fixed
 ~~~~~
@@ -1573,7 +1593,7 @@ Added
 -  Internal BoM HTML: highlight cell when hover.
 -  Internal BoM HTML: allow to jump to REF of row number using anchors.
 
-.. _fixed-17:
+.. _fixed-18:
 
 Fixed
 ~~~~~
@@ -1599,7 +1619,7 @@ Added
 -  Columns in position files can be selected, renamed and sorted as you
    like.
 
-.. _fixed-18:
+.. _fixed-19:
 
 Fixed
 ~~~~~
@@ -1642,7 +1662,7 @@ Added
 -  Default output file name format and default variant can be specified
    from the command line.
 
-.. _fixed-19:
+.. _fixed-20:
 
 Fixed
 ~~~~~
@@ -1655,7 +1675,7 @@ Fixed
 [0.6.2] - 2020-08-25
 --------------------
 
-.. _changed-11:
+.. _changed-12:
 
 Changed
 ~~~~~~~
@@ -1664,7 +1684,7 @@ Changed
    creating the internal BoM. They are usually mistakes that prevents
    grouping components.
 
-.. _fixed-20:
+.. _fixed-21:
 
 Fixed
 ~~~~~
@@ -1688,14 +1708,14 @@ Added
 
 -  More robust behavior on GUI dependent commands.
 
-.. _changed-12:
+.. _changed-13:
 
 Changed
 ~~~~~~~
 
 -  Incorporated mcpy, no longer a dependency.
 
-.. _fixed-21:
+.. _fixed-22:
 
 Fixed
 ~~~~~
@@ -1740,7 +1760,7 @@ Added
    -  ``error_number`` -> ``number``
    -  ``regexp`` -> ``regex``
 
-.. _changed-13:
+.. _changed-14:
 
 Changed
 ~~~~~~~
@@ -1760,7 +1780,7 @@ Changed
 [0.5.0] - 2020-07-11
 --------------------
 
-.. _changed-14:
+.. _changed-15:
 
 Changed
 ~~~~~~~
@@ -1831,7 +1851,7 @@ Added
    -  variants_blacklist
    -  dnp_field
 
-.. _fixed-22:
+.. _fixed-23:
 
 Fixed
 ~~~~~
@@ -1866,7 +1886,7 @@ Added
 -  Better debug information when a BoM fails to be generated.
 -  Support for compressed YAML files.
 
-.. _changed-15:
+.. _changed-16:
 
 Changed
 ~~~~~~~
@@ -1875,7 +1895,7 @@ Changed
    missing or corrupted.
 -  The ‘check_zone_fills’ option is now independent of ‘run_drc’
 
-.. _fixed-23:
+.. _fixed-24:
 
 Fixed
 ~~~~~
@@ -1895,7 +1915,7 @@ Added
 -  Tolerate config files without outputs
 -  Mechanism to filter ERC/DRC errors
 
-.. _fixed-24:
+.. _fixed-25:
 
 Fixed
 ~~~~~
@@ -1908,14 +1928,14 @@ Fixed
 [0.2.4] - 2020-05-19
 --------------------
 
-.. _changed-16:
+.. _changed-17:
 
 Changed
 ~~~~~~~
 
 -  Now kicad-automation-scripts 1.3.1 or newer is needed.
 
-.. _fixed-25:
+.. _fixed-26:
 
 Fixed
 ~~~~~
@@ -1940,7 +1960,7 @@ Added
 [0.2.2] - 2020-04-20
 --------------------
 
-.. _fixed-26:
+.. _fixed-27:
 
 Fixed
 ~~~~~
@@ -1953,7 +1973,7 @@ Fixed
 [0.2.1] - 2020-04-18
 --------------------
 
-.. _fixed-27:
+.. _fixed-28:
 
 Fixed
 ~~~~~
@@ -1984,7 +2004,7 @@ Added
 -  Progress information
 -  –version option
 
-.. _fixed-28:
+.. _fixed-29:
 
 Fixed
 ~~~~~
