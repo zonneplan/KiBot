@@ -21,7 +21,8 @@ from .error import SchError
 from .sexpdata import load, SExpData, Symbol, dumps, Sep
 from .sexp_helpers import (_check_is_symbol_list, _check_len, _check_len_total, _check_symbol, _check_hide, _check_integer,
                            _check_float, _check_str, _check_symbol_value, _check_symbol_float, _check_symbol_int,
-                           _check_symbol_str, _get_offset, _get_yes_no, _get_at, _get_size, _get_xy, _get_points)
+                           _check_symbol_str, _get_offset, _get_yes_no, _get_at, _get_size, _get_xy, _get_points,
+                           _check_relaxed)
 from .v5_sch import SchematicComponent, Schematic
 
 logger = log.get_logger()
@@ -29,6 +30,7 @@ CROSSED_LIB = 'kibot_crossed'
 NO_YES = ['no', 'yes']
 version = None
 KICAD_7_VER = 20230121
+KICAD_8_VER = 20231120
 SHEET_FILE = {'Sheet file', 'Sheetfile'}
 SHEET_NAME = {'Sheet name', 'Sheetname'}
 
@@ -207,6 +209,8 @@ class FontEffects(object):
                     o.hjustify, o.vjustify, o.mirror = FontEffects.parse_justify(i)
                 elif i_type == 'href':
                     o.href = _check_str(i, 1, 'font effect')
+                elif i_type == 'hide':
+                    o.hide = _get_yes_no(i, 1, i_type)
                 else:
                     raise SchError('Unknown font effect attribute `{}`'.format(i))
         return o
@@ -245,7 +249,10 @@ class FontEffects(object):
         if self.hjustify != 'C' or self.vjustify != 'C' or self.mirror:
             data.append(self.write_justify())
         if self.hide:
-            data.append(Symbol('hide'))
+            if version < KICAD_8_VER:
+                data.append(Symbol('hide'))
+            else:
+                data.append(_symbol('hide', [NO_YES[self.hide]]))
         if self.href is not None:
             data.append(_symbol('href', [self.href]))
         return _symbol('effects', data)
@@ -740,6 +747,7 @@ class LibComponent(object):
         self.pin_numbers_hide = None
         self.pin_names_hide = None
         self.pin_names_offset = None
+        self.exclude_from_sim = None
         self.in_bom = True
         self.on_board = True
         self.is_power = False
@@ -810,6 +818,8 @@ class LibComponent(object):
                 except SchError:
                     # Optional
                     pass
+            elif i_type == 'exclude_from_sim':
+                comp.exclude_from_sim = _get_yes_no(i, 1, i_type)
             elif i_type == 'in_bom':
                 comp.in_bom = _get_yes_no(i, 1, i_type)
             elif i_type == 'on_board':
@@ -937,6 +947,8 @@ class LibComponent(object):
                 aux.append(Symbol('hide'))
             sdata.append(_symbol('pin_names', aux))
         if s.units:
+            if s.exclude_from_sim is not None:
+                sdata.append(_symbol('exclude_from_sim', [Symbol(NO_YES[s.exclude_from_sim])]))
             sdata.append(_symbol('in_bom', [Symbol(NO_YES[s.in_bom])]))
             sdata.append(_symbol('on_board', [Symbol(NO_YES[s.on_board])]))
         sdata.append(Sep())
@@ -1015,6 +1027,8 @@ class SchematicComponentV6(SchematicComponent):
         self.projects = None
         # All instances, by path (v7)
         self.all_instances = {}
+        # v8
+        self.exclude_from_sim = None
 
     def set_ref(self, ref):
         self.ref = ref
@@ -1122,6 +1136,8 @@ class SchematicComponentV6(SchematicComponent):
             elif i_type == 'convert':
                 # Not documented 2022/04/17
                 comp.convert = _check_integer(i, 1, name+' convert')
+            elif i_type == 'exclude_from_sim':
+                comp.exclude_from_sim = _get_yes_no(i, 1, i_type)
             elif i_type == 'in_bom':
                 comp.in_bom = _get_yes_no(i, 1, i_type)
             elif i_type == 'on_board':
@@ -1133,7 +1149,10 @@ class SchematicComponentV6(SchematicComponent):
                 comp.fields_autoplaced = True
             elif i_type == 'uuid':
                 # Ensure we have a unique UUID
-                comp.uuid_ori = _check_symbol(i, 1, name + ' uuid')
+                if version < KICAD_8_VER:
+                    comp.uuid_ori = _check_symbol(i, 1, name + ' uuid')
+                else:
+                    comp.uuid_ori = _check_str(i, 1, name + ' uuid')
                 comp.uuid, _ = UUID_Validator.validate(comp.uuid_ori)
             # SYMBOL_PROPERTIES...
             elif i_type == 'property':
@@ -1211,6 +1230,8 @@ class SchematicComponentV6(SchematicComponent):
         if self.convert is not None:
             data.append(_symbol('convert', [self.convert]))
         data.append(Sep())
+        if self.exclude_from_sim is not None:
+            data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
         data.append(_symbol('in_bom', [Symbol(NO_YES[self.in_bom])]))
         data.append(_symbol('on_board', [Symbol(NO_YES[self.on_board])]))
         if dnp is not None:
@@ -1257,7 +1278,7 @@ def _get_uuid(items, pos, where):
     if len(items) < pos+1:
         return None
     values = _check_symbol_value(items, pos, where + ' uuid', 'uuid')
-    return _check_symbol(values, 1, where + ' uuid')
+    return _check_symbol(values, 1, where + ' uuid') if version < KICAD_8_VER else _check_str(values, 1, where + ' uuid')
 
 
 def get_uuid(items, pos, where):
@@ -1268,10 +1289,11 @@ def get_uuid(items, pos, where):
 
 def add_uuid(data, uuid, no_sep=False):
     if uuid:
+        uuid = uuid if version >= KICAD_8_VER else Symbol(uuid)
         if no_sep:
-            data.append(_symbol('uuid', [Symbol(uuid)]))
+            data.append(_symbol('uuid', [uuid]))
         else:
-            data.extend([_symbol('uuid', [Symbol(uuid)]), Sep()])
+            data.extend([_symbol('uuid', [uuid]), Sep()])
 
 
 class Junction(object):
@@ -1949,7 +1971,12 @@ class SchematicV6(Schematic):
         if fname not in saved and not dry:
             sch = [Symbol('kicad_sch')]
             sch.append(_symbol('version', [self.version]))
-            sch.append(_symbol('generator', [Symbol(self.generator)]))
+            if self.version >= KICAD_8_VER:
+                sch.append(_symbol('generator', [self.generator]))
+            else:
+                sch.append(_symbol('generator', [Symbol(self.generator)]))
+            if self.generator_version:
+                sch.append(_symbol('generator_version', [self.generator_version]))
             sch.append(Sep())
             sch.append(Sep())
             add_uuid(sch, self.uuid, no_sep=True)
@@ -2202,6 +2229,7 @@ class SchematicV6(Schematic):
         self.bus_alias = []
         self.libs = {}  # Just for compatibility with v5 class
         self.symbol_uuids = {}
+        self.generator_version = None
         if not os.path.isfile(fname):
             raise SchError('Missing subsheet: '+fname)
         with open(fname, 'rt') as fh:
@@ -2222,9 +2250,11 @@ class SchematicV6(Schematic):
                 global version
                 version = self.version
             elif e_type == 'generator':
-                self.generator = _check_symbol(e, 1, e_type)
+                self.generator = _check_relaxed(e, 1, e_type)
+            elif e_type == 'generator_version':
+                self.generator_version = _check_str(e, 1, e_type)
             elif e_type == 'uuid':
-                self.uuid_ori = _check_symbol(e, 1, e_type)
+                self.uuid_ori = _check_relaxed(e, 1, e_type)
                 uuid, _ = UUID_Validator.validate(self.uuid_ori)
                 self.id = self.uuid = uuid
             elif e_type == 'paper':
