@@ -120,6 +120,8 @@ class Update_XML(BasePreFlight):  # noqa: F821
             for p in set(pcb_props.keys()).difference(found_props):
                 errors.append('{} PCB property `{}` not in schematic'.format(ref, p))
         for ref in set(comps.keys()).difference(found_comps):
+            if 'exclude_from_board' in comps[ref].props:
+                continue
             errors.append('{} found in schematic, but not in PCB'.format(ref))
         return excluded
 
