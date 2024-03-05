@@ -486,7 +486,10 @@ class DiffOptions(AnyDiffOptions):
             GS.exit_with_error(None, FAILED_EXECUTE, e)
         if self.add_link_id:
             name_comps = os.path.splitext(name_ori)
-            target = name_comps[0]+'_'+gh1+'-'+gh2+name_comps[1]
+            extra = '_'+gh1+'-'+gh2
+            # Replace things like "origin/main" by "origin_main"
+            extra = extra.replace('/', '_')
+            target = name_comps[0]+extra+name_comps[1]
             if self.copy_instead_of_link:
                 copy2(name, target)
             else:
