@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - KiRi: continue even on corrupted schematics (#583)
 - Variants: avoid W045 on nameless pads. Assuming they are on purpose and not
   real pads. (See #584)
+- BoardView: Skip footprints with no pads (not just REF**)
+  (whitequark/kicad-boardview#14)
 
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.

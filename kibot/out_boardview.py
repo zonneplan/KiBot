@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
-# Copyright (c) 2018-2020 @whitequark
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2018-2024 @whitequark
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/whitequark/kicad-boardview
 import re
@@ -16,9 +16,9 @@ logger = log.get_logger()
 
 
 def skip_module(module, tp=False):
-    refdes = module.GetReference()
-    if refdes == "REF**":
+    if module.GetPadCount() == 0:
         return True
+    refdes = module.Reference().GetText()
     if tp and not refdes.startswith("TP"):
         return True
     if not tp and refdes.startswith("TP"):
