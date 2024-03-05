@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (#578)
 - Filters: _none filter not always honored (i.e. exclude in BoM) (#580)
 - PCB Parity: components excluded from the board reported anyways (#585)
+- BoardView: X axis mirroring issues (whitequark/kicad-boardview#11)
 
 ## [1.6.4] - 2024-02-02
 ### Added
