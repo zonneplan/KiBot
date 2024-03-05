@@ -433,7 +433,7 @@ class VariantOptions(BaseOptions):
                             pad_layers.addLayer(fmask if is_front else bmask)
                             pad_name = p.GetName()
                             # Some footprints has solder paste "pads" they don't have a name
-                            if pad_name:
+                            if pad_name or GS.global_always_warn_about_paste_pads:
                                 logger.warning(f"{W_WRONGPASTE}Pad with solder paste, but no copper or solder mask aperture "
                                                f" in {ref} ({pad_name})")
                         p.SetLayerSet(pad_layers)

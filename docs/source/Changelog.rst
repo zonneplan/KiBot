@@ -20,6 +20,10 @@ Changed
 ~~~~~~~
 
 -  KiRi: continue even on corrupted schematics (#583)
+-  Variants: avoid W045 on nameless pads. Assuming they are on purpose
+   and not real pads. (See #584)
+-  BoardView: Skip footprints with no pads (not just REF**)
+   (whitequark/kicad-boardview#14)
 
 Fixed
 ~~~~~
@@ -28,6 +32,12 @@ Fixed
    schematic. (#578)
 -  Filters: \_none filter not always honored (i.e. exclude in BoM)
    (#580)
+-  PCB Parity: components excluded from the board reported anyways
+   (#585)
+-  BoardView: X axis mirroring issues (whitequark/kicad-boardview#11)
+-  Present: problems when using gerbers already generated
+-  Diff: problems when using things like “origin/main” and add_link_id
+   (#589)
 
 [1.6.4] - 2024-02-02
 --------------------

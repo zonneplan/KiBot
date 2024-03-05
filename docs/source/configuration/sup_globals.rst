@@ -23,6 +23,7 @@
          For KiCad 5 and 6 use the design rules settings, stored in the project.
       -  ``allow_microvias`` :index:`: <pair: global options; allow_microvias>` [boolean=true] Allow the use of micro vias. This value is only used for KiCad 7+.
          For KiCad 5 and 6 use the design rules settings, stored in the project.
+      -  ``always_warn_about_paste_pads`` :index:`: <pair: global options; always_warn_about_paste_pads>` [boolean=false] Used to detect the use of pads just for paste.
       -  ``cache_3d_resistors`` :index:`: <pair: global options; cache_3d_resistors>` [boolean=false] Use a cache for the generated 3D models of colored resistors.
          Will save time, but you could need to remove the cache if you need to regenerate them.
       -  ``castellated_pads`` :index:`: <pair: global options; castellated_pads>` [boolean=false] Has the PCB castellated pads?
