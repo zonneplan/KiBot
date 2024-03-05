@@ -431,7 +431,11 @@ class VariantOptions(BaseOptions):
                             # No layers at all. Ridiculous, but happens.
                             # At least add an F.Mask
                             pad_layers.addLayer(fmask if is_front else bmask)
-                            logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)
+                            pad_name = p.GetName()
+                            # Some footprints has solder paste "pads" they don't have a name
+                            if pad_name:
+                                logger.warning(f"{W_WRONGPASTE}Pad with solder paste, but no copper or solder mask aperture "
+                                               f" in {ref} ({pad_name})")
                         p.SetLayerSet(pad_layers)
                     old_layers.append(old_c_layers)
                     logger.debugl(3, '- Removed paste/mask from '+ref)
