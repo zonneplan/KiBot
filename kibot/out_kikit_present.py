@@ -157,7 +157,7 @@ class PresentBoards(Optionable):
         # Configure it according to our needs
         with TemporaryDirectory() as tmp_dir:
             logger.debug('Generating the gerbers at '+tmp_dir)
-            out.done = False
+            out._done = False
             out.dir = tmp_dir
             out.options.variant = None
             run_output(out)
