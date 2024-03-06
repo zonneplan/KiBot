@@ -187,6 +187,13 @@
       "zones_allow_external_fillets": false,
       "zones_use_no_outline": true
     },
+    "ipc2581": {
+      "dist": "",
+      "distpn": "",
+      "internal_id": "",
+      "mfg": "",
+      "mpn": ""
+    },
     "layer_presets": [],
     "viewports": []
   },
@@ -445,8 +452,11 @@
       "gencad": "",
       "idf": "",
       "netlist": "fail-project.net",
+      "plot": "",
+      "pos_files": "",
       "specctra_dsn": "",
       "step": "",
+      "svg": "",
       "vmrl": "",
       "vrml": ""
     },
@@ -505,6 +515,7 @@
       "sort_asc": true,
       "sort_field": "Reference"
     },
+    "connection_grid_size": 50.0,
     "drawing": {
       "dashed_lines_dash_length_ratio": 12.0,
       "dashed_lines_gap_length_ratio": 3.0,
@@ -525,6 +536,7 @@
       "operating_point_overlay_i_range": "~A",
       "operating_point_overlay_v_precision": 3,
       "operating_point_overlay_v_range": "~V",
+      "overbar_offset_ratio": 1.23,
       "pin_symbol_size": 25.0,
       "text_offset_ratio": 0.3
     },
@@ -549,7 +561,7 @@
   "sheets": [
     [
       "87c78429-be2b-40ed-8d3b-56cb9666a56f",
-      ""
+      "Root"
     ],
     [
       "00000000-0000-0000-0000-00005ca71704",
