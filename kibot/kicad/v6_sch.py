@@ -167,6 +167,10 @@ class FontEffects(object):
                     color = Color.parse(i)
                 elif i_type == 'face':
                     face = _check_str(i, 1, 'font face')
+                elif i_type == 'bold':
+                    bold = _get_yes_no(i, 1, i_type)
+                elif i_type == 'italic':
+                    italic = _get_yes_no(i, 1, i_type)
                 else:
                     raise SchError('Unknown font effect attribute `{}`'.format(i))
         return w, h, thickness, bold, italic, color, face
@@ -222,10 +226,16 @@ class FontEffects(object):
         data.append(_symbol('size', [self.h, self.w]))
         if self.thickness is not None:
             data.append(_symbol('thickness', [self.thickness]))
-        if self.bold:
-            data.append(Symbol('bold'))
-        if self.italic:
-            data.append(Symbol('italic'))
+        if version < KICAD_8_VER:
+            if self.bold:
+                data.append(Symbol('bold'))
+            if self.italic:
+                data.append(Symbol('italic'))
+        else:
+            if self.bold:
+                data.append(_symbol('bold', [Symbol(NO_YES[self.bold])]))
+            if self.italic:
+                data.append(_symbol('italic', [Symbol(NO_YES[self.italic])]))
         if self.color is not None:
             data.append(self.color.write())
         return _symbol('font', data)
