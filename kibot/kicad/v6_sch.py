@@ -1288,7 +1288,7 @@ def _get_uuid(items, pos, where):
     if len(items) < pos+1:
         return None
     values = _check_symbol_value(items, pos, where + ' uuid', 'uuid')
-    return _check_symbol(values, 1, where + ' uuid') if version < KICAD_8_VER else _check_str(values, 1, where + ' uuid')
+    return _check_symbol(values, 1, where + ' uuid') if version < KICAD_8_VER else _check_relaxed(values, 1, where + ' uuid')
 
 
 def get_uuid(items, pos, where):
@@ -1410,7 +1410,8 @@ class SchematicBitmapV6(object):
                 bmp.uuid = get_uuid(items, c+2, 'image')
             elif i_type == 'data':
                 values = _check_symbol_value(items, c+2, 'image data', 'data')
-                bmp.data = [_check_symbol(values, i+1, 'image data') for i, d in enumerate(values[1:])]
+                # v6/7: Symbol v8: String
+                bmp.data = [_check_relaxed(values, i+1, 'image data') for i, d in enumerate(values[1:])]
             else:
                 raise SchError('Unknown symbol attribute `{}`'.format(i))
         return bmp
@@ -1466,21 +1467,37 @@ class TextBox(object):
     def parse(items, name):
         text = TextBox()
         text.name = name
+        text.exclude_from_sim = None
         text.text = _check_str(items, 1, name)
-        text.pos_x, text.pos_y, text.ang = _get_at(items, 2, name)
-        text.size = _get_size(items, 3, name)
-        text.stroke = Stroke.parse(items[4])
-        text.fill = Fill.parse(items[5])
-        text.effects = _get_effects(items, 6, name)
-        text.uuid = get_uuid(items, 7, name)
+        for c, i in enumerate(items[2:]):
+            i_type = _check_is_symbol_list(i)
+            if i_type == 'at':
+                text.pos_x, text.pos_y, text.ang = _get_at(items, c+2, name)
+            elif i_type == 'size':
+                text.size = _get_size(items, c+2, name)
+            elif i_type == 'stroke':
+                text.stroke = Stroke.parse(i)
+            elif i_type == 'fill':
+                text.fill = Fill.parse(i)
+            elif i_type == 'effects':
+                text.effects = _get_effects(items, c+2, name)
+            elif i_type == 'uuid':
+                text.uuid = get_uuid(items, c+2, name)
+            elif i_type == 'exclude_from_sim':
+                # KiCad 8
+                text.exclude_from_sim = _get_yes_no(i, 1, i_type)
+            else:
+                raise SchError('Unknown symbol attribute `{}`'.format(i))
         return text
 
     def write(self):
-        data = [self.text, Sep(),
-                _symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
-                self.stroke.write(), Sep(),
-                self.fill.write(), Sep(),
-                self.effects.write(), Sep()]
+        data = [self.text, Sep()]
+        if self.exclude_from_sim is not None:
+            data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
+        data.extend([_symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
+                     self.stroke.write(), Sep(),
+                     self.fill.write(), Sep(),
+                     self.effects.write(), Sep()])
         add_uuid(data, self.uuid)
         return _symbol(self.name, data)
 
