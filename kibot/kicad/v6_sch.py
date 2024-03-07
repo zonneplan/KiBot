@@ -1418,9 +1418,14 @@ class SchematicBitmapV6(object):
 
     def write(self):
         d = []
-        for v in self.data:
-            d.append(Symbol(v))
-            d.append(Sep())
+        if version < KICAD_8_VER:
+            for v in self.data:
+                d.append(Symbol(v))
+                d.append(Sep())
+        else:
+            for v in self.data:
+                d.append(v)
+                d.append(Sep())
         data = [_symbol('at', [self.pos_x, self.pos_y])]
         if self.scale is not None:
             data.append(_symbol('scale', [self.scale]))
