@@ -54,7 +54,7 @@ class PCB_Replace(Base_Replace):  # noqa: F821
         if o.date_command:
             # Convert it into another replacement
             t = TagReplacePCB()
-            t.tag = r'^    \(date (\S+|"(?:[^"]|\\")+")\)$'
+            t.tag = r'^(    |\t\t)\(date (\S+|"(?:[^"]|\\")+")\)$'
             t.command = o.date_command
             t.before = '    (date "'
             t.after = '")'
