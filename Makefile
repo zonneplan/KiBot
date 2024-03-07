@@ -189,7 +189,7 @@ single_test:
 	@echo "********************" Error
 	@tail -n 30 pp/*/error.txt
 	@rm -f tests/input_samples/bom.ini
-	@rm .coverage.kotori.*
+	@rm .coverage.*.*
 
 single_tests:
 	rm -rf pp
