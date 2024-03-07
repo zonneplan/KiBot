@@ -27,7 +27,7 @@ from .v5_sch import SchematicComponent, Schematic
 
 logger = log.get_logger()
 CROSSED_LIB = 'kibot_crossed'
-NO_YES = ['no', 'yes']
+NO_YES = [Symbol('no'), Symbol('yes')]
 version = None
 KICAD_7_VER = 20230121
 KICAD_8_VER = 20231120
@@ -233,9 +233,9 @@ class FontEffects(object):
                 data.append(Symbol('italic'))
         else:
             if self.bold:
-                data.append(_symbol('bold', [Symbol(NO_YES[self.bold])]))
+                data.append(_symbol_yn('bold', self.bold))
             if self.italic:
-                data.append(_symbol('italic', [Symbol(NO_YES[self.italic])]))
+                data.append(_symbol_yn('italic', self.italic))
         if self.color is not None:
             data.append(self.color.write())
         return _symbol('font', data)
@@ -262,7 +262,7 @@ class FontEffects(object):
             if version < KICAD_8_VER:
                 data.append(Symbol('hide'))
             else:
-                data.append(_symbol('hide', [NO_YES[self.hide]]))
+                data.append(_symbol_yn('hide', self.hide))
         if self.href is not None:
             data.append(_symbol('href', [self.href]))
         return _symbol('effects', data)
@@ -958,9 +958,9 @@ class LibComponent(object):
             sdata.append(_symbol('pin_names', aux))
         if s.units:
             if s.exclude_from_sim is not None:
-                sdata.append(_symbol('exclude_from_sim', [Symbol(NO_YES[s.exclude_from_sim])]))
-            sdata.append(_symbol('in_bom', [Symbol(NO_YES[s.in_bom])]))
-            sdata.append(_symbol('on_board', [Symbol(NO_YES[s.on_board])]))
+                sdata.append(_symbol_yn('exclude_from_sim', s.exclude_from_sim))
+            sdata.append(_symbol_yn('in_bom', s.in_bom))
+            sdata.append(_symbol_yn('on_board', s.on_board))
         sdata.append(Sep())
         if s.unit_name is not None:
             sdata.append(_symbol('unit_name', [s.unit_name]))
@@ -1241,11 +1241,11 @@ class SchematicComponentV6(SchematicComponent):
             data.append(_symbol('convert', [self.convert]))
         data.append(Sep())
         if self.exclude_from_sim is not None:
-            data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
-        data.append(_symbol('in_bom', [Symbol(NO_YES[self.in_bom])]))
-        data.append(_symbol('on_board', [Symbol(NO_YES[self.on_board])]))
+            data.append(_symbol_yn('exclude_from_sim', self.exclude_from_sim))
+        data.append(_symbol_yn('in_bom', self.in_bom))
+        data.append(_symbol_yn('on_board', self.on_board))
         if dnp is not None:
-            data.append(_symbol('dnp', [Symbol(NO_YES[dnp])]))
+            data.append(_symbol_yn('dnp', dnp))
         if self.fields_autoplaced:
             data.append(_symbol('fields_autoplaced'))
         data.append(Sep())
@@ -1455,7 +1455,7 @@ class Text(object):
     def write(self):
         data = [self.text]
         if self.exclude_from_sim is not None:
-            data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
+            data.append(_symbol_yn('exclude_from_sim', self.exclude_from_sim))
         data.extend([_symbol('at', [self.pos_x, self.pos_y, self.ang]), Sep(),
                      self.effects.write(), Sep()])
         add_uuid(data, self.uuid)
@@ -1493,7 +1493,7 @@ class TextBox(object):
     def write(self):
         data = [self.text, Sep()]
         if self.exclude_from_sim is not None:
-            data.append(_symbol('exclude_from_sim', [Symbol(NO_YES[self.exclude_from_sim])]))
+            data.append(_symbol_yn('exclude_from_sim', self.exclude_from_sim))
         data.extend([_symbol('at', [self.pos_x, self.pos_y, self.ang]), _symbol('size', [self.size.x, self.size.y]), Sep(),
                      self.stroke.write(), Sep(),
                      self.fill.write(), Sep(),
@@ -1811,6 +1811,10 @@ def _symbol(name, content=None):
     if content is None:
         return [Symbol(name)]
     return [Symbol(name)] + content
+
+
+def _symbol_yn(name, val):
+    return [Symbol(name), NO_YES[val]]
 
 
 def _add_items(items, sch, sep=False, cross=None, pre_sep=True, exp_hierarchy=None):

@@ -48,7 +48,7 @@ def _check_len_total(items, num, name):
 def _check_symbol(items, pos, name):
     value = _check_len(items, pos, name)
     if not isinstance(value, Symbol):
-        raise SchError('{} is not a Symbol `{}`'.format(name, value))
+        raise SchError('{} is not a Symbol `{}` ({})'.format(name, value, type(value)))
     return value.value()
 
 
