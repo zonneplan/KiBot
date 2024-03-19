@@ -261,7 +261,8 @@ Parameters:
          This option is for simple cases, consider using a full variant for complex cases.
 
       -  ``exclude_filter`` :index:`: <pair: output - bom - options; exclude_filter>` [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
-         The default filter excludes test points, fiducial marks, mounting holes, etc.
+         The default filter (built-in filter '_mechanical') excludes test points, fiducial marks, mounting holes, etc.
+         Please consult the built-in filters explanation to fully understand what is excluded by default.
          This option is for simple cases, consider using a full variant for complex cases.
 
       -  ``exclude_marked_in_pcb`` :index:`: <pair: output - bom - options; exclude_marked_in_pcb>` [boolean=false] Exclude components marked with *Exclude from BOM* in the PCB.
