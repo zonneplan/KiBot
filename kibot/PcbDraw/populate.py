@@ -10,11 +10,11 @@ from copy import deepcopy
 from itertools import chain
 from typing import List, Optional, Any, Tuple, Dict
 
-import mistune # type: ignore
+from . import mistune # type: ignore
 # The following try-catch is used to support mistune 0.8.4 and 2.x
 try:
-    from mistune.plugins.table import plugin_table # type: ignore
-    from mistune.plugins.footnotes import plugin_footnotes # type: ignore
+    from .mistune.plugins.table import plugin_table # type: ignore
+    from .mistune.plugins.footnotes import plugin_footnotes # type: ignore
     InlineParser = mistune.inline_parser.InlineParser
     HTMLRenderer = mistune.renderers.HTMLRenderer
 except ModuleNotFoundError:

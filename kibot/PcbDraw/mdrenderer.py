@@ -16,7 +16,7 @@
 
 # The following try-catch is used to support mistune 0.8.4 and 2.x
 try:
-    from mistune.renderers import BaseRenderer  # type: ignore
+    from .mistune.renderers import BaseRenderer  # type: ignore
 except ModuleNotFoundError:
     from mistune import Renderer  # type: ignore
     BaseRenderer = Renderer
