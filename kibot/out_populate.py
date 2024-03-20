@@ -114,8 +114,6 @@ class PopulateOptions(VariantOptions):
         return content
 
     def run(self, dir_name):
-        # Ensure we have mistune
-        self.ensure_tool('mistune')
         # Now we can use populate
         from .PcbDraw.populate import (load_content, get_data_path, read_template, create_renderer, parse_content,
                                        generate_html, generate_markdown, find_data_file)
