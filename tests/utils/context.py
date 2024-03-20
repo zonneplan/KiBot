@@ -550,13 +550,19 @@ class TestContext(object):
         png_ref = None
         if reference[-3:] == 'svg':
             png_ref = reference[:-3]+'png'
-            subprocess.check_call(['rsvg-convert', '-d', '300', '-p', '300', '-o', png_ref, reference])
+            cmd = ['rsvg-convert', '-h', '2160', '-o', png_ref, reference]
+            logging.debug('Converting reference to PNG with: '+usable_cmd(cmd))
+            subprocess.check_call(cmd)
             reference = png_ref
+            assert os.path.isfile(png_ref)
         png_image = None
         if image[-3:] == 'svg':
             png_image = image[:-3]+'png'
-            subprocess.check_call(['rsvg-convert', '-d', '300', '-p', '300', '-o', png_image, image])
+            cmd = ['rsvg-convert', '-h', '2160', '-o', png_image, image]
+            logging.debug('Converting result image to PNG with: '+usable_cmd(cmd))
+            subprocess.check_call(cmd)
             image = png_image
+            assert os.path.isfile(png_image)
         if trim:
             cmd = ['convert', image, '-trim', image]
             subprocess.run(cmd)
