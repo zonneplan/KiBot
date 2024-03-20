@@ -96,7 +96,7 @@ test_docker_local_1_ki6:
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki6 \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/ .cache"
+		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage.* htmlcov/ .cache"
 #	docker run --rm -it -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad6_auto_full:latest
 	#$(PY_COV) report
 	#x-www-browser htmlcov/index.html
@@ -108,13 +108,13 @@ test_docker_local_1_ki8:
 	# Run in the same directory to make the __pycache__ valid
 	# Also change the owner of the files to the current user (we run as root like in GitHub)
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki8 \
-		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/ .cache"
+		/bin/bash -c "flake8 . --count --statistics ; python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage.* htmlcov/ .cache"
 
 test_docker_local_1_ki7:
 	rm -rf output
 	rm -f tests/.local
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki7 \
-		/bin/bash -c "python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/ .cache"
+		/bin/bash -c "python3-coverage run src/kibot --help-outputs > /dev/null; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage.* htmlcov/ .cache"
 
 t1k7: single_test
 
@@ -129,7 +129,7 @@ test_docker_local_1_sn:
 	rm -rf output .cache/
 	rm -f tests/.local
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:stable_nightly \
-		/bin/bash -c "export KIBOT_COPY_REF=$(KIBOT_COPY_REF); src/kibot --help-outputs > /dev/null ; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage htmlcov/ .cache"
+		/bin/bash -c "export KIBOT_COPY_REF=$(KIBOT_COPY_REF); src/kibot --help-outputs > /dev/null ; pytest-3 --log-cli-level debug -k '$(SINGLE_TEST)' --test_dir=output ; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ tests/.config/kiplot/plugins/__pycache__/ tests/test_plot/fake_pcbnew/__pycache__/ tests/.config/kibot/plugins/__pycache__/ .coverage.* htmlcov/ .cache"
 # rm -R .cache/ ; KIBOT_COPY_REF="1" SINGLE_TEST=test_print_sch_variant_ni_2 make test_docker_local_1_sn
 
 t1k8: test_docker_local_1_ki8
@@ -165,7 +165,7 @@ test_docker_local_ki7:
 	rm -f tests/.local
 	$(PY_COV) erase
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki7 \
-		/bin/bash -c "python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/ .cache"
+		/bin/bash -c "python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage.* htmlcov/ .cache"
 	$(PY_COV) combine
 	$(PY_COV) report
 	x-www-browser htmlcov/index.html
@@ -175,7 +175,7 @@ test_docker_local_ki8:
 	rm -f tests/.local
 	$(PY_COV) erase
 	docker run --rm -v $(CWD):$(CWD) --workdir="$(CWD)" ghcr.io/inti-cmnb/kicad_auto_test:ki8 \
-		/bin/bash -c "python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage htmlcov/ .cache"
+		/bin/bash -c "python3-coverage run src/kibot --help-outputs ; pytest-3 --test_dir=output ; $(PY_COV) html; chown -R $(USER_ID):$(GROUP_ID) output/ tests/board_samples/ .coverage.* htmlcov/ .cache"
 	$(PY_COV) combine
 	$(PY_COV) report
 	x-www-browser htmlcov/index.html
