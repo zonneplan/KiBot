@@ -17,7 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   (#578)
 - Filters: _none filter not always honored (i.e. exclude in BoM) (#580)
 - PCB Parity: components excluded from the board reported anyways (#585)
-- BoardView: X axis mirroring issues (whitequark/kicad-boardview#11)
+- BoardView:
+  - X axis mirroring issues (whitequark/kicad-boardview#11)
+  - Alphanumeric pads sorting (whitequark/kicad-boardview#17) and
+    (whitequark/kicad-boardview#18)
 - Present: problems when using gerbers already generated
 - Diff: problems when using things like "origin/main" and add_link_id (#589)
 - Panelize: not able to use external JSON configs (#592)

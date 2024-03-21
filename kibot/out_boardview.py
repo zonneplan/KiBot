@@ -36,13 +36,10 @@ def y_coord(maxy, y, flipped):
     return coord(maxy - y) if not flipped else coord(y)
 
 
-def pad_sort_key(pad):
-    name = pad.GetName()
-    pad_pos = pad.GetPosition()
-    if re.match(r"^\d+$", name):
-        return (0, int(name), pad_pos.x, pad_pos.y)
-    else:
-        return (1, name, pad_pos.x, pad_pos.y)
+def natural_sort_key(s):
+    is_blank = s.strip() == ''
+    return (is_blank, [int(text) if text.isdigit() else text.casefold()
+                       for text in re.compile('([0-9]+)').split(s)])
 
 
 def convert(pcb, brd):
@@ -115,7 +112,7 @@ def convert(pcb, brd):
     pads = []
     for m in modules:
         pads_list = m.Pads()
-        for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad)):
+        for pad in sorted(pads_list, key=lambda pad: natural_sort_key(pad.GetName())):
             pads.append(pad)
 
     brd.write("PINS: {count}\n".format(count=len(pads)))
@@ -135,7 +132,7 @@ def convert(pcb, brd):
     for m in sorted(module_list, key=lambda mod: mod.GetReference()):
         if not skip_module(m, tp=True):
             pads_list = m.Pads()
-            for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad)):
+            for pad in sorted(pads_list, key=lambda pad: natural_sort_key(pad.GetName())):
                 testpoints.append((m, pad))
 
     brd.write("NAILS: {count}\n".format(count=len(testpoints)))
