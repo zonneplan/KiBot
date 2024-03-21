@@ -658,6 +658,8 @@ class PanelizeOptions(VariantOptions):
         elif isinstance(self.configs, str):
             self.configs = [self.configs]
         for c, cfg in enumerate(self.configs):
+            if isinstance(cfg, str):
+                continue
             if not cfg.name:
                 cfg.name = str(c+1)
 

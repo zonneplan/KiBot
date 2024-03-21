@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BoardView: X axis mirroring issues (whitequark/kicad-boardview#11)
 - Present: problems when using gerbers already generated
 - Diff: problems when using things like "origin/main" and add_link_id (#589)
+- Panelize: not able to use external JSON configs (#592)
 
 ## [1.6.4] - 2024-02-02
 ### Added
