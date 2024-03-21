@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ki_release: [ki5, ki6, ki7]
+        ki_release: [ki5, ki6, ki7, ki8]
         w_tests: [g1, g2, g3]
 
     runs-on: ubuntu-latest
