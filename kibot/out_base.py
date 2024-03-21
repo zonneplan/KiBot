@@ -731,6 +731,7 @@ class VariantOptions(BaseOptions):
         if not highlight:
             return
         self.create_3D_highlight_file()
+        extra_debug = GS.debug_level > 3
         # TODO: Adjust? Configure?
         z = (100.0 if self.highlight_on_top else 0.1)/2.54
         for m in GS.get_modules_board(board):
@@ -749,13 +750,19 @@ class VariantOptions(BaseOptions):
                 m_cen = wxPoint((bbox.x2+bbox.x1)/2, (bbox.y2+bbox.y1)/2)
             else:
                 # No courtyard, ask KiCad
-                # This will include things like text
-                bbox = m.GetBoundingBox()
+                # Avoid including the text. KiCad 8 can return ridiculous things
+                bbox = m.GetBoundingBox() if GS.ki5 else m.GetBoundingBox(False, False)
                 w = bbox.GetWidth()
                 h = bbox.GetHeight()
                 m_cen = m.GetCenter()
                 if not (m.GetAttributes() & MOD_ALLOW_MISSING_COURTYARD):
                     logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
+            if extra_debug:
+                logger.debug(f'Highlight for {ref}')
+                logger.debug(f' - Position {ToMM(m_pos.x)}, {ToMM(m_pos.y)}')
+                logger.debug(f' - Orientation {rot}')
+                logger.debug(f' - Center {ToMM(m_cen.x)} {ToMM(m_cen.y)}')
+                logger.debug(f' - w,h {ToMM(w)}, {ToMM(h)}')
             # Compute the offset
             off_x = m_cen.x - m_pos.x
             off_y = m_cen.y - m_pos.y
