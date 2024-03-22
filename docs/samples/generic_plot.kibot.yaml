@@ -2887,6 +2887,7 @@ outputs:
       variant: ''
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
+  # Note that if you need a more customized output you can use the *bom* output, which can include positions.
   - name: 'position_example'
     comment: 'Generates the file with position information for the PCB components, used by the pick and place machine.'
     type: 'position'
