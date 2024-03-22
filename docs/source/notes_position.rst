@@ -158,7 +158,7 @@ use of the rotation filter:
        comment: 'Adjust rotation for JLC'
        type: rot_footprint
        negative_bottom: false
-       mirror_bottom: false
+       mirror_bottom: true
 
    outputs:
      - name: 'position'
@@ -215,7 +215,7 @@ As you can see we now create a filter named ``fix_rotation`` of type
        comment: 'Adjust rotation for JLC'
        type: rot_footprint
        negative_bottom: false
-       mirror_bottom: false
+       mirror_bottom: true
 
 Using it, instead of the internal filter named ``_rot_footprint_jlcpcb``, is
 the same here. But you can then customize the filter.
@@ -231,7 +231,7 @@ rotate them just 90 degrees. The filter will look like this:
        comment: 'Adjust rotation for JLC'
        type: rot_footprint
        negative_bottom: false
-       mirror_bottom: false
+       mirror_bottom: true
        rotations:
          - ["^QFN-", 90.0]
 
@@ -253,7 +253,7 @@ example:
        comment: 'Adjust rotation for JLC'
        type: rot_footprint
        negative_bottom: false
-       mirror_bottom: false
+       mirror_bottom: true
        rotations:
          - ["^QFN-", 90.0]
 
@@ -280,7 +280,7 @@ You just need to add new offsets to the ``offsets`` option, like in the followin
        comment: 'Adjust rotation for JLC'
        type: rot_footprint
        negative_bottom: false
-       mirror_bottom: false
+       mirror_bottom: true
        offsets:
          - ["^QFN-20", "1,0.5"]
 
@@ -329,7 +329,7 @@ will adjust U103 rotation by 180 degrees:
        comment: 'Adjust rotation for JLC'
        type: rot_footprint
        negative_bottom: false
-       mirror_bottom: false
+       mirror_bottom: true
        rotations_and_offsets:
          - field: Reference
            regex: U103
