@@ -570,9 +570,10 @@ class BaseOptions(Optionable):
 class PanelOptions(BaseOptions):
     """ A class for options that uses KiKit's units """
     _num_regex = re.compile(r'([\d\.]+)(mm|cm|dm|m|mil|inch|in)')
+    _per_regex = re.compile(r'([\d\.]+)%')
     _ang_regex = re.compile(r'([\d\.]+)(deg|°|rad)')
 
-    def add_units(self, ops, def_units=None, convert=False):
+    def add_units(self, ops, def_units=None, convert=False, percent=False):
         if def_units is None:
             def_units = self._parent._parent.units
         for op in ops:
@@ -587,6 +588,8 @@ class PanelOptions(BaseOptions):
                 if convert:
                     setattr(self, _op, int(val*GS.kikit_units_to_kicad[def_units]))
             else:
+                if percent and PanelOptions._per_regex.match(val):
+                    continue
                 m = PanelOptions._num_regex.match(val)
                 if m is None:
                     raise KiPlotConfigurationError('Malformed value `{}: {}` must be a number and units'.format(op, val))

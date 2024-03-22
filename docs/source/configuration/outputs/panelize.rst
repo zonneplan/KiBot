@@ -52,12 +52,25 @@ Parameters:
                   -  ``cutcurves`` :index:`: <pair: output - panelize - options - configs - cuts; cutcurves>` [boolean=false] Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
                      Used for *vcuts*.
                   -  ``drill`` :index:`: <pair: output - panelize - options - configs - cuts; drill>` [number|string] Drill size used for the *mousebites*.
+                  -  *end_prolongation* :index:`: <pair: output - panelize - options - configs - cuts; end_prolongation>` Alias for endprolongation.
+                  -  ``endprolongation`` :index:`: <pair: output - panelize - options - configs - cuts; endprolongation>` [number|string] Prolongation on the end of V-CUT without text.
                   -  ``layer`` :index:`: <pair: output - panelize - options - configs - cuts; layer>` [string='Cmts.User'] Specify the layer to render V-cuts on. Also used for the *layer* type.
+                  -  *line_width* :index:`: <pair: output - panelize - options - configs - cuts; line_width>` Alias for linewidth.
+                  -  ``linewidth`` :index:`: <pair: output - panelize - options - configs - cuts; linewidth>` [number|string] Line width to plot cuts with.
                   -  ``offset`` :index:`: <pair: output - panelize - options - configs - cuts; offset>` [number|string] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
                      negative puts the cuts into the tabs.
                   -  ``prolong`` :index:`: <pair: output - panelize - options - configs - cuts; prolong>` [number|string] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
                      caused by milling). Used for *mousebites* and *layer*.
                   -  ``spacing`` :index:`: <pair: output - panelize - options - configs - cuts; spacing>` [number|string] The spacing of the holes used for the *mousebites*.
+                  -  ``template`` :index:`: <pair: output - panelize - options - configs - cuts; template>` [string='V-CUT'] Text template for the V-CUT.
+                  -  *text_offset* :index:`: <pair: output - panelize - options - configs - cuts; text_offset>` Alias for textoffset.
+                  -  *text_prolongation* :index:`: <pair: output - panelize - options - configs - cuts; text_prolongation>` Alias for textprolongation.
+                  -  *text_size* :index:`: <pair: output - panelize - options - configs - cuts; text_size>` Alias for textsize.
+                  -  *text_thickness* :index:`: <pair: output - panelize - options - configs - cuts; text_thickness>` Alias for textthickness.
+                  -  ``textoffset`` :index:`: <pair: output - panelize - options - configs - cuts; textoffset>` [number|string] Text offset from the V-CUT.
+                  -  ``textprolongation`` :index:`: <pair: output - panelize - options - configs - cuts; textprolongation>` [number|string] Prolongation of the text size of V-CUT.
+                  -  ``textsize`` :index:`: <pair: output - panelize - options - configs - cuts; textsize>` [number|string] Text size for vcuts.
+                  -  ``textthickness`` :index:`: <pair: output - panelize - options - configs - cuts; textthickness>` [number|string] Text thickness for width.
 
             -  **fiducials** :index:`: <pair: output - panelize - options - configs; fiducials>` [dict] Used to add fiducial marks to the (rail/frame of) the panel.
 
@@ -68,6 +81,7 @@ Parameters:
                   -  ``coppersize`` :index:`: <pair: output - panelize - options - configs - fiducials; coppersize>` [number|string] Diameter of the copper spot.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - fiducials; hoffset>` [number|string] Horizontal offset from panel edges.
                   -  ``opening`` :index:`: <pair: output - panelize - options - configs - fiducials; opening>` [number|string] Diameter of the solder mask opening.
+                  -  ``paste`` :index:`: <pair: output - panelize - options - configs - fiducials; paste>` [boolean=false] Include the fiducials in the paste layer (therefore they appear on the stencil).
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - fiducials; voffset>` [number|string] Vertical offset from panel edges.
 
             -  **framing** :index:`: <pair: output - panelize - options - configs; framing>` [dict] Specify the frame around the boards.
@@ -81,12 +95,21 @@ Parameters:
                      the boards have just a milled slot around their perimeter.
                      Plugin: Uses an external python function, only `code` and `arg` are relevant.
                   -  ``arg`` :index:`: <pair: output - panelize - options - configs - framing; arg>` [string=''] Argument to pass to the plugin. Used for *plugin*.
-                  -  ``chamfer`` :index:`: <pair: output - panelize - options - configs - framing; chamfer>` [number|string] Specify the size of chamfer frame corners.
+                  -  ``chamfer`` :index:`: <pair: output - panelize - options - configs - framing; chamfer>` [number|string] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
+                     and `chamferheight` to create a non 45 degrees chamfer.
+                  -  *chamfer_height* :index:`: <pair: output - panelize - options - configs - framing; chamfer_height>` Alias for chamferheight.
+                  -  *chamfer_width* :index:`: <pair: output - panelize - options - configs - framing; chamfer_width>` Alias for chamferwidth.
+                  -  ``chamferheight`` :index:`: <pair: output - panelize - options - configs - framing; chamferheight>` [number|string] Height of the chamfer frame corners, used for non 45 degrees chamfer.
+                  -  ``chamferwidth`` :index:`: <pair: output - panelize - options - configs - framing; chamferwidth>` [number|string] Width of the chamfer frame corners, used for non 45 degrees chamfer.
                   -  ``code`` :index:`: <pair: output - panelize - options - configs - framing; code>` [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                   -  ``cuts`` :index:`: <pair: output - panelize - options - configs - framing; cuts>` [string='both'] [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
                      Used for *frame*.
                   -  ``fillet`` :index:`: <pair: output - panelize - options - configs - framing; fillet>` [number|string] Specify radius of fillet frame corners.
                   -  ``hspace`` :index:`: <pair: output - panelize - options - configs - framing; hspace>` [number|string] Specify the horizontal space between PCB and the frame/rail.
+                  -  *max_total_height* :index:`: <pair: output - panelize - options - configs - framing; max_total_height>` Alias for maxtotalheight.
+                  -  *max_total_width* :index:`: <pair: output - panelize - options - configs - framing; max_total_width>` Alias for maxtotalwidth.
+                  -  ``maxtotalheight`` :index:`: <pair: output - panelize - options - configs - framing; maxtotalheight>` [number|string] Maximal height of the panel.
+                  -  ``maxtotalwidth`` :index:`: <pair: output - panelize - options - configs - framing; maxtotalwidth>` [number|string] Maximal width of the panel.
                   -  *min_total_height* :index:`: <pair: output - panelize - options - configs - framing; min_total_height>` Alias for mintotalheight.
                   -  *min_total_width* :index:`: <pair: output - panelize - options - configs - framing; min_total_width>` Alias for mintotalwidth.
                   -  ``mintotalheight`` :index:`: <pair: output - panelize - options - configs - framing; mintotalheight>` [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
@@ -114,10 +137,15 @@ Parameters:
                   -  *bake_text* :index:`: <pair: output - panelize - options - configs - layout; bake_text>` Alias for baketext.
                   -  ``baketext`` :index:`: <pair: output - panelize - options - configs - layout; baketext>` [boolean=true] A flag that indicates if text variables should be substituted or not.
                   -  ``code`` :index:`: <pair: output - panelize - options - configs - layout; code>` [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                  -  *h_back_bone* :index:`: <pair: output - panelize - options - configs - layout; h_back_bone>` Alias for hbackbone.
+                  -  *h_bone_cut* :index:`: <pair: output - panelize - options - configs - layout; h_bone_cut>` Alias for hbonecut.
+                  -  *h_bone_first* :index:`: <pair: output - panelize - options - configs - layout; h_bone_first>` Alias for hbonefirst.
+                  -  *h_bone_skip* :index:`: <pair: output - panelize - options - configs - layout; h_bone_skip>` Alias for hboneskip.
                   -  ``hbackbone`` :index:`: <pair: output - panelize - options - configs - layout; hbackbone>` [number|string] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
                      spacing of the boards.
                   -  ``hbonecut`` :index:`: <pair: output - panelize - options - configs - layout; hbonecut>` [boolean=true] If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
                      cross.
+                  -  ``hbonefirst`` :index:`: <pair: output - panelize - options - configs - layout; hbonefirst>` [number=0] Specify first horizontal backbone to render.
                   -  ``hboneskip`` :index:`: <pair: output - panelize - options - configs - layout; hboneskip>` [number=0] Skip every n horizontal backbones. I.e., 1 means place only every other backbone.
                   -  ``hspace`` :index:`: <pair: output - panelize - options - configs - layout; hspace>` [number|string] Specify the horizontal gap between the boards.
                   -  *rename_net* :index:`: <pair: output - panelize - options - configs - layout; rename_net>` Alias for renamenet.
@@ -128,10 +156,15 @@ Parameters:
                   -  ``rotation`` :index:`: <pair: output - panelize - options - configs - layout; rotation>` [number|string] Rotate the boards before placing them in the panel.
                   -  ``space`` :index:`: <pair: output - panelize - options - configs - layout; space>` [number|string] Specify the gap between the boards, overwrites `hspace` and `vspace`.
                   -  ``type`` :index:`: <pair: output - panelize - options - configs - layout; type>` [string='grid'] [grid,plugin] In the plugin type only `code` and `arg` are relevant.
+                  -  *v_back_bone* :index:`: <pair: output - panelize - options - configs - layout; v_back_bone>` Alias for vbackbone.
+                  -  *v_bone_cut* :index:`: <pair: output - panelize - options - configs - layout; v_bone_cut>` Alias for vbonecut.
+                  -  *v_bone_first* :index:`: <pair: output - panelize - options - configs - layout; v_bone_first>` Alias for vbonefirst.
+                  -  *v_bone_skip* :index:`: <pair: output - panelize - options - configs - layout; v_bone_skip>` Alias for vboneskip.
                   -  ``vbackbone`` :index:`: <pair: output - panelize - options - configs - layout; vbackbone>` [number|string] The width of vertical backbone (0 means no backbone). The backbone does not increase the
                      spacing of the boards.
                   -  ``vbonecut`` :index:`: <pair: output - panelize - options - configs - layout; vbonecut>` [boolean=true] If there are both backbones specified, specifies if there should be a vertical cut where the backbones
                      cross.
+                  -  ``vbonefirst`` :index:`: <pair: output - panelize - options - configs - layout; vbonefirst>` [number=0] Specify first vertical backbone to render.
                   -  ``vboneskip`` :index:`: <pair: output - panelize - options - configs - layout; vboneskip>` [number=0] Skip every n vertical backbones. I.e., 1 means place only every other backbone.
                   -  ``vspace`` :index:`: <pair: output - panelize - options - configs - layout; vspace>` [number|string] Specify the vertical gap between the boards.
 
@@ -145,13 +178,13 @@ Parameters:
                      A3-portrait,A4-portrait,A5-portrait,A-portrait,B-portrait,C-portrait,D-portrait,E-portrait,
                      USLetter-portrait,USLegal-portrait,USLedger-portrait] Paper size. The default `inherit` option inherits
                      paper size from the source board. This feature is not supported on KiCAD 5.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - page; anchor>` [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - page; anchor>` [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
                      (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - page; height>` [number|string] Height for the `custom` paper size.
                   -  *pos_x* :index:`: <pair: output - panelize - options - configs - page; pos_x>` Alias for posx.
                   -  *pos_y* :index:`: <pair: output - panelize - options - configs - page; pos_y>` Alias for posy.
-                  -  ``posx`` :index:`: <pair: output - panelize - options - configs - page; posx>` [number|string] The X position of the panel on the page.
-                  -  ``posy`` :index:`: <pair: output - panelize - options - configs - page; posy>` [number|string] The Y position of the panel on the page.
+                  -  ``posx`` :index:`: <pair: output - panelize - options - configs - page; posx>` [number|string] The X position of the panel on the page. Can be expressed as a page size percentage.
+                  -  ``posy`` :index:`: <pair: output - panelize - options - configs - page; posy>` [number|string] The Y position of the panel on the page. Can be expressed as a page size percentage.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - page; width>` [number|string] Width for the `custom` paper size.
 
             -  **tabs** :index:`: <pair: output - panelize - options - configs; tabs>` [dict] Style of the tabs used to join the PCB copies.
@@ -173,6 +206,10 @@ Parameters:
                   -  *min_distance* :index:`: <pair: output - panelize - options - configs - tabs; min_distance>` Alias for mindistance.
                   -  ``mindistance`` :index:`: <pair: output - panelize - options - configs - tabs; mindistance>` [number|string] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
                      Used for *fixed*.
+                  -  *patch_corners* :index:`: <pair: output - panelize - options - configs - tabs; patch_corners>` Alias for patchcorners.
+                  -  ``patchcorners`` :index:`: <pair: output - panelize - options - configs - tabs; patchcorners>` [boolean=true] The full tabs are appended to the nearest flat face of the PCB. If the PCB has sharp corners, you want to
+                     add patches of substrate to these corners. However, if the PCB has fillet or miter, you don't want to
+                     apply the patches.
                   -  ``spacing`` :index:`: <pair: output - panelize - options - configs - tabs; spacing>` [number|string] The maximum spacing of the tabs. Used for *spacing*.
                   -  *tab_footprints* :index:`: <pair: output - panelize - options - configs - tabs; tab_footprints>` Alias for tabfootprints.
                   -  ``tabfootprints`` :index:`: <pair: output - panelize - options - configs - tabs; tabfootprints>` [string='kikit:Tab'] The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma.
@@ -191,19 +228,25 @@ Parameters:
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - tooling; hoffset>` [number|string] Horizontal offset from panel edges.
                   -  ``paste`` :index:`: <pair: output - panelize - options - configs - tooling; paste>` [boolean=false] If True, the holes are included in the paste layer (therefore they appear on the stencil).
                   -  ``size`` :index:`: <pair: output - panelize - options - configs - tooling; size>` [number|string] Diameter of the holes.
+                  -  *solder_mask_margin* :index:`: <pair: output - panelize - options - configs - tooling; solder_mask_margin>` Alias for soldermaskmargin.
+                  -  ``soldermaskmargin`` :index:`: <pair: output - panelize - options - configs - tooling; soldermaskmargin>` [number|string] Solder mask expansion/margin. Use 1.3mm for JLCPCB.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - tooling; voffset>` [number|string] Vertical offset from panel edges.
 
             -  ``copperfill`` :index:`: <pair: output - panelize - options - configs; copperfill>` [dict] Fill non-board areas of the panel with copper.
 
                -  Valid keys:
 
-                  -  **type** :index:`: <pair: output - panelize - options - configs - copperfill; type>` [string='none'] [none,solid,hatched] How to fill non-board areas of the panel with copper.
+                  -  **type** :index:`: <pair: output - panelize - options - configs - copperfill; type>` [string='none'] [none,solid,hatched,hex] How to fill non-board areas of the panel with copper.
                   -  ``clearance`` :index:`: <pair: output - panelize - options - configs - copperfill; clearance>` [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
                      copper.
+                  -  ``diameter`` :index:`: <pair: output - panelize - options - configs - copperfill; diameter>` [number|string] Diameter of hexagons.
+                  -  *edge_clearance* :index:`: <pair: output - panelize - options - configs - copperfill; edge_clearance>` Alias for edgeclearance.
+                  -  ``edgeclearance`` :index:`: <pair: output - panelize - options - configs - copperfill; edgeclearance>` [number|string] Specifies clearance between the fill and panel perimeter.
                   -  ``layers`` :index:`: <pair: output - panelize - options - configs - copperfill; layers>` [string|list(string)] List of layers to fill. Can be a comma-separated string.
                      Using *all* means all external copper layers.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - copperfill; orientation>` [number|string] The orientation of the hatched strokes.
-                  -  ``spacing`` :index:`: <pair: output - panelize - options - configs - copperfill; spacing>` [number|string] The space between the hatched strokes.
+                  -  ``spacing`` :index:`: <pair: output - panelize - options - configs - copperfill; spacing>` [number|string] The space between the hatched strokes or hexagons.
+                  -  ``threshold`` :index:`: <pair: output - panelize - options - configs - copperfill; threshold>` [number=15] Remove fragments smaller than threshold. Expressed as a percentage.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - copperfill; width>` [number|string] The width of the hatched strokes.
 
             -  ``debug`` :index:`: <pair: output - panelize - options - configs; debug>` [dict] Debug options.
@@ -227,9 +270,14 @@ Parameters:
 
                   -  ``copperfill`` :index:`: <pair: output - panelize - options - configs - post; copperfill>` [boolean=false] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels).
                   -  ``dimensions`` :index:`: <pair: output - panelize - options - configs - post; dimensions>` [boolean=false] Draw dimensions with the panel size..
+                  -  *edge_width* :index:`: <pair: output - panelize - options - configs - post; edge_width>` Alias for edgewidth.
+                  -  ``edgewidth`` :index:`: <pair: output - panelize - options - configs - post; edgewidth>` [number|string] Specify line width for the Edge.Cuts of the panel.
                   -  *mill_radius* :index:`: <pair: output - panelize - options - configs - post; mill_radius>` Alias for millradius.
+                  -  *mill_radius_outer* :index:`: <pair: output - panelize - options - configs - post; mill_radius_outer>` Alias for millradiusouter.
                   -  ``millradius`` :index:`: <pair: output - panelize - options - configs - post; millradius>` [number|string] Simulate the milling operation (add fillets to the internal corners).
                      Specify mill radius (usually 1 mm). 0 radius disables the functionality.
+                  -  ``millradiusouter`` :index:`: <pair: output - panelize - options - configs - post; millradiusouter>` [number|string] Like `millradius`, but modifies only board outer counter.
+                     No internal features of the board are affected.
                   -  ``origin`` :index:`: <pair: output - panelize - options - configs - post; origin>` [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Specify if the auxiliary origin an grid origin should be placed.
                      Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr (middle of sides), c (center).
                      Empty string does not changes the origin.

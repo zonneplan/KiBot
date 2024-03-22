@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
   - from: KiKit
     role: mandatory
+    version: 1.5.1
 """
 import collections
 from copy import deepcopy
@@ -61,15 +62,15 @@ class PanelizePage(PanelOptions):
             """ {type} """
             self.size = None
             """ {type} """
-            self.anchor = 'tl'
+            self.anchor = 'mt'
             """ [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
                 (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline """
-            self.posx = 15
-            """ [number|string] The X position of the panel on the page """
+            self.posx = '50%'
+            """ [number|string] The X position of the panel on the page. Can be expressed as a page size percentage """
             self.pos_x = None
             """ {posx} """
-            self.posy = 15
-            """ [number|string] The Y position of the panel on the page """
+            self.posy = 20
+            """ [number|string] The Y position of the panel on the page. Can be expressed as a page size percentage """
             self.pos_y = None
             """ {posy} """
             self.width = 297
@@ -80,7 +81,8 @@ class PanelizePage(PanelOptions):
 
     def config(self, parent):
         super().config(parent)
-        self.add_units(('posx', 'posy', 'width', 'height'))
+        self.add_units(('posx', 'posy'), percent=True)
+        self.add_units(('width', 'height'))
 
 
 class PanelizeLayout(PanelOptionsWithPlugin):
@@ -122,19 +124,39 @@ class PanelizeLayout(PanelOptionsWithPlugin):
             self.vbackbone = 0
             """ [number|string] The width of vertical backbone (0 means no backbone). The backbone does not increase the
                 spacing of the boards """
+            self.v_back_bone = None
+            """ {vbackbone} """
             self.hbackbone = 0
             """ [number|string] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
                 spacing of the boards """
+            self.h_back_bone = None
+            """ {hbackbone} """
             self.vboneskip = 0
             """ Skip every n vertical backbones. I.e., 1 means place only every other backbone """
+            self.v_bone_skip = None
+            """ {vboneskip} """
             self.hboneskip = 0
             """ Skip every n horizontal backbones. I.e., 1 means place only every other backbone """
+            self.h_bone_skip = None
+            """ {hboneskip} """
             self.vbonecut = True
             """ If there are both backbones specified, specifies if there should be a vertical cut where the backbones
                 cross """
+            self.v_bone_cut = None
+            """ {vbonecut} """
             self.hbonecut = True
             """ If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
                 cross """
+            self.h_bone_cut = None
+            """ {hbonecut} """
+            self.vbonefirst = 0
+            """ Specify first vertical backbone to render """
+            self.v_bone_first = None
+            """ {vbonefirst} """
+            self.hbonefirst = 0
+            """ Specify first horizontal backbone to render """
+            self.h_bone_first = None
+            """ {hbonefirst} """
         super().__init__()
 
     def config(self, parent):
@@ -176,6 +198,12 @@ class PanelizeTabs(PanelOptionsWithPlugin):
             self.cutout = 1
             """ [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
                 depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full* """
+            self.patchcorners = True
+            """ The full tabs are appended to the nearest flat face of the PCB. If the PCB has sharp corners, you want to
+                add patches of substrate to these corners. However, if the PCB has fillet or miter, you don't want to
+                apply the patches """
+            self.patch_corners = None
+            """ {patchcorners} """
             self.tabfootprints = 'kikit:Tab'
             """ The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma """
             self.tab_footprints = None
@@ -212,13 +240,40 @@ class PanelizeCuts(PanelOptionsWithPlugin):
                 Used for *vcuts* """
             self.cut_curves = None
             """ {cutcurves} """
+            self.linewidth = 0.3
+            """ [number|string] Line width to plot cuts with """
+            self.line_width = None
+            """ {linewidth} """
+            self.textthickness = 0.3
+            """ [number|string] Text thickness for width """
+            self.text_thickness = None
+            """ {textthickness} """
+            self.textsize = 2
+            """ [number|string] Text size for vcuts """
+            self.text_size = None
+            """ {textsize} """
+            self.endprolongation = 3
+            """ [number|string] Prolongation on the end of V-CUT without text """
+            self.end_prolongation = None
+            """ {endprolongation} """
+            self.textprolongation = 3
+            """ [number|string] Prolongation of the text size of V-CUT """
+            self.text_prolongation = None
+            """ {textprolongation} """
+            self.textoffset = 3
+            """ [number|string] Text offset from the V-CUT """
+            self.text_offset = None
+            """ {textoffset} """
+            self.template = 'V-CUT'
+            """ Text template for the V-CUT """
             self.layer = 'Cmts.User'
             """ Specify the layer to render V-cuts on. Also used for the *layer* type """
         super().__init__()
 
     def config(self, parent):
         super().config(parent)
-        self.add_units(('drill', 'spacing', 'offset', 'prolong', 'clearance'))
+        self.add_units(('drill', 'spacing', 'offset', 'prolong', 'clearance', 'linewidth', 'textthickness', 'textsize',
+                        'endprolongation', 'textprolongation', 'textoffset'))
         res = Layer.solve(self.layer)
         if len(res) > 1:
             raise KiPlotConfigurationError('Must select only one layer for the V-cuts ({})'.format(self.layer))
@@ -245,7 +300,16 @@ class PanelizeFraming(PanelOptionsWithPlugin):
             self.fillet = 0
             """ [number|string] Specify radius of fillet frame corners """
             self.chamfer = 0
-            """ [number|string] Specify the size of chamfer frame corners """
+            """ [number|string] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
+                and `chamferheight` to create a non 45 degrees chamfer """
+            self.chamferwidth = 0
+            """ [number|string] Width of the chamfer frame corners, used for non 45 degrees chamfer """
+            self.chamfer_width = None
+            """ {chamferwidth} """
+            self.chamferheight = 0
+            """ [number|string] Height of the chamfer frame corners, used for non 45 degrees chamfer """
+            self.chamfer_height = None
+            """ {chamferheight} """
             self.mintotalheight = 0
             """ [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
                 Useful for services that require minimal panel size """
@@ -256,6 +320,14 @@ class PanelizeFraming(PanelOptionsWithPlugin):
                 Useful for services that require minimal panel size """
             self.min_total_width = None
             """ {mintotalwidth} """
+            self.maxtotalheight = 10000
+            """ [number|string] Maximal height of the panel """
+            self.max_total_height = None
+            """ {maxtotalheight} """
+            self.maxtotalwidth = 10000
+            """ [number|string] Maximal width of the panel """
+            self.max_total_width = None
+            """ {maxtotalwidth} """
             self.cuts = 'both'
             """ [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
                 Used for *frame* """
@@ -270,7 +342,7 @@ class PanelizeFraming(PanelOptionsWithPlugin):
         if self.space:
             self.hspace = self.vspace = self.space
         self.add_units(('hspace', 'vspace', 'space', 'width', 'fillet', 'chamfer', 'mintotalwidth', 'mintotalheight',
-                        'slotwidth'))
+                        'slotwidth', 'chamferwidth', 'chamferheight'))
 
 
 class PanelizeTooling(PanelOptionsWithPlugin):
@@ -286,11 +358,15 @@ class PanelizeTooling(PanelOptionsWithPlugin):
             """ [number|string] Diameter of the holes """
             self.paste = False
             """ If True, the holes are included in the paste layer (therefore they appear on the stencil) """
+            self.soldermaskmargin = 0
+            """ [number|string] Solder mask expansion/margin. Use 1.3mm for JLCPCB """
+            self.solder_mask_margin = None
+            """ {soldermaskmargin} """
         super().__init__()
 
     def config(self, parent):
         super().config(parent)
-        self.add_units(('hoffset', 'voffset', 'size'))
+        self.add_units(('hoffset', 'voffset', 'size', 'soldermaskmargin'))
 
 
 class PanelizeFiducials(PanelOptions):
@@ -308,6 +384,8 @@ class PanelizeFiducials(PanelOptions):
             """ {coppersize} """
             self.opening = 1
             """ [number|string] Diameter of the solder mask opening """
+            self.paste = False
+            """ Include the fiducials in the paste layer (therefore they appear on the stencil) """
         super().__init__()
 
     def config(self, parent):
@@ -369,25 +447,34 @@ class PanelizeCopperfill(PanelOptions):
     def __init__(self):
         with document:
             self.type = 'none'
-            """ *[none,solid,hatched] How to fill non-board areas of the panel with copper """
+            """ *[none,solid,hatched,hex] How to fill non-board areas of the panel with copper """
             self.clearance = 0.5
             """ [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
                 copper """
+            self.edgeclearance = 0.5
+            """ [number|string] Specifies clearance between the fill and panel perimeter """
+            self.edge_clearance = None
+            """ {edgeclearance} """
             self.layers = 'F.Cu,B.Cu'
             """ [string|list(string)] List of layers to fill. Can be a comma-separated string.
                 Using *all* means all external copper layers """
             self.width = 1
             """ [number|string] The width of the hatched strokes """
             self.spacing = 1
-            """ [number|string] The space between the hatched strokes """
+            """ [number|string] The space between the hatched strokes or hexagons """
             self.orientation = 45
             """ [number|string] The orientation of the hatched strokes """
+            self.diameter = 7
+            """ [number|string] Diameter of hexagons """
+            self.threshold = 15
+            """ Remove fragments smaller than threshold. Expressed as a percentage """
         super().__init__()
 
     def config(self, parent):
         super().config(parent)
-        self.add_units(('width', 'spacing', 'clearance'))
+        self.add_units(('width', 'spacing', 'clearance', 'edgeclearance', 'diameter'))
         self.add_angle(('orientation', ))
+        self.threshold = str(self.threshold)+'%'
         if not isinstance(self.layers, str) or self.layers != 'all':
             if isinstance(self.layers, str):
                 self.layers = self.layers.split(',')
@@ -407,6 +494,11 @@ class PanelizePost(PanelOptions):
                 Specify mill radius (usually 1 mm). 0 radius disables the functionality """
             self.mill_radius = None
             """ {millradius} """
+            self.millradiusouter = 0
+            """ [number|string] Like `millradius`, but modifies only board outer counter.
+                No internal features of the board are affected """
+            self.mill_radius_outer = None
+            """ {millradiusouter} """
             self.reconstructarcs = False
             """ The panelization process works on top of a polygonal representation of the board.
                 This options allows to reconstruct the arcs in the design before saving the panel """
@@ -434,11 +526,15 @@ class PanelizePost(PanelOptions):
                 Empty string does not changes the origin """
             self.dimensions = False
             """ Draw dimensions with the panel size. """
+            self.edgewidth = 0.1
+            """ [number|string] Specify line width for the Edge.Cuts of the panel """
+            self.edge_width = None
+            """ {edgewidth} """
         super().__init__()
 
     def config(self, parent):
         super().config(parent)
-        self.add_units(('millradius',))
+        self.add_units(('millradius', 'edgewidth', 'millradiusouter'))
 
 
 class PanelizeDebug(PanelOptions):
