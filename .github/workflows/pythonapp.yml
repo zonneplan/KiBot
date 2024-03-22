@@ -132,14 +132,6 @@ jobs:
         # Create the caches with macros
         python3-coverage run src/kibot --help-outputs > /dev/null
         ./g4.sh
-    - name: Upload Coverage
-      # Don't mix stable coverage with development coverage
-      if: github.ref == 'refs/heads/dev'
-      uses: coverallsapp/github-action@v2
-      with:
-        flag-name: independent
-        parallel: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
     - name: Store coverage
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
@@ -158,6 +150,14 @@ jobs:
         name: Test_Output_Independent
         # Important! empty directories are skipped!!!!
         path: output
+    - name: Upload Coverage
+      # Don't mix stable coverage with development coverage
+      if: github.ref == 'refs/heads/dev'
+      uses: coverallsapp/github-action@v2
+      with:
+        flag-name: independent
+        parallel: true
+        github-token: ${{ secrets.GITHUB_TOKEN }}
 
   create_images:
     name: Triggers the docker images creation
@@ -238,8 +238,8 @@ jobs:
     # Don't mix stable coverage with development coverage
     if: github.ref == 'refs/heads/dev'
     steps:
-    - name: Finished
-      env:
-        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
-      run: |
-        curl -k https://coveralls.io/webhook?repo_token=$COVERALLS_REPO_TOKEN -d "payload[build_num]="$GITHUB_RUN_ID"&payload[status]=done"
+    - name: Coveralls Finished
+      uses: coverallsapp/github-action@v2
+      with:
+        parallel-finished: true
+        carryforward: "ki5_g1,ki5_g2,ki5_g3,ki6_g1,ki6_g2,ki6_g3,ki7_g1,ki7_g2,ki7_g3,ki8_g1,ki8_g2,ki8_g3,independent"
