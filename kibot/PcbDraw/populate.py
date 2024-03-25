@@ -10,20 +10,12 @@ from copy import deepcopy
 from itertools import chain
 from typing import List, Optional, Any, Tuple, Dict
 
-from . import mistune # type: ignore
-# The following try-catch is used to support mistune 0.8.4 and 2.x
-try:
-    from .mistune.plugins.table import plugin_table # type: ignore
-    from .mistune.plugins.footnotes import plugin_footnotes # type: ignore
-    InlineParser = mistune.inline_parser.InlineParser
-    HTMLRenderer = mistune.renderers.HTMLRenderer
-except ModuleNotFoundError:
-    InlineParser = mistune.InlineLexer
-    HTMLRenderer = mistune.Renderer
 from . import pybars # type: ignore
 import yaml
 
 from . import mdrenderer
+from .mistune_shim import mistune  # type: ignore
+from .mistune_shim import HTMLRenderer, InlineParser, plugin_footnotes, plugin_table
 from .plot import find_data_file, get_global_datapaths
 
 PKG_BASE = os.path.dirname(__file__)
@@ -34,6 +26,15 @@ def parse_pcbdraw(lexer: Any, m: re.Match, state: Any=None) -> Any:
     components = list(map(lambda x: x.strip(), components.split(",")))
     return 'pcbdraw', side, components
 
+
+def parse_pcbdraw_v3(inline, m, state):
+    text = m.group('scomp')
+    side, components = text.split("|")
+    components = list(map(lambda x: x.strip(), components.split(",")))
+    state.append_token({'type': 'pcbdraw_v3', 'raw': text, 'attrs': {'side': side, 'components': components}})
+    return m.end()
+
+
 class PcbDrawInlineLexer(InlineParser): # type: ignore
     def __init__(self, renderer: Any, **kwargs: Any) -> None:
         super(PcbDrawInlineLexer, self).__init__(renderer, **kwargs)
@@ -41,11 +42,14 @@ class PcbDrawInlineLexer(InlineParser): # type: ignore
 
     def enable_pcbdraw(self) -> None:
         pcbdraw_pattern = (
-            r"\[\["                   # [[
-            r"([\s\S]+?\|[\s\S]+?)"   # side| component
-            r"\]\](?!\])"             # ]]
+            r"\[\["                           # [[
+            r"(?P<scomp>[\s\S]+?\|[\s\S]+?)"  # side| component
+            r"\]\](?!\])"                     # ]]
         )
-        if hasattr(self, 'register_rule'):
+        if hasattr(self, 'register'):
+            # mistune v3 API
+            self.register('pcbdraw', pcbdraw_pattern, parse_pcbdraw_v3, before='link')
+        elif hasattr(self, 'register_rule'):
             # mistune v2 API
             self.rules.insert(3, 'pcbdraw')
             self.register_rule('pcbdraw', pcbdraw_pattern, parse_pcbdraw)
@@ -101,6 +105,11 @@ def Renderer(BaseRenderer, initial_components: List[str], format: str): # type: 
                 items.append(self.current_item)
             return items
 
+        def pcbdraw_v3(self, text, **attrs) -> str:
+            side = attrs['side']
+            components = attrs['components']
+            return self.pcbdraw(side, components)
+
         def pcbdraw(self, side: str, components: List[str]) -> str:
             self.active_side = side
             self.visited_components += components
@@ -153,19 +162,19 @@ def Renderer(BaseRenderer, initial_components: List[str], format: str): # type: 
             self.append_comment(retval)
             return retval
 
-        def list(self, text: Any, ordered: bool, level: Any=None, start: Any=None) -> str:
+        def list(self, text: Any, ordered: bool, level: Any=None, start: Any=None, **attrs) -> str:
             if not text:
                 return ""
-            retval = super(Tmp, self).list(text, ordered, level, start)
+            retval = super(Tmp, self).list(text, ordered, level, start, **attrs)
             if level == 1:
                 # Add the result from the list when finished and only if not empty
                 self.append_comment(retval)
             return retval
 
-        def list_item(self, text: str, level: Any=None) -> str:
+        def list_item(self, text: str, level: Any=None, **attrs) -> str:
             if not self.found_step:
                 # If we don't have an image for this step assume this is a regular list
-                return super(Tmp, self).list_item(text, level)
+                return super(Tmp, self).list_item(text, level, **attrs)
             # Add a step
             step = {
                 "side": self.active_side,
@@ -203,12 +212,8 @@ def load_content(filename: str) -> Tuple[Optional[Dict[str, Any]], str]:
 def parse_content(renderer: Any, content: str) -> List[Dict[str, Any]]:
     lexer = PcbDrawInlineLexer(renderer)
     processor = mistune.Markdown(renderer=renderer, inline=lexer)
-    try:
-        plugin_table(processor)
-        plugin_footnotes(processor)
-    except NameError:
-        # Mistune v0.8.4 doesn't define the above functions
-        pass
+    plugin_table(processor)
+    plugin_footnotes(processor)
     processor(content)
     return renderer.output() # type: ignore
 
