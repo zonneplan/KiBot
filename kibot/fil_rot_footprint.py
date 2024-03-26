@@ -251,6 +251,10 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         self.apply_rotation_angle(comp, 0)
 
     def apply_offset_value(self, comp, angle, pos_offset_x, pos_offset_y):
+        if comp.bottom and self.mirror_bottom:
+            logger.debugl(2, '- applying mirror to the offset')
+            pos_offset_x = -pos_offset_x
+            angle = -angle
         if angle:
             rotation = radians(angle)
             rsin = sin(rotation)
@@ -282,7 +286,7 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                     pos_offset_x = -pos_offset_x
                     pos_offset_y = -pos_offset_y
                     logger.debugl(2, f'- changing to {pos_offset_x}, {pos_offset_y} mm to match signs')
-                self.apply_offset_value(comp, comp.offset_footprint_rot, pos_offset_x, pos_offset_y)
+                self.apply_offset_value(comp, comp.footprint_rot, pos_offset_x, pos_offset_y)
                 return True
         return False
 

@@ -19,7 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.
   (#578)
-- Filters: _none filter not always honored (i.e. exclude in BoM) (#580)
+- Filters:
+  - _none filter not always honored (i.e. exclude in BoM) (#580)
+  - Rotation for bottom JLCPCB parts with offset (#591)
 - PCB Parity: components excluded from the board reported anyways (#585)
 - BoardView:
   - X axis mirroring issues (whitequark/kicad-boardview#11)
