@@ -390,13 +390,13 @@ DEFAULT_ROTATIONS = [["^R_Array_Convex_", 90.0],
                      ["^Diodes_PowerDI3333-8", 270.0],
                      ["^Quectel_L80-R", 270.0],
                      ["^SC-74-6", 180.0],
-                     [r"^PinHeader_2x05_P1\.27mm_Vertical", 90.0],
-                     [r"^PinHeader_2x03_P1\.27mm_Vertical", 90.0],
+                     [r"^PinHeader_2x05_P1\.27mm_Vertical", -90.0],
+                     [r"^PinHeader_2x03_P1\.27mm_Vertical", -90.0],
                      ]
 DEFAULT_ROT_FIELDS = ['JLCPCB Rotation Offset', 'JLCRotOffset']
 DEFAULT_OFFSETS = [["^USB_C_Receptacle_XKB_U262-16XN-4BVC11", (0.0, -1.44)],
-                   [r"^PinHeader_2x05_P1\.27mm_Vertical", (2.54, 0.635)],
-                   [r"^PinHeader_2x03_P1\.27mm_Vertical", (1.27, 0.635)],
+                   [r"^PinHeader_2x05_P1\.27mm_Vertical", (-2.54, -0.635)],
+                   [r"^PinHeader_2x03_P1\.27mm_Vertical", (-1.27, -0.635)],
                    ]
 DEFAULT_OFFSET_FIELDS = ['JLCPCB Position Offset', 'JLCPosOffset']
 
