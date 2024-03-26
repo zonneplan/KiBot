@@ -312,14 +312,14 @@ positions_a = {'Q1': (122, 77, 'top', 180),
                # Manually rotated 270
                'Q3': (122, 86, 'top', 270),
                # Manually moved 1,1
-               'Q4': (133, 85, 'top', 180),
+               'Q4': (131, 87, 'top', 180),
                'Q5': (122, 77, 'bottom', 0),
                # Offset using *offsets*
                'Q6': (131, 78, 'bottom', 0),
                # Manually rotated 270
                'Q7': (122, 86, 'bottom', 90),
                # Manually moved 1,1
-               'Q8': (131, 87, 'bottom', 0)}
+               'Q8': (133, 85, 'bottom', 0)}
 POS_TRS = ('Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8')
 
 
