@@ -282,6 +282,16 @@ update_gha:
 	git push
 	git tag -f -a v2_k7 -m "GitHub Action v2 for KiCad 7"
 	git push origin -f --tags
+	cp Dockerfile_dk8 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 8 development" Dockerfile
+	git push
+	git tag -f -a v2_dk8 -m "GitHub Action v2 for KiCad 8 (development)"
+	git push origin -f --tags
+	cp Dockerfile_k8 Dockerfile
+	git commit -m "[CI/CD] Updating Github Action v2 for KiCad 8 latest" Dockerfile
+	git push
+	git tag -f -a v2_k8 -m "GitHub Action v2 for KiCad 8"
+	git push origin -f --tags
 
 
 .PHONY: deb deb_clean lint test test_local gen_ref doc py_build pypi_upload py_clean
