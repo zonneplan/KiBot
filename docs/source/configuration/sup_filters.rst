@@ -131,6 +131,7 @@ Supported filters
          This option forces the wrong computation for compatibility.
          This option also controls the way offset signs are interpreted. When enabled the offsets matches this plugin,
          when disabled matches the interpretation used by the matthewlai/JLCKicadTools plugin.
+         Disabling this option you'll get better algorithms, but loose compatibility with this plugin.
       -  ``comment`` :index:`: <pair: filter - rot_footprint; comment>` [string=''] A comment for documentation purposes.
       -  ``extend`` :index:`: <pair: filter - rot_footprint; extend>` [boolean=true] Extends the internal list of rotations with the one provided.
          Otherwise just use the provided list.

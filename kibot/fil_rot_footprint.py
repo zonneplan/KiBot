@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements a filter to rotate footprints.
@@ -139,7 +139,8 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 The correct computation is `(180 - component rot) + angle` but the plugin does `180 - (component rot + angle)`.
                 This option forces the wrong computation for compatibility.
                 This option also controls the way offset signs are interpreted. When enabled the offsets matches this plugin,
-                when disabled matches the interpretation used by the matthewlai/JLCKicadTools plugin """
+                when disabled matches the interpretation used by the matthewlai/JLCKicadTools plugin.
+                Disabling this option you'll get better algorithms, but loose compatibility with this plugin """
 
     def config(self, parent):
         super().config(parent)
@@ -285,8 +286,11 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                     # Signs here matches bennymeg/JLC-Plugin-for-KiCad because the fields usage comes from it
                     pos_offset_x = -pos_offset_x
                     pos_offset_y = -pos_offset_y
-                    logger.debugl(2, f'- changing to {pos_offset_x}, {pos_offset_y} mm to match signs')
-                self.apply_offset_value(comp, comp.footprint_rot, pos_offset_x, pos_offset_y)
+                    angle = comp.offset_footprint_rot
+                    logger.debugl(2, f'- changing to {pos_offset_x}, {pos_offset_y} mm to match signs, using angle {angle}')
+                else:
+                    angle = comp.footprint_rot
+                self.apply_offset_value(comp, angle, pos_offset_x, pos_offset_y)
                 return True
         return False
 
