@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
-# License: GPL-3.0
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 """KiBot: KiCad automation tool for documents generation
@@ -10,8 +10,8 @@
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--banner N]
-         [TARGET...]
+         [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--warn-ci-cd]
+         [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
@@ -76,6 +76,8 @@ Options:
   -V, --version                    Show program's version number and exit
   -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
   -W, --stop-on-warnings           Stop on warnings
+  --warn-ci-cd                     Don't disable warnings expected on CI/CD
+                                   environments
   -x, --example                    Create a template configuration file
 
 Quick start options:
@@ -361,10 +363,14 @@ def parse_global_redef(args):
 
 
 class SimpleFilter(object):
-    def __init__(self, num):
+    def __init__(self, num, regex=''):
         self.number = num
-        self.regex = re.compile('')
+        self.regex = re.compile(regex)
         self.error = ''
+
+
+def detect_ci_env():
+    return os.path.isfile('/etc/kiauto_tag') or ('GITLAB_CI' in os.environ) or ('GITHUB_RUN_ID' in os.environ)
 
 
 def apply_warning_filter(args):
@@ -373,6 +379,12 @@ def apply_warning_filter(args):
             log.set_filters([SimpleFilter(int(n)) for n in args.no_warn.split(',')])
         except ValueError:
             GS.exit_with_error(f'-w/--no-warn must specify a comma separated list of numbers ({args.no_warn})', EXIT_BAD_ARGS)
+    if detect_ci_env() and not args.warn_ci_cd:
+        # Disable warnings we always get on docker images
+        #  9: KiCad config without environment.vars section
+        # 10: Missing user templates and 3D models
+        logger.debug('Filtering warnings we always get on CI/CD')
+        log.set_filters([SimpleFilter(n, regex=r) for n, r in ((9, ''), (10, '(3D models|user templates)'))])
 
 
 def debug_arguments(args):
