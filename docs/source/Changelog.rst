@@ -36,8 +36,13 @@ Fixed
 
 -  Netlist generation problems with components on the PCB but not in
    schematic. (#578)
--  Filters: \_none filter not always honored (i.e. exclude in BoM)
-   (#580)
+-  Filters:
+
+   -  \_none filter not always honored (i.e. exclude in BoM) (#580)
+   -  Rotation for bottom JLCPCB parts with offset (#591)
+   -  Rotation angle used to compute the offsets, must be the final
+      angle
+
 -  PCB Parity: components excluded from the board reported anyways
    (#585)
 -  BoardView:

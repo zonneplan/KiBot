@@ -19,8 +19,8 @@ Footprint                                               Rotation
 ``^LQFP-``                                                 270
 ``^MSOP-``                                                 270
 ``^PUIAudio_SMT_0825_S_4_R*``                              270
-``^PinHeader_2x03_P1\.27mm_Vertical``                       90
-``^PinHeader_2x05_P1\.27mm_Vertical``                       90
+``^PinHeader_2x03_P1\.27mm_Vertical``                      -90
+``^PinHeader_2x05_P1\.27mm_Vertical``                      -90
 ``^PowerPAK_SO-8_Single``                                  270
 ``^QFN-``                                                  270
 ``^Quectel_L80-R``                                         270
