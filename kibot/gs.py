@@ -879,3 +879,13 @@ class GS(object):
                 footprint.GetFieldByName(fld).SetVisible(False)
         elif GS.ki6:
             footprint.SetProperties(flds)
+
+    @staticmethod
+    def get_shown_text(obj, allow_extra_text=True, a_depth=0):
+        if GS.ki8:  # 8
+            return obj.GetShownText(allow_extra_text, a_depth)
+        if GS.ki7:  # 7
+            return obj.GetShownText()
+        if GS.ki6:  # 6
+            return obj.GetShownText(a_depth, allow_extra_text)
+        return obj.GetShownText()  # 5

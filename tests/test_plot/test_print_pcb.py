@@ -128,7 +128,7 @@ def test_print_wrong_paste(test_dir):
 def test_pcb_print_simple_1(test_dir):
     prj = 'light_control'
     ctx = context.TestContext(test_dir, prj, 'pcb_print_2')
-    ctx.run()
+    ctx.run(extra_debug=True)
     ctx.expect_out_file(prj+'-F_Cu_mono.png')
     ctx.expect_out_file(prj+'-F_Cu_color.png')
     if is_debian:

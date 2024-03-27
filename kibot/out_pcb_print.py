@@ -1109,8 +1109,8 @@ class PCB_PrintOptions(VariantOptions):
                 if g.GetLayer() == id:
                     if hasattr(g, 'GetShownText'):
                         if extra_debug:
-                            logger.debug(f'- {g.GetClass()} {g.GetShownText()} @ {g.GetCenter()} mirrored: {g.IsMirrored()}'
-                                         f' just: {g.GetHorizJustify()}')
+                            logger.debug(f'- {g.GetClass()} {GS.get_shown_text(g)} @ {g.GetCenter()}'
+                                         f' mirrored: {g.IsMirrored()} just: {g.GetHorizJustify()}')
                         g.SetMirrored(not g.IsMirrored())
                         g.SetHorizJustify(-g.GetHorizJustify())
         if page.mirror_footprint_text:
@@ -1119,7 +1119,7 @@ class PCB_PrintOptions(VariantOptions):
                     if g.GetLayer() == id:
                         if hasattr(g, 'GetShownText'):
                             if extra_debug:
-                                logger.debug(f'- {g.GetClass()} {g.GetShownText()} @ {g.GetCenter()}'
+                                logger.debug(f'- {g.GetClass()} {GS.get_shown_text(g)} @ {g.GetCenter()}'
                                              f' mirrored: {g.IsMirrored()} just: {g.GetHorizJustify()}')
                             g.SetMirrored(not g.IsMirrored())
                             g.SetHorizJustify(-g.GetHorizJustify())

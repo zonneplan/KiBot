@@ -56,6 +56,8 @@ outputs:
             - layer: B.Cu
             - layer: B.Mask
               color: '#14332440'
+            - layer: User.Drawings
+            - layer: User.Comments
           sort_layers: true
           monochrome: true
           mirror: true
