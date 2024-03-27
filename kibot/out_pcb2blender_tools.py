@@ -105,7 +105,8 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             """ Prefix used for the stack files """
             self.show_components = Optionable
             """ *[list(string)|string=all] [none,all] List of components to include in the pads list,
-                can be also a string for `none` or `all`. The default is `all` """
+                can be also a string for `none` or `all`. The default is `all`.
+                Ranges like *R5-R10* are supported """
         super().__init__()
         self._expand_id = 'pcb2blender'
         self._expand_ext = 'pcb3d'

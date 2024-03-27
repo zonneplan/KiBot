@@ -587,9 +587,10 @@ class Base3DOptionsWithHL(Base3DOptions):
         with document:
             self.show_components = Optionable
             """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+                Ranges like *R5-R10* are supported.
                 Unlike the `pcbdraw` output, the default is `all` """
             self.highlight = Optionable
-            """ [list(string)=[]] List of components to highlight """
+            """ [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported """
             self.highlight_padding = 1.5
             """ [0,1000] How much the highlight extends around the component [mm] """
             self.highlight_on_top = False

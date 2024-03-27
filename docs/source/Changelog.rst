@@ -21,6 +21,10 @@ Added
 
 -  KiCad 8 support
 -  Panelize: support for all new options (upto 1.5.1)
+-  3D/2D renderers: support for ranges in the ``show_components`` and
+   ``highlight`` options. So one entry can be something like *R10-R20*.
+   Can be disabled using the global option ``allow_component_ranges``.
+   (See yaqwsx/PcbDraw#159)
 
 Changed
 ~~~~~~~

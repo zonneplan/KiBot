@@ -51,6 +51,7 @@ Shape {
 }
 
 """
+comp_range_regex = re.compile(r'(\w+?)(\d+)-(\w+?)(\d+)')
 
 
 class BaseOutput(RegOutput):
@@ -963,6 +964,18 @@ class VariantOptions(BaseOptions):
                 new_list.append(filter)
                 self._filters_to_expand = True
             else:
+                if GS.global_allow_component_ranges and c_s.count('-') == 1:
+                    m = comp_range_regex.match(c_s)
+                    if m:
+                        prefix = m.group(1)
+                        start = int(m.group(2))
+                        prefix2 = m.group(3)
+                        end = int(m.group(4))
+                        if prefix == prefix2 and end > start:
+                            # We have a match, both prefixes are the same and the numbers looks right
+                            logger.debugl(2, f'Expanding range {c_s} to {prefix}{start}...{prefix}{end}')
+                            new_list.extend([prefix+str(n) for n in range(start, end+1)])
+                            return new_list
                 new_list.append(c)
         return new_list
 

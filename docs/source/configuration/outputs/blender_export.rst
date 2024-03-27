@@ -44,6 +44,7 @@ Parameters:
                KIBOT_3D_MODELS environment variable.
             -  **no_virtual** :index:`: <pair: output - blender_export - options - pcb3d; no_virtual>` [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
             -  **show_components** :index:`: <pair: output - blender_export - options - pcb3d; show_components>` [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+               Ranges like *R5-R10* are supported.
                Unlike the `pcbdraw` output, the default is `all`.
 
             -  ``dnf_filter`` :index:`: <pair: output - blender_export - options - pcb3d; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
@@ -53,7 +54,7 @@ Parameters:
                them from LCSC database. In order to work you'll need to provide the LCSC
                part number. The field containing the LCSC part number is defined by the
                `field_lcsc_part` global variable.
-            -  ``highlight`` :index:`: <pair: output - blender_export - options - pcb3d; highlight>` [list(string)=[]] List of components to highlight.
+            -  ``highlight`` :index:`: <pair: output - blender_export - options - pcb3d; highlight>` [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported.
 
             -  ``highlight_on_top`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_on_top>` [boolean=false] Highlight over the component (not under).
             -  ``highlight_padding`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_padding>` [number=1.5] [0,1000] How much the highlight extends around the component [mm].

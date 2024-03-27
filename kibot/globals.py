@@ -358,6 +358,9 @@ class Globals(FiltersOptions):
             self.include_components_from_pcb = True
             """ Include components that are only in the PCB, not in the schematic, for filter and variants processing.
                 Note that version 1.6.3 and older ignored them """
+            self.allow_component_ranges = True
+            """ Allow using ranges like *R5-R20* in the `show_components` and `highlight` options.
+                If you have references that looks like a range you should disable this option """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

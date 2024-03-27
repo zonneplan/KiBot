@@ -133,6 +133,7 @@ class GS(object):
     def_global_output = '%f-%i%I%v.%x'
     # The class that controls the global options
     class_for_global_opts = None
+    global_allow_component_ranges = None
     global_always_warn_about_paste_pads = None
     global_cache_3d_resistors = None
     global_castellated_pads = None

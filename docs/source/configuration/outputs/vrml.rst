@@ -33,6 +33,7 @@ Parameters:
       -  **no_virtual** :index:`: <pair: output - vrml - options; no_virtual>` [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
       -  **output** :index:`: <pair: output - vrml - options; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=vrml, %x=wrl). Affected by global options.
       -  **show_components** :index:`: <pair: output - vrml - options; show_components>` [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+         Ranges like *R5-R10* are supported.
          Unlike the `pcbdraw` output, the default is `all`.
 
       -  ``dir_models`` :index:`: <pair: output - vrml - options; dir_models>` [string='shapes3D'] Subdirectory used to store the 3D models for the components.
@@ -45,7 +46,7 @@ Parameters:
          them from LCSC database. In order to work you'll need to provide the LCSC
          part number. The field containing the LCSC part number is defined by the
          `field_lcsc_part` global variable.
-      -  ``highlight`` :index:`: <pair: output - vrml - options; highlight>` [list(string)=[]] List of components to highlight.
+      -  ``highlight`` :index:`: <pair: output - vrml - options; highlight>` [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported.
 
       -  ``highlight_on_top`` :index:`: <pair: output - vrml - options; highlight_on_top>` [boolean=false] Highlight over the component (not under).
       -  ``highlight_padding`` :index:`: <pair: output - vrml - options; highlight_padding>` [number=1.5] [0,1000] How much the highlight extends around the component [mm].

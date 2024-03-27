@@ -190,7 +190,7 @@ outputs:
         # part number. The field containing the LCSC part number is defined by the
         # `field_lcsc_part` global variable
         download_lcsc: true
-        # [list(string)=[]] List of components to highlight
+        # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
         highlight: []
         # [boolean=false] Highlight over the component (not under)
         highlight_on_top: false
@@ -209,6 +209,7 @@ outputs:
         # A short-cut to use for simple cases where a variant is an overkill
         pre_transform: '_none'
         # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+        # Ranges like *R5-R10* are supported.
         # Unlike the `pcbdraw` output, the default is `all`
         show_components: all
         # [boolean=true] Add solder paste only for the populated components.
@@ -2352,7 +2353,8 @@ outputs:
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
       # [list(string)|string=all] [none,all] List of components to include in the pads list,
-      # can be also a string for `none` or `all`. The default is `all`
+      # can be also a string for `none` or `all`. The default is `all`.
+      # Ranges like *R5-R10* are supported
       show_components: all
       # [boolean=false] Create a file containing the board stackup
       stackup_create: false
@@ -3193,7 +3195,7 @@ outputs:
       download_lcsc: true
       # [number=720] Image height (aprox.)
       height: 720
-      # [list(string)=[]] List of components to highlight
+      # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
       highlight: []
       # [boolean=false] Highlight over the component (not under)
       highlight_on_top: false
@@ -3243,6 +3245,7 @@ outputs:
       # [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled
       show_comments: false
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+      # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
       # [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled
@@ -3699,7 +3702,7 @@ outputs:
       # part number. The field containing the LCSC part number is defined by the
       # `field_lcsc_part` global variable
       download_lcsc: true
-      # [list(string)=[]] List of components to highlight
+      # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
       highlight: []
       # [boolean=false] Highlight over the component (not under)
       highlight_on_top: false
@@ -3726,6 +3729,7 @@ outputs:
       # [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled
       ref_y: 0
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+      # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
       # [boolean=false] Use the auxiliary axis as origin for coordinates.
