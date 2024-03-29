@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """ Miscellaneous definitions """
 
-import re
-import os
 from contextlib import contextmanager
+import os
+import re
+from struct import unpack
 
 
 # Error levels
@@ -442,3 +443,12 @@ def hide_stderr():
 
 def version_str2tuple(ver):
     return tuple(map(int, ver.split('.')))
+
+
+def read_png(file):
+    with open(file, 'rb') as f:
+        s = f.read()
+    if not (s[:8] == b'\x89PNG\r\n\x1a\n' and (s[12:16] == b'IHDR')):
+        return None, None, None
+    w, h = unpack('>LL', s[16:24])
+    return s, w, h

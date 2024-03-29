@@ -10,9 +10,9 @@ HTML Writer: Generates a HTML BoM file.
 """
 import os
 from base64 import b64encode
-from struct import unpack
 from .columnlist import ColumnList, BoMError
 from .kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
+from ..misc import read_png
 
 BG_GEN = "#DCF5E4"
 BG_KICAD = "#F5DCA9"
@@ -273,11 +273,9 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
 
 
 def embed_image(file):
-    with open(file, 'rb') as f:
-        s = f.read()
-    if not (s[:8] == b'\x89PNG\r\n\x1a\n' and (s[12:16] == b'IHDR')):
+    s, w, h = read_png(file)
+    if s is None:
         raise BoMError('Only PNG images are supported for the logo')
-    w, h = unpack('>LL', s[16:24])
     return int(w), int(h), 'data:image/png;base64,'+b64encode(s).decode('ascii')
 
 

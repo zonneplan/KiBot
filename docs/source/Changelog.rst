@@ -25,6 +25,7 @@ Added
    ``highlight`` options. So one entry can be something like *R10-R20*.
    Can be disabled using the global option ``allow_component_ranges``.
    (See yaqwsx/PcbDraw#159)
+-  Navigate results: A header and navigation bar (#582)
 
 Changed
 ~~~~~~~

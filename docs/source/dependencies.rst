@@ -86,6 +86,7 @@
    -  Compare with files in the repo for `diff`
    -  Find commit hash and/or date for `kikit_present`
    -  Compare with files in the repo for `kiri`
+   -  Find origin url for `navigate_results`
    -  Find commit hash and/or date for `pcb_replace`
    -  Find commit hash and/or date for `sch_replace`
    -  Find commit hash and/or date for `set_text_variables`

@@ -1744,12 +1744,28 @@ outputs:
     type: 'navigate_results'
     dir: 'Example/navigate_results_dir'
     options:
+      # [boolean=true] Add a header containing information for the project
+      header: true
       # [string=''] The name of a file to create at the main output directory linking to the home page
       link_from_root: ''
+      # [string|boolean=''] PNG file to use as logo, use false to remove.
+      # The KiBot logo is used by default
+      logo: ''
+      # [string='https://github.com/INTI-CMNB/KiBot/'] Target link when clicking the logo
+      logo_url: 'https://github.com/INTI-CMNB/KiBot/'
+      # [boolean=true] Add a side navigation bar to quickly access to the outputs
+      nav_bar: true
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=false] Skip outputs with `run_by_default: false`
       skip_not_run: false
+      # [string=''] Title for the page, when empy KiBot will try using the schematic or PCB title.
+      # If they are empty the name of the project, schematic or PCB file is used.
+      # You can use %X values and KiCad variables here
+      title: ''
+      # [string|boolean=''] Target link when clicking the title, use false to remove.
+      # KiBot will try with the origin of the current git repo when empty
+      title_url: ''
   # Netlist:
   # The netlist can be generated in the classic format and in IPC-D-356 format,
   # useful for board testing

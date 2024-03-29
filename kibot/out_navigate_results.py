@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # The Assembly image is a composition from Pixlok and oNline Web Fonts
 # The rest are KiCad icons
@@ -17,7 +17,10 @@ Dependencies:
     role: Create outputs preview
   - from: ImageMagick
     role: Create outputs preview
+  - from: Git
+    role: Find origin url
 """
+import base64
 import os
 import subprocess
 import pprint
@@ -25,10 +28,12 @@ from shutil import copy2
 from math import ceil
 from struct import unpack
 from tempfile import NamedTemporaryFile
+from .bom.kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
+from .error import KiPlotConfigurationError
 from .gs import GS
-from .optionable import BaseOptions
-from .kiplot import config_output, get_output_dir
-from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS
+from .optionable import Optionable, BaseOptions
+from .kiplot import config_output, get_output_dir, run_command
+from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS, read_png
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
@@ -108,6 +113,7 @@ BIG_2_MID_REL = int(ceil(BIG_ICON/MID_ICON))
 IMAGEABLES_SIMPLE = {'png', 'jpg'}
 IMAGEABLES_GS = {'pdf', 'eps', 'ps'}
 IMAGEABLES_SVG = {'svg'}
+TITLE_HEIGHT = 30
 STYLE = """
 .cat-table { margin-left: auto; margin-right: auto; }
 .cat-table td { padding: 20px 24px; }
@@ -139,6 +145,84 @@ STYLE = """
 .generator { text-align: right; font-size: 0.6em; }
 a:link, a:visited { text-decoration: none;}
 a:hover, a:active { text-decoration: underline;}
+/* The side navigation menu */
+.sidenav {
+  height: 100%; /* 100% Full-height */
+  width: 0; /* 0 width - change this with JavaScript */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Stay on top */
+  top: 0; /* Stay at the top */
+  left: 0;
+  background-color: #0e4e8e; /* Black*/
+  overflow-x: hidden; /* Disable horizontal scroll */
+  padding-top: 60px; /* Place content 60px from the top */
+  transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+/* The navigation menu links */
+.sidenav a {
+  padding: 8px 8px 8px 8px;
+  text-decoration: none;
+  font-size: 20px;
+  color: #f1f1f1;
+  display: block;
+  transition: 0.3s;
+}
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover {
+  color: #ff0000;
+}
+/* Position and style the close button (top right corner) */
+.sidenav .closebtn {
+  position: absolute;
+  top: 0;
+  right: 8px;
+  font-size: 36px;
+  margin-left: 50px;
+}
+/* Style page content - use this if you want to push the page content to the right when you open the side navigation */
+#main {
+  transition: margin-left .5s;
+  padding: 20px;
+  margin-top: @TOP_MAR@px;
+}
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font
+   size) */
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+ul {
+  display: block;
+  list-style-type: none;
+  margin-block-start: -1em;
+  margin-block-end: 0em;
+  margin-inline-start: 0px;
+  margin-inline-end: 0px;
+  padding-inline-start: 10px;
+}
+.topmenu {
+  overflow: hidden;
+  position: fixed; /* Set the navbar to fixed position */
+  top: 0; /* Position the navbar at the top of the page */
+  width: 100%; /* Full width */
+}
+"""
+SCRIPT = """
+<script>
+function openNav() {
+  document.getElementById("theSideNav").style.width = "250px";
+  document.getElementById("main").style.marginLeft = "250px";
+  document.getElementById("theTopMenu").style.marginLeft = "250px";
+  document.getElementById("bmenu").style.display = "none";
+}
+
+function closeNav() {
+  document.getElementById("theSideNav").style.width = "0";
+  document.getElementById("main").style.marginLeft= "0";
+  document.getElementById("theTopMenu").style.marginLeft = "0";
+  document.getElementById("bmenu").style.display = "block";
+}
+</script>
 """
 
 
@@ -174,9 +258,53 @@ class Navigate_ResultsOptions(BaseOptions):
             """ *The name of a file to create at the main output directory linking to the home page """
             self.skip_not_run = False
             """ Skip outputs with `run_by_default: false` """
+            self.logo = Optionable
+            """ [string|boolean=''] PNG file to use as logo, use false to remove.
+                The KiBot logo is used by default """
+            self.logo_url = 'https://github.com/INTI-CMNB/KiBot/'
+            """ Target link when clicking the logo """
+            self.title = ''
+            """ Title for the page, when empty KiBot will try using the schematic or PCB title.
+                If they are empty the name of the project, schematic or PCB file is used.
+                You can use %X values and KiCad variables here """
+            self.title_url = Optionable
+            """ [string|boolean=''] Target link when clicking the title, use false to remove.
+                KiBot will try with the origin of the current git repo when empty """
+            self.nav_bar = True
+            """ Add a side navigation bar to quickly access to the outputs """
+            self.header = True
+            """ Add a header containing information for the project """
         super().__init__()
         self._expand_id = 'navigate'
         self._expand_ext = 'html'
+
+    def config(self, parent):
+        super().config(parent)
+        # Logo
+        if isinstance(self.logo, type):
+            self.logo = ''
+        elif isinstance(self.logo, bool):
+            self.logo = '' if self.logo else None
+        elif self.logo:
+            self.logo = os.path.abspath(self.logo)
+            if not os.path.isfile(self.logo):
+                raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
+            self._logo_data, self._logo_w, self._logo_h = read_png(self.logo)
+            if self._logo_data is None:
+                raise KiPlotConfigurationError('Only PNG images are supported for the logo')
+        if self.logo == '':
+            # Internal logo
+            self._logo_w = int(KIBOT_LOGO_W/2)
+            self._logo_h = int(KIBOT_LOGO_H/2)
+            self._logo_data = base64.b64decode(KIBOT_LOGO)
+        elif self.logo is None:
+            self._logo_w = self._logo_h = 0
+            self._logo_data = ''
+        # Title URL
+        if isinstance(self.title_url, type):
+            self.title_url = ''
+        elif isinstance(self.title_url, bool):
+            self.title_url = '' if self.title_url else None
 
     def add_to_tree(self, cat, out, o_tree):
         # Add `out` to `o_tree` in the `cat` category
@@ -336,8 +464,11 @@ class Navigate_ResultsOptions(BaseOptions):
                     format(self.home, self.home_img, MID_ICON, MID_ICON))
             f.write(' </tr>')
             f.write('</table>')
-        f.write('<p class="generator">Generated by <a href="https://github.com/INTI-CMNB/KiBot/">KiBot</a> v{}</p>'.
+        f.write('<p class="generator">Generated by <a href="https://github.com/INTI-CMNB/KiBot/">KiBot</a> v{}</p>\n'.
                 format(__version__))
+        f.write('</div>\n')
+        if self.nav_bar:
+            f.write(SCRIPT)
 
     def write_head(self, f, title):
         f.write('<!DOCTYPE html>\n')
@@ -349,6 +480,9 @@ class Navigate_ResultsOptions(BaseOptions):
         f.write(' <link rel="icon" href="favicon.ico">\n')
         f.write('</head>\n')
         f.write('<body>\n')
+        f.write(self.navbar)
+        f.write(self.top_menu)
+        f.write('<div id="main">\n')
 
     def generate_cat_page_for(self, name, node, prev, category):
         logger.debug('- Categories: '+str(node.keys()))
@@ -381,7 +515,7 @@ class Navigate_ResultsOptions(BaseOptions):
         for oname, out in node.items():
             if isinstance(out, dict):
                 continue
-            f.write('<table class="output-table">\n')
+            f.write(f'<table id="{oname}" class="output-table">\n')
             out_name = oname.replace(' ', '_')
             oname = oname.replace('_', ' ')
             oname = oname[0].upper()+oname[1:]
@@ -485,6 +619,88 @@ class Navigate_ResultsOptions(BaseOptions):
                 self.add_to_tree(c, o, o_tree)
         return o_tree
 
+    def generate_navbar_one(self, node, lvl, name, ext):
+        """ Recursively create a menu containing all outputs.
+            Using ul and li items """
+        indent = ' '+' '*lvl
+        code = indent+'<ul>\n'
+        indent += ' '
+        for k, v in node.items():
+            if isinstance(v, dict):
+                new_name = name+'_'+k
+                code += indent+f'<li><a href="{new_name}{ext}">{k}</a></li>\n'
+                code += self.generate_navbar_one(v, lvl+1, new_name, ext)
+            else:
+                code += indent+f'<li><a href="{name}{ext}#{v.name}">{v.name}</a></li>\n'
+        code += indent[:-1]+'</ul>\n'
+        return code
+
+    def generate_navbar(self, node, name):
+        name, ext = os.path.splitext(name)
+        code = '<div id="theSideNav" class="sidenav">\n'
+        code += '<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>\n'
+        code += self.generate_navbar_one(node, 0, name, ext)
+        code += '</div>\n'
+        return code
+
+    def generate_top_menu(self):
+        # Div for the top info
+        fsize = f'{TITLE_HEIGHT}px'
+        code = '<div id="theTopMenu" class="topmenu">\n'
+        code += ' <table style="width:100%">\n'
+        code += '  <tr>\n'
+        code += '   <td valign="top" align="left">\n'
+        if self.nav_bar:
+            code += f'    <span id="bmenu" style="font-size:{fsize};cursor:pointer" onclick="openNav()">&#9776;</span>\n'
+        code += '   </td>\n'
+        code += '   <td>\n'
+        if self.logo is not None and self.header:
+            img_name = os.path.join('images', 'logo.png')
+            if self.logo_url:
+                code += f'     <a href="{self.logo_url}">\n'
+            code += '     <img src="'+img_name+'" alt="Logo" width="'+str(self._logo_w)+'" height="'+str(self._logo_h)+'">\n'
+            if self.logo_url:
+                code += '     </a>\n'
+        code += '   </td>\n'
+        code += '   <td>\n'
+        if self.header:
+            if self.title_url:
+                code += f'     <a href="{self.title_url}">\n'
+            code += f'     <span style="font-size:{fsize};">{self._solved_title}</span>\n'
+            if self.title_url:
+                code += '     </a>\n'
+        code += '   </td>\n'
+        code += '  </tr>\n'
+        code += ' </table>\n'
+        code += '</div>\n'
+        return code
+
+    def solve_title(self):
+        base_title = None
+        if GS.sch:
+            base_title = GS.sch.get_title()
+        if GS.board and not base_title:
+            tb = GS.board.GetTitleBlock()
+            base_title = tb.GetTitle()
+        if not base_title:
+            base_title = GS.pro_basename or GS.sch_basename or GS.pcb_basename or 'Unknown'
+        text = self.expand_filename_sch(self.title if self.title else '+')
+        if text[0] == '+':
+            text = base_title+text[1:]
+        self._solved_title = text
+        # Now the URL
+        if self.title_url is not None and not self.title_url:
+            # Empty but not None
+            self._git_command = self.check_tool('Git')
+            if self._git_command:
+                res = ''
+                try:
+                    res = run_command([self._git_command, 'remote', 'get-url', 'origin'], just_raise=True)
+                except subprocess.CalledProcessError:
+                    pass
+                if res:
+                    self.title_url = res
+
     def run(self, name):
         self.out_dir = os.path.dirname(name)
         self.img_src_dir = GS.get_resource_path('images')
@@ -499,7 +715,11 @@ class Navigate_ResultsOptions(BaseOptions):
             logger.warning(W_NOOUTPUTS+'No outputs for navigate results')
             return
         with open(os.path.join(self.out_dir, 'styles.css'), 'wt') as f:
-            f.write(STYLE)
+            if not self.header:
+                top_margin = 0 if not self.nav_bar else TITLE_HEIGHT
+            else:
+                top_margin = str(max(self._logo_h, TITLE_HEIGHT))
+            f.write(STYLE.replace('@TOP_MAR@', str(top_margin)))
         self.rsvg_command = self.check_tool('rsvg1')
         self.convert_command = self.check_tool('ImageMagick')
         self.ps2img_avail = self.check_tool('Ghostscript')
@@ -508,6 +728,13 @@ class Navigate_ResultsOptions(BaseOptions):
         self.back_img = self.copy('back', MID_ICON)
         self.home_img = self.copy('home', MID_ICON)
         copy2(os.path.join(self.img_src_dir, 'favicon.ico'), os.path.join(self.out_dir, 'favicon.ico'))
+        # Copy the logo image
+        if self.logo is not None and self.header:
+            with open(os.path.join(self.out_dir, 'images', 'logo.png'), 'wb') as f:
+                f.write(self._logo_data)
+        self.solve_title()
+        self.navbar = self.generate_navbar(o_tree, name) if self.nav_bar else ''
+        self.top_menu = self.generate_top_menu() if self.nav_bar or self.header else ''
         self.generate_page_for(o_tree, name)
         # Link it?
         if self.link_from_root:

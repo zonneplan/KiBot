@@ -187,7 +187,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 6,\
+        "importance": 7,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -217,6 +217,13 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "kiri",\
+                "version": null\
+            },\
+            {\
+                "desc": "Find origin url",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "navigate_results",\
                 "version": null\
             },\
             {\
