@@ -224,6 +224,17 @@ function closeNav() {
   document.getElementById("theTopMenu").style.marginLeft = "0";
   document.getElementById("bmenu").style.display = "block";
 }
+
+function ScrollUp() {
+  /* When we come here from the navbar we must scroll to avoid the top menu */
+  var p = document.getElementById("main");
+  var style = p.currentStyle || window.getComputedStyle(p);
+  var m_top = parseInt(style.marginTop)
+
+  window.scrollBy(0, -(m_top + 5));
+}
+
+window.onload = ScrollUp;
 </script>
 """
 
