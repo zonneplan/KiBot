@@ -162,7 +162,7 @@ a:hover, a:active { text-decoration: underline;}
 .sidenav a {
   padding: 8px 8px 8px 8px;
   text-decoration: none;
-  font-size: 20px;
+  font-size: 16px;
   color: #f1f1f1;
   display: block;
   transition: 0.3s;
@@ -194,25 +194,27 @@ a:hover, a:active { text-decoration: underline;}
 ul {
   display: block;
   list-style-type: none;
-  margin-block-start: -1em;
-  margin-block-end: 0em;
-  margin-inline-start: 0px;
-  margin-inline-end: 0px;
+  margin-block: -1em 0px;
+  margin-inline: 0px 0px;
   padding-inline-start: 10px;
+}
+ul li {
+  margin-block: 0px -1em;
 }
 .topmenu {
   overflow: hidden;
   position: fixed; /* Set the navbar to fixed position */
   top: 0; /* Position the navbar at the top of the page */
   width: 100%; /* Full width */
+  background-color: white; /* Otherwise is transparent and overlaps */
 }
 """
 SCRIPT = """
 <script>
 function openNav() {
-  document.getElementById("theSideNav").style.width = "250px";
-  document.getElementById("main").style.marginLeft = "250px";
-  document.getElementById("theTopMenu").style.marginLeft = "250px";
+  document.getElementById("theSideNav").style.width = "360px";
+  document.getElementById("main").style.marginLeft = "360px";
+  document.getElementById("theTopMenu").style.marginLeft = "360px";
   document.getElementById("bmenu").style.display = "none";
 }
 
