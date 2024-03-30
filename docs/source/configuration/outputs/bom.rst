@@ -100,7 +100,8 @@ Parameters:
 
             -  **datasheet_as_link** :index:`: <pair: output - bom - options - html; datasheet_as_link>` [string=''] Column with links to the datasheet.
             -  **generate_dnf** :index:`: <pair: output - bom - options - html; generate_dnf>` [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
-            -  **logo** :index:`: <pair: output - bom - options - html; logo>` [string|boolean=''] PNG file to use as logo, use false to remove.
+            -  **logo** :index:`: <pair: output - bom - options - html; logo>` [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+               Note that when using an SVG this is first converted to a PNG using `logo_width`.
 
             -  **title** :index:`: <pair: output - bom - options - html; title>` [string='KiBot Bill of Materials'] BoM title.
             -  ``col_colors`` :index:`: <pair: output - bom - options - html; col_colors>` [boolean=true] Use colors to show the field type.
@@ -114,6 +115,7 @@ Parameters:
             -  ``lcsc_link`` :index:`: <pair: output - bom - options - html; lcsc_link>` [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
                Use **true** to copy the value indicated by the `field_lcsc_part` global option.
 
+            -  ``logo_width`` :index:`: <pair: output - bom - options - html; logo_width>` [number=370] Used when the logo is an SVG image. This width is used to render the SVG image.
             -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
 
             -  ``style`` :index:`: <pair: output - bom - options - html; style>` [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
@@ -134,7 +136,8 @@ Parameters:
             -  **generate_dnf** :index:`: <pair: output - bom - options - xlsx; generate_dnf>` [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
             -  **kicost** :index:`: <pair: output - bom - options - xlsx; kicost>` [boolean=false] Enable KiCost worksheet creation.
                Note: an example of how to use it on CI/CD can be found `here <https://github.com/set-soft/kicost_ci_test>`__.
-            -  **logo** :index:`: <pair: output - bom - options - xlsx; logo>` [string|boolean=''] PNG file to use as logo, use false to remove.
+            -  **logo** :index:`: <pair: output - bom - options - xlsx; logo>` [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+               Note that when using an SVG this is first converted to a PNG using `logo_width`.
 
             -  **specs** :index:`: <pair: output - bom - options - xlsx; specs>` [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
                Works with only some KiCost APIs.
@@ -161,6 +164,7 @@ Parameters:
                Use **true** to copy the value indicated by the `field_lcsc_part` global option.
 
             -  ``logo_scale`` :index:`: <pair: output - bom - options - xlsx; logo_scale>` [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
+            -  ``logo_width`` :index:`: <pair: output - bom - options - xlsx; logo_width>` [number=370] Used when the logo is an SVG image. This width is used to render the SVG image.
             -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [number=60] [20,999] Maximum column width (characters).
             -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
 

@@ -26,6 +26,7 @@ Added
    Can be disabled using the global option ``allow_component_ranges``.
    (See yaqwsx/PcbDraw#159)
 -  Navigate results: A header and navigation bar (#582)
+-  BoM: support for SVG format in the logos (#383)
 
 Changed
 ~~~~~~~

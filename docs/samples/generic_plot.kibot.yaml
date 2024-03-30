@@ -503,8 +503,11 @@ outputs:
         # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
         # Use **true** to copy the value indicated by the `field_lcsc_part` global option
         lcsc_link: ''
-        # [string|boolean=''] PNG file to use as logo, use false to remove
+        # [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+        # Note that when using an SVG this is first converted to a PNG using `logo_width`
         logo: ''
+        # [number=370] Used when the logo is an SVG image. This width is used to render the SVG image
+        logo_width: 370
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
         # [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
@@ -597,10 +600,13 @@ outputs:
         # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
         # Use **true** to copy the value indicated by the `field_lcsc_part` global option
         lcsc_link: ''
-        # [string|boolean=''] PNG file to use as logo, use false to remove
+        # [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+        # Note that when using an SVG this is first converted to a PNG using `logo_width`
         logo: ''
         # [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software
         logo_scale: 2
+        # [number=370] Used when the logo is an SVG image. This width is used to render the SVG image
+        logo_width: 370
         # [number=60] [20,999] Maximum column width (characters)
         max_col_width: 60
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
@@ -1759,7 +1765,7 @@ outputs:
       output: '%f-%i%I%v.%x'
       # [boolean=false] Skip outputs with `run_by_default: false`
       skip_not_run: false
-      # [string=''] Title for the page, when empy KiBot will try using the schematic or PCB title.
+      # [string=''] Title for the page, when empty KiBot will try using the schematic or PCB title.
       # If they are empty the name of the project, schematic or PCB file is used.
       # You can use %X values and KiCad variables here
       title: ''

@@ -1068,17 +1068,24 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 5,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "RSVG tools",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "navigate_results",\
+        "output": "bom",\
         "plugin_dirs": null,\
         "pypi_name": "RSVG tools",\
         "role": [\
+            {\
+                "desc": "SVG logos for the BoM",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "bom",\
+                "version": null\
+            },\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\

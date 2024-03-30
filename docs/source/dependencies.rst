@@ -105,6 +105,7 @@
 
 -  Optional to:
 
+   -  SVG logos for the BoM for `bom`
    -  Create outputs preview for `navigate_results`
    -  Create PNG icons for `navigate_results`
    -  Create PDF, PNG, PS and EPS formats for `pcb_print`
