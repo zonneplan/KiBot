@@ -907,6 +907,8 @@ class BoMOptions(BaseOptions):
             w = self.xlsx.logo_width
         else:
             return None
+        if not logo:
+            return None
         ext = os.path.splitext(logo)[1]
         if ext.lower() != '.svg':
             return None
