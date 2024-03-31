@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
-# Copyright (c) 2018-2020 @whitequark
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2018-2024 @whitequark
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/whitequark/kicad-boardview
 import re
@@ -16,9 +16,9 @@ logger = log.get_logger()
 
 
 def skip_module(module, tp=False):
-    refdes = module.GetReference()
-    if refdes == "REF**":
+    if module.GetPadCount() == 0:
         return True
+    refdes = module.Reference().GetText()
     if tp and not refdes.startswith("TP"):
         return True
     if not tp and refdes.startswith("TP"):
@@ -31,20 +31,15 @@ def coord(nanometers):
     return milliinches
 
 
-def y_coord(obj, maxy, y):
-    if obj.IsFlipped():
-        return coord(y)
-    else:
-        return coord(maxy - y)
+def y_coord(maxy, y, flipped):
+    # Adjust y-coordinate to start from the bottom of the board and account for flipped components
+    return coord(maxy - y) if not flipped else coord(y)
 
 
-def pad_sort_key(pad):
-    name = pad.GetName()
-    pad_pos = pad.GetPosition()
-    if re.match(r"^\d+$", name):
-        return (0, int(name), pad_pos.x, pad_pos.y)
-    else:
-        return (1, name, pad_pos.x, pad_pos.y)
+def natural_sort_key(s):
+    is_blank = s.strip() == ''
+    return (is_blank, [int(text) if text.isdigit() else text.casefold()
+                       for text in re.compile('([0-9]+)').split(s)])
 
 
 def convert(pcb, brd):
@@ -70,11 +65,11 @@ def convert(pcb, brd):
     for point in outline_points:
         brd.write("{x} {y}\n"
                   .format(x=coord(point.x),
-                          y=coord(point.y)))
+                          y=y_coord(outline_maxy, point.y, False)))
     if outline.IsClosed():
         brd.write("{x} {y}\n"
                   .format(x=coord(outline_points[0].x),
-                          y=coord(outline_points[0].y)))
+                          y=y_coord(outline_maxy, outline_points[0].y, False)))
     brd.write("\n")
 
     # Nets
@@ -101,14 +96,15 @@ def convert(pcb, brd):
     pin_at = 0
     for module in modules:
         module_bbox = module.GetBoundingBox()
+        flipped = module.IsFlipped()
         brd.write("{ref} {x1} {y1} {x2} {y2} {pin} {side}\n"
                   .format(ref=module.GetReference(),
                           x1=coord(module_bbox.GetLeft()),
-                          y1=y_coord(module, outline_maxy, module_bbox.GetTop()),
+                          y1=y_coord(outline_maxy, module_bbox.GetTop(), flipped),
                           x2=coord(module_bbox.GetRight()),
-                          y2=y_coord(module, outline_maxy, module_bbox.GetBottom()),
+                          y2=y_coord(outline_maxy, module_bbox.GetBottom(), flipped),
                           pin=pin_at,
-                          side=1 + module.IsFlipped()))
+                          side=1 + flipped))
         pin_at += module.GetPadCount()
     brd.write("\n")
 
@@ -116,17 +112,18 @@ def convert(pcb, brd):
     pads = []
     for m in modules:
         pads_list = m.Pads()
-        for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad)):
+        for pad in sorted(pads_list, key=lambda pad: natural_sort_key(pad.GetName())):
             pads.append(pad)
 
     brd.write("PINS: {count}\n".format(count=len(pads)))
     for pad in pads:
         pad_pos = pad.GetPosition()
+        flipped = pad.IsFlipped()
         brd.write("{x} {y} {net} {side}\n"
                   .format(x=coord(pad_pos.x),
-                          y=y_coord(pad, outline_maxy, pad_pos.y),
+                          y=y_coord(outline_maxy, pad_pos.y, flipped),
                           net=pad.GetNetCode(),
-                          side=1 + pad.IsFlipped()))
+                          side=1 + flipped))
     brd.write("\n")
 
     # Nails
@@ -135,18 +132,19 @@ def convert(pcb, brd):
     for m in sorted(module_list, key=lambda mod: mod.GetReference()):
         if not skip_module(m, tp=True):
             pads_list = m.Pads()
-            for pad in sorted(pads_list, key=lambda pad: pad_sort_key(pad)):
+            for pad in sorted(pads_list, key=lambda pad: natural_sort_key(pad.GetName())):
                 testpoints.append((m, pad))
 
     brd.write("NAILS: {count}\n".format(count=len(testpoints)))
     for module, pad in testpoints:
         pad_pos = pad.GetPosition()
+        flipped = pad.IsFlipped()
         brd.write("{probe} {x} {y} {net} {side}\n"
                   .format(probe=module.GetReference()[2:],
                           x=coord(pad_pos.x),
-                          y=y_coord(pad, outline_maxy, pad_pos.y),
+                          y=y_coord(outline_maxy, pad_pos.y, flipped),
                           net=pad.GetNetCode(),
-                          side=1 + pad.IsFlipped()))
+                          side=1 + flipped))
     brd.write("\n")
 
 

@@ -2,6 +2,9 @@
 kibot:
   version: 1
 
+globals:
+  always_warn_about_paste_pads: true
+
 variants:
   - name: 'default'
     comment: 'Default variant'

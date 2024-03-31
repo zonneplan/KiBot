@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
@@ -238,7 +238,7 @@ def ki_conf_error(e):
                         'Line content: `{}`'.format(e.code.rstrip())), EXIT_BAD_CONFIG)
 
 
-def load_any_sch(file, project):
+def load_any_sch(file, project, fatal=True, extra_msg=None):
     if file[-9:] == 'kicad_sch':
         sch = SchematicV6()
         load_libs = False
@@ -252,10 +252,14 @@ def load_any_sch(file, project):
         if GS.debug_level > 1:
             logger.debug('Schematic dependencies: '+str(sch.get_files()))
     except SchFileError as e:
+        if extra_msg is not None:
+            logger.error(extra_msg)
         GS.exit_with_error(('At line {} of `{}`: {}'.format(e.line, e.file, e.msg),
-                            'Line content: `{}`'.format(e.code)), CORRUPTED_SCH)
+                            'Line content: `{}`'.format(e.code)), CORRUPTED_SCH if fatal else DONT_STOP)
     except SchError as e:
-        GS.exit_with_error(('While loading `{}`'.format(file), str(e)), CORRUPTED_SCH)
+        if extra_msg is not None:
+            logger.error(extra_msg)
+        GS.exit_with_error(('While loading `{}`'.format(file), str(e)), CORRUPTED_SCH if fatal else DONT_STOP)
     except KiConfError as e:
         ki_conf_error(e)
     return sch
@@ -274,6 +278,7 @@ def create_component_from_footprint(m, ref):
     c.name = m.GetValue()
     c.sheet_path_h = c.lib = ''
     c.project = GS.sch_basename
+    c.id = m.m_Uuid.AsString() if hasattr(m, 'm_Uuid') else ''
     # Basic fields
     # Reference
     f = SchematicField()
@@ -301,14 +306,13 @@ def create_component_from_footprint(m, ref):
     f.number = 3
     c.add_field(f)
     # Other fields
-    if GS.ki6:
-        for name, val in m.GetProperties().items():
-            f = SchematicField()
-            f.name = name
-            f.value = val
-            f.number = -1
-            f.visible(False)
-            c.add_field(f)
+    for name, val in GS.get_fields(m).items():
+        f = SchematicField()
+        f.name = name
+        f.value = val
+        f.number = -1
+        f.visible(False)
+        c.add_field(f)
     c._solve_fields(None)
     c.split_ref()
     return c

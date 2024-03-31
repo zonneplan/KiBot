@@ -3,8 +3,8 @@ KiBot: KiCad automation tool for documents generation
 Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
-         [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--banner N]
-         [TARGET...]
+         [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--warn-ci-cd]
+         [--banner N] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
@@ -69,6 +69,8 @@ Options:
   -V, --version                    Show program's version number and exit
   -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
   -W, --stop-on-warnings           Stop on warnings
+  --warn-ci-cd                     Don't disable warnings expected on CI/CD
+                                   environments
   -x, --example                    Create a template configuration file
 
 Quick start options:

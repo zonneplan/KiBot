@@ -103,7 +103,7 @@ def test_erc_off_grid_1(test_dir):
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt', sub=True)
-    ctx.clean_up()
+    ctx.clean_up(keep_project=context.ki8())
 
 
 def test_drc_1(test_dir):
@@ -180,10 +180,8 @@ def test_drc_fail(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(context.ki6(), reason="KiCad 6+ can't time-out")
 def test_drc_time_out(test_dir):
-    if context.ki6():
-        # KiCad 6 has Python binding, no time-out problems!
-        return
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'drc_time_out', '')
     ctx.run(DRC_ERROR)

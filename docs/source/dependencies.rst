@@ -22,7 +22,7 @@
    -  Compare schematics for `kiri` (v2.2.0)
    -  Print the page frame in GUI mode for `pcb_print` (v1.6.7)
 
-`KiKit <https://github.com/INTI-CMNB/KiKit>`__ :index:`: <pair: dependency; KiKit>`  v1.3.0.4 |image11| |Auto-download|
+`KiKit <https://github.com/INTI-CMNB/KiKit>`__ :index:`: <pair: dependency; KiKit>`  v1.5.1 |image11| |Auto-download|
 
 -  Mandatory for: `panelize`, `stencil_3d`, `stencil_for_jig`
 -  Optional to separate multiboard projects for general use
@@ -71,30 +71,27 @@
 
 -  Mandatory for `kikit_present`
 
-`mistune <https://pypi.org/project/mistune/>`__ :index:`: <pair: dependency; mistune>`  |image29| |image30|
-
--  Mandatory for `populate`
-
-`QRCodeGen <https://pypi.org/project/QRCodeGen/>`__ :index:`: <pair: dependency; QRCodeGen>`  |image31| |image32| |image33| |Auto-download|
+`QRCodeGen <https://pypi.org/project/QRCodeGen/>`__ :index:`: <pair: dependency; QRCodeGen>`  |image29| |image30| |image31| |Auto-download|
 
 -  Mandatory for `qr_lib`
 
-`Colorama <https://pypi.org/project/Colorama/>`__ :index:`: <pair: dependency; Colorama>`  |image34| |image35| |image36|
+`Colorama <https://pypi.org/project/Colorama/>`__ :index:`: <pair: dependency; Colorama>`  |image32| |image33| |image34|
 
 -  Optional to get color messages in a portable way for general use
 
-`Git <https://git-scm.com/>`__ :index:`: <pair: dependency; Git>`  |image37| |image38| |Auto-download|
+`Git <https://git-scm.com/>`__ :index:`: <pair: dependency; Git>`  |image35| |image36| |Auto-download|
 
 -  Optional to:
 
    -  Compare with files in the repo for `diff`
    -  Find commit hash and/or date for `kikit_present`
    -  Compare with files in the repo for `kiri`
+   -  Find origin url for `navigate_results`
    -  Find commit hash and/or date for `pcb_replace`
    -  Find commit hash and/or date for `sch_replace`
    -  Find commit hash and/or date for `set_text_variables`
 
-`ImageMagick <https://imagemagick.org/>`__ :index:`: <pair: dependency; ImageMagick>`  |image39| |image40| |Auto-download|
+`ImageMagick <https://imagemagick.org/>`__ :index:`: <pair: dependency; ImageMagick>`  |image37| |image38| |Auto-download|
 
 -  Optional to:
 
@@ -104,16 +101,17 @@
    -  Create JPG and BMP images for `pcbdraw`
    -  Automatically crop images for `render_3d`
 
-`RSVG tools <https://gitlab.gnome.org/GNOME/librsvg>`__ :index:`: <pair: dependency; RSVG tools>`  |image41| |image42| |Auto-download|
+`RSVG tools <https://gitlab.gnome.org/GNOME/librsvg>`__ :index:`: <pair: dependency; RSVG tools>`  |image39| |image40| |Auto-download|
 
 -  Optional to:
 
+   -  SVG logos for the BoM for `bom`
    -  Create outputs preview for `navigate_results`
    -  Create PNG icons for `navigate_results`
    -  Create PDF, PNG, PS and EPS formats for `pcb_print`
    -  Create PNG, JPG and BMP images for `pcbdraw`
 
-`Bash <https://www.gnu.org/software/bash/>`__ :index:`: <pair: dependency; Bash>`  |image43| |image44|
+`Bash <https://www.gnu.org/software/bash/>`__ :index:`: <pair: dependency; Bash>`  |image41| |image42|
 
 -  Optional to:
 
@@ -121,27 +119,27 @@
    -  Run external commands to create replacement text for `sch_replace`
    -  Run external commands to create replacement text for `set_text_variables`
 
-`Ghostscript <https://www.ghostscript.com/>`__ :index:`: <pair: dependency; Ghostscript>`  |image45| |image46| |Auto-download|
+`Ghostscript <https://www.ghostscript.com/>`__ :index:`: <pair: dependency; Ghostscript>`  |image43| |image44| |Auto-download|
 
 -  Optional to:
 
    -  Create outputs preview for `navigate_results`
    -  Create PNG, PS and EPS formats for `pcb_print`
 
-`numpy <https://pypi.org/project/numpy/>`__ :index:`: <pair: dependency; numpy>`  |image47| |image48| |Auto-download|
+`numpy <https://pypi.org/project/numpy/>`__ :index:`: <pair: dependency; numpy>`  |image45| |image46| |Auto-download|
 
 -  Optional to automatically adjust SVG margin for `pcbdraw`
 
-`Pandoc <https://pandoc.org/>`__ :index:`: <pair: dependency; Pandoc>`  |image49| |image50|
+`Pandoc <https://pandoc.org/>`__ :index:`: <pair: dependency; Pandoc>`  |image47| |image48|
 
 -  Optional to create PDF/ODF/DOCX files for `report`
 -  Note: In CI/CD environments: the `kicad_auto_test` docker image contains it.
 
-`RAR <https://www.rarlab.com/>`__ :index:`: <pair: dependency; RAR>`  |image51| |image52| |Auto-download|
+`RAR <https://www.rarlab.com/>`__ :index:`: <pair: dependency; RAR>`  |image49| |image50| |Auto-download|
 
 -  Optional to compress in RAR format for `compress`
 
-`XLSXWriter <https://pypi.org/project/XLSXWriter/>`__ :index:`: <pair: dependency; XLSXWriter>`  v1.1.2 |image53| |image54| |image55| |Auto-download|
+`XLSXWriter <https://pypi.org/project/XLSXWriter/>`__ :index:`: <pair: dependency; XLSXWriter>`  v1.1.2 |image51| |image52| |image53| |Auto-download|
 
 -  Optional to create XLSX files for `bom`
 
@@ -204,57 +202,53 @@
 .. |image28| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/python3-markdown2
 .. |image29| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
-   :target: https://pypi.org/project/mistune/
-.. |image30| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
-   :target: https://packages.debian.org/stable/python3-mistune
-.. |image31| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
    :target: https://pypi.org/project/QRCodeGen/
-.. |image32| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png
+.. |image30| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png
    :target: https://pypi.org/project/QRCodeGen/
-.. |image33| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image31| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/python3-qrcodegen
-.. |image34| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
+.. |image32| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
    :target: https://pypi.org/project/Colorama/
-.. |image35| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png
+.. |image33| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png
    :target: https://pypi.org/project/Colorama/
-.. |image36| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image34| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/python3-colorama
-.. |image37| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image35| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://git-scm.com/
-.. |image38| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image36| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/git
-.. |image39| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image37| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://imagemagick.org/
-.. |image40| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image38| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/imagemagick
-.. |image41| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image39| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://gitlab.gnome.org/GNOME/librsvg
-.. |image42| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image40| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/librsvg2-bin
-.. |image43| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image41| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://www.gnu.org/software/bash/
-.. |image44| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image42| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/bash
-.. |image45| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image43| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://www.ghostscript.com/
-.. |image46| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image44| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/ghostscript
-.. |image47| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
+.. |image45| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
    :target: https://pypi.org/project/numpy/
-.. |image48| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image46| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/python3-numpy
-.. |image49| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image47| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://pandoc.org/
-.. |image50| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image48| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/pandoc
-.. |image51| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
+.. |image49| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/llave-inglesa-22x22.png
    :target: https://www.rarlab.com/
-.. |image52| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image50| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/rar
-.. |image53| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
+.. |image51| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/Python-logo-notext-22x22.png
    :target: https://pypi.org/project/XLSXWriter/
-.. |image54| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png
+.. |image52| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/PyPI_logo_simplified-22x22.png
    :target: https://pypi.org/project/XLSXWriter/
-.. |image55| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
+.. |image53| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
    :target: https://packages.debian.org/stable/python3-xlsxwriter
 

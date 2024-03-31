@@ -39,6 +39,7 @@ def test_print_sch_ok(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
+@pytest.mark.skipif(context.ki8(), reason="Always prints something")
 def test_print_sch_fail(test_dir):
     prj = 'print_err'
     ctx = context.TestContextSCH(test_dir, prj, 'print_sch')
@@ -93,6 +94,7 @@ def test_print_sch_svg_ok(test_dir):
 
 @pytest.mark.slow
 @pytest.mark.eeschema
+@pytest.mark.skipif(context.ki8(), reason="Always prints something")
 def test_print_sch_svg_fail(test_dir):
     prj = 'print_err'
     ctx = context.TestContext(test_dir, prj, 'print_sch_svg')

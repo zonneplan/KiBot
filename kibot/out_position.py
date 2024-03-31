@@ -351,7 +351,8 @@ class PositionOptions(VariantOptions):
 class Position(BaseOutput):  # noqa: F821
     """ Pick & place
         Generates the file with position information for the PCB components, used by the pick and place machine.
-        This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew. """
+        This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
+        Note that if you need a more customized output you can use the *bom* output, which can include positions. """
     def __init__(self):
         super().__init__()
         with document:

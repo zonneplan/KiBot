@@ -21,8 +21,11 @@
 
       -  ``allow_blind_buried_vias`` :index:`: <pair: global options; allow_blind_buried_vias>` [boolean=true] Allow the use of buried vias. This value is only used for KiCad 7+.
          For KiCad 5 and 6 use the design rules settings, stored in the project.
+      -  ``allow_component_ranges`` :index:`: <pair: global options; allow_component_ranges>` [boolean=true] Allow using ranges like *R5-R20* in the `show_components` and `highlight` options.
+         If you have references that looks like a range you should disable this option.
       -  ``allow_microvias`` :index:`: <pair: global options; allow_microvias>` [boolean=true] Allow the use of micro vias. This value is only used for KiCad 7+.
          For KiCad 5 and 6 use the design rules settings, stored in the project.
+      -  ``always_warn_about_paste_pads`` :index:`: <pair: global options; always_warn_about_paste_pads>` [boolean=false] Used to detect the use of pads just for paste.
       -  ``cache_3d_resistors`` :index:`: <pair: global options; cache_3d_resistors>` [boolean=false] Use a cache for the generated 3D models of colored resistors.
          Will save time, but you could need to remove the cache if you need to regenerate them.
       -  ``castellated_pads`` :index:`: <pair: global options; castellated_pads>` [boolean=false] Has the PCB castellated pads?
@@ -83,8 +86,7 @@
 
       -  ``erc_grid`` :index:`: <pair: global options; erc_grid>` [number=50] Grid size used for the ERC. This value must be in mils.
          This is needed for KiCad 7 in order to run the off grid check.
-         Shouldn't be needed in KiCad 8.
-         https://gitlab.com/kicad/code/kicad/-/issues/14110.
+         This value is stored in the project for KiCad 8, no need to specify it.
       -  ``extra_pth_drill`` :index:`: <pair: global options; extra_pth_drill>` [number=0.1] How many millimeters the manufacturer will add to plated holes.
          This is because the plating reduces the hole, so you need to use a bigger drill.
          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.

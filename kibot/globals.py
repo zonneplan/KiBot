@@ -235,6 +235,8 @@ class Globals(FiltersOptions):
             """ When applying filters and variants remove the adhesive (glue) for components that won't be included """
             self.remove_solder_mask_for_dnp = False
             """ When applying filters and variants remove the solder mask apertures for components that won't be included """
+            self.always_warn_about_paste_pads = False
+            """ Used to detect the use of pads just for paste """
             self.restore_project = False
             """ Restore the KiCad project after execution.
                 Note that this option will undo operations like `set_text_variables`.
@@ -296,8 +298,7 @@ class Globals(FiltersOptions):
             self.erc_grid = 50
             """ Grid size used for the ERC. This value must be in mils.
                 This is needed for KiCad 7 in order to run the off grid check.
-                Shouldn't be needed in KiCad 8.
-                https://gitlab.com/kicad/code/kicad/-/issues/14110 """
+                This value is stored in the project for KiCad 8, no need to specify it """
             self.kicad_dnp_applied = True
             """ The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag before running any filter """
             self.kicad_dnp_applies_to_3D = True
@@ -357,6 +358,9 @@ class Globals(FiltersOptions):
             self.include_components_from_pcb = True
             """ Include components that are only in the PCB, not in the schematic, for filter and variants processing.
                 Note that version 1.6.3 and older ignored them """
+            self.allow_component_ranges = True
+            """ Allow using ranges like *R5-R20* in the `show_components` and `highlight` options.
+                If you have references that looks like a range you should disable this option """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

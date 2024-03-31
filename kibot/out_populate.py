@@ -3,14 +3,15 @@
 # Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-"""
-Dependencies:
-  - name: mistune
-    python_module: true
-    debian: python3-mistune
-    arch: python-mistune
-    role: mandatory
-"""
+# No longer a dependency, now included.
+# Will be fixed when the code supports mistune 3 ... or never
+# Dependencies:
+#   - name: mistune
+#     python_module: true
+#     debian: python3-mistune
+#     arch: python-mistune
+#     role: mandatory
+# """
 import os
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
@@ -113,8 +114,6 @@ class PopulateOptions(VariantOptions):
         return content
 
     def run(self, dir_name):
-        # Ensure we have mistune
-        self.ensure_tool('mistune')
         # Now we can use populate
         from .PcbDraw.populate import (load_content, get_data_path, read_template, create_renderer, parse_content,
                                        generate_html, generate_markdown, find_data_file)

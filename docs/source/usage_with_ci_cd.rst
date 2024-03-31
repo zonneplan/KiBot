@@ -27,15 +27,17 @@ installed. The usual mechanism to achieve this is using
 `docker <https://www.docker.com/>`__. Docker images containing KiBot,
 all the supporting scripts and a corresponding KiCad can be found in the
 `kicad5_auto <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto>`__,
-`kicad6_auto <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto>`__
-and
+`kicad6_auto <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto>`__,
 `kicad7_auto <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_auto>`__
+and
+`kicad8_auto <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad8_auto>`__
 GitHub packages. More complete images, with Pandoc, LaTeX, Blender and
 testing tools, can be found in the following packages:
 `kicad5_auto_full <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto_full>`__,
-`kicad6_auto_full <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full>`__
-and
+`kicad6_auto_full <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full>`__,
 `kicad7_auto_full <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_auto_full>`__
+and
+`kicad8_auto_full <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad8_auto_full>`__
 GitHub packages. Old images can be found at `Docker
 Hub <https://hub.docker.com/>`__ as
 `setsoft/kicad_auto <https://hub.docker.com/repository/docker/setsoft/kicad_auto>`__
@@ -44,18 +46,20 @@ and
 
 The images are based on
 `kicad5_debian <https://github.com/INTI-CMNB/kicad_debian/pkgs/container/kicad5_debian>`__,
-`kicad6_debian <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_debian>`__
+`kicad6_debian <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_debian>`__,
+`kicad7_debian <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_debian>`__
 and
-`kicad7_debian <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_debian>`__.
+`kicad8_debian <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad8_debian>`__.
 (`setsoft/kicad_debian <https://hub.docker.com/repository/docker/setsoft/kicad_debian>`__
 on Docker Hub), containing KiCad on Debian GNU/Linux.
 
 If you need to run the current development version of KiBot you can use
 the following docker images:
 `ghcr.io/inti-cmnb/kicad5_auto_full:dev <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad5_auto_full>`__,
-`ghcr.io/inti-cmnb/kicad6_auto_full:dev <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full>`__
-or
+`ghcr.io/inti-cmnb/kicad6_auto_full:dev <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad6_auto_full>`__,
 `ghcr.io/inti-cmnb/kicad7_auto_full:dev <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad7_auto_full>`__
+or
+`ghcr.io/inti-cmnb/kicad8_auto_full:dev <https://github.com/INTI-CMNB/kicad_auto/pkgs/container/kicad8_auto_full>`__
 (`setsoft/kicad_auto:dev <https://hub.docker.com/repository/docker/setsoft/kicad_auto>`__).
 These images are based on the *full* (also named *test*) images.
 
@@ -70,13 +74,19 @@ Name                                      KiBot        KiCad
 ========================================= ============ =======
 ghcr.io/inti-cmnb/kicad5_auto_full:latest last release 5.1.9
 ghcr.io/inti-cmnb/kicad6_auto_full:latest last release 6.0.11
-ghcr.io/inti-cmnb/kicad7_auto_full:latest last release 7.x
+ghcr.io/inti-cmnb/kicad7_auto_full:latest last release 7.0.11
+ghcr.io/inti-cmnb/kicad8_auto_full:latest last release 8.x
 ghcr.io/inti-cmnb/kicad5_auto:latest      last release 5.1.9
 ghcr.io/inti-cmnb/kicad6_auto:latest      last release 6.0.11
-ghcr.io/inti-cmnb/kicad7_auto:latest      last release 7.x
+ghcr.io/inti-cmnb/kicad7_auto:latest      last release 7.0.11
+ghcr.io/inti-cmnb/kicad8_auto:latest      last release 8.x
 ghcr.io/inti-cmnb/kicad5_auto_full:dev    git code     5.1.9
 ghcr.io/inti-cmnb/kicad6_auto_full:dev    git code     6.0.11
-ghcr.io/inti-cmnb/kicad7_auto_full:dev    git code     7.x
+ghcr.io/inti-cmnb/kicad7_auto_full:dev    git code     7.0.11
+ghcr.io/inti-cmnb/kicad8_auto_full:dev    git code     8.x
+ghcr.io/inti-cmnb/kicad5_auto_full:1.6.4  1.6.4        5.1.9
+ghcr.io/inti-cmnb/kicad6_auto_full:1.6.4  1.6.4        6.0.11
+ghcr.io/inti-cmnb/kicad7_auto_full:1.6.4  1.6.4        7.0.11
 ghcr.io/inti-cmnb/kicad5_auto_full:1.6.3  1.6.3        5.1.9
 ghcr.io/inti-cmnb/kicad6_auto_full:1.6.3  1.6.3        6.0.11
 ghcr.io/inti-cmnb/kicad7_auto_full:1.6.3  1.6.3        7.0.10
@@ -162,7 +172,8 @@ Here is an example of workflow file using the GitHub Action:
            name: output
            path: output
 
-For KiCad 6 use ``v2_k6`` instead of ``v2`` (``v2_k7`` for KiCad 7).
+For KiCad 6 use ``v2_k6`` instead of ``v2`` (``v2_k7`` for KiCad 7
+or ``v2_k8`` for KiCad 8).
 These actions use the last KiBot stable release, to use the current
 development code use ``v2_dk6`` (KiCad 6) and ``v2_d`` (KiCad 5).
 
@@ -172,7 +183,7 @@ A working example applied to a repo can be found
 Another example, but using variants can be found
 `here <https://github.com/INTI-CMNB/kibot_variants_arduprog>`__
 (`kibot_action.yml <https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/master/.github/workflows/kibot_action.yml>`__
-for KiCad 6,
+for KiCad 7,
 `kibot_action.yml <https://github.com/INTI-CMNB/kibot_variants_arduprog/blob/KiCad5/.github/workflows/kibot_action.yml>`__
 for KiCad 5)
 
@@ -235,12 +246,17 @@ v2_k7_1_6_2 2   1.6.2        7.0.5.1
 v2_1_6_3    2   1.6.3        5.1.9
 v2_k6_1_6_3 2   1.6.3        6.0.11
 v2_k7_1_6_3 2   1.6.3        7.0.10
+v2_1_6_4    2   1.6.4        5.1.9
+v2_k6_1_6_4 2   1.6.4        6.0.11
+v2_k7_1_6_4 2   1.6.4        7.0.11
 v2          2   last release 5.1.9
 v2_k6       2   last release 6.0.11
-v2_k7       2   last release 7.x
+v2_k7       2   last release 7.0.11
+v2_k8       2   last release 8.x
 v2_d        2   git code     5.1.9
 v2_dk6      2   git code     6.0.11
-v2_dk7      2   git code     7.x
+v2_dk7      2   git code     7.0.11
+v2_dk8      2   git code     8.x
 =========== === ============ =======
 
 The main differences between API 1 and 2 are:

@@ -2,8 +2,8 @@
 <export version="E">
   <design>
     <source>kibom-variant_3.kicad_sch</source>
-    <date>jue 09 feb 2023 07:53:05</date>
-    <tool>Eeschema 7.0.0-rc2-unknown-rc2+208+g52b07b8bac</tool>
+    <date>2024-03-05T16:48:36+0000</date>
+    <tool>Eeschema 8.99.0-47-gb7b64d959f</tool>
     <sheet number="1" name="/" tstamps="/">
       <title_block>
         <title>KiBom Test Schematic</title>
@@ -29,13 +29,16 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <fields>
         <field name="Config">T2</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Config" value="T2"/>
-      <property name="Sheetname" value=""/>
+      <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="kibom-variant_3.kicad_sch"/>
-      <property name="ki_description" value="Unpolarized capacitor"/>
       <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>00000000-0000-0000-0000-00005f43bec2</tstamps>
     </comp>
@@ -44,24 +47,32 @@
       <footprint>Capacitor_SMD:C_0805_2012Metric</footprint>
       <fields>
         <field name="Config">T3</field>
+        <field name="Footprint">Capacitor_SMD:C_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
       </fields>
       <libsource lib="Device" part="C" description="Unpolarized capacitor"/>
       <property name="Config" value="T3"/>
-      <property name="Sheetname" value=""/>
+      <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="kibom-variant_3.kicad_sch"/>
-      <property name="ki_description" value="Unpolarized capacitor"/>
       <property name="ki_keywords" value="cap capacitor"/>
+      <property name="ki_fp_filters" value="C_*"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>00000000-0000-0000-0000-00005f43ce1c</tstamps>
     </comp>
     <comp ref="FID1">
       <value>Fiducial</value>
       <footprint>Fiducial:Fiducial_0.5mm_Mask1mm</footprint>
+      <fields>
+        <field name="Footprint">Fiducial:Fiducial_0.5mm_Mask1mm</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
+      </fields>
       <libsource lib="Mechanical" part="Fiducial" description="Fiducial Marker"/>
-      <property name="Sheetname" value=""/>
+      <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="kibom-variant_3.kicad_sch"/>
-      <property name="ki_description" value="Fiducial Marker"/>
       <property name="ki_keywords" value="fiducial marker"/>
+      <property name="ki_fp_filters" value="Fiducial*"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>00000000-0000-0000-0000-00005f57eddb</tstamps>
     </comp>
@@ -70,13 +81,16 @@
       <footprint>Resistor_SMD:R_0805_2012Metric</footprint>
       <fields>
         <field name="Config">default</field>
+        <field name="Footprint">Resistor_SMD:R_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Config" value="default"/>
-      <property name="Sheetname" value=""/>
+      <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="kibom-variant_3.kicad_sch"/>
-      <property name="ki_description" value="Resistor"/>
       <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>00000000-0000-0000-0000-00005f43d144</tstamps>
     </comp>
@@ -86,14 +100,17 @@
       <fields>
         <field name="Config">T1</field>
         <field name="default:_3D_model">${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_2010_5025Metric.wrl</field>
+        <field name="Footprint">Resistor_SMD:R_0805_2012Metric</field>
+        <field name="Datasheet"/>
+        <field name="Description"/>
       </fields>
       <libsource lib="Device" part="R" description="Resistor"/>
       <property name="Config" value="T1"/>
       <property name="default:_3D_model" value="${KICAD6_3DMODEL_DIR}/Resistor_SMD.3dshapes/R_2010_5025Metric.wrl"/>
-      <property name="Sheetname" value=""/>
+      <property name="Sheetname" value="Root"/>
       <property name="Sheetfile" value="kibom-variant_3.kicad_sch"/>
-      <property name="ki_description" value="Resistor"/>
       <property name="ki_keywords" value="R res resistor"/>
+      <property name="ki_fp_filters" value="R_*"/>
       <sheetpath names="/" tstamps="/"/>
       <tstamps>00000000-0000-0000-0000-00005f43d4bb</tstamps>
     </comp>
@@ -108,7 +125,9 @@
       <fields>
         <field name="Reference">C</field>
         <field name="Value">C</field>
+        <field name="Footprint"/>
         <field name="Datasheet">~</field>
+        <field name="Description">Unpolarized capacitor</field>
       </fields>
       <pins>
         <pin num="1" name="" type="passive"/>
@@ -124,7 +143,9 @@
       <fields>
         <field name="Reference">R</field>
         <field name="Value">R</field>
+        <field name="Footprint"/>
         <field name="Datasheet">~</field>
+        <field name="Description">Resistor</field>
       </fields>
       <pins>
         <pin num="1" name="" type="passive"/>
@@ -140,18 +161,13 @@
       <fields>
         <field name="Reference">FID</field>
         <field name="Value">Fiducial</field>
+        <field name="Footprint"/>
         <field name="Datasheet">~</field>
+        <field name="Description">Fiducial Marker</field>
       </fields>
     </libpart>
   </libparts>
-  <libraries>
-    <library logical="Device">
-      <uri>/usr/share/kicad-nightly/symbols//Device.kicad_sym</uri>
-    </library>
-    <library logical="Mechanical">
-      <uri>/usr/share/kicad-nightly/symbols//Mechanical.kicad_sym</uri>
-    </library>
-  </libraries>
+  <libraries/>
   <nets>
     <net code="1" name="unconnected-(C1-Pad1)">
       <node ref="C1" pin="1" pintype="passive"/>

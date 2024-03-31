@@ -53,7 +53,10 @@ kicad_minor = int(m.group(2))
 kicad_patch = int(m.group(3))
 kicad_version = kicad_major*1000000+kicad_minor*1000+kicad_patch
 if kicad_version >= KICAD_VERSION_5_99:
-    BOARDS_DIR = '../board_samples/kicad_'+str(kicad_major+(0 if kicad_minor < 99 else 1))
+    km = kicad_major+(0 if kicad_minor < 99 else 1)
+    if km > 8:
+        km = 8
+    BOARDS_DIR = '../board_samples/kicad_'+str(km)
     if kicad_version >= KICAD_VERSION_8_0_0:
         REF_DIR = 'tests/reference/8_0_0'
     elif kicad_version >= KICAD_VERSION_7_0_11 and 'rc' in build_version:
@@ -547,13 +550,19 @@ class TestContext(object):
         png_ref = None
         if reference[-3:] == 'svg':
             png_ref = reference[:-3]+'png'
-            subprocess.check_call(['rsvg-convert', '-d', '300', '-p', '300', '-o', png_ref, reference])
+            cmd = ['rsvg-convert', '-h', '2160', '-o', png_ref, reference]
+            logging.debug('Converting reference to PNG with: '+usable_cmd(cmd))
+            subprocess.check_call(cmd)
             reference = png_ref
+            assert os.path.isfile(png_ref)
         png_image = None
         if image[-3:] == 'svg':
             png_image = image[:-3]+'png'
-            subprocess.check_call(['rsvg-convert', '-d', '300', '-p', '300', '-o', png_image, image])
+            cmd = ['rsvg-convert', '-h', '2160', '-o', png_image, image]
+            logging.debug('Converting result image to PNG with: '+usable_cmd(cmd))
+            subprocess.check_call(cmd)
             image = png_image
+            assert os.path.isfile(png_image)
         if trim:
             cmd = ['convert', image, '-trim', image]
             subprocess.run(cmd)

@@ -190,7 +190,7 @@ outputs:
         # part number. The field containing the LCSC part number is defined by the
         # `field_lcsc_part` global variable
         download_lcsc: true
-        # [list(string)=[]] List of components to highlight
+        # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
         highlight: []
         # [boolean=false] Highlight over the component (not under)
         highlight_on_top: false
@@ -209,6 +209,7 @@ outputs:
         # A short-cut to use for simple cases where a variant is an overkill
         pre_transform: '_none'
         # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+        # Ranges like *R5-R10* are supported.
         # Unlike the `pcbdraw` output, the default is `all`
         show_components: all
         # [boolean=true] Add solder paste only for the populated components.
@@ -426,7 +427,8 @@ outputs:
       # This option is for simple cases, consider using a full variant for complex cases
       dnf_filter: '_kibom_dnf'
       # [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
-      # The default filter excludes test points, fiducial marks, mounting holes, etc.
+      # The default filter (built-in filter '_mechanical') excludes test points, fiducial marks, mounting holes, etc.
+      # Please consult the built-in filters explanation to fully understand what is excluded by default.
       # This option is for simple cases, consider using a full variant for complex cases
       exclude_filter: '_mechanical'
       # [boolean=false] Exclude components marked with *Exclude from BOM* in the PCB.
@@ -501,8 +503,11 @@ outputs:
         # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
         # Use **true** to copy the value indicated by the `field_lcsc_part` global option
         lcsc_link: ''
-        # [string|boolean=''] PNG file to use as logo, use false to remove
+        # [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+        # Note that when using an SVG this is first converted to a PNG using `logo_width`
         logo: ''
+        # [number=370] Used when the logo is an SVG image. This width is used to render the SVG image
+        logo_width: 370
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
         # [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
@@ -595,10 +600,13 @@ outputs:
         # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
         # Use **true** to copy the value indicated by the `field_lcsc_part` global option
         lcsc_link: ''
-        # [string|boolean=''] PNG file to use as logo, use false to remove
+        # [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+        # Note that when using an SVG this is first converted to a PNG using `logo_width`
         logo: ''
         # [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software
         logo_scale: 2
+        # [number=370] Used when the logo is an SVG image. This width is used to render the SVG image
+        logo_width: 370
         # [number=60] [20,999] Maximum column width (characters)
         max_col_width: 60
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
@@ -1742,12 +1750,28 @@ outputs:
     type: 'navigate_results'
     dir: 'Example/navigate_results_dir'
     options:
+      # [boolean=true] Add a header containing information for the project
+      header: true
       # [string=''] The name of a file to create at the main output directory linking to the home page
       link_from_root: ''
+      # [string|boolean=''] PNG file to use as logo, use false to remove.
+      # The KiBot logo is used by default
+      logo: ''
+      # [string='https://github.com/INTI-CMNB/KiBot/'] Target link when clicking the logo
+      logo_url: 'https://github.com/INTI-CMNB/KiBot/'
+      # [boolean=true] Add a side navigation bar to quickly access to the outputs
+      nav_bar: true
       # [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options
       output: '%f-%i%I%v.%x'
       # [boolean=false] Skip outputs with `run_by_default: false`
       skip_not_run: false
+      # [string=''] Title for the page, when empty KiBot will try using the schematic or PCB title.
+      # If they are empty the name of the project, schematic or PCB file is used.
+      # You can use %X values and KiCad variables here
+      title: ''
+      # [string|boolean=''] Target link when clicking the title, use false to remove.
+      # KiBot will try with the origin of the current git repo when empty
+      title_url: ''
   # Netlist:
   # The netlist can be generated in the classic format and in IPC-D-356 format,
   # useful for board testing
@@ -1796,14 +1820,21 @@ outputs:
             # [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
             # copper
             clearance: 0.5
+            # [number|string] Diameter of hexagons
+            diameter: 7
+            # `edge_clearance` is an alias for `edgeclearance`
+            # [number|string] Specifies clearance between the fill and panel perimeter
+            edgeclearance: 0.5
             # [string|list(string)] List of layers to fill. Can be a comma-separated string.
             # Using *all* means all external copper layers
             layers: 'F.Cu,B.Cu'
             # [number|string] The orientation of the hatched strokes
             orientation: 45
-            # [number|string] The space between the hatched strokes
+            # [number|string] The space between the hatched strokes or hexagons
             spacing: 1
-            # [string='none'] [none,solid,hatched] How to fill non-board areas of the panel with copper
+            # [number=15] Remove fragments smaller than threshold. Expressed as a percentage
+            threshold: 15
+            # [string='none'] [none,solid,hatched,hex] How to fill non-board areas of the panel with copper
             type: 'none'
             # [number|string] The width of the hatched strokes
             width: 1
@@ -1821,8 +1852,14 @@ outputs:
             cutcurves: false
             # [number|string] Drill size used for the *mousebites*
             drill: 0.5
+            # `end_prolongation` is an alias for `endprolongation`
+            # [number|string] Prolongation on the end of V-CUT without text
+            endprolongation: 3
             # [string='Cmts.User'] Specify the layer to render V-cuts on. Also used for the *layer* type
             layer: 'Cmts.User'
+            # `line_width` is an alias for `linewidth`
+            # [number|string] Line width to plot cuts with
+            linewidth: 0.3
             # [number|string] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
             # negative puts the cuts into the tabs
             offset: 0
@@ -1831,6 +1868,20 @@ outputs:
             prolong: 0
             # [number|string] The spacing of the holes used for the *mousebites*
             spacing: 0.8
+            # [string='V-CUT'] Text template for the V-CUT
+            template: 'V-CUT'
+            # `text_offset` is an alias for `textoffset`
+            # `text_prolongation` is an alias for `textprolongation`
+            # `text_size` is an alias for `textsize`
+            # `text_thickness` is an alias for `textthickness`
+            # [number|string] Text offset from the V-CUT
+            textoffset: 3
+            # [number|string] Prolongation of the text size of V-CUT
+            textprolongation: 3
+            # [number|string] Text size for vcuts
+            textsize: 2
+            # [number|string] Text thickness for width
+            textthickness: 0.3
             # [string='none'] [none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
             # into a layer with this option to understand what's going on. Shouldn't be used for the final design
             type: 'none'
@@ -1861,6 +1912,8 @@ outputs:
             hoffset: 0
             # [number|string] Diameter of the solder mask opening
             opening: 1
+            # [boolean=false] Include the fiducials in the paste layer (therefore they appear on the stencil)
+            paste: false
             # [string='none'] [none,3fid,4fid,plugin] Add none, 3 or 4 fiducials to the (rail/frame of) the panel
             type: 'none'
             # [number|string] Vertical offset from panel edges
@@ -1869,8 +1922,15 @@ outputs:
           framing:
             # [string=''] Argument to pass to the plugin. Used for *plugin*
             arg: ''
-            # [number|string] Specify the size of chamfer frame corners
+            # [number|string] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
+            # and `chamferheight` to create a non 45 degrees chamfer
             chamfer: 0
+            # `chamfer_height` is an alias for `chamferheight`
+            # `chamfer_width` is an alias for `chamferwidth`
+            # [number|string] Height of the chamfer frame corners, used for non 45 degrees chamfer
+            chamferheight: 0
+            # [number|string] Width of the chamfer frame corners, used for non 45 degrees chamfer
+            chamferwidth: 0
             # [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*
             code: ''
             # [string='both'] [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
@@ -1880,6 +1940,12 @@ outputs:
             fillet: 0
             # [number|string] Specify the horizontal space between PCB and the frame/rail
             hspace: 2
+            # `max_total_height` is an alias for `maxtotalheight`
+            # `max_total_width` is an alias for `maxtotalwidth`
+            # [number|string] Maximal height of the panel
+            maxtotalheight: 10000
+            # [number|string] Maximal width of the panel
+            maxtotalwidth: 10000
             # `min_total_height` is an alias for `mintotalheight`
             # `min_total_width` is an alias for `mintotalwidth`
             # [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
@@ -1921,12 +1987,18 @@ outputs:
             code: ''
             # [number=1] Specify the number of columns of boards in the grid pattern
             cols: 1
+            # `h_back_bone` is an alias for `hbackbone`
+            # `h_bone_cut` is an alias for `hbonecut`
+            # `h_bone_first` is an alias for `hbonefirst`
+            # `h_bone_skip` is an alias for `hboneskip`
             # [number|string] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
             # spacing of the boards
             hbackbone: 0
             # [boolean=true] If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
             # cross
             hbonecut: true
+            # [number=0] Specify first horizontal backbone to render
+            hbonefirst: 0
             # [number=0] Skip every n horizontal backbones. I.e., 1 means place only every other backbone
             hboneskip: 0
             # [number|string] Specify the horizontal gap between the boards
@@ -1946,12 +2018,18 @@ outputs:
             space: null
             # [string='grid'] [grid,plugin] In the plugin type only `code` and `arg` are relevant
             type: 'grid'
+            # `v_back_bone` is an alias for `vbackbone`
+            # `v_bone_cut` is an alias for `vbonecut`
+            # `v_bone_first` is an alias for `vbonefirst`
+            # `v_bone_skip` is an alias for `vboneskip`
             # [number|string] The width of vertical backbone (0 means no backbone). The backbone does not increase the
             # spacing of the boards
             vbackbone: 0
             # [boolean=true] If there are both backbones specified, specifies if there should be a vertical cut where the backbones
             # cross
             vbonecut: true
+            # [number=0] Specify first vertical backbone to render
+            vbonefirst: 0
             # [number=0] Skip every n vertical backbones. I.e., 1 means place only every other backbone
             vboneskip: 0
             # [number|string] Specify the vertical gap between the boards
@@ -1961,18 +2039,18 @@ outputs:
           name: ''
           # [dict] Sets page size on the resulting panel and position the panel in the page
           page:
-            # [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
+            # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
             # (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline
-            anchor: 'tl'
+            anchor: 'mt'
             # [number|string] Height for the `custom` paper size
             height: 210
             # `page_size` is an alias for `type`
             # `pos_x` is an alias for `posx`
             # `pos_y` is an alias for `posy`
-            # [number|string] The X position of the panel on the page
-            posx: 15
-            # [number|string] The Y position of the panel on the page
-            posy: 15
+            # [number|string] The X position of the panel on the page. Can be expressed as a page size percentage
+            posx: '50%'
+            # [number|string] The Y position of the panel on the page. Can be expressed as a page size percentage
+            posy: 20
             # `size` is an alias for `type`
             # [string='inherit'] [inherit,custom,A0,A1,A2,A3,A4,A5,A,B,C,D,E,USLetter,USLegal,USLedger,A0-portrait,A1-portrait,A2-portrait,
             # A3-portrait,A4-portrait,A5-portrait,A-portrait,B-portrait,C-portrait,D-portrait,E-portrait,
@@ -1987,10 +2065,17 @@ outputs:
             copperfill: false
             # [boolean=false] Draw dimensions with the panel size.
             dimensions: false
+            # `edge_width` is an alias for `edgewidth`
+            # [number|string] Specify line width for the Edge.Cuts of the panel
+            edgewidth: 0.1
             # `mill_radius` is an alias for `millradius`
+            # `mill_radius_outer` is an alias for `millradiusouter`
             # [number|string] Simulate the milling operation (add fillets to the internal corners).
             # Specify mill radius (usually 1 mm). 0 radius disables the functionality
             millradius: 0
+            # [number|string] Like `millradius`, but modifies only board outer counter.
+            # No internal features of the board are affected
+            millradiusouter: 0
             # [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Specify if the auxiliary origin an grid origin should be placed.
             # Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr (middle of sides), c (center).
             # Empty string does not changes the origin
@@ -2052,6 +2137,11 @@ outputs:
             # [number|string] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
             # Used for *fixed*
             mindistance: 0
+            # `patch_corners` is an alias for `patchcorners`
+            # [boolean=true] The full tabs are appended to the nearest flat face of the PCB. If the PCB has sharp corners, you want to
+            # add patches of substrate to these corners. However, if the PCB has fillet or miter, you don't want to
+            # apply the patches
+            patchcorners: true
             # [number|string] The maximum spacing of the tabs. Used for *spacing*
             spacing: 10
             # `tab_footprints` is an alias for `tabfootprints`
@@ -2227,6 +2317,9 @@ outputs:
             paste: false
             # [number|string] Diameter of the holes
             size: 1.152
+            # `solder_mask_margin` is an alias for `soldermaskmargin`
+            # [number|string] Solder mask expansion/margin. Use 1.3mm for JLCPCB
+            soldermaskmargin: 0
             # [string='none'] [none,3hole,4hole,plugin] Add none, 3 or 4 holes to the (rail/frame of) the panel
             type: 'none'
             # [number|string] Vertical offset from panel edges
@@ -2282,7 +2375,8 @@ outputs:
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
       # [list(string)|string=all] [none,all] List of components to include in the pads list,
-      # can be also a string for `none` or `all`. The default is `all`
+      # can be also a string for `none` or `all`. The default is `all`.
+      # Ranges like *R5-R10* are supported
       show_components: all
       # [boolean=false] Create a file containing the board stackup
       stackup_create: false
@@ -2886,6 +2980,7 @@ outputs:
       variant: ''
   # Pick & place:
   # This output is what you get from the 'File/Fabrication output/Footprint position (.pos) file' menu in pcbnew.
+  # Note that if you need a more customized output you can use the *bom* output, which can include positions.
   - name: 'position_example'
     comment: 'Generates the file with position information for the PCB components, used by the pick and place machine.'
     type: 'position'
@@ -3122,7 +3217,7 @@ outputs:
       download_lcsc: true
       # [number=720] Image height (aprox.)
       height: 720
-      # [list(string)=[]] List of components to highlight
+      # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
       highlight: []
       # [boolean=false] Highlight over the component (not under)
       highlight_on_top: false
@@ -3172,6 +3267,7 @@ outputs:
       # [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled
       show_comments: false
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+      # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
       # [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled
@@ -3212,7 +3308,8 @@ outputs:
       # [number=1280] Image width (aprox.)
       width: 1280
       # [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
-      # Same result as using the mouse wheel in the 3D viewer
+      # Same result as using the mouse wheel in the 3D viewer.
+      # Note that KiCad 8 starts with a zoom to fit, so you might not even need it
       zoom: 0
   # Design report:
   # Mainly oriented to be sent to the manufacturer or check PCB details.
@@ -3627,7 +3724,7 @@ outputs:
       # part number. The field containing the LCSC part number is defined by the
       # `field_lcsc_part` global variable
       download_lcsc: true
-      # [list(string)=[]] List of components to highlight
+      # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
       highlight: []
       # [boolean=false] Highlight over the component (not under)
       highlight_on_top: false
@@ -3654,6 +3751,7 @@ outputs:
       # [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled
       ref_y: 0
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+      # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
       # [boolean=false] Use the auxiliary axis as origin for coordinates.

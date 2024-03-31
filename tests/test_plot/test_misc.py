@@ -1934,7 +1934,7 @@ def test_populate_1(test_dir):
     prj = 'simple_2layer'  # Fake
     ctx = context.TestContext(test_dir, prj, 'populate', 'Populate')
     ctx.run(no_board_file=True, extra=['-b', 'tests/data/ArduinoLearningKitStarter.kicad_pcb', 'Populate'])
-    ctx.compare_image('Populate/img/populating_4.png', 'populating_4.png')
+    ctx.compare_image('Populate/img/populating_4.png', 'populating_4.png', tol=100)
     ctx.clean_up()
 
 

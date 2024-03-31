@@ -29,7 +29,7 @@ You can put a paragraph of text between the population steps. Lorem ipsum dolor
 sit amet, consectetuer adipiscing elit. Itaque earum rerum hic tenetur a
 sapiente.
 
-- [[back | R24 ]] We can also populate a component on the other side
+- [[back | R24, C5-C7 ]] We can also populate a component on the other side
 
 ## Conclusion
 

@@ -51,6 +51,7 @@ Shape {
 }
 
 """
+comp_range_regex = re.compile(r'(\w+?)(\d+)-(\w+?)(\d+)')
 
 
 class BaseOutput(RegOutput):
@@ -431,7 +432,11 @@ class VariantOptions(BaseOptions):
                             # No layers at all. Ridiculous, but happens.
                             # At least add an F.Mask
                             pad_layers.addLayer(fmask if is_front else bmask)
-                            logger.warning(W_WRONGPASTE+'Pad with solder paste, but no copper or solder mask aperture in '+ref)
+                            pad_name = p.GetName()
+                            # Some footprints has solder paste "pads" they don't have a name
+                            if pad_name or GS.global_always_warn_about_paste_pads:
+                                logger.warning(f"{W_WRONGPASTE}Pad with solder paste, but no copper or solder mask aperture "
+                                               f" in {ref} ({pad_name})")
                         p.SetLayerSet(pad_layers)
                     old_layers.append(old_c_layers)
                     logger.debugl(3, '- Removed paste/mask from '+ref)
@@ -727,6 +732,7 @@ class VariantOptions(BaseOptions):
         if not highlight:
             return
         self.create_3D_highlight_file()
+        extra_debug = GS.debug_level > 3
         # TODO: Adjust? Configure?
         z = (100.0 if self.highlight_on_top else 0.1)/2.54
         for m in GS.get_modules_board(board):
@@ -745,13 +751,19 @@ class VariantOptions(BaseOptions):
                 m_cen = wxPoint((bbox.x2+bbox.x1)/2, (bbox.y2+bbox.y1)/2)
             else:
                 # No courtyard, ask KiCad
-                # This will include things like text
-                bbox = m.GetBoundingBox()
+                # Avoid including the text. KiCad 8 can return ridiculous things
+                bbox = m.GetBoundingBox() if GS.ki5 else m.GetBoundingBox(False, False)
                 w = bbox.GetWidth()
                 h = bbox.GetHeight()
                 m_cen = m.GetCenter()
                 if not (m.GetAttributes() & MOD_ALLOW_MISSING_COURTYARD):
                     logger.warning(W_NOCRTYD+"Missing courtyard for `{}`".format(ref))
+            if extra_debug:
+                logger.debug(f'Highlight for {ref}')
+                logger.debug(f' - Position {ToMM(m_pos.x)}, {ToMM(m_pos.y)}')
+                logger.debug(f' - Orientation {rot}')
+                logger.debug(f' - Center {ToMM(m_cen.x)} {ToMM(m_cen.y)}')
+                logger.debug(f' - w,h {ToMM(w)}, {ToMM(h)}')
             # Compute the offset
             off_x = m_cen.x - m_pos.x
             off_y = m_cen.y - m_pos.y
@@ -869,22 +881,16 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             comp = comps_hash.get(ref, None)
             if comp is not None:
-                properties = {f.name: f.value for f in comp.fields}
                 old_value = m.GetValue()
-                m.SetValue(properties['Value'])
-                if GS.ki6:
-                    old_properties = m.GetProperties()
-                    m.SetProperties(properties)
-                    if has_GetFPIDAsString:
-                        # Introduced in 6.0.6
-                        old_fp = m.GetFPIDAsString()
-                        m.SetFPIDAsString(properties['Footprint'])
-                        data = (old_value, old_properties, old_fp)
-                    else:
-                        data = (old_value, old_properties)
-                else:
-                    data = old_value
-                self.sch_fields_to_pcb_bkp[ref] = data
+                old_fields = GS.get_fields(m)
+                # Introduced in 6.0.6
+                old_fp = m.GetFPIDAsString() if has_GetFPIDAsString else None
+                fields = {f.name: f.value for f in comp.fields}
+                GS.set_fields(m, fields)
+                m.SetValue(fields['Value'])
+                if has_GetFPIDAsString:
+                    m.SetFPIDAsString(fields['Footprint'])
+                self.sch_fields_to_pcb_bkp[ref] = (old_value, old_fields, old_fp)
         self._has_GetFPIDAsString = has_GetFPIDAsString
 
     def restore_sch_fields_to_pcb(self, board):
@@ -894,13 +900,10 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             data = self.sch_fields_to_pcb_bkp.get(ref, None)
             if data is not None:
-                if GS.ki6:
-                    m.SetValue(data[0])
-                    m.SetProperties(data[1])
-                    if has_GetFPIDAsString:
-                        m.SetFPIDAsString(data[2])
-                else:
-                    m.SetValue(data)
+                m.SetValue(data[0])
+                if has_GetFPIDAsString:
+                    m.SetFPIDAsString(data[2])
+                GS.set_fields(m, data[1])
 
     def save_tmp_board(self, dir=None):
         """ Save the PCB to a temporal file.
@@ -961,6 +964,18 @@ class VariantOptions(BaseOptions):
                 new_list.append(filter)
                 self._filters_to_expand = True
             else:
+                if GS.global_allow_component_ranges and c_s.count('-') == 1:
+                    m = comp_range_regex.match(c_s)
+                    if m:
+                        prefix = m.group(1)
+                        start = int(m.group(2))
+                        prefix2 = m.group(3)
+                        end = int(m.group(4))
+                        if prefix == prefix2 and end > start:
+                            # We have a match, both prefixes are the same and the numbers looks right
+                            logger.debugl(2, f'Expanding range {c_s} to {prefix}{start}...{prefix}{end}')
+                            new_list.extend([prefix+str(n) for n in range(start, end+1)])
+                            return new_list
                 new_list.append(c)
         return new_list
 

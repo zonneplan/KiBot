@@ -187,7 +187,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 6,\
+        "importance": 7,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -217,6 +217,13 @@ deps = '{\
                 "mandatory": false,\
                 "max_version": null,\
                 "output": "kiri",\
+                "version": null\
+            },\
+            {\
+                "desc": "Find origin url",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "navigate_results",\
                 "version": null\
             },\
             {\
@@ -761,9 +768,8 @@ deps = '{\
                 "output": "panelize",\
                 "version": [\
                     1,\
-                    3,\
-                    0,\
-                    4\
+                    5,\
+                    1\
                 ]\
             },\
             {\
@@ -1062,17 +1068,24 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 4,\
+        "importance": 5,\
         "in_debian": true,\
         "is_kicad_plugin": false,\
         "is_python": false,\
         "name": "RSVG tools",\
         "no_cmd_line_version": false,\
         "no_cmd_line_version_old": false,\
-        "output": "navigate_results",\
+        "output": "bom",\
         "plugin_dirs": null,\
         "pypi_name": "RSVG tools",\
         "role": [\
+            {\
+                "desc": "SVG logos for the BoM",\
+                "mandatory": false,\
+                "max_version": null,\
+                "output": "bom",\
+                "version": null\
+            },\
             {\
                 "desc": "Create outputs preview",\
                 "mandatory": false,\
@@ -1296,40 +1309,6 @@ deps = '{\
                 "mandatory": true,\
                 "max_version": null,\
                 "output": "kikit_present",\
-                "version": null\
-            }\
-        ],\
-        "tests": [],\
-        "url": null,\
-        "url_down": null\
-    },\
-    "mistune": {\
-        "arch": "python-mistune",\
-        "command": "mistune",\
-        "comments": [],\
-        "deb_package": "python3-mistune",\
-        "downloader": null,\
-        "downloader_str": null,\
-        "extra_arch": null,\
-        "extra_deb": null,\
-        "help_option": "--version",\
-        "importance": 10000,\
-        "in_debian": true,\
-        "is_kicad_plugin": false,\
-        "is_python": true,\
-        "module_name": "mistune",\
-        "name": "mistune",\
-        "no_cmd_line_version": false,\
-        "no_cmd_line_version_old": false,\
-        "output": "populate",\
-        "plugin_dirs": null,\
-        "pypi_name": "mistune",\
-        "role": [\
-            {\
-                "desc": null,\
-                "mandatory": true,\
-                "max_version": null,\
-                "output": "populate",\
                 "version": null\
             }\
         ],\
@@ -1763,7 +1742,7 @@ if kicad_ok:
         version = 'Older than 5.1.6'
 else:
     version = NOT_AVAIL
-if kicad_version >= (5, 1, 6) and kicad_version < (7, 99):
+if kicad_version >= (5, 1, 6) and kicad_version < (8, 99):
     sev = 0
 else:
     sev = 4

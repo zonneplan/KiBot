@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python
+# This workflow will install Python dependencies, run tests and lint with a single version of Python.
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Regression tests
@@ -30,7 +30,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ki_release: [ki5, ki6, ki7]
+        ki_release: [ki5, ki6, ki7, ki8]
         w_tests: [g1, g2, g3]
 
     runs-on: ubuntu-latest
@@ -97,7 +97,7 @@ jobs:
         path: output
     - name: Upload Coverage
       # Don't mix stable coverage with development coverage
-      if: github.ref == 'refs/heads/dev'
+      if: ${{ (github.ref == 'refs/heads/dev') && (matrix.ki_release != 'ki8') }}
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}_${{ matrix.w_tests }}

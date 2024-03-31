@@ -34,6 +34,7 @@ htmlcov/
 pp/
 output/
 .coverage
+.coverage.*
 TODO
 inti.png
 tags

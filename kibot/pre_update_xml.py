@@ -78,7 +78,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
         excluded = set()
         for m in GS.get_modules():
             ref = m.GetReference()
-            pcb_props = m.GetProperties()
+            pcb_props = GS.get_fields(m)
             found_comps.add(ref)
             if ref not in comps:
                 if GS.ki6_only and pcb_props.get('exclude_from_bom') is not None:
@@ -120,6 +120,8 @@ class Update_XML(BasePreFlight):  # noqa: F821
             for p in set(pcb_props.keys()).difference(found_props):
                 errors.append('{} PCB property `{}` not in schematic'.format(ref, p))
         for ref in set(comps.keys()).difference(found_comps):
+            if 'exclude_from_board' in comps[ref].props:
+                continue
             errors.append('{} found in schematic, but not in PCB'.format(ref))
         return excluded
 

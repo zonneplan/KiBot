@@ -133,6 +133,8 @@ class GS(object):
     def_global_output = '%f-%i%I%v.%x'
     # The class that controls the global options
     class_for_global_opts = None
+    global_allow_component_ranges = None
+    global_always_warn_about_paste_pads = None
     global_cache_3d_resistors = None
     global_castellated_pads = None
     global_colored_tht_resistors = None
@@ -855,3 +857,36 @@ class GS(object):
     def write_to_file(content, name):
         with GS.create_file(name, bin=isinstance(content, bytes)) as f:
             f.write(content)
+
+    @staticmethod
+    def get_fields(footprint):
+        """ Returns a dict with the field/value for the fields in a FOOTPRINT (aka MODULE) """
+        if GS.ki8:
+            # KiCad 8 defines a special object (PCB_FIELD) and its iterator
+            return {f.GetName(): f.GetText() for f in footprint.GetFields()}
+        if GS.ki6:
+            return footprint.GetProperties()
+        # KiCad 5 didn't have fields in the modules
+        return {}
+
+    @staticmethod
+    def set_fields(footprint, flds):
+        """ Sets the fields in a FOOTPRINT (aka MODULE) from a dict """
+        if GS.ki8:
+            new_fields = [fld for fld in flds.keys() if not footprint.HasField(fld)]
+            footprint.SetFields(flds)
+            # New fields are added as visible, so we must hide them (OMG!)
+            for fld in new_fields:
+                footprint.GetFieldByName(fld).SetVisible(False)
+        elif GS.ki6:
+            footprint.SetProperties(flds)
+
+    @staticmethod
+    def get_shown_text(obj, allow_extra_text=True, a_depth=0):
+        if GS.ki8:  # 8
+            return obj.GetShownText(allow_extra_text, a_depth)
+        if GS.ki7:  # 7
+            return obj.GetShownText()
+        if GS.ki6:  # 6
+            return obj.GetShownText(a_depth, allow_extra_text)
+        return obj.GetShownText()  # 5

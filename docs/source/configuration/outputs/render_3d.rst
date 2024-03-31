@@ -43,11 +43,13 @@ Parameters:
       -  **rotate_z** :index:`: <pair: output - render_3d - options; rotate_z>` [number=0] Steps to rotate around the Z axis, positive is clockwise.
          Each step is currently 10 degrees. Only for KiCad 6 or newer.
       -  **show_components** :index:`: <pair: output - render_3d - options; show_components>` [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+         Ranges like *R5-R10* are supported.
          Unlike the `pcbdraw` output, the default is `all`.
 
       -  **view** :index:`: <pair: output - render_3d - options; view>` [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
       -  **zoom** :index:`: <pair: output - render_3d - options; zoom>` [number=0] Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
          Same result as using the mouse wheel in the 3D viewer.
+         Note that KiCad 8 starts with a zoom to fit, so you might not even need it.
       -  ``auto_crop`` :index:`: <pair: output - render_3d - options; auto_crop>` [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
          In this mode the `background2` is changed to be the same as `background1`.
       -  ``background1`` :index:`: <pair: output - render_3d - options; background1>` [string='#66667F'] First color for the background gradient.
@@ -63,7 +65,7 @@ Parameters:
          part number. The field containing the LCSC part number is defined by the
          `field_lcsc_part` global variable.
       -  ``height`` :index:`: <pair: output - render_3d - options; height>` [number=720] Image height (aprox.).
-      -  ``highlight`` :index:`: <pair: output - render_3d - options; highlight>` [list(string)=[]] List of components to highlight.
+      -  ``highlight`` :index:`: <pair: output - render_3d - options; highlight>` [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported.
 
       -  ``highlight_on_top`` :index:`: <pair: output - render_3d - options; highlight_on_top>` [boolean=false] Highlight over the component (not under).
       -  ``highlight_padding`` :index:`: <pair: output - render_3d - options; highlight_padding>` [number=1.5] [0,1000] How much the highlight extends around the component [mm].

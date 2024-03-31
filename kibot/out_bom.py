@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # License: MIT
 # Project: KiBot (formerly KiPlot)
 """
@@ -10,6 +10,8 @@ Dependencies:
   - from: KiCost
     role: Find components costs and specs
     version: 1.1.8
+  - from: RSVG
+    role: SVG logos for the BoM
   - name: XLSXWriter
     role: Create XLSX files
     python_module: true
@@ -22,12 +24,13 @@ import csv
 from copy import deepcopy
 import os
 import re
+from tempfile import NamedTemporaryFile
 from .gs import GS
 from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
-from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import, expand_fields
+from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import, expand_fields, run_command
 from .kicad.v5_sch import SchematicComponent, SchematicField
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
@@ -201,7 +204,10 @@ class BoMLinkable(Optionable):
             self.highlight_empty = True
             """ Use a color for empty cells. Applies only when `col_colors` is `true` """
             self.logo = Optionable
-            """ *[string|boolean=''] PNG file to use as logo, use false to remove """
+            """ *[string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+                Note that when using an SVG this is first converted to a PNG using `logo_width` """
+            self.logo_width = 370
+            """ Used when the logo is an SVG image. This width is used to render the SVG image """
             self.title = 'KiBot Bill of Materials'
             """ *BoM title """
             self.extra_info = Optionable
@@ -487,7 +493,8 @@ class BoMOptions(BaseOptions):
                 This option is for simple cases, consider using a full variant for complex cases """
             self.exclude_filter = Optionable
             """ [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
-                The default filter excludes test points, fiducial marks, mounting holes, etc.
+                The default filter (built-in filter '_mechanical') excludes test points, fiducial marks, mounting holes, etc.
+                Please consult the built-in filters explanation to fully understand what is excluded by default.
                 This option is for simple cases, consider using a full variant for complex cases """
             self.dnf_filter = Optionable
             """ [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
@@ -891,6 +898,31 @@ class BoMOptions(BaseOptions):
             comps.extend(new_comps)
             prj.source = os.path.basename(prj.file)
 
+    def solve_logo(self):
+        if self.format == 'html':
+            logo = self.html.logo
+            w = self.html.logo_width
+        elif self.format == 'xlsx':
+            logo = self.xlsx.logo
+            w = self.xlsx.logo_width
+        else:
+            return None
+        if not logo:
+            return None
+        ext = os.path.splitext(logo)[1]
+        if ext.lower() != '.svg':
+            return None
+        with NamedTemporaryFile(mode='w', suffix='.png', delete=False) as f:
+            png = f.name
+        cmd = [self.ensure_tool('RSVG'), '-w', str(w), '-f', 'png', '-o', png, logo]
+        run_command(cmd)
+        self._old_logo = logo
+        if self.format == 'html':
+            self.html.logo = png
+        elif self.format == 'xlsx':
+            self.xlsx.logo = png
+        return png
+
     def run(self, output):
         format = self.format.lower()
         if format == 'xlsx':
@@ -950,10 +982,18 @@ class BoMOptions(BaseOptions):
         # To translate project to ID
         if self.source_by_id:
             self.source_to_id = {prj.name: prj.ref_id for prj in self.aggregate}
+        tmp_png = self.solve_logo()
         try:
             do_bom(output, format, comps, self)
         except BoMError as e:
             raise KiPlotConfigurationError(str(e))
+        finally:
+            if tmp_png:
+                os.remove(tmp_png)
+                if self.format == 'html':
+                    self.html.logo = self._old_logo
+                elif self.format == 'xlsx':
+                    self.xlsx.logo = self._old_logo
         # Undo the reference prefix
         if self.ref_id:
             l_id = len(self.ref_id)
