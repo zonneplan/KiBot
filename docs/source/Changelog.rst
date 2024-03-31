@@ -13,7 +13,7 @@ Changelog <https://keepachangelog.com/en/1.0.0/>`__, and this project
 adheres to `Semantic
 Versioning <https://semver.org/spec/v2.0.0.html>`__.
 
-[1.6.5] - Unreleased
+[1.6.5] - 2024-03-31
 --------------------
 
 Added
@@ -64,6 +64,8 @@ Fixed
 -  Diff: problems when using things like “origin/main” and add_link_id
    (#589)
 -  Panelize: not able to use external JSON configs (#592)
+
+.. _section-1:
 
 [1.6.4] - 2024-02-02
 --------------------
@@ -344,7 +346,7 @@ Fixed
    -  Problems when creating a colored resistor, but we didn’t have a
       cache yet (i.e. no model downloaded) #553
 
-.. _section-1:
+.. _section-2:
 
 [1.6.3] - 2023-06-26
 --------------------
@@ -514,7 +516,7 @@ Fixed
 
 -  KiCad user template directory autodetection for KiCad 7+
 
-.. _section-2:
+.. _section-3:
 
 [1.6.2] - 2023-04-24
 --------------------
@@ -632,7 +634,7 @@ Changed:
 -  Some R, L and C values that were rejected are accepted now. You just
    get a warning about what part of the value was discarded.
 
-.. _section-3:
+.. _section-4:
 
 [1.6.1] - 2023-03-16
 --------------------
@@ -681,7 +683,7 @@ Fixed
    conditions were met.
 -  PCB Print: KiCad crashing on some complex filled zones (#396)
 
-.. _section-4:
+.. _section-5:
 
 [1.6.0] - 2023-02-06
 --------------------
@@ -800,7 +802,7 @@ Added
    ~/.cache/kibot/3d You can change the directory using KIBOT_3D_MODELS
 -  License is now AGPL v3, since we are incorporating AGPL code.
 
-.. _section-5:
+.. _section-6:
 
 [1.5.1] - 2022-12-16
 --------------------
@@ -812,7 +814,7 @@ Fixed
 
 -  System level resources look-up
 
-.. _section-6:
+.. _section-7:
 
 [1.5.0] - 2022-12-16
 --------------------
@@ -926,7 +928,7 @@ Fixed
 -  Makefile: outputs marked as not run by default were listed in the
    ``all`` target.
 
-.. _section-7:
+.. _section-8:
 
 [1.4.0] - 2022-10-12
 --------------------
@@ -1044,7 +1046,7 @@ Changed
 -  When importing globals now options that are lists or dicts are
    merged, not just replaced. (#291)
 
-.. _section-8:
+.. _section-9:
 
 [1.3.0] - 2022-09-08
 --------------------
@@ -1144,7 +1146,7 @@ Changed
 -  Fails to expand KiCad vars are reported once (not every time)
 -  No more warnings about missing 3D models when we can download them
 
-.. _section-9:
+.. _section-10:
 
 [1.2.0] - 2022-06-15
 --------------------
@@ -1203,7 +1205,7 @@ Changed
    -  ``navigate_results`` and ``compress`` outputs are created after
       others
 
-.. _section-10:
+.. _section-11:
 
 [1.1.0] - 2022-05-24
 --------------------
@@ -1234,7 +1236,7 @@ Fixed
 -  KiCost+Internal variants: problem with ``variant`` field
    capitalization
 
-.. _section-11:
+.. _section-12:
 
 [1.0.0] - 2022-05-10
 --------------------
@@ -1412,7 +1414,7 @@ Fixed
    (not imported from KiCad 5)
 -  Problems when using page layout files with relative paths. (#174)
 
-.. _section-12:
+.. _section-13:
 
 [0.11.0] - 2021-04-25
 ---------------------
@@ -1468,7 +1470,7 @@ Fixed
 -  The “References” (plural) column is now coloured as “Reference”
    (singular)
 
-.. _section-13:
+.. _section-14:
 
 [0.10.1] - 2021-02-22
 ---------------------
@@ -1481,7 +1483,7 @@ Added
 -  GitLab CI workaround
 -  Verbosity level is now passed to KiAuto
 
-.. _section-14:
+.. _section-15:
 
 [0.10.0-4] - 2021-02-16
 -----------------------
@@ -1493,7 +1495,7 @@ Fixed
 
 -  Problem using Python 3.6 (ZipFile’s compresslevel arg needs 3.7)
 
-.. _section-15:
+.. _section-16:
 
 [0.10.0-3] - 2021-02-16
 -----------------------
@@ -1505,7 +1507,7 @@ Fixed
 
 -  Problem using Python 3.6 (StreamHandler.setStream introduced in 3.7)
 
-.. _section-16:
+.. _section-17:
 
 [0.10.0-2] - 2021-02-12
 -----------------------
@@ -1517,7 +1519,7 @@ Fixed
 
 -  Missing python3-distutils dependency on Debian package.
 
-.. _section-17:
+.. _section-18:
 
 [0.10.0] - 2021-02-12
 ---------------------
@@ -1580,7 +1582,7 @@ Fixed
    (i.e. UTF-8).
 -  Problems when using components with more than 10 subparts.
 
-.. _section-18:
+.. _section-19:
 
 [0.9.0] - 2021-01-04
 --------------------
@@ -1618,7 +1620,7 @@ Fixed
 -  Generic filter ``include_only`` option worked only when debug
    enabled.
 
-.. _section-19:
+.. _section-20:
 
 [0.8.1] - 2020-12-09
 --------------------
@@ -1639,7 +1641,7 @@ Fixed
 -  Internal BoM separator wasn’t applied when using ``use_alt``
 -  Problems loading plug-ins when using ``pip``.
 
-.. _section-20:
+.. _section-21:
 
 [0.8.0] - 2020-11-06
 --------------------
@@ -1670,7 +1672,7 @@ Fixed
 -  Excellon drill output when using unified output and not using default
    KiCad names.
 
-.. _section-21:
+.. _section-22:
 
 [0.7.0] - 2020-09-11
 --------------------
@@ -1708,7 +1710,7 @@ Fixed
 -  Virtual components are always excluded from position files. Note you
    can change it using the variants mechanism.
 
-.. _section-22:
+.. _section-23:
 
 [0.6.2] - 2020-08-25
 --------------------
@@ -1734,7 +1736,7 @@ Fixed
 -  Problems with PcbDraw when generating PNG and JPG outputs. Now we use
    a more reliable conversion method when available.
 
-.. _section-23:
+.. _section-24:
 
 [0.6.1] - 2020-08-20
 --------------------
@@ -1761,7 +1763,7 @@ Fixed
 -  Problems when using ``pip install`` without –no-compile. At least for
    user level install.
 
-.. _section-24:
+.. _section-25:
 
 [0.6.0] - 2020-08-18
 --------------------
@@ -1813,7 +1815,7 @@ Changed
    -  pdf_sch_print: adds -schematic
    -  IBoM: contains the project name.
 
-.. _section-25:
+.. _section-26:
 
 [0.5.0] - 2020-07-11
 --------------------
@@ -1898,7 +1900,7 @@ Fixed
 -  ‘ignore_unconnected’ preflight wasn’t working.
 -  The report of hwo many ERC/DRC errors we found.
 
-.. _section-26:
+.. _section-27:
 
 [0.4.0] - 2020-06-17
 --------------------
@@ -1911,7 +1913,7 @@ Added
 -  STEP 3D model generation
 -  Support for unpatched InteractiveHtmlBom
 
-.. _section-27:
+.. _section-28:
 
 [0.3.0] - 2020-06-14
 --------------------
@@ -1940,7 +1942,7 @@ Fixed
 
 -  Error codes that overlapped.
 
-.. _section-28:
+.. _section-29:
 
 [0.2.5] - 2020-06-11
 --------------------
@@ -1961,7 +1963,7 @@ Fixed
 -  All pcbnew plot formats generated gerber job files
 -  Most formats that needed layers didn’t complain when omitted
 
-.. _section-29:
+.. _section-30:
 
 [0.2.4] - 2020-05-19
 --------------------
@@ -1981,7 +1983,7 @@ Fixed
 -  Problems for kibom and print_sch outputs when the PCB name included a
    path.
 
-.. _section-30:
+.. _section-31:
 
 [0.2.3] - 2020-04-23
 --------------------
@@ -1993,7 +1995,7 @@ Added
 
 -  List available targets
 
-.. _section-31:
+.. _section-32:
 
 [0.2.2] - 2020-04-20
 --------------------
@@ -2006,7 +2008,7 @@ Fixed
 -  KiBoM temporal files, now removed
 -  preflight tasks that didn’t honor –out-dir
 
-.. _section-32:
+.. _section-33:
 
 [0.2.1] - 2020-04-18
 --------------------
@@ -2019,7 +2021,7 @@ Fixed
 -  Problem when the excellon drill target directory didn’t exist (now
    created)
 
-.. _section-33:
+.. _section-34:
 
 [0.2.0] - 2020-03-28
 --------------------
@@ -2049,7 +2051,7 @@ Fixed
 
 -  Debian dependencies
 
-.. _section-34:
+.. _section-35:
 
 [0.1.1] - 2020-03-13
 --------------------
