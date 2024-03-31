@@ -97,7 +97,8 @@ jobs:
         path: output
     - name: Upload Coverage
       # Don't mix stable coverage with development coverage
-      if: ${{ (github.ref == 'refs/heads/dev') && (matrix.ki_release != 'ki8') }}
+      # if: ${{ (github.ref == 'refs/heads/dev') && (matrix.ki_release != 'ki8') }}
+      if: ${{ (matrix.ki_release != 'ki8') }}
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
@@ -159,7 +160,7 @@ jobs:
         path: output
     - name: Upload Coverage
       # Don't mix stable coverage with development coverage
-      if: github.ref == 'refs/heads/dev'
+      # if: github.ref == 'refs/heads/dev'
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
         COVERALLS_FLAG_NAME: independent
@@ -189,7 +190,7 @@ jobs:
     container: setsoft/kicad_auto_test:ki7
     needs: [test, test_indep]
     # Don't mix stable coverage with development coverage
-    if: github.ref == 'refs/heads/dev'
+    #if: github.ref == 'refs/heads/dev'
 
     steps:
     - uses: actions/checkout@v4
@@ -250,7 +251,7 @@ jobs:
     needs: [test, test_indep]
     runs-on: ubuntu-latest
     # Don't mix stable coverage with development coverage
-    if: github.ref == 'refs/heads/dev'
+    #if: github.ref == 'refs/heads/dev'
     steps:
     - name: Finished
       env:
