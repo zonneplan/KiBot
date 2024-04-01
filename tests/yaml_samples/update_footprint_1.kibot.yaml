@@ -1,0 +1,19 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  update_footprint:
+    - U1
+    - SYM1
+
+outputs:
+  - name: SVG
+    comment: "Render the silkscreen"
+    type: svg
+    dir: SVG
+    options:
+      limit_viewbox: true
+    layers:
+      - layer: F.SilkS
+        suffix: F_Silk

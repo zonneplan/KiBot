@@ -18,6 +18,7 @@ import logging
 import pytest
 import os
 import re
+import shutil
 from subprocess import run, PIPE
 from . import context
 from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG, NETLIST_DIFF
@@ -389,4 +390,18 @@ def test_set_text_variables_2(test_dir):
     finally:
         os.replace(file_back, file)
     ctx.expect_out_file(prj+'-bom_'+hash+'.csv')
+    ctx.clean_up(keep_project=True)
+
+
+def test_update_footprint_1(test_dir):
+    """ Try updating 2 footprints from the lib """
+    prj = 'update_footprint_1'
+    ctx = context.TestContext(test_dir, 'update_footprint_1/update_footprint_1', prj, 'SVG')
+    # Copy the ref file
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.run(extra=[])
+    o = prj+'-F_Silk.svg'
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.expect_out_file_d(o)
+    ctx.compare_image(o, sub=True)
     ctx.clean_up(keep_project=True)

@@ -86,6 +86,9 @@ preflight:
       command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
       before: 'Git hash: <'
       after: '>'
+  # [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
+  # This is useful to replace logos using freshly created versions.
+  update_footprint: QR1, QR2
   # [boolean=false] Update the QR codes.
   # Complements the `qr_lib` output.
   # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.

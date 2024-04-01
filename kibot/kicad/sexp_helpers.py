@@ -1,10 +1,16 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2023 Salvador E. Tropea
-# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
+import os
+from tempfile import NamedTemporaryFile
 from .error import SchError
-from .sexpdata import Symbol
+from ..error import KiPlotConfigurationError
+from ..gs import GS
+from .sexpdata import Symbol, Sep, dumps, SExpData, load
+TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
+               'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
 
 
 class Point(object):
@@ -16,6 +22,55 @@ class Point(object):
     @staticmethod
     def parse(items):
         return Point(items)
+
+
+def make_separated(sexp):
+    """ Add separators to make the file more readable """
+    if not isinstance(sexp, list):
+        return sexp
+    if not isinstance(sexp[0], Symbol) or sexp[0].value() not in TO_SEPARATE:
+        return sexp
+    separated = []
+    for s in sexp:
+        separated.append(make_separated(s))
+        if isinstance(s, list):
+            separated.append(Sep())
+    return separated
+
+
+def load_sexp_file(fname):
+    with open(fname, 'rt') as fh:
+        error = None
+        try:
+            ki_file = load(fh)
+        except SExpData as e:
+            error = str(e)
+        if error:
+            raise KiPlotConfigurationError(error)
+    return ki_file
+
+
+def save_pcb_from_sexp(pcb, logger):
+    # Make it readable
+    separated = make_separated(pcb[0])
+    # Save it to a temporal
+    with NamedTemporaryFile(mode='wt', suffix='.kicad_pcb', delete=False) as f:
+        logger.debug('- Saving updated PCB to: '+f.name)
+        f.write(dumps(separated))
+        f.write('\n')
+        tmp_pcb = f.name
+    # Also copy the project
+    GS.copy_project(tmp_pcb)
+    # Reload it
+    logger.debug('- Loading the temporal PCB')
+    GS.load_board(tmp_pcb, forced=True)
+    # Create a back-up and save it in the original place
+    logger.debug('- Replacing the old PCB')
+    os.remove(tmp_pcb)
+    GS.make_bkp(GS.pcb_file)
+    GS.board.Save(GS.pcb_file)
+    # After saving the file the name isn't changed, we must force it!!!
+    GS.board.SetFileName(GS.pcb_file)
 
 
 def _check_is_symbol_list(e, allow_orphan_symbol=()):
@@ -159,3 +214,8 @@ def _get_points(items):
 def _get_size(items, pos, name):
     value = _check_symbol_value(items, pos, name, 'size')
     return _get_xy(value)
+
+
+def _get_symbol_name(items):
+    """ Check if items is a list and starts with a symbol, return its name, otherwise None """
+    return None if not isinstance(items, list) or not isinstance(items[0], Symbol) else items[0].value()

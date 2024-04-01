@@ -156,6 +156,8 @@ Supported preflights
       -  ``text`` :index:`: <pair: preflight - set_text_variables; text>` [string=''] Text to insert instead of the variable.
       -  *variable* :index:`: <pair: preflight - set_text_variables; variable>` Alias for name.
 
+-  **update_footprint**: :index:`: <pair: preflights; update_footprint>` [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
+   This is useful to replace logos using freshly created versions.
 -  **update_qr**: :index:`: <pair: preflights; update_qr>` [boolean=false] Update the QR codes.
    Complements the `qr_lib` output. |br|
    The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.

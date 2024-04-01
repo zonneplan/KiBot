@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [1.6.6] - Unreleased
+### Added
+- New preflights:
+  - update_footprint: updates one or more footprints from the libs.
+    Useful for external QR codes, logos, etc. (#492 #483)
 
 
 ## [1.6.5] - 2024-03-31
