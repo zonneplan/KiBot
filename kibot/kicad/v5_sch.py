@@ -1974,9 +1974,11 @@ class Schematic(object):
                 prop = SubElement(comp, 'property')
                 prop.set('name', 'Sheetname')
                 prop.set('value', os.path.basename(c.sheet_path_h))
-                prop = SubElement(comp, 'property')
-                prop.set('name', 'Sheetfile')
-                prop.set('value', os.path.basename(c.parent_sheet.fname))
+                if hasattr(c, 'parent_sheet'):
+                    # Components from the PCB doesn't have "parent_sheet"
+                    prop = SubElement(comp, 'property')
+                    prop.set('name', 'Sheetfile')
+                    prop.set('value', os.path.basename(c.parent_sheet.fname))
             shp = SubElement(comp, 'sheetpath')
             shp.set('names', _path(c.sheet_path_h))
             shp.set('tstamps', _path(c.sheet_path))

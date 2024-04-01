@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - update_footprint: updates one or more footprints from the libs.
     Useful for external QR codes, logos, etc. (#492 #483)
 
+### Fixed
+- Netlist generation problems with components on the PCB but not in schematic.
+  I.e. logos reaching iBoM output (#598)
+
 
 ## [1.6.5] - 2024-03-31
 ### Added
