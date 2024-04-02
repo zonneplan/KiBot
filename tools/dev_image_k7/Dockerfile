@@ -19,7 +19,6 @@ RUN     dpkg --remove kicost kibot && \
 	unzip pp.zip && \
 	pip3 install --break-system-packages KiAuto-master/ && \
 	rm -rf KiAuto-master/ pp.zip && \
-	apt-get -y remove curl unzip python3-pip && \
 	rm -rf /var/lib/apt/lists/*
 
 ARG repo_hash
