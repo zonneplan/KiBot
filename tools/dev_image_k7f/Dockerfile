@@ -12,7 +12,7 @@ RUN     dpkg --remove kicost kibot && \
 	unzip pp.zip && \
 	pip3 install --break-system-packages KiCost-master/ && \
 	rm -rf KiCost-master pp.zip && \
-	dpkg --remove kiauto && \
+	dpkg --remove --force-all kiauto && \
 	curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
 	pip3 install --break-system-packages KiAuto-master/ && \
