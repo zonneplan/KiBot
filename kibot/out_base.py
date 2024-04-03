@@ -51,7 +51,7 @@ Shape {
 }
 
 """
-comp_range_regex = re.compile(r'(\w+?)(\d+)-(\w+?)(\d+)')
+comp_range_regex = re.compile(r'([a-zA-Z]+)(\d+)-([a-zA-Z]+)(\d+)')
 
 
 class BaseOutput(RegOutput):
