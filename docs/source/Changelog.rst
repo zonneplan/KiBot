@@ -29,6 +29,8 @@ Fixed
 
 -  Netlist generation problems with components on the PCB but not in
    schematic. I.e. logos reaching iBoM output (#598)
+-  3D/2D renderers: ranges regex to be more strict. Don’t take things
+   like “r1-10”
 
 [1.6.5] - 2024-03-31
 --------------------
@@ -56,7 +58,7 @@ Changed
 -  KiRi: continue even on corrupted schematics (#583)
 -  Variants: avoid W045 on nameless pads. Assuming they are on purpose
    and not real pads. (See #584)
--  BoardView: Skip footprints with no pads (not just REF*\*)
+-  BoardView: Skip footprints with no pads (not just REF**)
    (whitequark/kicad-boardview#14)
 
 .. _fixed-1:

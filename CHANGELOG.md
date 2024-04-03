@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.
   I.e. logos reaching iBoM output (#598)
+- 3D/2D renderers: ranges regex to be more strict. Don't take things like
+  "r1-10"
 
 
 ## [1.6.5] - 2024-03-31
