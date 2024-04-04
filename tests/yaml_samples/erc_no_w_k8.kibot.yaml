@@ -1,0 +1,20 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  dir: 'def_dir'
+
+preflight:
+  erc: true
+  erc_warnings: true
+  filters:
+    - filter: 'Ignore C3 pad 2 too close to anything'
+      number: 4
+      regex: 'Pad 2 of C3'
+    - filter: 'Ignore unconnected pad 2 of C4'
+      number: 2
+      regex: 'Pad 2 of C4'
+    - filter: 'Ignore KiCad 6 lib_symbol_issues'
+      error: lib_symbol_issues
+      regex: ''

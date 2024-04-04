@@ -90,10 +90,10 @@ class Filters(BasePreFlight):  # noqa: F821
         Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
         To farther ignore these warnings use the `filters` option in the `global` section """
     def __init__(self, name, value):
-        f = FiltersOptions()
-        f.set_tree({'filters': value})
-        f.config(self)
-        super().__init__(name, f.filters)
+        self._filter_ops = FiltersOptions()
+        self._filter_ops.set_tree({'filters': value})
+        self._filter_ops.config(self)
+        super().__init__(name, self._filter_ops.filters)
 
     def get_example():
         """ Returns a YAML value for the example config """
@@ -109,5 +109,6 @@ class Filters(BasePreFlight):  # noqa: F821
             our_dir = GS.global_dir if GS.global_use_dir_for_preflights else ''
             o_dir = get_output_dir(our_dir, self)
             GS.filter_file = os.path.join(o_dir, 'kibot_errors.filter')
+            GS.filters = self._filter_ops.unparsed
             with open(GS.filter_file, 'w') as f:
                 f.write(self._value)

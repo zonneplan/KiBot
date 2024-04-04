@@ -32,6 +32,19 @@ Supported preflights
 -  **check_zone_fills**: :index:`: <pair: preflights; check_zone_fills>` [boolean=false] Zones are filled before doing any operation involving PCB layers.
    The original PCB remains unchanged. If you need to abort when the zone fill
    creates significant changes to a layer use the CheckZoneFill internal template.
+-  **erc**: :index:`: <pair: preflights; erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+   This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
+
+   -  Valid keys:
+
+      -  **output** :index:`: <pair: preflight - erc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=erc %x=according to format). Affected by global options.
+      -  ``dir`` :index:`: <pair: preflight - erc; dir>` [string=''] Sub-directory for the report.
+      -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [boolean=true] Enable the ERC. This is the replacement for the boolean value.
+      -  ``format`` :index:`: <pair: preflight - erc; format>` [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
+         You can specify multile formats.
+
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [boolean=false] ERC warnings are considered errors, they still reported as errors, but consider it an error.
+
 -  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
    Option for `run_erc`. ERC warnings are considered errors.
 -  **fill_zones**: :index:`: <pair: preflights; fill_zones>` [boolean=false] Fill all zones again and save the PCB.
@@ -96,7 +109,8 @@ Supported preflights
       -  ``ignore_unconnected`` :index:`: <pair: preflight - run_drc; ignore_unconnected>` [boolean=false] Ignores the unconnected nets. Useful if you didn't finish the routing.
          It will also ignore KiCad 6 warnings.
 
--  **run_erc**: :index:`: <pair: preflights; run_erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+-  **run_erc**: :index:`: <pair: preflights; run_erc>` [boolean=false|dict] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
+   To ensure the schematic is electrically correct. |br|
    The report file name is controlled by the global output pattern (%i=erc %x=txt).
 
    -  Valid keys:

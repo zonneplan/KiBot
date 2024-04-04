@@ -18,7 +18,7 @@ from .gs import GS
 from .optionable import Optionable
 from .kiplot import load_sch
 from .error import KiPlotConfigurationError
-from .misc import ERC_ERROR
+from .misc import ERC_ERROR, W_DEPR
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -40,7 +40,8 @@ class Run_ERCOptions(Optionable):
 
 @pre_class
 class Run_ERC(BasePreFlight):  # noqa: F821
-    """ [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+    """ [boolean=false|dict] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
+        To ensure the schematic is electrically correct.
         The report file name is controlled by the global output pattern (%i=erc %x=txt) """
     def __init__(self, name, value):
         super().__init__(name, value)
@@ -76,6 +77,8 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         return cls.__doc__, Run_ERCOptions
 
     def run(self):
+        if GS.ki8:
+            logger.warning(W_DEPR+'For KiCad 8 use the "erc" preflight instead of "run_erc"')
         command = self.ensure_tool('KiAuto')
         # Workaround for KiCad 7 odd behavior: it forces a file extension
         # Note: One thing is adding the extension before you enter a name, other is add something you removed on purpose

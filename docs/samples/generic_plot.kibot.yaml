@@ -29,6 +29,9 @@ preflight:
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
+  # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
+  erc: true
   # [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
   # Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
@@ -63,7 +66,8 @@ preflight:
   # This will change in the future.
   # If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
   run_drc: true
-  # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # [boolean=false|dict] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
+  # To ensure the schematic is electrically correct.
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).
   run_erc: true
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
@@ -338,7 +342,8 @@ outputs:
       # [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS)
       bottom_negative_x: false
       # [list(dict)|list(string)] List of columns to display.
-      # Can be just the name of the field
+      # Can be just the name of the field.
+      # In addition to all user defined fields you have various special columns, consult :ref:`bom_columns`
       columns:
         # [string=''] Used as explanation for this column. The XLSX output uses it
         - comment: ''

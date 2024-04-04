@@ -75,7 +75,9 @@ class GS(object):
     # Main output dir
     out_dir = None
     out_dir_in_cmd_line = False
+    # Content of the "filters" preflight
     filter_file = None
+    filters = None
     board = None
     sch = None
     debug_enabled = False

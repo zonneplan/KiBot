@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New preflights:
   - update_footprint: updates one or more footprints from the libs.
     Useful for external QR codes, logos, etc. (#492 #483)
+  - erc: a replacement for run_erc when using KiCad 8.
+    It can generate ERC reports not only in plain text but also HTML, JSON and
+    CSV.
 
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.
