@@ -457,6 +457,8 @@ If the PCB contains footprints not found in the schematic, like in the case of a
    pair: position; XYRS files
    pair: pick and place; XYRS files
 
+.. _xyrs_files:
+
 
 XYRS files
 ~~~~~~~~~~

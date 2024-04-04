@@ -34,6 +34,7 @@ Parameters:
 
       -  **columns** :index:`: <pair: output - bom - options; columns>` [list(dict)|list(string)] List of columns to display.
          Can be just the name of the field.
+         In addition to all user defined fields you have various special columns, consult :ref:`bom_columns`.
 
          -  Valid keys:
 

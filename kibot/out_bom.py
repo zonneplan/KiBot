@@ -469,7 +469,8 @@ class BoMOptions(BaseOptions):
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.columns = BoMColumns
             """ *[list(dict)|list(string)] List of columns to display.
-                Can be just the name of the field """
+                Can be just the name of the field.
+                In addition to all user defined fields you have various special columns, consult :ref:`bom_columns` """
             self.cost_extra_columns = BoMColumns
             """ [list(dict)|list(string)] List of columns to add to the global section of the cost.
                 Can be just the name of the field """
