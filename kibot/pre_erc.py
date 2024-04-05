@@ -114,6 +114,7 @@ class ERC(BasePreFlight):  # noqa: F821
         self.c_err_excl = self.c_warn_excl = self.c_tot_excl = 0
         sheets = data.get('sheets', [])
         for sheet in sheets:
+            sheet['file_name'] = self.sheet_paths.get(sheet.get('path', ''), 'unknown')
             violations = sheet.get('violations', [])
             for violation in violations:
                 severity = violation.get('severity', 'error')
@@ -158,7 +159,10 @@ class ERC(BasePreFlight):  # noqa: F821
         sheets = data.get('sheets', [])
         for sheet in sheets:
             violations = sheet.get('violations', [])
-            sheet_name = sheet.get('path', '')
+            sheet_fname = sheet.get('file_name', '')
+            name = sheet.get('path', '')
+            if sheet_fname:
+                name += f' ({sheet_fname})'
             for violation in violations:
                 severity = violation.get('severity', 'error')
                 excluded = violation.get('excluded', False)
@@ -167,7 +171,7 @@ class ERC(BasePreFlight):  # noqa: F821
                 details = ''
                 for item in violation.get('items', []):
                     details += self.get_item_txt(item, indent=0, sep=';')
-                writer.writerow([sheet_name, severity, excluded, type, description, details[:-1]])
+                writer.writerow([name, severity, excluded, type, description, details[:-1]])
         return f.getvalue()
 
     def add_html_violation(self, violation, html, i):
@@ -246,8 +250,11 @@ class ERC(BasePreFlight):  # noqa: F821
             violations = sheet.get('violations', [])
             if not violations:
                 continue
-            sheet_name = sheet.get('path', '')
-            html += f'<p class="subtitle">Sheet {sheet_name}</p>\n'
+            sheet_fname = sheet.get('file_name', '')
+            name = sheet.get('path', '')
+            if sheet_fname:
+                name += f' ({sheet_fname})'
+            html += f'<p class="subtitle">Sheet {name}</p>\n'
             html += '<table class="content-table">\n'
             html += ' <thead>\n'
             html += '  <tr>\n'
@@ -322,6 +329,16 @@ class ERC(BasePreFlight):  # noqa: F821
                 txt += f'    Sheet: {path}'
                 logf(txt)
 
+    def solve_sheet_paths(self):
+        self.sheet_paths = {}
+        if not GS.sch:
+            return
+        for s in GS.sch.all_sheets:
+            path = s.sheet_path_h
+            if len(path) > 1:
+                path += '/'
+            self.sheet_paths[path] = s.fname_rel
+
     def run(self):
         if not GS.ki8:
             raise KiPlotConfigurationError('The `erc` preflight needs KiCad 8 or newer, use `run_erc` instead')
@@ -343,6 +360,8 @@ class ERC(BasePreFlight):  # noqa: F821
         if data.get('$schema', '') != 'https://schemas.kicad.org/erc.v1.json':
             logger.warning(W_ERCJSON+'Unknown JSON schema, ERC might fail')
         self.units = data.get('coordinate_units', 'mm')
+        # Create a dict to translate sheets paths to file names
+        self.solve_sheet_paths()
         # Apply KiBot filters
         self.apply_filters(data)
         # Generate the desired output format
