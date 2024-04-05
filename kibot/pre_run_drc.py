@@ -16,7 +16,7 @@ from .gs import GS
 from .optionable import Optionable
 from .kicad.config import KiConf
 from .kiplot import load_board
-from .misc import DRC_ERROR, KICAD_VERSION_7_0_1_1, W_DRC7BUG
+from .misc import DRC_ERROR, KICAD_VERSION_7_0_1_1, W_DRC7BUG, W_DEPR
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -80,6 +80,8 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         return cls.__doc__, Run_DRCOptions
 
     def run(self):
+        if GS.ki8:
+            logger.warning(W_DEPR+'For KiCad 8 use the `drc` preflight instead of `run_drc`')
         command = self.ensure_tool('KiAuto')
         if GS.ki7:
             # KiCad 7 can do some library parity checks, but we need to be sure that the KICAD7* vars are defined

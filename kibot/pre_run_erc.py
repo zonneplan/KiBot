@@ -78,7 +78,7 @@ class Run_ERC(BasePreFlight):  # noqa: F821
 
     def run(self):
         if GS.ki8:
-            logger.warning(W_DEPR+'For KiCad 8 use the "erc" preflight instead of "run_erc"')
+            logger.warning(W_DEPR+'For KiCad 8 use the `erc` preflight instead of `run_erc`')
         command = self.ensure_tool('KiAuto')
         # Workaround for KiCad 7 odd behavior: it forces a file extension
         # Note: One thing is adding the extension before you enter a name, other is add something you removed on purpose

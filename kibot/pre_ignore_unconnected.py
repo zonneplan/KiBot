@@ -1,22 +1,26 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
+from .misc import W_DEPR
 from .macros import macros, pre_class  # noqa: F401
 from .error import (KiPlotConfigurationError)
+from .log import get_logger
+logger = get_logger(__name__)
 
 
 @pre_class
 class Ignore_Unconnected(BasePreFlight):  # noqa: F821
-    """ [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`.
+    """ [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`/`drc`.
         Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
-        It will also ignore KiCad 6 warnings """
+        It will also ignore KiCad 6 warnings when using `run_drc` """
     def __init__(self, name, value):
         super().__init__(name, value)
         if not isinstance(value, bool):
             raise KiPlotConfigurationError('must be boolean')
         self._enabled = value
+        logger.warning(W_DEPR+'The `ignore_unconnected` preflight is deprecated, use the `ignore_unconnected` option')
 
     def get_example():
         """ Returns a YAML value for the example config """
