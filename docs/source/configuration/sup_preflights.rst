@@ -58,6 +58,7 @@ Supported preflights
       -  ``format`` :index:`: <pair: preflight - erc; format>` [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
          You can specify multiple formats.
 
+      -  ``units`` :index:`: <pair: preflight - erc; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
       -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [boolean=false] ERC warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.

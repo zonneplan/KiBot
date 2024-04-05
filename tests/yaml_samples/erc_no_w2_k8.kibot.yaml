@@ -4,6 +4,7 @@ kibot:
 
 global:
   dir: 'def_dir'
+  units: mils
 
 preflight:
   erc:

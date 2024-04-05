@@ -20,6 +20,7 @@ from .misc import (ERC_ERROR, W_ERCJSON, STYLE_COMMON, TABLE_MODERN, HEAD_COLOR_
                    GENERATOR_CSS, W_ERC, W_FILXRC)
 from .log import get_logger
 logger = get_logger(__name__)
+UNITS_2_KICAD = {'millimeters': 'mm', 'inches': 'in', 'mils': 'mils'}
 
 
 def warning(msg):
@@ -59,6 +60,8 @@ class ERCOptions(FiltersOptions):
             """ ERC warnings are considered errors, they still reported as errors, but consider it an error """
             self.dont_stop = False
             """ Continue even if we detect ERC errors """
+            self.units = 'millimeters'
+            """ [millimeters,inches,mils] Units used for the positions. Affected by global options """
         super().__init__()
         self.filters = FilterOptionsXRC
         self.set_doc('filters', " [list(dict)] Used to manipulate the ERC violations. Avoid using the *filters* preflight")
@@ -373,7 +376,8 @@ class ERC(BasePreFlight):  # noqa: F821
         output = outputs[0]
         os.makedirs(os.path.dirname(output), exist_ok=True)
         # Run the ERC from the CLI
-        cmd = ['kicad-cli', 'sch', 'erc', '-o', output, '--format', 'json', '--severity-all', GS.sch_file]
+        cmd = ['kicad-cli', 'sch', 'erc', '-o', output, '--format', 'json', '--severity-all',
+               '--units', UNITS_2_KICAD[self._units], GS.sch_file]
         logger.info('- Running the ERC')
         run_command(cmd)
         # Read the result

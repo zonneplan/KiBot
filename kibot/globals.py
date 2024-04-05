@@ -272,8 +272,8 @@ class Globals(FiltersOptions):
             """ Tries to reformat the PCB/SCH date using the `date_format`.
                 This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD) """
             self.units = ''
-            """ [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
-                Also KiCad 6 dimensions """
+            """ [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs and
+                the `erc` and `drc` preflights. Also KiCad 6 dimensions """
             self.use_dir_for_preflights = True
             """ Use the global `dir` as subdir for the preflights """
             self.variant = ''

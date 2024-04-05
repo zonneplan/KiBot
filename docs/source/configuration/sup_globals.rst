@@ -195,8 +195,8 @@
       -  ``time_format`` :index:`: <pair: global options; time_format>` [string='%H-%M-%S'] Format used for the time we started the script. Uses the `strftime` format.
       -  ``time_reformat`` :index:`: <pair: global options; time_reformat>` [boolean=true] Tries to reformat the PCB/SCH date using the `date_format`.
          This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD).
-      -  ``units`` :index:`: <pair: global options; units>` [string=''] [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
-         Also KiCad 6 dimensions.
+      -  ``units`` :index:`: <pair: global options; units>` [string=''] [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs and
+         the `erc` and `drc` preflights. Also KiCad 6 dimensions.
       -  ``use_dir_for_preflights`` :index:`: <pair: global options; use_dir_for_preflights>` [boolean=true] Use the global `dir` as subdir for the preflights.
       -  ``use_os_env_for_expand`` :index:`: <pair: global options; use_os_env_for_expand>` [boolean=true] In addition to KiCad text variables also use the OS environment variables when expanding `${VARIABLE}`.
       -  ``variant`` :index:`: <pair: global options; variant>` [string=''] Default variant to apply to all outputs.
