@@ -7,16 +7,17 @@ preflight:
     format: HTML,CSV,JSON,RPT
     dont_stop: true
     # warnings_as_errors: true
-  filters:
-    - filter: 'Ignore C3 pad 2 too close to anything'
-      number: 4
-      regex: 'Pad 2 of C3'
-    - filter: 'Ignore unconnected pad 2 of C4'
-      number: 2
-      regex: 'Pad 2 of C4'
-    - filter: 'Ignore KiCad 6 lib_symbol_issues'
-      error: lib_symbol_issues
-      regex: ''
+    filters:
+      - filter: 'Ignore C3 pad 2 too close to anything'
+        number: 4
+        regex: 'Pad 2 of C3'
+      - filter: 'Ignore unconnected pad 2 of C4'
+        number: 2
+        regex: 'Pad 2 of C4'
+      - filter: 'Ignore KiCad 6 lib_symbol_issues'
+        error: lib_symbol_issues
+        regex: ''
+        change_to: error
 #    - filter: 'Test'
 #      error: pin_to_pin
 #      regex: 'Symbol U1 Pin 2'

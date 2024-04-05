@@ -64,7 +64,7 @@ class FiltersOptions(Optionable):
                 where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
                 error = f.error
                 if not error:
-                    if not f.number:
+                    if not hasattr(f, 'number') or not f.number:
                         raise KiPlotConfigurationError('Missing `error`'+where)
                     error = str(f.number)
                 regex = f.regex
@@ -86,7 +86,8 @@ class FiltersOptions(Optionable):
 
 @pre_class
 class Filters(BasePreFlight):  # noqa: F821
-    """ [list(dict)] A list of entries to filter out ERC/DRC messages.
+    """ [list(dict)] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
+        Avoid using it with the new *erc* and *drc* preflights.
         Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
         To farther ignore these warnings use the `filters` option in the `global` section """
     def __init__(self, name, value):

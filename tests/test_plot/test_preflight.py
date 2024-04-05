@@ -121,6 +121,7 @@ def test_erc_warning_k8_1(test_dir):
     ctx.expect_out_file(prj+'-erc.csv')
     ctx.expect_out_file(prj+'-erc.json')
     ctx.search_err(r"WARNING:\(W142\) 1 ERC warnings detected")
+    ctx.search_err(r"WARNING:\(W144\)")
     ctx.clean_up(keep_project=context.ki7())
 
 
@@ -167,6 +168,18 @@ def test_erc_warning_k8_3(test_dir):
     """ Using an SCH with ERC warnings as errors """
     prj = 'warning-project'
     ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w_2_k8', 'def_dir')
+    ctx.run(ERC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html', sub=True)
+    ctx.search_err(r"ERC warnings: 1, promoted as errors")
+    ctx.clean_up(keep_project=context.ki7())
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_warning_k8_4(test_dir):
+    """ Using an SCH with ERC warnings as errors, using ERC options """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w2_k8', 'def_dir')
     ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.html', sub=True)

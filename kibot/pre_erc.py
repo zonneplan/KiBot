@@ -10,13 +10,14 @@ import json
 import os
 from . import __version__
 from .bom.kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
+from .pre_filters import FilterOptions, FiltersOptions
 from .macros import macros, document, pre_class  # noqa: F401
 from .gs import GS
 from .optionable import Optionable
 from .kiplot import load_sch, run_command
 from .error import KiPlotConfigurationError
 from .misc import (ERC_ERROR, W_ERCJSON, STYLE_COMMON, TABLE_MODERN, HEAD_COLOR_B, HEAD_COLOR_B_L, TD_ERC_CLASSES,
-                   GENERATOR_CSS, W_ERC)
+                   GENERATOR_CSS, W_ERC, W_FILXRC)
 from .log import get_logger
 logger = get_logger(__name__)
 
@@ -25,7 +26,23 @@ def warning(msg):
     logger.warning(W_ERC+msg)
 
 
-class ERCOptions(Optionable):
+class FilterOptionsXRC(FilterOptions):
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.change_to = 'ignore'
+            """ [error,warning,ignore] The action of the filter.
+                Changing to *ignore* is the default and is used to suppress a violation, but you can also change
+                it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
+                so you can revert a GUI exclusion """
+        # number is for KiCad 5, remove it
+        del self.number
+        del self.error_number
+        # Avoid mentioning KiCad 5/6 in the "error" help
+        self.set_doc('error', " [string=''] Error id we want to exclude")
+
+
+class ERCOptions(FiltersOptions):
     """ ERC options """
     def __init__(self):
         with document:
@@ -43,6 +60,8 @@ class ERCOptions(Optionable):
             self.dont_stop = False
             """ Continue even if we detect ERC errors """
         super().__init__()
+        self.filters = FilterOptionsXRC
+        self.set_doc('filters', " [list(dict)] Used to manipulate the ERC violations. Avoid using the *filters* preflight")
         self._unknown_is_error = True
         self._format_example = 'HTML,RPT'
 
@@ -76,6 +95,7 @@ class ERC(BasePreFlight):  # noqa: F821
         for k, v in dict(f.get_attrs_gen()).items():
             setattr(self, '_'+k, v)
         self._format = f.format
+        self._filters = f.unparsed
         self._sch_related = True
         self._expand_id = 'erc'
         self._expand_ext = self._format[0].lower()
@@ -109,7 +129,13 @@ class ERC(BasePreFlight):  # noqa: F821
         return (' '*indent)+f'{pos_txt}{desc}'+sep
 
     def apply_filters(self, data):
-        GS.filters if GS.filters else []
+        filters = []
+        if self._filters:
+            filters += self._filters
+        if GS.filters:
+            logger.error(GS.filters)
+            filters += GS.filters
+            logger.warning(W_FILXRC+'Using filters from the `filters` preflight, move them to `erc`')
         self.c_err = self.c_warn = self.c_tot = 0
         self.c_err_excl = self.c_warn_excl = self.c_tot_excl = 0
         sheets = data.get('sheets', [])
@@ -118,26 +144,26 @@ class ERC(BasePreFlight):  # noqa: F821
             violations = sheet.get('violations', [])
             for violation in violations:
                 severity = violation.get('severity', 'error')
-                if violation.get('excluded'):
-                    # Already filtered inside KiCad
-                    if severity == 'error':
-                        self.c_err_excl += 1
-                    else:
-                        self.c_warn_excl += 1
-                    self.c_tot_excl += 1
-                    continue
                 type = violation.get('type', '')
                 # Collect the text using a layout equivalent to the report
                 txt = violation.get('description', '')+'\n'
                 for item in violation.get('items', []):
                     txt += self.get_item_txt(item)
                 # Check if any filter matches this violation
-                excluded = False
-                for f in GS.filters:
+                excluded = violation.get('excluded')
+                for f in filters:
                     if type == f.error and f.regex.search(txt):
-                        violation['excluded'] = True
-                        violation['excluded_by_kibot'] = True
-                        excluded = True
+                        change_to = f.change_to if hasattr(f, 'change_to') else 'ignore'
+                        if change_to == 'ignore':
+                            if not excluded:
+                                violation['excluded'] = True
+                                violation['excluded_by_kibot'] = True
+                                excluded = True
+                        else:
+                            violation['excluded'] = False
+                            violation['modified_by_kibot'] = True
+                            severity = violation['severity'] = change_to
+                            excluded = False
                         break
                 if excluded:
                     if severity == 'error':

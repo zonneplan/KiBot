@@ -41,6 +41,20 @@ Supported preflights
       -  ``dir`` :index:`: <pair: preflight - erc; dir>` [string=''] Sub-directory for the report.
       -  ``dont_stop`` :index:`: <pair: preflight - erc; dont_stop>` [boolean=false] Continue even if we detect ERC errors.
       -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [boolean=true] Enable the ERC. This is the replacement for the boolean value.
+      -  ``filters`` :index:`: <pair: preflight - erc; filters>` [list(dict)] Used to manipulate the ERC violations. Avoid using the *filters* preflight.
+
+         -  Valid keys:
+
+            -  ``change_to`` :index:`: <pair: preflight - erc - filters; change_to>` [string='ignore'] [error,warning,ignore] The action of the filter.
+               Changing to *ignore* is the default and is used to suppress a violation, but you can also change
+               it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
+               so you can revert a GUI exclusion.
+            -  ``error`` :index:`: <pair: preflight - erc - filters; error>` [string=''] Error id we want to exclude.
+            -  ``filter`` :index:`: <pair: preflight - erc - filters; filter>` [string=''] Name for the filter, for documentation purposes.
+            -  *filter_msg* :index:`: <pair: preflight - erc - filters; filter_msg>` Alias for filter.
+            -  ``regex`` :index:`: <pair: preflight - erc - filters; regex>` [string=''] Regular expression to match the text for the error we want to exclude.
+            -  *regexp* :index:`: <pair: preflight - erc - filters; regexp>` Alias for regex.
+
       -  ``format`` :index:`: <pair: preflight - erc; format>` [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
          You can specify multiple formats.
 
@@ -49,7 +63,8 @@ Supported preflights
 -  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
    Option for `run_erc`. ERC warnings are considered errors.
 -  **fill_zones**: :index:`: <pair: preflights; fill_zones>` [boolean=false] Fill all zones again and save the PCB.
--  **filters**: :index:`: <pair: preflights; filters>` [list(dict)] A list of entries to filter out ERC/DRC messages.
+-  **filters**: :index:`: <pair: preflights; filters>` [list(dict)] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
+   Avoid using it with the new *erc* and *drc* preflights. |br|
    Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`). |br|
    To farther ignore these warnings use the `filters` option in the `global` section.
 
