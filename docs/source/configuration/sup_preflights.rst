@@ -38,12 +38,12 @@ Supported preflights
 
    -  Valid keys:
 
-      -  **output** :index:`: <pair: preflight - drc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=erc %x=according to format). Affected by global options.
+      -  **output** :index:`: <pair: preflight - drc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=drc %x=according to format). Affected by global options.
       -  ``all_track_errors`` :index:`: <pair: preflight - drc; all_track_errors>` [boolean=false] Report all the errors for all the tracks, not just the first.
       -  ``dir`` :index:`: <pair: preflight - drc; dir>` [string=''] Sub-directory for the report.
-      -  ``dont_stop`` :index:`: <pair: preflight - drc; dont_stop>` [boolean=false] Continue even if we detect DRC errors.
-      -  ``enabled`` :index:`: <pair: preflight - drc; enabled>` [boolean=true] Enable the DRC. This is the replacement for the boolean value.
-      -  ``filters`` :index:`: <pair: preflight - drc; filters>` [list(dict)] Used to manipulate the DRC violations. Avoid using the *filters* preflight.
+      -  ``dont_stop`` :index:`: <pair: preflight - drc; dont_stop>` [boolean=false] Continue even if we detect errors.
+      -  ``enabled`` :index:`: <pair: preflight - drc; enabled>` [boolean=true] Enable the check. This is the replacement for the boolean value.
+      -  ``filters`` :index:`: <pair: preflight - drc; filters>` [list(dict)] Used to manipulate the violations. Avoid using the *filters* preflight.
 
          -  Valid keys:
 
@@ -63,7 +63,7 @@ Supported preflights
       -  ``ignore_unconnected`` :index:`: <pair: preflight - drc; ignore_unconnected>` [boolean=false] Ignores the unconnected nets. Useful if you didn't finish the routing.
       -  ``schematic_parity`` :index:`: <pair: preflight - drc; schematic_parity>` [boolean=true] Check if the PCB and the schematic are coincident.
       -  ``units`` :index:`: <pair: preflight - drc; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [boolean=false] DRC warnings are considered errors, they still reported as errors, but consider it an error.
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [boolean=false] Warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc**: :index:`: <pair: preflights; erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
    This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
@@ -72,9 +72,9 @@ Supported preflights
 
       -  **output** :index:`: <pair: preflight - erc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=erc %x=according to format). Affected by global options.
       -  ``dir`` :index:`: <pair: preflight - erc; dir>` [string=''] Sub-directory for the report.
-      -  ``dont_stop`` :index:`: <pair: preflight - erc; dont_stop>` [boolean=false] Continue even if we detect ERC errors.
-      -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [boolean=true] Enable the ERC. This is the replacement for the boolean value.
-      -  ``filters`` :index:`: <pair: preflight - erc; filters>` [list(dict)] Used to manipulate the ERC violations. Avoid using the *filters* preflight.
+      -  ``dont_stop`` :index:`: <pair: preflight - erc; dont_stop>` [boolean=false] Continue even if we detect errors.
+      -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [boolean=true] Enable the check. This is the replacement for the boolean value.
+      -  ``filters`` :index:`: <pair: preflight - erc; filters>` [list(dict)] Used to manipulate the violations. Avoid using the *filters* preflight.
 
          -  Valid keys:
 
@@ -92,7 +92,7 @@ Supported preflights
          You can specify multiple formats.
 
       -  ``units`` :index:`: <pair: preflight - erc; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [boolean=false] ERC warnings are considered errors, they still reported as errors, but consider it an error.
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [boolean=false] Warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
    Option for `run_erc`. ERC warnings are considered errors.
