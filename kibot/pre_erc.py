@@ -40,6 +40,8 @@ class ERCOptions(Optionable):
                 You can specify multiple formats """
             self.warnings_as_errors = False
             """ ERC warnings are considered errors, they still reported as errors, but consider it an error """
+            self.dont_stop = False
+            """ Continue even if we detect ERC errors """
         super().__init__()
         self._unknown_is_error = True
         self._format_example = 'HTML,RPT'
@@ -360,7 +362,8 @@ class ERC(BasePreFlight):  # noqa: F821
         self.report('error', self.c_err, data)
         self.report('warning', self.c_warn, data)
         # Check the final status
+        error_level = 0 if self._dont_stop else ERC_ERROR
         if self.c_err:
-            GS.exit_with_error(f'ERC errors: {self.c_err}', ERC_ERROR)
-        if self.c_warn and (self._warnings_as_errors or BasePreFlight.get_option('erc_warnings')):  # noqa: F821
-            GS.exit_with_error(f'ERC warnings: {self.c_warn}, promoted as errors', ERC_ERROR)
+            GS.exit_with_error(f'ERC errors: {self.c_err}', error_level)
+        elif self.c_warn and (self._warnings_as_errors or BasePreFlight.get_option('erc_warnings')):  # noqa: F821
+            GS.exit_with_error(f'ERC warnings: {self.c_warn}, promoted as errors', error_level)

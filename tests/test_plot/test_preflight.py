@@ -74,6 +74,20 @@ def test_erc_fail_k8_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_fail_k8_2(test_dir):
+    """ Test don't stop """
+    prj = 'fail-erc'
+    ctx = context.TestContext(test_dir, prj, 'erc_k8_dont_stop', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html')
+    ctx.expect_out_file(prj+'-erc.rpt')
+    ctx.expect_out_file(prj+'-erc.csv')
+    ctx.expect_out_file(prj+'-erc.json')
+    ctx.clean_up()
+
+
 def test_erc_fail_2(test_dir):
     """ Using a dummy SCH """
     prj = '3Rs'

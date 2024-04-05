@@ -39,9 +39,10 @@ Supported preflights
 
       -  **output** :index:`: <pair: preflight - erc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=erc %x=according to format). Affected by global options.
       -  ``dir`` :index:`: <pair: preflight - erc; dir>` [string=''] Sub-directory for the report.
+      -  ``dont_stop`` :index:`: <pair: preflight - erc; dont_stop>` [boolean=false] Continue even if we detect ERC errors.
       -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [boolean=true] Enable the ERC. This is the replacement for the boolean value.
       -  ``format`` :index:`: <pair: preflight - erc; format>` [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
-         You can specify multile formats.
+         You can specify multiple formats.
 
       -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [boolean=false] ERC warnings are considered errors, they still reported as errors, but consider it an error.
 
