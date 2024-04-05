@@ -95,7 +95,7 @@ class ERC(BasePreFlight):  # noqa: F821
         for k, v in dict(f.get_attrs_gen()).items():
             setattr(self, '_'+k, v)
         self._format = f.format
-        self._filters = f.unparsed
+        self._filters = None if isinstance(f.filters, type) else f.unparsed
         self._sch_related = True
         self._expand_id = 'erc'
         self._expand_ext = self._format[0].lower()
