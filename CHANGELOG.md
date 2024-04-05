@@ -13,6 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - erc: a replacement for run_erc when using KiCad 8.
     It can generate ERC reports not only in plain text but also HTML, JSON and
     CSV.
+  - drc: a replacement for run_drc when using KiCad 8.
+    Also supporting multiple formats and with a modern separation between
+    unconnected and warnings.
 
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.

@@ -29,6 +29,10 @@ preflight:
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
+  # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
+  # GUI exclusions and schematic parity are supported.
+  drc: true
   # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
   # This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
   erc: true

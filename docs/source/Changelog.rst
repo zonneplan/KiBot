@@ -25,6 +25,9 @@ Added
       Useful for external QR codes, logos, etc. (#492 #483)
    -  erc: a replacement for run_erc when using KiCad 8. It can generate
       ERC reports not only in plain text but also HTML, JSON and CSV.
+   -  drc: a replacement for run_drc when using KiCad 8. Also supporting
+      multiple formats and with a modern separation between unconnected
+      and warnings.
 
 Fixed
 ~~~~~

@@ -32,6 +32,39 @@ Supported preflights
 -  **check_zone_fills**: :index:`: <pair: preflights; check_zone_fills>` [boolean=false] Zones are filled before doing any operation involving PCB layers.
    The original PCB remains unchanged. If you need to abort when the zone fill
    creates significant changes to a layer use the CheckZoneFill internal template.
+-  **drc**: :index:`: <pair: preflights; drc>` [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+   This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer. |br|
+   GUI exclusions and schematic parity are supported.
+
+   -  Valid keys:
+
+      -  **output** :index:`: <pair: preflight - drc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=erc %x=according to format). Affected by global options.
+      -  ``all_track_errors`` :index:`: <pair: preflight - drc; all_track_errors>` [boolean=false] Report all the errors for all the tracks, not just the first.
+      -  ``dir`` :index:`: <pair: preflight - drc; dir>` [string=''] Sub-directory for the report.
+      -  ``dont_stop`` :index:`: <pair: preflight - drc; dont_stop>` [boolean=false] Continue even if we detect DRC errors.
+      -  ``enabled`` :index:`: <pair: preflight - drc; enabled>` [boolean=true] Enable the DRC. This is the replacement for the boolean value.
+      -  ``filters`` :index:`: <pair: preflight - drc; filters>` [list(dict)] Used to manipulate the DRC violations. Avoid using the *filters* preflight.
+
+         -  Valid keys:
+
+            -  ``change_to`` :index:`: <pair: preflight - drc - filters; change_to>` [string='ignore'] [error,warning,ignore] The action of the filter.
+               Changing to *ignore* is the default and is used to suppress a violation, but you can also change
+               it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
+               so you can revert a GUI exclusion.
+            -  ``error`` :index:`: <pair: preflight - drc - filters; error>` [string=''] Error id we want to exclude.
+            -  ``filter`` :index:`: <pair: preflight - drc - filters; filter>` [string=''] Name for the filter, for documentation purposes.
+            -  *filter_msg* :index:`: <pair: preflight - drc - filters; filter_msg>` Alias for filter.
+            -  ``regex`` :index:`: <pair: preflight - drc - filters; regex>` [string=''] Regular expression to match the text for the error we want to exclude.
+            -  *regexp* :index:`: <pair: preflight - drc - filters; regexp>` Alias for regex.
+
+      -  ``format`` :index:`: <pair: preflight - drc; format>` [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
+         You can specify multiple formats.
+
+      -  ``ignore_unconnected`` :index:`: <pair: preflight - drc; ignore_unconnected>` [boolean=false] Ignores the unconnected nets. Useful if you didn't finish the routing.
+      -  ``schematic_parity`` :index:`: <pair: preflight - drc; schematic_parity>` [boolean=true] Check if the PCB and the schematic are coincident.
+      -  ``units`` :index:`: <pair: preflight - drc; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [boolean=false] DRC warnings are considered errors, they still reported as errors, but consider it an error.
+
 -  **erc**: :index:`: <pair: preflights; erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
    This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
 

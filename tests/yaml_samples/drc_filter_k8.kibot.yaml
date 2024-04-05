@@ -1,0 +1,33 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  dir: 'def_dir'
+
+preflight:
+  drc:
+    format: HTML,JSON,RPT,CSV
+    filters:
+      - filter_msg: 'Ignore clearance violation'
+        error: clearance
+        regexp: 'netclass .Default'
+      - filter_msg: 'Ignore missing outline'
+        error: invalid_outline
+        regexp: 'no edges found'
+      - filter_msg: 'Ignore silk over copper'
+        error: silk_over_copper
+        regexp: 'Silkscreen clipped'
+      - filter_msg: 'Ignore unconnected pad 2 of C4'
+        error: unconnected_items
+        regexp: 'Pad 2 .* of C4'
+      # KiCad v7 rc2
+      - filter_msg: 'Ignore solder mask bridge'
+        error: solder_mask_bridge
+        regexp: 'of C3 on F.Cu'
+      - filter_msg: 'Ignore library issues'
+        error: lib_footprint_issues
+        regexp: '.*'
+      - filter_msg: 'Ignore library missmatches'
+        error: lib_footprint_mismatch
+        regexp: '.*'

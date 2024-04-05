@@ -211,6 +211,19 @@ def test_drc_1(test_dir):
     ctx.clean_up(keep_project=context.ki7())
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_k8_1(test_dir):
+    prj = name = 'bom_ok_drc'
+    ctx = context.TestContext(test_dir, prj, 'drc_k8', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(name+'-drc.rpt')
+    ctx.expect_out_file(name+'-drc.html')
+    ctx.expect_out_file(name+'-drc.csv')
+    ctx.expect_out_file(name+'-drc.json')
+    ctx.clean_up(keep_project=True)
+
+
 def test_drc_filter_1(test_dir):
     """ Test using internal filters """
     prj = 'fail-project'
@@ -219,6 +232,20 @@ def test_drc_filter_1(test_dir):
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt', sub=True)
     ctx.expect_out_file('kibot_errors.filter', sub=True)
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_filter_k8_1(test_dir):
+    """ Test using internal filters """
+    prj = 'fail-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_filter_k8', 'def_dir')
+    ctx.run(extra_debug=True)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html', sub=True)
+    ctx.expect_out_file(prj+'-drc.csv', sub=True)
+    ctx.expect_out_file(prj+'-drc.rpt', sub=True)
+    ctx.expect_out_file(prj+'-drc.json', sub=True)
     ctx.clean_up(keep_project=True)
 
 
@@ -236,6 +263,17 @@ def test_drc_filter_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_filter_ki8_2(test_dir):
+    """ Test using KiCad 6 exclusions """
+    prj = 'fail-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_filter_k8_exc', '')
+    ctx.run(extra_debug=True)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html')
+    ctx.clean_up(keep_project=True)
+
+
 def test_drc_unco_1(test_dir):
     """ Check we can ignore unconnected nets. Old style """
     prj = 'warning-project'
@@ -243,6 +281,17 @@ def test_drc_unco_1(test_dir):
     ctx.run()
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_unco_k8_1(test_dir):
+    """ Check we can ignore unconnected nets. Old style """
+    prj = 'warning-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_unco_k8', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html')
     ctx.clean_up()
 
 
@@ -256,6 +305,17 @@ def test_drc_unco_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_unco_k8_2(test_dir):
+    """ Check we can ignore unconnected nets. New style """
+    prj = 'warning-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_unco_2_k8', 'def_dir')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html', sub=True)
+    ctx.clean_up()
+
+
 def test_drc_error(test_dir):
     """ Check we catch DRC errors """
     prj = 'warning-project'
@@ -263,6 +323,17 @@ def test_drc_error(test_dir):
     ctx.run(DRC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_error_k8(test_dir):
+    """ Check we catch DRC errors """
+    prj = 'warning-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_k8', '')
+    ctx.run(DRC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html')
     ctx.clean_up()
 
 
@@ -281,6 +352,21 @@ def test_drc_time_out(test_dir):
     ctx.run(DRC_ERROR)
     ctx.search_err('Time out detected')
     ctx.search_err('kiauto_wait_start must be integer')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_parity_1(test_dir):
+    prj = 'pcb_parity'
+    ctx = context.TestContext(test_dir, prj, 'drc_parity', '')
+    # ctx.run(ret_val=NETLIST_DIFF, extra_debug=True)
+    ctx.run(extra_debug=True)
+    ctx.search_err(["C1 footprint .Capacitor_SMD:C_0805_2012Metric. doesn't match that given by symbol",
+                    "Footprint R1 value .100. doesn't match symbol value .120.",
+                    "Missing footprint FID1 .Fiducial.",
+                    "Pad net .VCC. doesn't match net given by schematic .GND.",
+                    "Pad net .Net-.C1-Pad1.. doesn't match net given by schematic .unconnected-.C1-Pad1..",
+                    "Pad net .Net-.C1-Pad1.. doesn't match net given by schematic .Net-.R1-Pad2.."])
     ctx.clean_up()
 
 
