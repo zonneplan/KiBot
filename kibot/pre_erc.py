@@ -34,7 +34,6 @@ class ERC(XRC):  # noqa: F821
         if self._filters:
             filters += self._filters
         if GS.filters:
-            logger.error(GS.filters)
             filters += GS.filters
             logger.warning(W_FILXRC+'Using filters from the `filters` preflight, move them to `erc`')
         self.c_err = self.c_warn = self.c_tot = 0
