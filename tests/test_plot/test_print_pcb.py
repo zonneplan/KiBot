@@ -139,6 +139,8 @@ def test_pcb_print_simple_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_pcb_print_simple_2(test_dir):
     if context.ki6():
         prj = 'pcb_print_rare'
