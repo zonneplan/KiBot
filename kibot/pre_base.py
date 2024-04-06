@@ -20,6 +20,7 @@ class BasePreFlight(Registrable):
     _in_use = {}
     _options = {}
     _targets = None
+    _configured = False
 
     def __init__(self, name, value):
         super().__init__()
@@ -38,6 +39,17 @@ class BasePreFlight(Registrable):
         if not isinstance(self._value, bool):
             raise KiPlotConfigurationError('must be boolean')
         self._enabled = self._value
+
+    @staticmethod
+    def reset():
+        # List of used preflights
+        BasePreFlight._in_use = {}
+        # Defined options
+        BasePreFlight._options = {}
+        # Output targets
+        BasePreFlight._targets = None
+        # No longer configured
+        BasePreFlight._configured = False
 
     @staticmethod
     def add_preflight(o_pre):
@@ -84,6 +96,8 @@ class BasePreFlight(Registrable):
 
     @staticmethod
     def configure_all():
+        if BasePreFlight._configured:
+            return
         try:
             # Configure all of them
             for k, v in BasePreFlight._in_use.items():
@@ -91,6 +105,7 @@ class BasePreFlight(Registrable):
                 v.config()
         except KiPlotConfigurationError as e:
             GS.exit_with_error("In preflight `"+str(k)+"`: "+str(e), EXIT_BAD_CONFIG)
+        BasePreFlight._configured = True
 
     @staticmethod
     def run_enabled(targets):

@@ -635,6 +635,7 @@ def gen_global_targets(f, pre_targets, out_targets, type):
 
 def get_pre_targets(targets, dependencies, is_pre):
     pcb_targets = sch_targets = ''
+    BasePreFlight.configure_all()
     prefs = BasePreFlight.get_in_use_objs()
     try:
         for pre in prefs:
@@ -1058,8 +1059,9 @@ def generate_targets(config_file):
     # Reset the board and schematic
     GS.board = None
     GS.sch = None
-    # Reset the list of outputs
+    # Reset the list of outputs and preflights
     RegOutput.reset()
+    BasePreFlight.reset()
     # Read the config file
     cr = CfgYamlReader()
     with open(config_file) as cf_file:
