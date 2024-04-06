@@ -83,13 +83,19 @@ class BasePreFlight(Registrable):
         out.priority = 90
 
     @staticmethod
-    def run_enabled(targets):
-        BasePreFlight._targets = targets
+    def configure_all():
         try:
             # Configure all of them
             for k, v in BasePreFlight._in_use.items():
                 logger.debug('Configuring preflight '+k)
                 v.config()
+        except KiPlotConfigurationError as e:
+            GS.exit_with_error("In preflight `"+str(k)+"`: "+str(e), EXIT_BAD_CONFIG)
+
+    @staticmethod
+    def run_enabled(targets):
+        BasePreFlight._targets = targets
+        try:
             for k, v in BasePreFlight._in_use.items():
                 if v._enabled:
                     if v.is_sch():

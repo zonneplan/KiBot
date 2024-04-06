@@ -413,7 +413,7 @@ def expand_fields(comps, dont_copy=False):
 
 def preflight_checks(skip_pre, targets):
     logger.debug("Preflight checks")
-
+    BasePreFlight.configure_all()
     if skip_pre is not None:
         if skip_pre == 'all':
             logger.debug("Skipping all preflight actions")
