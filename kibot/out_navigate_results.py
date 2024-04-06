@@ -33,7 +33,8 @@ from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .kiplot import config_output, get_output_dir, run_command
-from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS, read_png
+from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS, read_png, force_list
+from .pre_base import BasePreFlight
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
@@ -538,6 +539,7 @@ class Navigate_ResultsOptions(BaseOptions):
             out_dir = get_output_dir(out.dir, out, dry=True)
             f.write('<tbody><tr>\n')
             targets, icons = out.get_navigate_targets(out_dir)
+            logger.error(f'{targets} {icons}')
             if len(targets) == 1:
                 tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
                 img, _ = self.get_image_for_file(targets[0], out_name, image=icons[0] if icons else None)
@@ -546,6 +548,7 @@ class Navigate_ResultsOptions(BaseOptions):
             else:
                 c = 0
                 for tg in targets:
+                    logger.error(f'- {tg}')
                     if c == OUT_COLS:
                         f.write('</tr>\n<tr>\n')
                         c = 0
@@ -618,16 +621,22 @@ class Navigate_ResultsOptions(BaseOptions):
 
     def create_tree(self):
         o_tree = {}
+        BasePreFlight.configure_all()
+        for n in BasePreFlight.get_in_use_names():
+            pre = BasePreFlight.get_preflight(n)
+            cat = force_list(pre.get_category())
+            if not cat:
+                continue
+            for c in cat:
+                self.add_to_tree(c, pre, o_tree)
         for o in RegOutput.get_outputs():
             if not o.run_by_default and self.skip_not_run:
                 # Skip outputs that aren't generated in a regular run
                 continue
             config_output(o)
-            cat = o.category
+            cat = force_list(o.category)
             if cat is None:
                 continue
-            if isinstance(cat, str):
-                cat = [cat]
             for c in cat:
                 self.add_to_tree(c, o, o_tree)
         return o_tree

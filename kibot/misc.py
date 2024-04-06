@@ -527,3 +527,7 @@ def read_png(file):
         return None, None, None
     w, h = unpack('>LL', s[16:24])
     return s, w, h
+
+
+def force_list(v):
+    return v if v is None or isinstance(v, list) else [v]

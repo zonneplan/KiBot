@@ -22,6 +22,7 @@ class ERC(XRC):  # noqa: F821
         super().__init__(name, value, ERCOptions)
         self._sch_related = True
         self._expand_id = 'erc'
+        self._category = 'Schematic/docs'
 
     @classmethod
     def get_doc(cls):
@@ -173,7 +174,5 @@ class ERC(XRC):  # noqa: F821
         return cmd
 
     @staticmethod
-    def get_conf_examples(name, layers):
-        if not GS.ki8:
-            return None
-        return {'erc': {'format': 'HTML,CSV,JSON,RPT', 'dont_stop': True}}
+    def get_conf_examples(name, _):
+        return XRC.get_conf_examples(name)

@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     Also supporting multiple formats and with a modern separation between
     unconnected and warnings.
 - Quick Start: D/ERC are also included for KiCad 8 (with dont_stop: true)
+- Navigate Results: Includes the new D/ERC
 
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.

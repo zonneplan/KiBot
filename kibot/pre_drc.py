@@ -27,6 +27,7 @@ class DRC(XRC):  # noqa: F821
         super().__init__(name, value, DRCOptions)
         self._pcb_related = True
         self._expand_id = 'drc'
+        self._category = 'PCB/docs'
 
     @classmethod
     def get_doc(cls):
@@ -173,7 +174,5 @@ class DRC(XRC):  # noqa: F821
         return cmd
 
     @staticmethod
-    def get_conf_examples(name, layers):
-        if not GS.ki8:
-            return None
-        return {'drc': {'format': 'HTML,CSV,JSON,RPT', 'dont_stop': True}}
+    def get_conf_examples(name, _):
+        return XRC.get_conf_examples(name)

@@ -31,6 +31,7 @@ Added
 
 -  Quick Start: D/ERC are also included for KiCad 8 (with dont_stop:
    true)
+-  Navigate Results: Includes the new D/ERC
 
 Fixed
 ~~~~~
