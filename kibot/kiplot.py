@@ -996,7 +996,7 @@ def generate_one_example(dest_dir, types):
         global needed_imports
         needed_imports = {}
         # All the preflights
-        preflights = []
+        preflights = {}
         for n, cls in OrderedDict(sorted(BasePreFlight.get_registered().items())).items():
             o = cls(n, None)
             if types and n not in types:
@@ -1008,7 +1008,7 @@ def generate_one_example(dest_dir, types):
             tree = cls.get_conf_examples(n, layers)
             if tree:
                 logger.debug('- {}, generated'.format(n))
-                preflights.extend(tree)
+                preflights.update(tree)
             else:
                 logger.debug('- {}, nothing to do'.format(n))
         # All the outputs

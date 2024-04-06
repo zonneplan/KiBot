@@ -176,4 +176,4 @@ class ERC(XRC):  # noqa: F821
     def get_conf_examples(name, layers):
         if not GS.ki8:
             return None
-        return [{'erc': {'format': 'HTML,CSV,JSON,RPT', 'dont_stop': True}}]
+        return {'erc': {'format': 'HTML,CSV,JSON,RPT', 'dont_stop': True}}
