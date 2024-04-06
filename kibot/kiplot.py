@@ -952,6 +952,14 @@ def register_xmp_import(name, definitions=None):
     needed_imports[name] = definitions
 
 
+def check_we_cant_use(o):
+    """ Check if the output doesn't have what it needs, i.e. no PCB and this is PCB related """
+    return ((not (o.is_pcb() and GS.pcb_file) and
+             not (o.is_sch() and GS.sch_file) and
+             not (o.is_any() and (GS.pcb_file or GS.sch_file))) or
+            ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file)))
+
+
 def generate_one_example(dest_dir, types):
     """ Generate a example config for dest_dir """
     fname = discover_files(dest_dir)
@@ -987,6 +995,22 @@ def generate_one_example(dest_dir, types):
         # A helper for the internal templates
         global needed_imports
         needed_imports = {}
+        # All the preflights
+        preflights = []
+        for n, cls in OrderedDict(sorted(BasePreFlight.get_registered().items())).items():
+            o = cls(n, None)
+            if types and n not in types:
+                logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
+                continue
+            if check_we_cant_use(o):
+                logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
+                continue
+            tree = cls.get_conf_examples(n, layers)
+            if tree:
+                logger.debug('- {}, generated'.format(n))
+                preflights.extend(tree)
+            else:
+                logger.debug('- {}, nothing to do'.format(n))
         # All the outputs
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():
@@ -994,9 +1018,7 @@ def generate_one_example(dest_dir, types):
             if types and n not in types:
                 logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
-            if ((not (o.is_pcb() and GS.pcb_file) and not (o.is_sch() and GS.sch_file) and
-                 not (o.is_any() and (GS.pcb_file or GS.sch_file))) or
-               ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file))):
+            if check_we_cant_use(o):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
             tree = cls.get_conf_examples(n, layers)
@@ -1017,6 +1039,9 @@ def generate_one_example(dest_dir, types):
                     content['definitions'] = d
                 imports.append(content)
             yaml_dump(f, {'import': imports})
+            f.write('\n')
+        if preflights:
+            yaml_dump(f, {'preflight': preflights})
             f.write('\n')
         if outputs:
             yaml_dump(f, {'outputs': outputs})

@@ -3,7 +3,6 @@
 # Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
-from .error import KiPlotConfigurationError
 from .gs import (GS)
 from .kiplot import load_sch
 from .misc import W_NOANNO
@@ -20,9 +19,6 @@ class Annotate_Power(BasePreFlight):  # noqa: F821
         Used to solve ERC problems when using filters that remove power reference numbers """
     def __init__(self, name, value):
         super().__init__(name, value)
-        if not isinstance(value, bool):
-            raise KiPlotConfigurationError('must be boolean')
-        self._enabled = value
         self._sch_related = True
 
     def annotate_ki5(self):

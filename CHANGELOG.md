@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - drc: a replacement for run_drc when using KiCad 8.
     Also supporting multiple formats and with a modern separation between
     unconnected and warnings.
+- Quick Start: D/ERC are also included for KiCad 8 (with dont_stop: true)
 
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.

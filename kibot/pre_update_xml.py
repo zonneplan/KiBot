@@ -51,11 +51,14 @@ class Update_XML(BasePreFlight):  # noqa: F821
     def __init__(self, name, value):
         super().__init__(name, value)
         self._check_pcb_parity = False
-        if isinstance(value, bool):
-            self._enabled = value
-        elif isinstance(value, dict):
+        self._sch_related = True
+
+    def config(self):
+        if isinstance(self._value, bool):
+            self._enabled = self._value
+        elif isinstance(self._value, dict):
             f = Update_XMLOptions()
-            f.set_tree(value)
+            f.set_tree(self._value)
             f.config(self)
             self._enabled = f.enabled
             self._check_pcb_parity = f.check_pcb_parity
@@ -63,7 +66,6 @@ class Update_XML(BasePreFlight):  # noqa: F821
             self._pcb_related = True
         else:
             raise KiPlotConfigurationError('must be boolean or dict')
-        self._sch_related = True
 
     @classmethod
     def get_doc(cls):

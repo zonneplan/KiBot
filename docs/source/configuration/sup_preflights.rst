@@ -94,7 +94,7 @@ Supported preflights
       -  ``units`` :index:`: <pair: preflight - erc; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
       -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [boolean=false] Warnings are considered errors, they still reported as errors, but consider it an error.
 
--  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
+-  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.
    Option for `run_erc`. ERC warnings are considered errors.
 -  **fill_zones**: :index:`: <pair: preflights; fill_zones>` [boolean=false] Fill all zones again and save the PCB.
 -  **filters**: :index:`: <pair: preflights; filters>` [list(dict)] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
@@ -114,9 +114,9 @@ Supported preflights
       -  ``regex`` :index:`: <pair: preflight - filters; regex>` [string=''] Regular expression to match the text for the error we want to exclude.
       -  *regexp* :index:`: <pair: preflight - filters; regexp>` Alias for regex.
 
--  **ignore_unconnected**: :index:`: <pair: preflights; ignore_unconnected>` [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`.
+-  **ignore_unconnected**: :index:`: <pair: preflights; ignore_unconnected>` [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`/`drc`.
    Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing. |br|
-   It will also ignore KiCad 6 warnings.
+   It will also ignore KiCad 6 warnings when using `run_drc`.
 -  **pcb_replace**: :index:`: <pair: preflights; pcb_replace>` [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
    This is useful for KiCad 5, use `set_text_variables` when using KiCad 6. |br|
    This preflight modifies the PCB. Even when a back-up is done use it carefully.

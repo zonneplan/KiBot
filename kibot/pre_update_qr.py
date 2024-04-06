@@ -4,7 +4,6 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .macros import macros, pre_class  # noqa: F401
-from .error import KiPlotConfigurationError
 from .registrable import RegOutput
 from .log import get_logger
 
@@ -18,9 +17,6 @@ class Update_QR(BasePreFlight):  # noqa: F821
         The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough """
     def __init__(self, name, value):
         super().__init__(name, value)
-        if not isinstance(value, bool):
-            raise KiPlotConfigurationError('must be boolean')
-        self._enabled = value
         self._sch_related = True
         self._pcb_related = True
 

@@ -29,6 +29,9 @@ Added
       multiple formats and with a modern separation between unconnected
       and warnings.
 
+-  Quick Start: D/ERC are also included for KiCad 8 (with dont_stop:
+   true)
+
 Fixed
 ~~~~~
 

@@ -171,3 +171,9 @@ class ERC(XRC):  # noqa: F821
         cmd = ['kicad-cli', 'sch', 'erc', '-o', output, '--format', 'json', '--severity-all',
                '--units', UNITS_2_KICAD[self._units], GS.sch_file]
         return cmd
+
+    @staticmethod
+    def get_conf_examples(name, layers):
+        if not GS.ki8:
+            return None
+        return [{'erc': {'format': 'HTML,CSV,JSON,RPT', 'dont_stop': True}}]

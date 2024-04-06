@@ -31,12 +31,14 @@ class Update_Footprint(BasePreFlight):  # noqa: F821
         This is useful to replace logos using freshly created versions """
     def __init__(self, name, value):
         super().__init__(name, value)
-        if not isinstance(value, list) and not isinstance(value, str):
-            raise KiPlotConfigurationError('must be string or list of strings')
-        if isinstance(value, list) and any((not isinstance(x, str) for x in value)):
-            raise KiPlotConfigurationError('all items in the list must be strings')
         self._pcb_related = True
-        self._refs = Optionable.force_list(value)
+
+    def config(self):
+        if not isinstance(self._value, list) and not isinstance(self._value, str):
+            raise KiPlotConfigurationError('must be string or list of strings')
+        if isinstance(self._value, list) and any((not isinstance(x, str) for x in self._value)):
+            raise KiPlotConfigurationError('all items in the list must be strings')
+        self._refs = Optionable.force_list(self._value)
         if not self._refs:
             raise KiPlotConfigurationError('nothing to update')
 

@@ -27,10 +27,17 @@ class BasePreFlight(Registrable):
         self._name = name
         self._sch_related = False
         self._pcb_related = False
+        self._any_related = False    # True if we need an schematic OR a PCB
         self._enabled = True
         self._expand_id = ''
         self._expand_ext = ''
         self._files_to_remove = []
+
+    def config(self):
+        """ Default configuration assumes this is just a boolean """
+        if not isinstance(self._value, bool):
+            raise KiPlotConfigurationError('must be boolean')
+        self._enabled = self._value
 
     @staticmethod
     def add_preflight(o_pre):
@@ -54,6 +61,10 @@ class BasePreFlight(Registrable):
         return BasePreFlight._in_use.keys()
 
     @staticmethod
+    def get_registered():
+        return BasePreFlight._registered
+
+    @staticmethod
     def _set_option(name, value):
         BasePreFlight._options[name] = value
 
@@ -75,6 +86,10 @@ class BasePreFlight(Registrable):
     def run_enabled(targets):
         BasePreFlight._targets = targets
         try:
+            # Configure all of them
+            for k, v in BasePreFlight._in_use.items():
+                logger.debug('Configuring preflight '+k)
+                v.config()
             for k, v in BasePreFlight._in_use.items():
                 if v._enabled:
                     if v.is_sch():
@@ -108,6 +123,10 @@ class BasePreFlight(Registrable):
     def is_pcb(self):
         """ True for preflights that needs the PCB """
         return self._pcb_related
+
+    def is_any(self):
+        """ True for outputs that needs the schematic and/or the PCB """
+        return self._any_related
 
     def get_example():
         """ Returns a YAML value for the example config """
@@ -200,3 +219,7 @@ class BasePreFlight(Registrable):
                 logger.debug('- Dir `{}`'.format(f))
                 rmtree(f)
         self._files_to_remove = []
+
+    @staticmethod
+    def get_conf_examples(name, layers):
+        return None

@@ -5,7 +5,6 @@
 # Project: KiBot (formerly KiPlot)
 from .misc import W_DEPR
 from .macros import macros, pre_class  # noqa: F401
-from .error import (KiPlotConfigurationError)
 from .log import get_logger
 logger = get_logger(__name__)
 
@@ -17,9 +16,9 @@ class Ignore_Unconnected(BasePreFlight):  # noqa: F821
         It will also ignore KiCad 6 warnings when using `run_drc` """
     def __init__(self, name, value):
         super().__init__(name, value)
-        if not isinstance(value, bool):
-            raise KiPlotConfigurationError('must be boolean')
-        self._enabled = value
+
+    def config(self):
+        super().config()
         logger.warning(W_DEPR+'The `ignore_unconnected` preflight is deprecated, use the `ignore_unconnected` option')
 
     def get_example():

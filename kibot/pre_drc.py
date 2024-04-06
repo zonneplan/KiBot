@@ -171,3 +171,9 @@ class DRC(XRC):  # noqa: F821
             cmd.append('--all-track-errors')
         cmd.append(GS.pcb_file)
         return cmd
+
+    @staticmethod
+    def get_conf_examples(name, layers):
+        if not GS.ki8:
+            return None
+        return [{'drc': {'format': 'HTML,CSV,JSON,RPT', 'dont_stop': True}}]

@@ -90,11 +90,14 @@ class Filters(BasePreFlight):  # noqa: F821
         Avoid using it with the new *erc* and *drc* preflights.
         Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
         To farther ignore these warnings use the `filters` option in the `global` section """
-    def __init__(self, name, value):
+#     def __init__(self, name, value):
+#         super().__init__(name, value)
+
+    def config(self):
         self._filter_ops = FiltersOptions()
-        self._filter_ops.set_tree({'filters': value})
+        self._filter_ops.set_tree({'filters': self._value})
         self._filter_ops.config(self)
-        super().__init__(name, self._filter_ops.filters)
+        self._value = self._filter_ops.filters
 
     def get_example():
         """ Returns a YAML value for the example config """
