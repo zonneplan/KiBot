@@ -247,9 +247,11 @@ def test_pre_xrc_fail(test_dir, caplog, monkeypatch):
             init_globals()
             pre_drc = BasePreFlight.get_class_for('run_drc')('run_drc', True)
             with pytest.raises(SystemExit) as e1:
+                pre_drc.config()
                 pre_drc.run()
             pre_erc = BasePreFlight.get_class_for('run_erc')('run_erc', True)
             with pytest.raises(SystemExit) as e2:
+                pre_erc.config()
                 pre_erc.run()
             out = RegOutput.get_class_for('pdf_pcb_print')()
             out.set_tree({'layers': 'all'})
