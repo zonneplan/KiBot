@@ -303,7 +303,7 @@ class XRC(BasePreFlight):
         self.report('error', self.c_err, data)
         self.report('warning', self.c_warn, data)
         # Check the final status
-        error_level = 0 if self._dont_stop else err
+        error_level = -1 if self._dont_stop else err
         if self.c_err:
             GS.exit_with_error(f'{nm} errors: {self.c_err}', error_level)
         elif self.c_warn and (self._warnings_as_errors or erc_warnings):  # noqa: F821
