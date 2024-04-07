@@ -136,7 +136,7 @@ class XRC(BasePreFlight):
     def get_conf_examples(name):
         if not GS.ki8:
             return None
-        return {name: {'dont_stop': True, 'format': 'RPT,JSON,HTML,CSV'}}
+        return {name: {'dont_stop': True, 'format': 'HTML,RPT,JSON,CSV'}}
 
     def get_item_txt(self, item, indent=4, sep='\n'):
         desc = item.get('description', '')
