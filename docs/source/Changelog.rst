@@ -43,6 +43,7 @@ Fixed
 -  Sch errors are now caught during output runs. (#604)
 -  Compress: could make Python ZIP lib crash when adding a dir to the
    zip root.
+-  Copy Files: problems when no target dir and no WKS.
 
 [1.6.5] - 2024-03-31
 --------------------
