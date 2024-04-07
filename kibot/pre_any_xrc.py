@@ -128,13 +128,15 @@ class XRC(BasePreFlight):
 
     def get_navigate_targets(self, _):
         kind = 'erc' if self._sch_related else 'drc'
-        return self.get_targets(), [os.path.join(GS.get_resource_path('images'), kind+'.svg')]
+        icons = [os.path.join(GS.get_resource_path('images'), kind+'.svg')
+                 if f in {'HTML', 'RPT'} else None for f in self._format]
+        return self.get_targets(), icons
 
     @staticmethod
     def get_conf_examples(name):
         if not GS.ki8:
             return None
-        return {name: {'dont_stop': True}}
+        return {name: {'dont_stop': True, 'format': 'RPT,JSON,HTML,CSV'}}
 
     def get_item_txt(self, item, indent=4, sep='\n'):
         desc = item.get('description', '')

@@ -99,7 +99,8 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'sch': 'eeschema',
              'kicad_sch': 'eeschema',
              'blend': 'file_blend',
-             'pcb3d': 'file_pcb3d'}
+             'pcb3d': 'file_pcb3d',
+             'json': 'file_json'}
 for i in range(31):
     n = str(i)
     EXT_IMAGE['gl'+n] = 'file_gbr'
@@ -539,7 +540,14 @@ class Navigate_ResultsOptions(BaseOptions):
             out_dir = get_output_dir(out.dir, out, dry=True)
             f.write('<tbody><tr>\n')
             targets, icons = out.get_navigate_targets(out_dir)
-            logger.error(f'{targets} {icons}')
+            c_targets = len(targets)
+            # Make the icons a list with same len as targets
+            if icons is None:
+                icons = [None]*c_targets
+            else:
+                c_icons = len(icons)
+                if c_icons < c_targets:
+                    icons.extend([None]*(c_targets-c_icons))
             if len(targets) == 1:
                 tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
                 img, _ = self.get_image_for_file(targets[0], out_name, image=icons[0] if icons else None)
@@ -547,12 +555,12 @@ class Navigate_ResultsOptions(BaseOptions):
                         format(OUT_COLS, tg_rel, img))
             else:
                 c = 0
-                for tg in targets:
+                for tg, icon in zip(targets, icons):
                     if c == OUT_COLS:
                         f.write('</tr>\n<tr>\n')
                         c = 0
                     tg_rel = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
-                    img, wide = self.get_image_for_file(tg, out_name)
+                    img, wide = self.get_image_for_file(tg, out_name, image=icon)
                     # Check if we need to break this row
                     span = 1
                     if wide:
