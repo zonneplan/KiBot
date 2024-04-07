@@ -25,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 3D/2D renderers: ranges regex to be more strict. Don't take things like
   "r1-10"
 - Sch errors are now caught during output runs. (#604)
+- Compress: could make Python ZIP lib crash when adding a dir to the zip root.
 
 
 ## [1.6.5] - 2024-03-31

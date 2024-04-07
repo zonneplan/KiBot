@@ -102,6 +102,9 @@ class CompressOptions(BaseOptions):
             extra['compresslevel'] = 9
         with ZipFile(output, 'w', **extra) as zip:
             for fname, dest in files.items():
+                if dest == '/':
+                    # When we move all to / the main dir is stored as / and Python crashes
+                    continue
                 logger.debug('Adding '+fname+' as '+dest)
                 zip.write(fname, dest)
 
