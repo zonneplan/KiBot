@@ -548,7 +548,6 @@ class Navigate_ResultsOptions(BaseOptions):
             else:
                 c = 0
                 for tg in targets:
-                    logger.error(f'- {tg}')
                     if c == OUT_COLS:
                         f.write('</tr>\n<tr>\n')
                         c = 0
