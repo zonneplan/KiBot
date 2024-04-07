@@ -498,7 +498,7 @@ def run_output(out, dont_stop=False):
             logger.error(msg)
         else:
             config_error(msg)
-    except (PlotError, KiPlotError) as e:
+    except (PlotError, KiPlotError, SchError) as e:
         msg = "In output `"+str(out)+"`: "+str(e)
         GS.exit_with_error(msg, DONT_STOP if dont_stop else PLOT_ERROR)
     except KiConfError as e:
