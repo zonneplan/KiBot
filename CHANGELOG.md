@@ -16,6 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - drc: a replacement for run_drc when using KiCad 8.
     Also supporting multiple formats and with a modern separation between
     unconnected and warnings.
+- Internal templates:
+  - ExportProject: creates a ZIP file containing a self-contained version of
+    the project. All footprint, symbols and 3D models are included.
 - Quick Start: D/ERC are also included for KiCad 8 (with dont_stop: true)
 - Navigate Results: Includes the new D/ERC
 

@@ -29,6 +29,12 @@ Added
       multiple formats and with a modern separation between unconnected
       and warnings.
 
+-  Internal templates:
+
+   -  ExportProject: creates a ZIP file containing a self-contained
+      version of the project. All footprint, symbols and 3D models are
+      included.
+
 -  Quick Start: D/ERC are also included for KiCad 8 (with dont_stop:
    true)
 -  Navigate Results: Includes the new D/ERC
