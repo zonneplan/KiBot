@@ -2036,3 +2036,12 @@ def test_kicanvas_1(test_dir):
     ctx.run(extra=['KiCanvas'])
     ctx.expect_out_file_d(['kicanvas.js', prj+'-kicanvas.html', prj+'.kicad_pcb', prj+'.kicad_sch', prj+'.kicad_pro'])
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Just v7 test")
+def test_only_pcb_bad_ref(test_dir):
+    prj = 'only_pcb_bad_ref'
+    ctx = context.TestContext(test_dir, prj, 'simple_position_dummy_filter', '')
+    ctx.run()
+    ctx.search_err('Not including component')
+    ctx.clean_up()

@@ -31,6 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compress: could make Python ZIP lib crash when adding a dir to the zip root.
 - Copy Files: problems when no target dir and no WKS.
 
+### Changed
+- Filters: When we find a component in the PCB, that is not in the schematic,
+  and has a malformed reference, now we inform a warning, discard the
+  component and continue. (#604)
+
 
 ## [1.6.5] - 2024-03-31
 ### Added

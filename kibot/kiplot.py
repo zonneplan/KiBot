@@ -24,7 +24,8 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
-                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP)
+                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP,
+                   W_BADREF)
 from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -314,7 +315,12 @@ def create_component_from_footprint(m, ref):
         f.visible(False)
         c.add_field(f)
     c._solve_fields(None)
-    c.split_ref()
+    try:
+        c.split_ref()
+    except SchError:
+        # Unusable ref, discard it
+        logger.warning(f'{W_BADREF}Not including component `{ref}` in filters because it has a malformed reference')
+        c = None
     return c
 
 
@@ -342,6 +348,8 @@ def get_board_comps_data(comps):
                 continue
             # Create a component for this so we can include/exclude it using filters
             c = create_component_from_footprint(m, ref)
+            if c is None:
+                continue
             comps_hash[ref] = [c]
             comps.append(c)
         for c in comps_hash[ref]:
