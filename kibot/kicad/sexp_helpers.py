@@ -3,12 +3,9 @@
 # Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
-import os
-from tempfile import NamedTemporaryFile
 from .error import SchError
 from ..error import KiPlotConfigurationError
-from ..gs import GS
-from .sexpdata import Symbol, Sep, dumps, SExpData, load
+from .sexpdata import Symbol, Sep, SExpData, load
 TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
 
@@ -48,29 +45,6 @@ def load_sexp_file(fname):
         if error:
             raise KiPlotConfigurationError(error)
     return ki_file
-
-
-def save_pcb_from_sexp(pcb, logger):
-    # Make it readable
-    separated = make_separated(pcb[0])
-    # Save it to a temporal
-    with NamedTemporaryFile(mode='wt', suffix='.kicad_pcb', delete=False) as f:
-        logger.debug('- Saving updated PCB to: '+f.name)
-        f.write(dumps(separated))
-        f.write('\n')
-        tmp_pcb = f.name
-    # Also copy the project
-    GS.copy_project(tmp_pcb)
-    # Reload it
-    logger.debug('- Loading the temporal PCB')
-    GS.load_board(tmp_pcb, forced=True)
-    # Create a back-up and save it in the original place
-    logger.debug('- Replacing the old PCB')
-    os.remove(tmp_pcb)
-    GS.make_bkp(GS.pcb_file)
-    GS.board.Save(GS.pcb_file)
-    # After saving the file the name isn't changed, we must force it!!!
-    GS.board.SetFileName(GS.pcb_file)
 
 
 def _check_is_symbol_list(e, allow_orphan_symbol=()):

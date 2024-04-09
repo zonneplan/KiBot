@@ -15,8 +15,9 @@ import os
 from .gs import GS
 from .optionable import BaseOptions, Optionable
 from .error import KiPlotConfigurationError
+from .kicad.pcb import save_pcb_from_sexp
 from .kicad.sexpdata import Symbol, dumps, Sep, sexp_iter
-from .kicad.sexp_helpers import make_separated, save_pcb_from_sexp, load_sexp_file
+from .kicad.sexp_helpers import make_separated, load_sexp_file
 from .kicad.v6_sch import DrawRectangleV6, PointXY, Stroke, Fill, SchematicFieldV6, FontEffects
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
