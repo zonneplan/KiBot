@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
 from .gs import GS
@@ -14,7 +14,12 @@ logger = log.get_logger()
 @filter_class
 class Var_Rename(BaseFilter):  # noqa: F821
     """ Variant Renamer
-        This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use """
+        This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
+        As an example: a field named *V1:MPN* with value *1N4001* will change the field *MPN* to be
+        *1N4001* when the variant in use is *V1*.
+        Note that this mechanism can be used to change a footprint, i.e. *VARIANT:Footprint* assigned
+        with *Diode_SMD:D_0805_2012Metric* will change the footprint when *VARIANT* is in use. Of course the
+        footprints should be similar, or your PCB will become invalid """
     def __init__(self):
         super().__init__()
         self._is_transform = True
@@ -47,10 +52,14 @@ class Var_Rename(BaseFilter):  # noqa: F821
                     f_variant = res[0].lower()
                     f_field = res[1].lower()
                     if f_variant == variant:
+                        old_value = comp.get_field_value(f_field)
                         if GS.debug_level > 2:
                             logger.debug('ref: {} {}: {} -> {}'.
-                                         format(comp.ref, f_field, comp.get_field_value(f_field), value))
+                                         format(comp.ref, f_field, old_value, value))
                         comp.set_field(f_field, value)
+                        if f_field == 'footprint' and old_value != value:
+                            # Ok, this is crazy, but we can change the footprint
+                            comp._footprint_variant = True
                 elif self.variant_to_value and name.lower() == variant:
                     if GS.debug_level > 2:
                         logger.debug('ref: {} value: {} -> {}'.format(comp.ref, comp.value, value))

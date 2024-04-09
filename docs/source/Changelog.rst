@@ -35,6 +35,11 @@ Added
       version of the project. All footprint, symbols and 3D models are
       included.
 
+-  Filters:
+
+   -  Now the *var_rename* and *var_rename_kicost* filters can be used
+      to change footprints using variants (See #574)
+
 -  Quick Start: D/ERC are also included for KiCad 8 (with dont_stop:
    true)
 -  Navigate Results: Includes the new D/ERC
@@ -86,7 +91,7 @@ Changed
 -  KiRi: continue even on corrupted schematics (#583)
 -  Variants: avoid W045 on nameless pads. Assuming they are on purpose
    and not real pads. (See #584)
--  BoardView: Skip footprints with no pads (not just REF*\*)
+-  BoardView: Skip footprints with no pads (not just REF**)
    (whitequark/kicad-boardview#14)
 
 .. _fixed-1:

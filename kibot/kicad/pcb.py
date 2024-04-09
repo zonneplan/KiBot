@@ -83,7 +83,7 @@ class PCB(object):
         return o
 
 
-def save_pcb_from_sexp(pcb, logger, replace=True):
+def save_pcb_from_sexp(pcb, logger, replace_pcb=True):
     """ Save a PCB expressed as S-Expressions to disk """
     # Make it readable
     separated = make_separated(pcb[0])
@@ -100,7 +100,7 @@ def save_pcb_from_sexp(pcb, logger, replace=True):
     GS.load_board(tmp_pcb, forced=True)
     os.remove(tmp_pcb)
     # Create a back-up and save it in the original place
-    if replace:
+    if replace_pcb:
         logger.debug('- Replacing the old PCB')
         GS.make_bkp(GS.pcb_file)
         GS.board.Save(GS.pcb_file)
@@ -139,7 +139,7 @@ def update_footprint(ref, name, s, aliases, logger):
     return True
 
 
-def replace_footprints(fname, replacements, logger):
+def replace_footprints(fname, replacements, logger, replace_pcb=True):
     pcb = load_sexp_file(fname)
     aliases = KiConf.get_fp_lib_aliases()
     updated = False
@@ -160,4 +160,4 @@ def replace_footprints(fname, replacements, logger):
                         updated |= update_footprint(ref, new_fp if new_fp else fp_name, fp, aliases, logger)
     # If we replaced one or more footprints
     if updated:
-        save_pcb_from_sexp(pcb, logger)
+        save_pcb_from_sexp(pcb, logger, replace_pcb)

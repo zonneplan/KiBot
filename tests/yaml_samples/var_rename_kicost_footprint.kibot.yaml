@@ -1,0 +1,49 @@
+# Example showing how we can change a footprint using the variants mechanism
+# To get the resistor footprint (default) use:
+# $ kibot -g variant=production -c var_rename_footprint.kibot.yaml -b var_rename_footprint.kicad_pcb
+# To get the diode footprint use:
+# $ kibot -g variant=development -c var_rename_footprint.kibot.yaml -b var_rename_footprint.kicad_pcb
+
+kiplot:
+  version: 1
+
+filters:
+  # A filter used to apply the variants renamer
+  - name: 'Variant rename'
+    comment: 'Variant rename KiCost style'
+    type: var_rename_kicost
+
+variants:
+  # A variant for production, will define "PROD" as variant
+  - name: 'production'
+    comment: 'Production variant'
+    type: kibom
+    file_id: '_(PROD)'
+    variant: PROD
+    pre_transform: 'Variant rename'
+
+  # A variant for development, will define "V1" as variant
+  # It will match the "v1:Footprint" field of R1 containing "Diode_SMD:D_0805_2012Metric"
+  # So this resistor will change its footprint to be a diode.
+  # This changes only the silkscreen, so we get the same copper, but different silkscreen
+  - name: 'development'
+    comment: 'Development variant'
+    type: kibom
+    file_id: '_(DEV)'
+    variant: V1
+    pre_transform: 'Variant rename'
+
+outputs:
+  # An output to clearly show R1
+  - name: PNG
+    comment: Top copper and silkscreen
+    type: pcb_print
+    dir: PNG
+    options:
+      plot_sheet_reference: false
+      scaling: 0
+      format: PNG
+      pages:
+        - layers:
+            - layer: F.Cu
+            - layer: F.SilkS

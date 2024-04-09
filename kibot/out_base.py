@@ -10,6 +10,7 @@ import re
 from shutil import rmtree
 from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
+from .kicad.pcb import replace_footprints
 from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD, MOD_ALLOW_MISSING_COURTYARD, W_MISSDIR, W_KEEPTMP
 if not GS.kicad_version_n:
@@ -799,6 +800,23 @@ class VariantOptions(BaseOptions):
         """ True if we will apply filters/variants """
         return self._comps or self._sub_pcb
 
+    def apply_footprint_variants(self, board, comps_hash):
+        """ Allows changing the footprints using variants """
+        if comps_hash is None:
+            return
+        # Check if we have footprints that needs change
+        to_change = {}
+        for m in GS.get_modules_board(board):
+            ref = m.GetReference()
+            c = comps_hash.get(ref, None)
+            if hasattr(c, '_footprint_variant') and c._footprint_variant:
+                to_change[c.ref] = c.get_field_value('footprint')
+        if not to_change:
+            return
+        # One or more needs a change
+        logger.debug(f'Replacing footprints from variant change {to_change}')
+        replace_footprints(GS.pcb_file, to_change, logger, replace_pcb=False)
+
     def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
         if not self.will_filter_pcb_components():
             return False
@@ -807,6 +825,7 @@ class VariantOptions(BaseOptions):
             self._sub_pcb.apply(self.comps_hash)
         if self._comps:
             if do_2D:
+                self.apply_footprint_variants(GS.board, self.comps_hash)
                 self.cross_modules(GS.board, self.comps_hash)
                 self.remove_paste_and_glue(GS.board, self.comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:

@@ -276,7 +276,12 @@ Supported filters
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
 
 -  **var_rename**: (**Variant Renamer**)
-   This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
+   This filter implements the VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use. |br|
+   As an example: a field named *V1:MPN* with value *1N4001* will change the field *MPN* to be
+   *1N4001* when the variant in use is *V1*. |br|
+   Note that this mechanism can be used to change a footprint, i.e. *VARIANT:Footprint* assigned
+   with *Diode_SMD:D_0805_2012Metric* will change the footprint when *VARIANT* is in use. Of course the
+   footprints should be similar, or your PCB will become invalid.
 
    -  Valid keys:
 
@@ -289,7 +294,14 @@ Supported filters
 -  **var_rename_kicost**: (**Variant Renamer KiCost style**)
    This filter implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use. |br|
    It applies the KiCost concept of variants (a regex to match the VARIANT). |br|
-   The internal `_var_rename_kicost` filter emulates the KiCost behavior.
+   As an example: a field named *kicost.V1:MPN* with value *1N4001* will change the field *MPN* to be
+   *1N4001* when a variant in use matches the *V1* string. |br|
+   Note that this mechanism can be used to change a footprint, i.e. *kicost.VARIANT:Footprint* assigned
+   with *Diode_SMD:D_0805_2012Metric* will change the footprint when *VARIANT* is matched. Of course the
+   footprints should be similar, or your PCB will become invalid. |br|
+   The internal `_var_rename_kicost` filter is configured to emulate the KiCost behavior. You can create
+   other filters to fine-tune the behavior, i.e. you can make the mechanism to be triggered by fields
+   like *kibot.VARIANT|FIELD*.
 
    -  Valid keys:
 

@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Internal templates:
   - ExportProject: creates a ZIP file containing a self-contained version of
     the project. All footprint, symbols and 3D models are included.
+- Filters:
+  - Now the *var_rename* and *var_rename_kicost* filters can be used to change
+    footprints using variants (See #574)
 - Quick Start: D/ERC are also included for KiCad 8 (with dont_stop: true)
 - Navigate Results: Includes the new D/ERC
 
