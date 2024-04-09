@@ -77,6 +77,12 @@ filters functionality.
 -  `print_pdf_no_inductors_2.kibot.yaml <https://github.com/INTI-CMNB/KiBot/tree/master/tests/yaml_samples/print_pdf_no_inductors_2.kibot.yaml>`__:
    Shows how to do what ``print_pdf_no_inductors_1.kibot.yaml`` does but
    without the need of a variant.
+-  `var_rename_footprint.kibot.yaml <https://github.com/INTI-CMNB/KiBot/blob/dev/tests/yaml_samples/var_rename_footprint.kibot.yaml>`__
+   and `var_rename_kicost_footprint.kibot.yaml <https://github.com/INTI-CMNB/KiBot/blob/dev/tests/yaml_samples/var_rename_kicost_footprint.kibot.yaml>`__:
+   Shows how to replace a footprint using the variants mechanism. They can be applied to
+   `var_rename_footprint.kicad_pcb <https://github.com/INTI-CMNB/KiBot/blob/dev/tests/board_samples/kicad_7/var_rename_footprint.kicad_pcb>`__ or
+   `var_rename_kicost_footprint.kicad_pcb <https://github.com/INTI-CMNB/KiBot/blob/dev/tests/board_samples/kicad_7/var_rename_kicost_footprint.kicad_pcb>`__
+   respectively.
 
 
 .. index::
