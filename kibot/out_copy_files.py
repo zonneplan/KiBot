@@ -245,7 +245,7 @@ class Copy_FilesOptions(Base3DOptions):
                 extra_files.append(dru_name)
             # Worksheet
             prj_name_used = prj_name
-            if dry and not os.path.isfile(prj_name_used):
+            if dry and prj_name_used is not None and not os.path.isfile(prj_name_used):
                 prj_name_used = GS.pro_file
             wks = GS.fix_page_layout(prj_name_used, dry=dry)
             extra_files += [w for w in wks if w]
