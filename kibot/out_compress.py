@@ -142,7 +142,7 @@ class CompressOptions(BaseOptions):
         files = OrderedDict()
         out_dir_cwd = os.getcwd()
         out_dir_default = self.expand_filename_sch(GS.out_dir)
-        dirs_list = []
+        dirs_list = set()
         for f in self.files:
             # Get the list of candidates
             files_list = None
@@ -154,8 +154,6 @@ class CompressOptions(BaseOptions):
                     continue
                 output_out_dir = out_dir
                 logger.debugl(2, '- List of files: {}'.format(files_list))
-                if out_dir not in dirs_list:
-                    dirs_list.append(out_dir)
                 if not no_out_run:
                     extra_files = []
                     for file in files_list:
@@ -171,11 +169,32 @@ class CompressOptions(BaseOptions):
                             # Popultate output adds the image dirs
                             # Computing its content is complex:
                             # - We must parse the input markdown
-                            # - We must coinfigure and use the renderer output to do the file name expansion
+                            # - We must configure and use the renderer output to do the file name expansion
                             # This is almost as complex as generating the whole output, so it adds the dir
                             extra_files += glob.glob(os.path.join(file, '**'), recursive=True)
                     if extra_files:
                         files_list += extra_files
+                # Add the output dir and all its subdirs
+                dirs_list.add(out_dir)
+                for fname in files_list:
+                    dname = os.path.dirname(fname)
+                    d_rel = os.path.relpath(dname, out_dir)
+                    if d_rel == '.':
+                        # The out_dir is already there
+                        continue
+                    # Add a subdir
+                    if dname not in dirs_list:
+                        dirs_list.add(dname)
+                        logger.debugl(2, f'- Adding subdir: {dname}')
+                    # Compute the subdirs leading to this one
+                    while True:
+                        d_rel = os.path.dirname(d_rel)
+                        if not d_rel:
+                            break
+                        dname = os.path.join(out_dir, d_rel)
+                        if dname not in dirs_list:
+                            dirs_list.add(dname)
+                            logger.debugl(2, f'- Adding subdir: {dname}')
             else:
                 out_dir = out_dir_cwd if f.from_cwd else out_dir_default
                 source = f.expand_filename_both(f.source, make_safe=False)
@@ -200,7 +219,7 @@ class CompressOptions(BaseOptions):
                 else:
                     dest = os.path.relpath(dest, out_dir)
                 files[fname_real] = dest
-        return files, dirs_list
+        return files, list(dirs_list)
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]
