@@ -57,7 +57,11 @@ Fixed
    -  Could make Python ZIP lib crash when adding a dir to the zip root.
    -  So it also removes subdirs created by an output when using move.
 
--  Copy Files: problems when no target dir and no WKS.
+-  Copy Files:
+
+   -  Problems when no target dir and no WKS.
+   -  Problems when finding the targets (Makefile, copy files, etc.)
+      before generating the outputs (or when moved).
 
 Changed
 ~~~~~~~

@@ -244,7 +244,10 @@ class Copy_FilesOptions(Base3DOptions):
             if dru_name:
                 extra_files.append(dru_name)
             # Worksheet
-            wks = GS.fix_page_layout(prj_name, dry=dry)
+            prj_name_used = prj_name
+            if dry and not os.path.isfile(prj_name_used):
+                prj_name_used = GS.pro_file
+            wks = GS.fix_page_layout(prj_name_used, dry=dry)
             extra_files += [w for w in wks if w]
             if mode_project:
                 extra_files += self.copy_footprints(f.dest, dry)

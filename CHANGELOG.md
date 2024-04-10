@@ -34,7 +34,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Compress:
   - Could make Python ZIP lib crash when adding a dir to the zip root.
   - So it also removes subdirs created by an output when using move.
-- Copy Files: problems when no target dir and no WKS.
+- Copy Files:
+  - Problems when no target dir and no WKS.
+  - Problems when finding the targets (Makefile, copy files, etc.) before
+    generating the outputs (or when moved).
 
 ### Changed
 - Filters: When we find a component in the PCB, that is not in the schematic,
