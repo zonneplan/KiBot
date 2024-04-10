@@ -224,7 +224,7 @@ Here is a list of currently defined templates and their outputs / groups:
 -  ExportProject: creates a ZIP file containing a self-contained version of the project.
    All footprint, symbols and 3D models are included.
 
-   -  **_ExportProject**: Exports the project
+   -  **_ExportProject**: Exports the project. Not run by default, pulled by the compress.
    -  **_ExportProject_compress**: Moves the files to a ZIP file
 
 -  `FusionPCB <https://www.seeedstudio.io/fusion.html>`__: contain
