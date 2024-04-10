@@ -17,6 +17,7 @@ logger = get_logger(__name__)
 @pre_class
 class ERC(XRC):  # noqa: F821
     """ [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+        You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template.
         This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer """
     def __init__(self, name, value):
         super().__init__(name, value, ERCOptions)

@@ -9,6 +9,7 @@ from . import __version__
 from .bom.kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
 from .error import KiPlotConfigurationError
 from .gs import GS
+from .kicad.config import KiConf
 from .kiplot import load_board, load_sch, run_command
 from .misc import (ERC_ERROR, DRC_ERROR, W_ERCJSON, W_DRCJSON, STYLE_COMMON, TABLE_MODERN, HEAD_COLOR_B, HEAD_COLOR_B_L,
                    TD_ERC_CLASSES, GENERATOR_CSS)
@@ -265,6 +266,11 @@ class XRC(BasePreFlight):
 
     def run(self):
         # Differences between ERC and DRC
+        if GS.sch_file:
+            # May be needed by DRC when checking parity?
+            KiConf.check_sym_lib_table()
+        if GS.pcb_file:
+            KiConf.check_fp_lib_table()
         if self._sch_related:
             nm = 'ERC'
             err = ERC_ERROR

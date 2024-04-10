@@ -33,6 +33,7 @@ Supported preflights
    The original PCB remains unchanged. If you need to abort when the zone fill
    creates significant changes to a layer use the CheckZoneFill internal template.
 -  **drc**: :index:`: <pair: preflights; drc>` [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+   You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template. |br|
    This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer. |br|
    GUI exclusions and schematic parity are supported.
 
@@ -66,6 +67,7 @@ Supported preflights
       -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [boolean=false] Warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc**: :index:`: <pair: preflights; erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+   You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template. |br|
    This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
 
    -  Valid keys:

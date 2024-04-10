@@ -14,6 +14,7 @@ Notes about coverage:
 I'm excluding all the Darwin and Windows code from coverage.
 I'm not even sure the values are correct.
 """
+import atexit
 import csv
 from glob import glob
 from io import StringIO
@@ -28,7 +29,7 @@ from ..error import KiPlotConfigurationError
 from ..gs import GS
 from .. import log
 from ..misc import (W_NOCONFIG, W_NOKIENV, W_NOLIBS, W_NODEFSYMLIB, MISSING_WKS, W_MAXDEPTH, W_3DRESVER, W_LIBTVERSION,
-                    W_LIBTUNK)
+                    W_LIBTUNK, W_MISLIBTAB)
 from .sexpdata import load, SExpData, Symbol, dumps, Sep
 from .sexp_helpers import _check_is_symbol_list, _check_integer, _check_relaxed
 
@@ -546,6 +547,36 @@ class KiConf(object):
             KiConf.init(fname)
             KiConf.fp_aliases = KiConf.load_all_lib_aliases(FP_LIB_TABLE, KiConf.footprint_dir, '*.pretty')
         return KiConf.fp_aliases
+
+    def check_fp_lib_table(fname=None):
+        if fname is None:
+            fname = GS.pcb_file
+        KiConf.check_lib_table(fname, FP_LIB_TABLE)
+
+    def check_sym_lib_table(fname=None):
+        if fname is None:
+            fname = GS.sch_file
+        KiConf.check_lib_table(fname, SYM_LIB_TABLE)
+
+    def check_lib_table(fname, table_name):
+        KiConf.init(fname)
+        if KiConf.config_dir:
+            fp_name = os.path.join(KiConf.config_dir, table_name)
+            if not os.path.isfile(fp_name):
+                # No global fp lib table
+                global_fp_name = os.path.join(KiConf.template_dir, table_name) if KiConf.template_dir else None
+                if global_fp_name and os.path.isfile(global_fp_name):
+                    # Try to copy the template
+                    if not GS.ci_cd_detected:
+                        logger.warning(f'{W_MISLIBTAB}Missing default system symbol table {table_name}, copying the template')
+                    logger.debug(f'Copying {global_fp_name} to {fp_name}')
+                    copy2(global_fp_name, fp_name)
+                    atexit.register(KiConf.remove_lib_table, fp_name)
+
+    def remove_lib_table(fname):
+        if os.path.isfile(fname):
+            logger.debug('Removing '+fname)
+            os.remove(fname)
 
     def save_fp_lib_aliases(fname, aliases, is_fp=True):
         logger.debug(f'Writing lib table `{fname}`')

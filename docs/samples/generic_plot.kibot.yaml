@@ -30,10 +30,12 @@ preflight:
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
   # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
   # This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
   # GUI exclusions and schematic parity are supported.
   drc: true
   # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template.
   # This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
   erc: true
   # [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.

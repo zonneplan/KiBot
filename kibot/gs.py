@@ -122,6 +122,7 @@ class GS(object):
     kikit_units_to_kicad = {'mm': IU_PER_MM, 'cm': 10*IU_PER_MM, 'dm': 100*IU_PER_MM,
                             'm': 1000*IU_PER_MM, 'mil': IU_PER_MILS, 'inch': 1000*IU_PER_MILS,
                             'in': 1000*IU_PER_MILS}
+    ci_cd_detected = False
     # Maximum recursive replace
     MAXDEPTH = 20
     #
