@@ -200,6 +200,8 @@ def test_erc_off_grid_1(test_dir):
     ctx.clean_up(keep_project=context.ki8())
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_1(test_dir):
     prj = name = 'bom'
     if context.ki7():
@@ -224,6 +226,8 @@ def test_drc_k8_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_filter_1(test_dir):
     """ Test using internal filters """
     prj = 'fail-project'
@@ -274,6 +278,8 @@ def test_drc_filter_ki8_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_unco_1(test_dir):
     """ Check we can ignore unconnected nets. Old style """
     prj = 'warning-project'
@@ -295,6 +301,8 @@ def test_drc_unco_k8_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_unco_2(test_dir):
     """ Check we can ignore unconnected nets. New style """
     prj = 'warning-project'
@@ -316,6 +324,8 @@ def test_drc_unco_k8_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_error(test_dir):
     """ Check we catch DRC errors """
     prj = 'warning-project'
@@ -337,6 +347,8 @@ def test_drc_error_k8(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_fail(test_dir):
     """ Check we dummy PCB """
     prj = 'bom_no_xml'
@@ -345,6 +357,8 @@ def test_drc_fail(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 @pytest.mark.skipif(context.ki6(), reason="KiCad 6+ can't time-out")
 def test_drc_time_out(test_dir):
     prj = 'bom'
