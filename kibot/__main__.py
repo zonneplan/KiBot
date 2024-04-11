@@ -430,6 +430,8 @@ def main():
 
     # Force iBoM to avoid the use of graphical stuff
     os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
+    # Tell git that we don't want interactive stuff
+    os.environ['GIT_TERMINAL_PROMPT'] = '0'
 
     # Parse global overwrite options
     parse_global_redef(args)
