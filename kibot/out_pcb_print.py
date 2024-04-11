@@ -298,7 +298,7 @@ class PCB_PrintOptions(VariantOptions):
                 But it can't keep track of page numbers.
                 internal: KiBot loads the `.kicad_wks` and does the drawing work.
                 Best option, but some details are different from what the GUI generates.
-                plot: uses KiCad Python API. Only available for KiCad 6.
+                plot: uses KiCad Python API. Not available for KiCad 5.
                 You get the default frame and some substitutions doesn't work """
             self.pages = PagesOptions
             """ *[list(dict)] List of pages to include in the output document.
