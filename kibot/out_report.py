@@ -442,36 +442,7 @@ class ReportOptions(BaseOptions):
         return self.is_pure_smd_6, self.is_not_virtual_6
 
     def measure_pcb(self, board):
-        edge_layer = board.GetLayerID('Edge.Cuts')
-        x1 = y1 = x2 = y2 = None
-        for d in board.GetDrawings():
-            if d.GetClass() == GS.board_gr_type and d.GetLayer() == edge_layer:
-                bb = GS.get_shape_bbox(d)
-                start = bb.GetOrigin()
-                end = bb.GetEnd()
-                if x1 is None:
-                    x1 = x2 = start.x
-                    y1 = y2 = start.y
-                for p in [start, end]:
-                    x2 = max(x2, p.x)
-                    y2 = max(y2, p.y)
-                    x1 = min(x1, p.x)
-                    y1 = min(y1, p.y)
-        # This is a special case: the PCB edges are in a footprint
-        for m in GS.get_modules():
-            for gi in m.GraphicalItems():
-                if gi.GetClass() == GS.footprint_gr_type and gi.GetLayer() == edge_layer:
-                    bb = GS.get_shape_bbox(gi)
-                    start = bb.GetOrigin()
-                    end = bb.GetEnd()
-                    if x1 is None:
-                        x1 = x2 = start.x
-                        y1 = y2 = start.y
-                    for p in [start, end]:
-                        x2 = max(x2, p.x)
-                        y2 = max(y2, p.y)
-                        x1 = min(x1, p.x)
-                        y1 = min(y1, p.y)
+        x1, y1, x2, y2 = GS.compute_pcb_boundary(board)
         if x1 is None:
             self.bb_w = self.bb_h = INF
         else:
