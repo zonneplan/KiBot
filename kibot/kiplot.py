@@ -998,6 +998,7 @@ def generate_one_example(dest_dir, types):
         fil = [{'number': 1007},  # No information for a component in a distributor
                {'number': 1015},  # More than one component in a search for a distributor
                {'number': 58},    # Missing project file
+               {'number': 107},   # Stencil.side auto, we always use it for the example
                ]
         glb = {'filters': fil}
         yaml_dump(f, {'global': glb})
