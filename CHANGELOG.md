@@ -38,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems when no target dir and no WKS.
   - Problems when finding the targets (Makefile, copy files, etc.) before
     generating the outputs (or when moved).
+- BoM:
+  - Expansion of variables in fields could fail if the KiCad config wasn't
+    initialized
 
 ### Changed
 - Filters: When we find a component in the PCB, that is not in the schematic,

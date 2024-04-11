@@ -63,6 +63,11 @@ Fixed
    -  Problems when finding the targets (Makefile, copy files, etc.)
       before generating the outputs (or when moved).
 
+-  BoM:
+
+   -  Expansion of variables in fields could fail if the KiCad config
+      wasn’t initialized
+
 Changed
 ~~~~~~~
 

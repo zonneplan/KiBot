@@ -412,6 +412,7 @@ def expand_fields(comps, dont_copy=False):
         new_comps = deepcopy(comps)
         for n_c, c in zip(new_comps, comps):
             n_c.original_copy = c
+    KiConf.init(GS.sch_file)
     env = KiConf.kicad_env
     env.update(GS.load_pro_variables())
     for c in comps:
