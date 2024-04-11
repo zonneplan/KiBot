@@ -1060,7 +1060,7 @@ class BoM(BaseOutput):  # noqa: F821
         elif dists:
             defs = {'_KIBOT_MPN_FIELD': '- field: '+list(dists)[0]+'#'}
         else:
-            defs = {}
+            defs = {'_KIBOT_MPN_FIELD': ''}
         register_xmp_import('MacroFab_XYRS', defs)
 
     @staticmethod
