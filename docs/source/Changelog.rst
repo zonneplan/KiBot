@@ -21,13 +21,16 @@ Added
 
 -  New preflights:
 
-   -  update_footprint: updates one or more footprints from the libs.
-      Useful for external QR codes, logos, etc. (#492 #483)
    -  erc: a replacement for run_erc when using KiCad 8. It can generate
       ERC reports not only in plain text but also HTML, JSON and CSV.
    -  drc: a replacement for run_drc when using KiCad 8. Also supporting
       multiple formats and with a modern separation between unconnected
       and warnings.
+   -  update_footprint: updates one or more footprints from the libs.
+      Useful for external QR codes, logos, etc. (#492 #483)
+   -  update_pcb_characteristics: updates the text you get from *Place*
+      -> *Add Board Characteristics*, so you don’t need to remove it and
+      place again. (See #384)
 
 -  Internal templates:
 

@@ -100,6 +100,12 @@ preflight:
   # [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
   # This is useful to replace logos using freshly created versions.
   update_footprint: QR1, QR2
+  # [boolean=False] Update the information in the Board Characteristics.
+  # Starting with KiCad 7 you can paste a block containing board information using
+  # *Place* -> *Add Board Characteristics*. But this information is static, so if
+  # you modify anything related to it the block will be obsolete.
+  # This preflight tries to refresh the information.
+  update_pcb_characteristics: true
   # [boolean=false] Update the QR codes.
   # Complements the `qr_lib` output.
   # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.

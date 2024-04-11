@@ -192,6 +192,8 @@
          Read `solder_mask_color` help.
       -  ``solder_mask_color_top`` :index:`: <pair: global options; solder_mask_color_top>` [string=''] Color for the top solder mask. When not defined `solder_mask_color` is used.
          Read `solder_mask_color` help.
+      -  ``str_no`` :index:`: <pair: global options; str_no>` [string='yes'] String used for *no*. Currently used by the **update_pcb_characteristics** preflight.
+      -  ``str_yes`` :index:`: <pair: global options; str_yes>` [string='yes'] String used for *yes*. Currently used by the **update_pcb_characteristics** preflight.
       -  ``time_format`` :index:`: <pair: global options; time_format>` [string='%H-%M-%S'] Format used for the time we started the script. Uses the `strftime` format.
       -  ``time_reformat`` :index:`: <pair: global options; time_reformat>` [boolean=true] Tries to reformat the PCB/SCH date using the `date_format`.
          This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD).

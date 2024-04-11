@@ -361,6 +361,10 @@ class Globals(FiltersOptions):
             self.allow_component_ranges = True
             """ Allow using ranges like *R5-R20* in the `show_components` and `highlight` options.
                 If you have references that looks like a range you should disable this option """
+            self.str_yes = 'yes'
+            """ String used for *yes*. Currently used by the **update_pcb_characteristics** preflight """
+            self.str_no = 'yes'
+            """ String used for *no*. Currently used by the **update_pcb_characteristics** preflight """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

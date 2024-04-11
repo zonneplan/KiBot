@@ -188,6 +188,8 @@ class GS(object):
     global_solder_mask_color = None
     global_solder_mask_color_bottom = None
     global_solder_mask_color_top = None
+    global_str_yes = None
+    global_str_no = None
     global_time_format = None
     global_time_reformat = None
     global_units = None
