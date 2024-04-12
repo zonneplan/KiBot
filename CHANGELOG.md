@@ -27,6 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     footprints using variants (See #574)
 - Quick Start: D/ERC are also included for KiCad 8 (with dont_stop: true)
 - Navigate Results: Includes the new D/ERC
+- SCH print:
+  - Option to specify a custom page layout (WKS)
+  - Workaround for people using backslashes (i.e. Windows+WSL) (See #607)
 
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.

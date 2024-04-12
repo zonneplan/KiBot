@@ -38,6 +38,9 @@ Parameters:
       -  ``pre_transform`` :index:`: <pair: output - pdf_sch_print - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
+      -  ``sheet_reference_layout`` :index:`: <pair: output - pdf_sch_print - options; sheet_reference_layout>` [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+         This option works only when you print the toplevel sheet of a project and the project
+         file is available.
       -  ``title`` :index:`: <pair: output - pdf_sch_print - options; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
       -  ``variant`` :index:`: <pair: output - pdf_sch_print - options; variant>` [string=''] Board variant to apply.

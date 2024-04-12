@@ -46,6 +46,11 @@ Added
 -  Quick Start: D/ERC are also included for KiCad 8 (with dont_stop:
    true)
 -  Navigate Results: Includes the new D/ERC
+-  SCH print:
+
+   -  Option to specify a custom page layout (WKS)
+   -  Workaround for people using backslashes (i.e. Windows+WSL) (See
+      #607)
 
 Fixed
 ~~~~~

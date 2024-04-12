@@ -625,23 +625,28 @@ class KiConf(object):
                 KiConf.aliases_3D[name] = value
         logger.debugl(1, 'Finished loading 3D aliases')
 
-    def fix_page_layout_k6_key(key, data, dest_dir):
+    def fix_page_layout_k6_key(key, data, dest_dir, forced):
         if key in data:
             section = data[key]
             pl = section.get('page_layout_descr_file', None)
             if pl:
-                fname = KiConf.expand_env(pl)
-                if os.path.isfile(fname):
-                    dest = os.path.join(dest_dir, key+'.kicad_wks')
-                    logger.debug('Copying {} -> {}'.format(fname, dest))
-                    copy2(fname, dest)
-                    data[key]['page_layout_descr_file'] = key+'.kicad_wks'
-                    return dest
+                if forced:
+                    data[key]['page_layout_descr_file'] = forced
+                    logger.debug(f'Replacing page layout {pl} -> {forced}')
                 else:
-                    GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
+                    fname = KiConf.expand_env(pl)
+                    if os.path.isfile(fname):
+                        dest = os.path.join(dest_dir, key+'.kicad_wks')
+                        logger.debug('Copying {} -> {}'.format(fname, dest))
+                        copy2(fname, dest)
+                        data[key]['page_layout_descr_file'] = key+'.kicad_wks'
+                        logger.debug(f'Replacing page layout {pl} -> {key}.kicad_wks')
+                        return dest
+                    else:
+                        GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
         return None
 
-    def fix_page_layout_k6(project, dry):
+    def fix_page_layout_k6(project, dry, force_sch, force_pcb):
         # Get the current definitions
         dest_dir = os.path.dirname(project)
         with open(project, 'rt') as f:
@@ -649,8 +654,9 @@ class KiConf(object):
         data = json.loads(pro_text)
         layouts = [None, None]
         if not dry:
-            layouts[1] = KiConf.fix_page_layout_k6_key('pcbnew', data, dest_dir)
-            layouts[0] = KiConf.fix_page_layout_k6_key('schematic', data, dest_dir)
+            layouts[1] = KiConf.fix_page_layout_k6_key('pcbnew', data, dest_dir, force_pcb)
+            layouts[0] = KiConf.fix_page_layout_k6_key('schematic', data, dest_dir, force_sch)
+            logger.debug(f'Saving modified project to {project}')
             with open(project, 'wt') as f:
                 f.write(json.dumps(data, sort_keys=True, indent=2))
         else:
@@ -662,7 +668,7 @@ class KiConf(object):
                 layouts[1] = KiConf.expand_env(aux.get('page_layout_descr_file', None), ref_dir=dest_dir)
         return layouts
 
-    def fix_page_layout_k5(project, dry):
+    def fix_page_layout_k5(project, dry, force_sch, force_pcb):
         order = 1
         dest_dir = os.path.dirname(project)
         with open(project, 'rt') as f:
@@ -676,7 +682,11 @@ class KiConf(object):
                 is_pcb_new = False
             if line.startswith('PageLayoutDescrFile='):
                 fname = line[20:].strip()
-                if fname:
+                if force_sch and not is_pcb_new:
+                    dest = force_sch
+                elif force_pcb and is_pcb_new:
+                    dest = force_pcb
+                elif fname:
                     fname = KiConf.expand_env(fname)
                     if os.path.isfile(fname):
                         dest = os.path.join(dest_dir, str(order)+'.kicad_wks')
@@ -691,19 +701,26 @@ class KiConf(object):
                         GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
                 else:
                     dest = ''
+                if dest or fname:
+                    logger.debug(f'Replacing page layout {fname} -> {dest}')
                 lns[c] = f'PageLayoutDescrFile={dest}\n'
         if not dry:
+            logger.debug(f'Saving modified project to {project}')
             with open(project, 'wt') as f:
                 lns = f.writelines(lns)
         return layouts
 
-    def fix_page_layout(project, dry=False):
+    def fix_page_layout(project, dry=False, force_sch=None, force_pcb=None):
+        """ When we copy the project the page layouts must be also copied.
+            After copying the project to another destination we have wrong relative references to the WKSs.
+            We copy these files and patch the project so the files are named in a simple way.
+            In addition we can use this function to force the names of the page layouts. """
         if not project:
             return None, None
-        KiConf.init(GS.pcb_file)
+        KiConf.init(GS.pcb_file or GS.sch_file)
         if GS.ki5:
-            return KiConf.fix_page_layout_k5(project, dry)
-        return KiConf.fix_page_layout_k6(project, dry)
+            return KiConf.fix_page_layout_k5(project, dry, force_sch, force_pcb)
+        return KiConf.fix_page_layout_k6(project, dry, force_sch, force_pcb)
 
     def expand_env(name, used_extra=None, ref_dir=None):
         if used_extra is None:
