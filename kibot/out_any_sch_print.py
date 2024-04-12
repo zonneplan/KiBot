@@ -63,7 +63,7 @@ class Any_SCH_PrintOptions(VariantOptions):
                     raise KiPlotConfigurationError(f'Missing `{new_wks}` worksheet')
             else:
                 ori_wks = new_wks = wks[0]
-                if not os.path.isfile(new_wks):
+                if ori_wks and not os.path.isfile(new_wks):
                     # Try replacing backslashes
                     try_wks = new_wks.replace('\\', '/')
                     if not os.path.isfile(try_wks):
