@@ -26,7 +26,7 @@ def add_line(x1l, x2l, yl, table_layer, line_w, g):
     nl.SetEnd(pos)
     nl.SetLayer(table_layer)
     nl.SetWidth(line_w)
-    nl.SetParentGroup(g)
+    g.AddItem(nl)
     GS.board.Add(nl)
 
 
@@ -43,7 +43,7 @@ def add_row_texts(ref_cell, columns_x, y, table_layer, g):
         pos.y = y
         nt.SetPosition(pos)
         nt.SetLayer(table_layer)
-        nt.SetParentGroup(g)
+        g.AddItem(nt)
         GS.board.Add(nt)
         row_cels.append(nt)
     return row_cels
