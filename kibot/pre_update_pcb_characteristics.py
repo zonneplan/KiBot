@@ -12,6 +12,43 @@ import pcbnew
 logger = log.get_logger()
 
 
+def update_table_group(g, values):
+    updated = False
+    items = sorted(g.GetItems(), key=lambda x: (x.GetY(), x.GetX()))
+    items = [item for item in items if isinstance(item, pcbnew.PCB_TEXT)]
+    if len(items) != 23:
+        logger.non_critical_error("The board characteristicts group doesn't contain 23 text items")
+        return False
+    is_msg = True
+    msg = None
+    id = 0
+    # Update the group
+    for item in items[1:]:
+        if is_msg:
+            msg = item.GetText()
+        else:
+            old_v = item.GetText()
+            new_v = values[id]
+            if old_v != new_v:
+                logger.debug(f'- Setting {msg[:-2]} to {new_v} (was {old_v})')
+                item.SetText(new_v)
+                updated = True
+            id = id+1
+        is_msg = not is_msg
+    return updated
+
+
+def update_table(values):
+    logger.debug('Board characteristics table')
+    # Look for the Board Characteristics group
+    for g in GS.board.Groups():
+        if g.GetName() == 'group-boardCharacteristics':
+            # Found the group
+            return update_table_group(g, values)
+    logger.non_critical_error("Trying to update the Board Characteristics table, but couldn't find it")
+    return False
+
+
 @pre_class
 class Update_PCB_Characteristics(BasePreFlight):  # noqa: F821
     """ [boolean=False] Update the information in the Board Characteristics.
@@ -52,31 +89,6 @@ class Update_PCB_Characteristics(BasePreFlight):  # noqa: F821
                   YESNO[GS.global_castellated_pads],
                   YESNO[GS.global_edge_plating],
                   GS.global_edge_connector.capitalize())
-        updated = False
-        # Look for the Board Characteristics group
-        for g in GS.board.Groups():
-            if g.GetName() == 'group-boardCharacteristics':
-                items = sorted(g.GetItems(), key=lambda x: (x.GetY(), x.GetX()))
-                items = [item for item in items if isinstance(item, pcbnew.PCB_TEXT)]
-                if len(items) != 23:
-                    logger.non_critical_error("The board characteristicts group doesn't contain 23 text items")
-                    return
-                is_msg = True
-                msg = None
-                id = 0
-                # Update the group
-                for item in items[1:]:
-                    if is_msg:
-                        msg = item.GetText()
-                    else:
-                        old_v = item.GetText()
-                        new_v = values[id]
-                        if old_v != new_v:
-                            logger.debug(f'- Setting {msg[:-2]} to {new_v} (was {old_v})')
-                            item.SetText(new_v)
-                            updated = True
-                        id = id+1
-                    is_msg = not is_msg
-        if updated:
+        if update_table(values):
             GS.make_bkp(GS.pcb_file)
             GS.board.Save(GS.pcb_file)

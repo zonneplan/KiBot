@@ -232,6 +232,11 @@ Supported preflights
 -  **update_qr**: :index:`: <pair: preflights; update_qr>` [boolean=false] Update the QR codes.
    Complements the `qr_lib` output. |br|
    The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
+-  **update_stackup**: :index:`: <pair: preflights; update_stackup>` [boolean=False] Update the information in the Stackup Table.
+   Starting with KiCad 7 you can paste a block containing board information using
+   *Place* -> *Stackup Table*. But this information is static, so if
+   you modify anything related to it the block will be obsolete. |br|
+   This preflight tries to refresh the information.
 -  **update_xml**: :index:`: <pair: preflights; update_xml>` [boolean=false|dict] Update the XML version of the BoM (Bill of Materials).
    To ensure our generated BoM is up to date. |br|
    Note that this isn't needed when using the internal BoM generator (`bom`). |br|

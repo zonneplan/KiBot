@@ -30,7 +30,10 @@ Added
       Useful for external QR codes, logos, etc. (#492 #483)
    -  update_pcb_characteristics: updates the text you get from *Place*
       -> *Add Board Characteristics*, so you don’t need to remove it and
-      place again. (See #384)
+      place again. (See #384 #368)
+   -  update_stackup: updates the text you get from *Place* -> *Add
+      Stackup Table*, so you don’t need to remove it and place again.
+      (See #384 #368)
 
 -  Internal templates:
 
