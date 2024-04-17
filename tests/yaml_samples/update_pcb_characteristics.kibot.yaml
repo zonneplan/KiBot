@@ -1,0 +1,6 @@
+kibot:
+  version: 1
+
+preflight:
+  update_pcb_characteristics: true
+  update_stackup: true
