@@ -28,6 +28,7 @@ Added
       and warnings.
    -  update_footprint: updates one or more footprints from the libs.
       Useful for external QR codes, logos, etc. (#492 #483)
+   -  draw_stackup: creates a nice drawing for the stackup (See #368)
    -  update_pcb_characteristics: updates the text you get from *Place*
       -> *Add Board Characteristics*, so you don’t need to remove it and
       place again. (See #384 #368)

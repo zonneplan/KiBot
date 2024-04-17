@@ -1,0 +1,446 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2024 Salvador E. Tropea
+# Copyright (c) 2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
+# Project: KiBot (formerly KiPlot)
+import os
+from .error import KiPlotConfigurationError
+from .gs import GS
+from .kiplot import load_board, get_output_targets, look_for_output
+from .layer import Layer
+from .optionable import Optionable
+from .macros import macros, document, pre_class  # noqa: F401
+from . import log
+import pcbnew
+logger = log.get_logger()
+VALID_COLUMNS = {'gerber', 'drawing', 'description', 'thickness'}
+
+
+class SUColumns(Optionable):
+    """ A column of data """
+    def __init__(self):
+        super().__init__()
+        self._unknown_is_error = True
+        with document:
+            self.type = ''
+            """ *[gerber,drawing,description,thickness] The gerber column contains the
+                file names for the gerber files. Is usable only when a gerber output is
+                provided.
+                The drawing column contains the drawings for each layer.
+                The description column contains the description for each layer.
+                The thickness column just displays the total stackup height """
+            self.separator = ' '
+            """ *Text used as separator, usually one or more spaces """
+            self.width = 10
+            """ *Relative width. We first compute the total width and then distribute it according
+                to the relative width of each column. The absolute width depends on the area
+                assigned for the whole drawing """
+            self.side = 'auto'
+            """ [auto,right,left] Side for the dimension used for the *thickness* type.
+                When using *auto* the side is detected looking for a *drawing* column """
+        self._type_example = 'drawing'
+
+
+class DrawStackupOptions(Optionable):
+    """ Draw stackup options """
+    def __init__(self):
+        with document:
+            self.enabled = True
+            """ Enable the check. This is the replacement for the boolean value """
+            self.pos_x = 19
+            """ X position in the PCB. The units are defined by the global *units* variable.
+                Only used when the group can't be found """
+            self.pos_y = 100
+            """ Y position in the PCB. The units are defined by the global *units* variable.
+                Only used when the group can't be found """
+            self.width = 120
+            """ Width for the drawing. The units are defined by the global *units* variable.
+                Only used when the group can't be found """
+            self.height = 200
+            """ Height for the drawing. The units are defined by the global *units* variable.
+                Only used when the group can't be found """
+            self.layer = 'Cmts.User'
+            """ Layer used for the stackup. Only used when the group can't be found.
+                Otherwise we use the layer for the first object in the group """
+            self.group_name = 'kibot_stackup'
+            """ Name for the group containing the drawings. If KiBot can't find it will create
+                a new group at the specified coordinates for the indicated layer """
+            self.border = 0.1
+            """ Line width for the border box. Use 0 to eliminate it """
+            self.gerber = ''
+            """ *Name of the output used to generate the gerbers. This is needed only when you
+                want to include the *gerber* column, containing the gerber file names """
+            self.columns = SUColumns
+            """ *[list(dict)|list(string)] List of columns to display.
+                Can be just the name of the column.
+                Available columns are *gerber*, *drawing* and *description*.
+                When empty KiBot will add them in the above order, skipping the *gerber* if not available """
+        super().__init__()
+        self._unknown_is_error = True
+
+    def config(self, parent):
+        super().config(parent)
+        # Ensure we have a valid layer
+        load_board()  # We need the board to know the layer names
+        self._layer = Layer.solve(self.layer)[0]._id
+        # Solve the columns
+        # - Make a list
+        def_columns = ['drawing', 'thickness', 'description']
+        if self.gerber:
+            def_columns.insert(0, 'gerber')
+        self._columns = Optionable.force_list(self.columns, default=def_columns)
+        # - Convert strings
+        for c, col in enumerate(self._columns):
+            if isinstance(col, str):
+                if col not in VALID_COLUMNS:
+                    raise KiPlotConfigurationError(f'Invalid column type {col} must be one of {VALID_COLUMNS}')
+                o = SUColumns()
+                o.type = col
+                if o.type == 'thickness':
+                    o.width = 5
+                self._columns[c] = o
+        # - Sanity
+        if not self._columns:
+            raise KiPlotConfigurationError('No columns provided')
+
+
+def draw_rect(g, x, y, w, h, layer, filled=False, line_w=10000):
+    if not line_w:
+        draw_line(g, x, y, x, y, layer)
+        x += w
+        y += h
+        draw_line(g, x, y, x, y, layer)
+        return
+    nl = pcbnew.PCB_SHAPE(GS.board)
+    nl.SetShape(1)
+    if filled:
+        nl.SetFilled(True)
+    pos = nl.GetStart()
+    pos.x = x
+    pos.y = y
+    nl.SetStart(pos)
+    pos = nl.GetEnd()
+    pos.x = x+w
+    pos.y = y+h
+    nl.SetEnd(pos)
+    nl.SetLayer(layer)
+    nl.SetWidth(line_w)
+    g.AddItem(nl)
+    GS.board.Add(nl)
+
+
+def draw_line(g, x1, y1, x2, y2, layer):
+    nl = pcbnew.PCB_SHAPE(GS.board)
+    pos = nl.GetStart()
+    pos.x = x1
+    pos.y = y1
+    nl.SetStart(pos)
+    pos = nl.GetEnd()
+    pos.x = x2
+    pos.y = y2
+    nl.SetEnd(pos)
+    nl.SetLayer(layer)
+    nl.SetWidth(10000)
+    g.AddItem(nl)
+    GS.board.Add(nl)
+
+
+def draw_core(g, x, y, w, h, layer):
+    y = y+int(h*0.1)
+    h = int(h*0.8)
+    draw_rect(g, x, y, w, h, layer)
+    # 45 degrees /
+    xend = x+w
+    while x < xend:
+        x2 = x+h
+        y2 = y
+        if x2 > xend:
+            x2 = xend
+            y2 = y+h-(x2-x)
+        draw_line(g, x, y+h, x2, y2, layer)
+        x += h
+
+
+def draw_prepreg(g, x, y, w, h, layer):
+    y = y+int(h*0.25)
+    h = int(h*0.5)
+    draw_rect(g, x, y, w, h, layer)
+    # 45 degrees \.
+    xstart = x
+    x += w
+    while x > xstart:
+        x2 = x-h
+        y2 = y
+        if x2 < xstart:
+            x2 = xstart
+            y2 = y+h-(x-x2)
+        draw_line(g, x, y+h, x2, y2, layer)
+        x -= h
+
+
+def draw_copper(g, x, y, w, h, layer):
+    y = y+int(h*0.4)
+    h = int(h*0.2)
+    draw_rect(g, x, y, w, h, layer, filled=True)
+
+
+def draw_mask(g, x, y, w, h, layer):
+    y = y+int(h*0.45)
+    h = int(h*0.1)
+    xend = x+w
+    while x < xend:
+        w = 2*h
+        if x+w > xend:
+            w = xend-x
+        draw_rect(g, x, y, w, h, layer, filled=True)
+        x += 4*h
+
+
+def draw_text(g, x, y, text, h, w, layer):
+    h2 = int(h/2)
+    nt = pcbnew.PCB_TEXT(GS.board)
+    nt.SetText(text)
+    nt.SetTextX(x)
+    nt.SetTextY(y+h2)
+    nt.SetLayer(layer)
+    nt.SetTextWidth(w)
+    nt.SetTextHeight(h2)
+    nt.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
+    nt.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+    g.AddItem(nt)
+    GS.board.Add(nt)
+    return nt, nt.GetTextBox().GetWidth()
+
+
+def get_er_tan(la):
+    txt = ''
+    if la.epsilon_r:
+        txt += f" ϵᵣ {la.epsilon_r}"
+    if la.loss_tangent:
+        txt += f" tanδ {la.loss_tangent}"
+    return txt
+
+
+def get_dielectric_text(tp, la):
+    txt = tp
+    if la.material:
+        txt += ' '+la.material
+    if la.thickness:
+        thickness = str(int(la.thickness))+' µm'
+        txt += f" {thickness}"
+    return txt+get_er_tan(la)
+
+
+def get_mask_text(la):
+    txt = la.type
+    if la.color:
+        txt += f": {la.color}"
+    if la.material:
+        txt += f" {la.material}"
+    return txt+get_er_tan(la)
+
+
+def get_copper_text(la):
+    txt = "Copper"
+    if la.thickness:
+        thickness = str(int(la.thickness))+' µm'
+        oz = la.thickness/35
+        if int(oz) == oz:
+            oz = int(oz)
+        txt += f" ({thickness}/{oz} oz)"
+    return txt
+
+
+def draw_thickness(g, x, y, w, font_h, first, last, layer, right=True):
+    if right:
+        x1 = int(x+0.1*w)
+        h = -int(w*0.5)
+    else:
+        x1 = int(x+0.9*w)
+        h = int(w*0.5)
+    y1 = int(y+(first+0.5)*font_h)
+    y2 = int(y+(last+0.5)*font_h)
+    dim = pcbnew.PCB_DIM_ALIGNED(GS.board, pcbnew.PCB_DIM_ALIGNED_T)
+    pos = dim.GetStart()
+    pos.x = x1
+    pos.y = y1
+    dim.SetStart(pos)
+    pos = dim.GetEnd()
+    pos.x = x1
+    pos.y = y2
+    dim.SetEnd(pos)
+    ds = GS.board.GetDesignSettings()
+    dim.SetOverrideTextEnabled(True)
+    dim.SetOverrideText(GS.to_mm(ds.GetBoardThickness()))
+    dim.SetHeight(h)
+    dim.SetUnitsMode(pcbnew.DIM_UNITS_MODE_MILLIMETRES)
+    g.AddItem(dim)
+    GS.board.Add(dim)
+
+
+def update_drawing_group(g, pos_x, pos_y, width, height, tlayer, border, gerber, cols):
+    pass
+    # Purge all content
+    for item in g.GetItems():
+        # logger.error(item.GetShape())
+        GS.board.Delete(item)
+    # Analyze the stackup
+    stackup = []
+    sep_gbr = sep_desc = ' '
+    col_draw = -1
+    col_thick = -1
+    for n, c in enumerate(cols):
+        if c.type == 'description':
+            sep_desc = c.separator
+        elif c.type == 'gerber':
+            sep_gbr = c.separator
+        elif c.type == 'drawing':
+            col_draw = n
+        elif c.type == 'thickness':
+            col_thick = n
+    first_height = last_height = None
+    for index, la in enumerate(GS.stackup):
+        la.id = id = GS.board.GetLayerID(la.name)
+        if first_height is None and la.thickness:
+            first_height = index
+        if la.thickness:
+            last_height = index
+        is_paste = False
+        if id in (pcbnew.F_SilkS, pcbnew.B_SilkS):
+            la.draw = draw_mask
+            text = get_mask_text(la)
+        elif id in (pcbnew.F_Mask, pcbnew.B_Mask):
+            la.draw = draw_mask
+            text = get_mask_text(la)
+        elif id in (pcbnew.F_Paste, pcbnew.B_Paste):
+            is_paste = True
+            la.draw = draw_mask
+            text = la.type
+        elif la.type == 'copper':
+            la.draw = draw_copper
+            text = get_copper_text(la)
+        elif la.type == 'core':
+            la.draw = draw_core
+            text = get_dielectric_text("CORE", la)
+        else:
+            la.draw = draw_prepreg
+            text = get_dielectric_text("Prepreg", la)
+        la.description = sep_desc+text+sep_desc
+        la.gerber_name = sep_gbr+os.path.basename(gerber.get(la.id, ''))+sep_gbr
+        if is_paste:
+            continue
+        stackup.append(la)
+    # Move the paste and measure texts
+    max_len_desc = 0
+    max_len_gerber = 0
+    for la in GS.stackup:
+        if la.id == pcbnew.F_Paste:
+            stackup.insert(0, la)
+        elif la.id == pcbnew.B_Paste:
+            stackup.append(la)
+        max_len_desc = max(max_len_desc, len(la.description))
+        max_len_gerber = max(max_len_gerber, len(la.gerber_name))
+    # Compute sizes
+    layers = len(GS.stackup)
+    logger.debug(f'- Rendering {layers} layers')
+    row_h = int(height/layers)
+    logger.debug(f'- Row height {GS.to_mm(row_h)} mm')
+    total_rel_w = sum((c.width for c in cols))
+    xpos_x = pos_x
+    for c in cols:
+        c.x = xpos_x
+        c.w = int(c.width/total_rel_w*width)
+        c.max_txt_w = 0
+        c.font_w = 0
+        if c.type == 'description':
+            c.font_w = int(c.w/max_len_desc)
+        elif c.type == 'gerber':
+            c.font_w = int(c.w/max_len_gerber)
+        xpos_x += c.w
+    y = pos_y
+    # Draw it
+    draw_rect(g, pos_x, pos_y, width, height, tlayer, line_w=GS.from_mm(border))
+    for la in stackup:
+        for c in cols:
+            if c.type == 'drawing':
+                if la.draw is not None:
+                    la.draw(g, c.x, y, c.w, row_h, tlayer)
+            elif c.type == 'description':
+                la.desc_o, w = draw_text(g, c.x, y, la.description, row_h, c.font_w, tlayer)
+                c.max_txt_w = max(c.max_txt_w, w)
+            elif c.type == 'gerber':
+                la.gbr_o, w = draw_text(g, c.x, y, la.gerber_name, row_h, c.font_w, tlayer)
+                c.max_txt_w = max(c.max_txt_w, w)
+        y += row_h
+    if first_height != last_height:
+        for c in cols:
+            if c.type == 'thickness':
+                right = col_thick >= col_draw if c.side == 'auto' else c.side == 'right'
+                draw_thickness(g, c.x, pos_y, c.w, row_h, first_height, last_height, tlayer, right)
+    # The text is proportional, not monospaced, so we must adjust it
+    for c in cols:
+        if c.font_w:
+            c.font_w = int(c.w/c.max_txt_w*c.font_w)
+    for la in stackup:
+        for c in cols:
+            if c.type == 'description':
+                la.desc_o.SetTextWidth(c.font_w)
+            elif c.type == 'gerber':
+                la.gbr_o.SetTextWidth(c.font_w)
+    return True
+
+
+def update_drawing(ops, parent):
+    gerber = look_for_output(ops.gerber, 'gerber', parent, {'gerber'}) if ops.gerber else None
+    if gerber:
+        targets, _, _ = get_output_targets(ops.gerber, parent)
+        gerber_names = {la._id: tg for la, tg in zip(Layer.solve(gerber.layers), targets)}
+    else:
+        gerber_names = {}
+    logger.debug('Drawing stackup')
+    # Look for the Stackup Table group
+    for g in GS.board.Groups():
+        if g.GetName() == ops.group_name:
+            # Found the group
+            x1, y1, x2, y2 = GS.compute_group_boundary(g)
+            item = g.GetItems()[0]
+            layer = item.GetLayer()
+            logger.debug(f'- Found group @{GS.to_mm(x1)},{GS.to_mm(y1)} mm ({GS.to_mm(x2-x1)}x{GS.to_mm(y2-y1)} mm)'
+                         f' layer {layer}')
+            return update_drawing_group(g, x1, y1, x2-x1, y2-y1, layer, ops.border, gerber_names, ops._columns)
+    g = pcbnew.PCB_GROUP(GS.board)
+    g.SetName(ops.group_name)
+    logger.debug(f'- Creating group at @{GS.to_mm(ops.pos_x)},{GS.to_mm(ops.pos_y)} mm '
+                 f'({GS.to_mm(ops.width)}x{GS.to_mm(ops.height)} mm)')
+    return update_drawing_group(g, ops.pos_x, ops.pos_y, ops.width, ops.height, ops._layer, ops.border, gerber_names,
+                                ops._columns)
+
+
+@pre_class
+class Draw_Stackup(BasePreFlight):  # noqa: F821
+    """ [boolean=False|dict] Draw the PCB stackup. Needs KiCad 7 or newer.
+        To specify the position and size of the drawing you can use two methods.
+        You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options.
+        But you can also draw a rectangle in your PCB with the size and layer you want.
+        Then draw another thing inside the rectangle, select both and create a group
+        (right mouse button, then Grouping -> Group). Now edit the group and change its name
+        to *kibot_stackup*. After running this preflight the rectangle will contain the
+        stackup """
+    def __init__(self, name, value):
+        super().__init__(name, value)
+        self._pcb_related = True
+
+    def config(self):
+        o = DrawStackupOptions()
+        o.set_tree({'enabled': self._value} if isinstance(self._value, bool) else self._value)
+        o.config(self)
+        self._value = o
+
+    def apply(self):
+        if not GS.ki7:
+            raise KiPlotConfigurationError('The `draw_stackup` preflight needs KiCad 7 or newer')
+        if not GS.stackup:
+            raise KiPlotConfigurationError('Unable to find the stackup information')
+        if update_drawing(self._value, self):
+            GS.make_bkp(GS.pcb_file)
+            GS.board.Save(GS.pcb_file)

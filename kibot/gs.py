@@ -396,6 +396,15 @@ class GS(object):
         # Inches
         return 0.001/IU_PER_MILS
 
+#     @staticmethod
+#     def unit_name_to_abrev(units):
+#         if units == 'millimeters':
+#             return 'mm'
+#         if units == 'mils':
+#             return 'mils'
+#         # Inches
+#         return 'in'
+
     @staticmethod
     def to_mm(val):
         return float(val)/IU_PER_MM
@@ -407,6 +416,11 @@ class GS(object):
     @staticmethod
     def to_mils(val):
         return val/IU_PER_MILS
+
+#     @staticmethod
+#     def to_global_units(val):
+#         scale = GS.unit_name_to_scale_factor(GS.global_units)
+#         return str(val*scale)+' '+GS.unit_name_to_abrev(GS.global_units)
 
     @staticmethod
     def make_bkp(fname):
@@ -895,6 +909,23 @@ class GS(object):
         if GS.ki6:  # 6
             return obj.GetShownText(a_depth, allow_extra_text)
         return obj.GetShownText()  # 5
+
+    @staticmethod
+    def compute_group_boundary(g):
+        x1 = y1 = x2 = y2 = None
+        for item in g.GetItems():
+            bb = GS.get_shape_bbox(item) if hasattr(item, 'GetWidth') else item.GetBoundingBox()
+            start = bb.GetOrigin()
+            end = bb.GetEnd()
+            if x1 is None:
+                x1 = x2 = start.x
+                y1 = y2 = start.y
+            for p in [start, end]:
+                x2 = max(x2, p.x)
+                y2 = max(y2, p.y)
+                x1 = min(x1, p.x)
+                y1 = min(y1, p.y)
+        return x1, y1, x2, y2
 
     @staticmethod
     def compute_pcb_boundary(board):

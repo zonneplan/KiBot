@@ -29,6 +29,15 @@ preflight:
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
+  # [boolean=False|dict] Draw the PCB stackup. Needs KiCad 7 or newer.
+  # To specify the position and size of the drawing you can use two methods.
+  # You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options.
+  # But you can also draw a rectangle in your PCB with the size and layer you want.
+  # Then draw another thing inside the rectangle, select both and create a group
+  # (right mouse button, then Grouping -> Group). Now edit the group and change its name
+  # to *kibot_stackup*. After running this preflight the rectangle will contain the
+  # stackup.
+  draw_stackup: true
   # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
   # This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
