@@ -607,12 +607,21 @@ class TestContext(object):
         # Split the reference
         logging.debug('Splitting '+reference)
         full_ref_name = os.path.join(REF_DIR, reference)
-        cmd = ['convert', '-density', '150', full_ref_name, self.get_out_path('ref-%d.png')]
+        cmd = ['convert', '-density', '150',
+               full_ref_name,
+               # Avoid the transparency, not repeatable across KiCad releases
+               '-background', 'white', '-alpha', 'background', '-alpha', 'off',
+               self.get_out_path('ref-%d.png')]
+        logging.debug(full_ref_name)
         subprocess.check_call(cmd)
         # Split the generated
         logging.debug('Splitting '+gen)
         full_gen_name = self.get_out_path(gen)
-        cmd = ['convert', '-density', '150', full_gen_name, self.get_out_path('gen-%d.png')]
+        cmd = ['convert', '-density', '150',
+               full_gen_name,
+               # Avoid the transparency, not repeatable across KiCad releases
+               '-background', 'white', '-alpha', 'background', '-alpha', 'off',
+               self.get_out_path('gen-%d.png')]
         subprocess.check_call(cmd)
         # Check number of pages
         ref_pages = glob(self.get_out_path('ref-*.png'))
