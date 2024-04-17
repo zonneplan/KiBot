@@ -609,9 +609,8 @@ def test_update_pcb_characteristics_1(test_dir):
     # Copy the ref file
     shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
     ctx.run(extra=[])
-    ctx.search_in_file(ctx.board_file, ['gr_text "ENEPIG"', 'gr_text "FR408-HR"'])
+    ctx.search_in_file(ctx.board_file, ['gr_text "ENEPIG"', 'gr_text "FR408-HR"', 'gr_text "Polyimide"'])
     ctx.search_not_in_file(ctx.board_file, ['gr_text "ENIG"', 'gr_text "21116"'])
-    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
     file_back = ctx.board_file + '-bak'
     assert os.path.isfile(file_back), file_back
     os.remove(file_back)
