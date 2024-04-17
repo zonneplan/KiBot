@@ -150,7 +150,7 @@ def cover_it(cov):
 class TestContext(object):
 
     def __init__(self, test_dir, board_name, yaml_name, sub_dir='', yaml_compressed=False, add_cfg_kmajor=False,
-                 test_name=None):
+                 test_name=None, relaxed=False):
         if test_name is None:
             test_name = sys._getframe(1).f_code.co_name
         if test_name.startswith('test_'):
@@ -170,7 +170,7 @@ class TestContext(object):
         # The name of the PCB board file
         self.board_name = board_name
         # The actual board file that will be loaded
-        self._get_board_file()
+        self._get_board_file(relaxed=relaxed)
         # The YAML file we'll use
         self._get_yaml_name(yaml_name, yaml_compressed)
         # The actual output dir for this run
@@ -188,14 +188,15 @@ class TestContext(object):
             return os.path.join(this_dir, BOARDS_DIR)
         return os.path.join(this_dir, BOARDS_DIR, file)
 
-    def _get_board_file(self):
+    def _get_board_file(self, relaxed=False):
         self.board_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_PCB_EXT))
         self.sch_file = os.path.abspath(os.path.join(self.get_board_dir(), self.board_name + KICAD_SCH_EXT))
         logging.info('KiCad file: '+self.board_file)
-        if self.mode == MODE_PCB:
-            assert os.path.isfile(self.board_file), self.board_file
-        else:
-            assert os.path.isfile(self.sch_file), self.sch_file
+        if not relaxed:
+            if self.mode == MODE_PCB:
+                assert os.path.isfile(self.board_file), self.board_file
+            else:
+                assert os.path.isfile(self.sch_file), self.sch_file
 
     def _get_yaml_dir(self):
         this_dir = os.path.dirname(os.path.realpath(__file__))

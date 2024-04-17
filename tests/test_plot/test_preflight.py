@@ -605,7 +605,7 @@ def test_update_pcb_characteristics_1(test_dir):
     """ update_pcb_characteristics ENIG -> ENEPIG
         update_stackup 21116 -> FR408-HR """
     prj = 'board_characteristics'
-    ctx = context.TestContext(test_dir, prj, 'update_pcb_characteristics')
+    ctx = context.TestContext(test_dir, prj, 'update_pcb_characteristics', relaxed=True)
     # Copy the ref file
     shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
     ctx.run(extra=[])
