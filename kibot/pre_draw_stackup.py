@@ -274,6 +274,7 @@ def draw_thickness(g, x, y, w, font_h, first, last, layer, right=True):
     dim.SetOverrideText(GS.to_mm(ds.GetBoardThickness()))
     dim.SetHeight(h)
     dim.SetUnitsMode(pcbnew.DIM_UNITS_MODE_MILLIMETRES)
+    dim.Update()
     g.AddItem(dim)
     GS.board.Add(dim)
 
