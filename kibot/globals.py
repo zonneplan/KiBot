@@ -363,7 +363,7 @@ class Globals(FiltersOptions):
                 If you have references that looks like a range you should disable this option """
             self.str_yes = 'yes'
             """ String used for *yes*. Currently used by the **update_pcb_characteristics** preflight """
-            self.str_no = 'yes'
+            self.str_no = 'no'
             """ String used for *no*. Currently used by the **update_pcb_characteristics** preflight """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
