@@ -27,6 +27,7 @@ outputs:
     comment: "Gerbers for the Gerber god"
     type: gerber
     dir: gerberdir
+    run_by_default: false
     options:
       # generic layer options
       exclude_edge_layer: false
@@ -51,3 +52,11 @@ outputs:
 
     layers: all
 
+  - name: PDF
+    comment: "PDF files"
+    type: pdf
+    run_by_default: false
+    options:
+      output: stackup.pdf
+    layers:
+      - layer: Dwgs.User

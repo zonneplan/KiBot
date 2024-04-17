@@ -616,3 +616,18 @@ def test_update_pcb_characteristics_1(test_dir):
     assert os.path.isfile(file_back), file_back
     os.remove(file_back)
     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Implemented for 7 and up")
+def test_draw_stackup_1(test_dir):
+    """ Draw a stackup and compare """
+    prj = 'draw_stackup'
+    ctx = context.TestContext(test_dir, prj, 'draw_stackup_1', relaxed=True)
+    # Copy the ref file
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.run(extra=['PDF'])
+    ctx.compare_pdf('stackup.pdf')
+    file_back = ctx.board_file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    os.remove(file_back)
+    ctx.clean_up()
