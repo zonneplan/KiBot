@@ -36,6 +36,11 @@ Added
       Stackup Table*, so you don’t need to remove it and place again.
       (See #384 #368)
 
+-  Global variables:
+
+   -  str_yes/str_no: to finetune the *update_pcb_characteristics*
+      preflight.
+
 -  Internal templates:
 
    -  ExportProject: creates a ZIP file containing a self-contained

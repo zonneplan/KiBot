@@ -23,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - update_stackup: updates the text you get from *Place* ->
     *Add Stackup Table*, so you don't need to remove it and place
     again. (See #384 #368)
+- Global variables:
+  - str_yes/str_no: to finetune the *update_pcb_characteristics* preflight.
 - Internal templates:
   - ExportProject: creates a ZIP file containing a self-contained version of
     the project. All footprint, symbols and 3D models are included.
