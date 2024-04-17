@@ -7,5 +7,5 @@ fp-info-cache
 pcb_parity.xml
 batteryPack.kicad_prl
 parity_not_in_bom.xml
-board_characteristics.kicad_pcb
+board_characteristics*.kicad_pcb
 draw_stackup.kicad_pcb

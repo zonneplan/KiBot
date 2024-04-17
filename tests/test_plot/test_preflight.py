@@ -603,7 +603,7 @@ def test_update_footprint_1(test_dir):
 @pytest.mark.skipif(not context.ki7(), reason="Needs board characteristics")
 def test_update_pcb_characteristics_1(test_dir):
     """ update_pcb_characteristics ENIG -> ENEPIG
-        update_stackup 21116 -> FR408-HR """
+        update_stackup 21116 -> FR408-HR, add a Polyimide prepreg """
     prj = 'board_characteristics'
     ctx = context.TestContext(test_dir, prj, 'update_pcb_characteristics', relaxed=True)
     # Copy the ref file
@@ -611,6 +611,21 @@ def test_update_pcb_characteristics_1(test_dir):
     ctx.run(extra=[])
     ctx.search_in_file(ctx.board_file, ['gr_text "ENEPIG"', 'gr_text "FR408-HR"', 'gr_text "Polyimide"'])
     ctx.search_not_in_file(ctx.board_file, ['gr_text "ENIG"', 'gr_text "21116"'])
+    file_back = ctx.board_file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    os.remove(file_back)
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Needs board characteristics")
+def test_update_pcb_characteristics_2(test_dir):
+    """ update_stackup remove layers  """
+    prj = 'board_characteristics_2'
+    ctx = context.TestContext(test_dir, prj, 'update_pcb_characteristics', relaxed=True)
+    # Copy the ref file
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.run(extra=[])
+    ctx.search_not_in_file(ctx.board_file, ['gr_text "In1.Cu"', 'gr_text "In2.Cu"'])
     file_back = ctx.board_file + '-bak'
     assert os.path.isfile(file_back), file_back
     os.remove(file_back)
