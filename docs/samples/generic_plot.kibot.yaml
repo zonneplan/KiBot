@@ -2531,6 +2531,9 @@ outputs:
           exclude_pads_from_silkscreen: false
           # [string='#000000'] Color used for the holes when `colored_holes` is enabled
           holes_color: '#000000'
+          # [string='%ll'] Text to use for the `LAYER` in the title block.
+          # All the expansions available for `sheet` are also available here
+          layer_var: '%ll'
           # [list(dict)|list(string)|string] List of layers printed in this page.
           # Order is important, the last goes on top.
           # You can reuse other layers lists, some options aren't used here, but they are valid
@@ -2602,8 +2605,9 @@ outputs:
               use_for_center: true
           # [number=1.0] Scale factor (0 means autoscaling)
           scaling: 1.0
-          # [string='Assembly'] Text to use for the `sheet` in the title block.
+          # [string='Assembly'] Text to use for the `SHEET` in the title block.
           # Pattern (%*) and text variables are expanded.
+          # The %ll is the list of layers included in this page.
           # In addition when you use `repeat_for_layer` the following patterns are available:
           # %ln layer name, %ls layer suffix and %ld layer description
           sheet: 'Assembly'

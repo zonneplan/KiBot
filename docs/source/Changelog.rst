@@ -65,6 +65,8 @@ Added
 
    -  Support for (undocumented) KiCad 8.0 worksheets (20231118) (See
       #607)
+   -  Control over the LAYER KiCad variable used in worksheets
+      (layer_var ops)
 
 Fixed
 ~~~~~
