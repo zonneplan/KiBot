@@ -18,6 +18,9 @@ Dependencies:
     downloader: python
     role: Automatically adjust SVG margin
 """
+PROFILE_PLOT = False
+if PROFILE_PLOT:
+    import cProfile
 import os
 from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
@@ -479,8 +482,16 @@ class PcbDrawOptions(VariantOptions):
             if plotter.compute_bbox:
                 self.ensure_tool('numpy')
             plotter.kicad_bb_only_edge = self.size_detection == 'kicad_edge'
-
-            image = plotter.plot()
+            # Plot it
+            if PROFILE_PLOT:
+                logger.error('Start')
+                with cProfile.Profile() as pr:
+                    image = plotter.plot()
+                    pr.print_stats(sort='time')
+                    pr.print_stats(sort='cumulative')
+                logger.error('End')
+            else:
+                image = plotter.plot()
         # Most errors are reported as RuntimeError
         # When the PCB can't be loaded we get IOError
         # When the SVG contains errors we get SyntaxError

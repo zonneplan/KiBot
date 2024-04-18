@@ -96,6 +96,8 @@ Changed
 -  Filters: When we find a component in the PCB, that is not in the
    schematic, and has a malformed reference, now we inform a warning,
    discard the component and continue. (#604)
+-  PcbDraw: Now handles panelized boards much faster. Previous code was
+   really slow for panels and the time increased exponentially.
 
 [1.6.5] - 2024-03-31
 --------------------
