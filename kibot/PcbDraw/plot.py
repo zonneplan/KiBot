@@ -138,12 +138,10 @@ def pseudo_distance(a: Point, b: Point) -> Numeric:
     return a0*a0 + a1*a1
 
 def get_closest(reference: Point, elems: List[Point]) -> int:
-    x = reference[0]
-    y = reference[1]
-    for c, e in enumerate(elems):
-        if x == e[0] and y == e[1]:
-            return c
-    return int(np.argmin([pseudo_distance(reference, x) for x in elems]))
+    try:
+        return elems.index(reference)
+    except ValueError:
+        return int(np.argmin([pseudo_distance(reference, x) for x in elems]))
 
 def extract_arg(args: List[Any], index: int, default: Any=None) -> Any:
     """
