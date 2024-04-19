@@ -137,6 +137,7 @@ jobs:
         ln -s `which python3-coverage` ~/bin/python3-coverage
         ls -la ~/bin/
         echo ~/bin >> $GITHUB_PATH
+        python3-coverage --version
         coverage --version
         export CURDIR=`pwd`
         cd ~/bin/
