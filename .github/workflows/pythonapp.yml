@@ -138,9 +138,10 @@ jobs:
         coverage --version
         export CURDIR=`pwd`
         cd ~/bin/
-        # https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-linux.tar.gz
-        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-linux.tar.gz
-        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-checksums.txt
+        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-linux.tar.gz
+        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-checksums.txt
+        # curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-linux.tar.gz
+        # curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-checksums.txt
         cat coveralls-checksums.txt | grep coveralls-linux.tar.gz | sha256sum --check
         tar -xzf coveralls-linux.tar.gz
         rm coveralls-checksums.txt
