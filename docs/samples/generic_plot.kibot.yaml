@@ -546,6 +546,18 @@ outputs:
         logo_width: 370
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
+        # [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+        # Note that these rows won't have colored columns
+        row_colors:
+          # [string='#FF8080'] Color used for this category
+          - color: '#FF8080'
+            # [string=''] A description for this color, must be filled
+            description: "Components that can't be replaced"
+            # [string|list(string)='_none'] Name of the filter to match.
+            # Be careful because this filter should be coherent with the grouping fields.
+            # KiBot will assume that all the components grouped in the same group will
+            # return the same value when applying this filter
+            filter: '_none'
         # [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
         # Or you can provide a CSS file name. Please use .css as file extension.
         style: 'modern-blue'
@@ -647,6 +659,18 @@ outputs:
         max_col_width: 60
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
+        # [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+        # Note that these rows won't have colored columns
+        row_colors:
+          # [string='#FF8080'] Color used for this category
+          - color: '#FF8080'
+            # [string=''] A description for this color, must be filled
+            description: "Components that can't be replaced"
+            # [string|list(string)='_none'] Name of the filter to match.
+            # Be careful because this filter should be coherent with the grouping fields.
+            # KiBot will assume that all the components grouped in the same group will
+            # return the same value when applying this filter
+            filter: '_none'
         # [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
         # Works with only some KiCost APIs
         specs: false

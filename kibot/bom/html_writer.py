@@ -14,6 +14,8 @@ from .columnlist import ColumnList, BoMError
 from .kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
 from ..misc import (read_png, STYLE_COMMON, TABLE_MODERN, TABLE_CLASSIC, HEAD_COLOR_R, HEAD_COLOR_R_L, HEAD_COLOR_G,
                     HEAD_COLOR_G_L, HEAD_COLOR_B, HEAD_COLOR_B_L)
+from .. import log
+logger = log.get_logger()
 
 
 # JavaScript table sorter. Is floating around internet, i.e.:
@@ -157,7 +159,7 @@ def link(text):
 
 
 def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, link_lcsc, col_colors,
-                  dnf=False):
+                  row_colors, dnf=False):
     cl = ''
     # Table start
     html.write('<table class="content-table">\n')
@@ -178,6 +180,13 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
     for i, group in enumerate(groups):
         if (cfg.ignore_dnf and not group.is_fitted()) != dnf:
             continue
+        # Check if the user wants a color for this row
+        row_color = None
+        for r_color in row_colors:
+            c = group.components[0]
+            if r_color.filter.filter(c):
+                row_color = r_color.color
+                break
         row = group.get_row(headings)
         if link_datasheet != -1:
             datasheet = group.get_field(ColumnList.COL_DATASHEET_L)
@@ -200,6 +209,10 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
                 else:
                     cl = cell_class(headings[n])
                 cl = ' class="td-{}{}"'.format(cl, rc % 2)
+            else:
+                cl = ' class="td-nocolor"'
+            if row_color is not None:
+                cl += f' style="background-color: {row_color}"'
             if headings[n] == ColumnList.COL_REFERENCE_L:
                 for ref in r.split(cfg.ref_separator):
                     r = '<div id="{}"></div>'.format(ref)+r
@@ -314,6 +327,7 @@ def write_html(filename, groups, headings, head_names, cfg):
     link_mouser = cfg.html.mouser_link
     link_lcsc = cfg.html.lcsc_link
     col_colors = cfg.html.col_colors
+    row_colors = cfg.html.row_colors
     # Compute the CSS
     style_name = cfg.html.style
     if os.path.isfile(style_name):
@@ -387,23 +401,31 @@ def write_html(filename, groups, headings, head_names, cfg):
         # Fitted groups
         html.write("<h2>Component Groups</h2>\n")
         content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, link_lcsc,
-                      col_colors)
+                      col_colors, row_colors)
 
         # DNF component groups
         if cfg.html.generate_dnf and cfg.n_total != cfg.n_fitted:
             html.write("<h2>Optional components (DNF=Do Not Fit)</h2>\n")
             content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, link_lcsc,
-                          col_colors, True)
+                          col_colors, row_colors, True)
 
         # Color reference
         if col_colors:
             html.write('<table class="color-ref">\n')
-            html.write('<tr><th>Color reference:</th></tr>\n')
+            html.write('<tr><th>Color reference for columns:</th></tr>\n')
             html.write('<tr><td class="td-kicad0">KiCad Fields (default)</td></tr>\n')
             html.write('<tr><td class="td-gen0">Generated Fields</td></tr>\n')
             html.write('<tr><td class="td-user0">User Fields</td></tr>\n')
             if cfg.html.highlight_empty:
                 html.write('<tr><td class="td-empty0">Empty Fields</td></tr>\n')
+            html.write('</table>\n')
+
+        if row_colors:
+            html.write('<table class="color-ref">\n')
+            html.write('<tr><th>Color reference for rows:</th></tr>\n')
+            for r_color in row_colors:
+                html.write('<tr><td style="background-color: '
+                           f'{r_color.color}">{r_color.description}</td></tr>\n')
             html.write('</table>\n')
 
         html.write(SORT_CODE)

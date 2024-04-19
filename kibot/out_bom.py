@@ -178,6 +178,33 @@ class BoMColumns(Optionable):
             self.join = join
 
 
+class RowColors(Optionable):
+    """ Filters to give colors to rows """
+    def __init__(self):
+        super().__init__()
+        self._unknown_is_error = True
+        with document:
+            self.description = ''
+            """ *A description for this color, must be filled """
+            self.color = '#FF8080'
+            """ *Color used for this category """
+            self.filter = Optionable
+            """ *[string|list(string)='_none'] Name of the filter to match.
+                Be careful because this filter should be coherent with the grouping fields.
+                KiBot will assume that all the components grouped in the same group will
+                return the same value when applying this filter """
+        self._description_example = "Components that can't be replaced"
+
+    def config(self, parent):
+        super().config(parent)
+        self.validate_colors(['color'])
+        if not self.description:
+            raise KiPlotConfigurationError('You must add a description for a colored row')
+        if isinstance(self.filter, type):
+            raise KiPlotConfigurationError('You must provide a filter to match the rows')
+        self.filter = BaseFilter.solve_filter(self.filter, 'colored rows')
+
+
 class BoMLinkable(Optionable):
     """ Base class for HTML and XLSX formats """
     def __init__(self):
@@ -211,6 +238,9 @@ class BoMLinkable(Optionable):
             """ *BoM title """
             self.extra_info = Optionable
             """ [string|list(string)=''] Information to put after the title and before the pcb and stats info """
+            self.row_colors = RowColors
+            """ [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+                Note that these rows won't have colored columns """
 
     def config(self, parent):
         super().config(parent)
@@ -233,6 +263,9 @@ class BoMLinkable(Optionable):
         self.extra_info = Optionable.force_list(self.extra_info, comma_sep=False)
         # Datasheet as link
         self.datasheet_as_link = self.datasheet_as_link.lower()
+        # Row colors
+        if isinstance(self.row_colors, type):
+            self.row_colors = []
 
 
 class BoMHTML(BoMLinkable):

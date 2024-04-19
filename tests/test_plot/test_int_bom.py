@@ -366,16 +366,16 @@ def simple_html_test(ctx, rows, headers, sh_head, prj, do_title=True, do_logo=Tr
     ctx.clean_up()
 
 
-def simple_html_setup(test_dir, name, ret_val=0):
+def simple_html_setup(test_dir, name, ret_val=0, get_out=False):
     prj = 'kibom-test'
     ext = 'html'
     ctx = context.TestContextSCH(test_dir, prj, name, BOM_DIR, test_name=name)
     ctx.run(ret_val)
     out = prj + '-bom.' + ext
-    if ret_val == 0:
+    if ret_val == 0 and not get_out:
         return ctx.load_html(out), prj, ctx
     else:
-        return (None, None, None), prj, ctx
+        return (out, None, None), prj, ctx
 
 
 def test_int_bom_simple_html_1(test_dir):
@@ -440,6 +440,11 @@ def test_int_bom_simple_html_9(test_dir):
         ref = f.read()
     assert style[1:] == ref
     simple_html_test(ctx, rows, headers, sh_head, prj, do_title=False, do_logo=False, do_info=False, do_stats=False)
+
+
+def test_int_bom_simple_html_colored_rows(test_dir):
+    (outf, r1, r2), prj, ctx = simple_html_setup(test_dir, 'int_bom_simple_html_colored_rows', get_out=True)
+    ctx.search_in_file(outf, ['Color reference for rows'], sub=True)
 
 
 def adapt_xml(h):
@@ -1177,6 +1182,13 @@ def test_int_bom_simple_xlsx_a(test_dir):
     prj = 'kibom-test'
     ctx = context.TestContextSCH(test_dir, prj, 'int_bom_simple_xlsx_a', BOM_DIR)
     simple_xlsx_verify(ctx, prj, False)
+
+
+def test_int_bom_simple_xlsx_colored_rows(test_dir):
+    """ Colored rows """
+    prj = 'kibom-test'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_simple_xlsx_colored_rows', BOM_DIR)
+    simple_xlsx_verify(ctx, prj)
 
 
 def test_int_bom_datasheet_link_xlsx(test_dir):

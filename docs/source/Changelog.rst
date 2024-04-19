@@ -68,6 +68,10 @@ Added
    -  Control over the LAYER KiCad variable used in worksheets
       (layer_var ops)
 
+-  Internal BoM:
+
+   -  Colored rows for HTML and XLSX (See #344)
+
 Fixed
 ~~~~~
 
