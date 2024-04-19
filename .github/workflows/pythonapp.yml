@@ -90,7 +90,7 @@ jobs:
         python3-coverage report
         python3-coverage html -d output/htmlcov_${{ matrix.w_tests }}
         python3-coverage xml
-        ls -la .coverage*
+        ls -la coverage* .coverage*
     - name: Store results
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
@@ -114,6 +114,10 @@ jobs:
         #coveralls --service=github
         #echo Disabled by now
         coveralls
+    - name: Upload Coverage optional (requisite)
+      if: ${{ (matrix.ki_release == 'ki8') }}
+      run: |
+        rm .coverage
     - name: Upload Coverage optional
       if: ${{ (matrix.ki_release == 'ki8') }}
       uses: coverallsapp/github-action@v2
