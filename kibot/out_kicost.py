@@ -155,7 +155,7 @@ class KiCostOptions(VariantOptions):
             if self.kicost_variant:
                 logger.warning(W_MIXVARIANT+'Avoid using KiCost variants and internal variants on the same output')
             # Write a custom netlist to a temporal dir
-            net_dir = GS.mkdtemp(prefix='kicost')
+            net_dir = GS.mkdtemp('kicost')
             netlist = os.path.join(net_dir, GS.sch_basename+'.xml')
             logger.debug('Creating variant netlist `{}`'.format(netlist))
             with open(netlist, 'wb') as f:
