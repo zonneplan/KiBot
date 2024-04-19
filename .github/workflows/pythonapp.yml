@@ -119,6 +119,7 @@ jobs:
         flag-name: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
         parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
+        format: python
 
   test_indep:
     strategy:
