@@ -136,6 +136,7 @@ jobs:
         ln -s `which python3-coverage` ~/bin/python-coverage
         ln -s `which python3-coverage` ~/bin/python3-coverage
         ls -la ~/bin/
+        echo ~/bin >> $GITHUB_PATH
         coverage --version
         export CURDIR=`pwd`
         cd ~/bin/
@@ -145,7 +146,6 @@ jobs:
         cat coveralls-checksums.txt | grep coveralls-linux.tar.gz | sha256sum --check
         tar -xzf coveralls-linux.tar.gz
         rm coveralls-checksums.txt
-        echo ~/bin >> $GITHUB_PATH
         cd ${CURDIR}
         ~/bin/coveralls report --debug --format python .coverage
 
