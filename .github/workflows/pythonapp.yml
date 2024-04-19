@@ -128,6 +128,8 @@ jobs:
         # COVERALLS_COMPARE_SHA: ${{ inputs.compare-sha }}
         COVERALLS_SOURCE_HEADER: github-action
       run: |
+        ls -la coverage* .coverage*
+        export CURDIR=`pwd`
         mkdir -p ~/bin/
         cd ~/bin/
         # https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-linux.tar.gz
@@ -138,6 +140,8 @@ jobs:
         rm coveralls-checksums.txt
         echo ~/bin >> $GITHUB_PATH
         ln -s `which python3-coverage` ~/bin/coverage
+        ls -la ~/bin/
+        cd ${CURDIR}
         ~/bin/coveralls report --debug --format python .coverage
 
   test_indep:
