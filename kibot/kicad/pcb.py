@@ -87,7 +87,7 @@ def save_pcb_from_sexp(pcb, logger, replace_pcb=True):
     # Make it readable
     separated = make_separated(pcb[0])
     # Save it to a temporal
-    tmp_pcb = GS.tmp_file(content=dumps(separated)+'\n', suffix='.kicad_pcb', indent=True, what='updated PCB', logger=logger)
+    tmp_pcb = GS.tmp_file(content=dumps(separated)+'\n', suffix='.kicad_pcb', indent=True, what='updated PCB', a_logger=logger)
     # Also copy the project
     GS.copy_project(tmp_pcb)
     # Reload it

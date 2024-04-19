@@ -196,7 +196,7 @@ class KiBoMConfig(Optionable):
     @staticmethod
     def _create_minimal_ini():
         """ KiBoM config to get only the headers """
-        return GS.tmp_file(content=SIMPLE_CONFIG, what='minimal INI', logger=logger)
+        return GS.tmp_file(content=SIMPLE_CONFIG, what='minimal INI', a_logger=logger)
 
     @staticmethod
     def _get_columns():

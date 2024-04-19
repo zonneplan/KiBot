@@ -83,7 +83,7 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         command = self.ensure_tool('KiAuto')
         # Workaround for KiCad 7 odd behavior: it forces a file extension
         # Note: One thing is adding the extension before you enter a name, other is add something you removed on purpose
-        tmp_name = GS.tmp_file(suffix='.rpt', prefix='erc_report', what='ERC report', logger=logger)
+        tmp_name = GS.tmp_file(suffix='.rpt', prefix='erc_report', what='ERC report', a_logger=logger)
         cmd = [command, 'run_erc', '-o', os.path.basename(tmp_name), '-g', str(GS.global_erc_grid)]
         if self._warnings_as_errors or BasePreFlight.get_option('erc_warnings'):  # noqa: F821
             cmd.append('-w')

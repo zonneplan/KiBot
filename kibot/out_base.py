@@ -711,7 +711,7 @@ class VariantOptions(BaseOptions):
     def create_3D_highlight_file(self):
         if self._highlight_3D_file:
             return
-        tname = GS.tmp_file(content=HIGHLIGHT_3D_WRL, suffix='.wrl', what='temporal highlight', logger=logger)
+        tname = GS.tmp_file(content=HIGHLIGHT_3D_WRL, suffix='.wrl', what='temporal highlight', a_logger=logger)
         self._highlight_3D_file = tname
         self._files_to_remove.append(tname)
 
@@ -925,7 +925,7 @@ class VariantOptions(BaseOptions):
         """ Save the PCB to a temporal file.
             Advantage: all relative paths inside the file remains valid
             Disadvantage: the name of the file gets altered """
-        fname = GS.tmp_file(suffix='.kicad_pcb', dir=GS.pcb_dir if dir is None else dir, what='modified PCB', logger=logger)
+        fname = GS.tmp_file(suffix='.kicad_pcb', dir=GS.pcb_dir if dir is None else dir, what='modified PCB', a_logger=logger)
         GS.board.Save(fname)
         GS.copy_project(fname)
         self._files_to_remove.extend(GS.get_pcb_and_pro_names(fname))

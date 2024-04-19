@@ -765,7 +765,7 @@ class PanelizeOptions(VariantOptions):
                 cfg_d[k] = {ky: va for ky, va in v.get_attrs_gen() if va is not None and v.get_user_defined(ky)}
         js = json.dumps(cfg_d, indent=4)
         logger.debugl(1, js)
-        return GS.tmp_file(content=js, suffix='.json', prefix='panel_cfg', what='panel config', logger=logger)
+        return GS.tmp_file(content=js, suffix='.json', prefix='panel_cfg', what='panel config', a_logger=logger)
 
     def create_preview_file(self, name):
         if not self.create_preview or not os.path.isfile(name):
