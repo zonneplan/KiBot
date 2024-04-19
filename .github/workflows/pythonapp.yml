@@ -131,13 +131,13 @@ jobs:
         COVERALLS_SOURCE_HEADER: github-action
       run: |
         ls -la coverage* .coverage*
+        mkdir -p ~/bin/
         ln -s `which python3-coverage` ~/bin/coverage
         ln -s `which python3-coverage` ~/bin/python-coverage
         ln -s `which python3-coverage` ~/bin/python3-coverage
         ls -la ~/bin/
         coverage --version
         export CURDIR=`pwd`
-        mkdir -p ~/bin/
         cd ~/bin/
         # https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-linux.tar.gz
         curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-linux.tar.gz
