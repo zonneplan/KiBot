@@ -114,10 +114,6 @@ jobs:
         #coveralls --service=github
         #echo Disabled by now
         coveralls
-    - name: Upload Coverage optional (requisite)
-      if: ${{ (matrix.ki_release == 'ki8') }}
-      run: |
-        rm .coverage
     - name: Upload Coverage optional
       if: ${{ (matrix.ki_release == 'ki8') }}
       env:
