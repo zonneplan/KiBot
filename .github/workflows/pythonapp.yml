@@ -120,12 +120,29 @@ jobs:
         rm .coverage
     - name: Upload Coverage optional
       if: ${{ (matrix.ki_release == 'ki8') }}
-      uses: coverallsapp/github-action@v2
-      with:
-        flag-name: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
-        parallel: true
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        format: cobertura
+      env:
+        COVERALLS_DEBUG: true
+        COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
+        COVERALLS_PARALLEL: true
+        COVERALLS_ENDPOINT: https://coveralls.io
+        # COVERALLS_GIT_BRANCH: ${{ inputs.git-branch }}
+        # COVERALLS_GIT_COMMIT: ${{ inputs.git-commit }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # COVERALLS_COMPARE_REF: ${{ inputs.compare-ref }}
+        # COVERALLS_COMPARE_SHA: ${{ inputs.compare-sha }}
+        COVERALLS_SOURCE_HEADER: github-action
+      run: |
+        mkdir -p ~/bin/
+        cd ~/bin/
+        # https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-linux.tar.gz
+        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-linux.tar.gz
+        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-checksums.txt
+        cat coveralls-checksums.txt | grep coveralls-linux.tar.gz | sha256sum --check
+        tar -xzf coveralls-linux.tar.gz
+        rm coveralls-checksums.txt
+        echo ~/bin >> $GITHUB_PATH
+        ln -s `which python3-coverage` ~/bin/coverage
+        ~/bin/coveralls report --debug --format python .coverage
 
   test_indep:
     strategy:
