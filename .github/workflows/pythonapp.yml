@@ -89,6 +89,8 @@ jobs:
         python3-coverage combine
         python3-coverage report
         python3-coverage html -d output/htmlcov_${{ matrix.w_tests }}
+        python3-coverage xml
+        ls -la .coverage*
     - name: Store results
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
@@ -119,7 +121,7 @@ jobs:
         flag-name: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
         parallel: true
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        format: python
+        format: cobertura
 
   test_indep:
     strategy:
