@@ -129,6 +129,10 @@ jobs:
         COVERALLS_SOURCE_HEADER: github-action
       run: |
         ls -la coverage* .coverage*
+        ln -s `which python3-coverage` ~/bin/coverage
+        ln -s `which python3-coverage` ~/bin/python-coverage
+        ln -s `which python3-coverage` ~/bin/python3-coverage
+        ls -la ~/bin/
         coverage --version
         export CURDIR=`pwd`
         mkdir -p ~/bin/
@@ -140,10 +144,6 @@ jobs:
         tar -xzf coveralls-linux.tar.gz
         rm coveralls-checksums.txt
         echo ~/bin >> $GITHUB_PATH
-        ln -s `which python3-coverage` ~/bin/coverage
-        ln -s `which python3-coverage` ~/bin/python-coverage
-        ln -s `which python3-coverage` ~/bin/python3-coverage
-        ls -la ~/bin/
         cd ${CURDIR}
         ~/bin/coveralls report --debug --format python .coverage
 
