@@ -27,7 +27,6 @@ import pprint
 from shutil import copy2
 from math import ceil
 from struct import unpack
-from tempfile import NamedTemporaryFile
 from .bom.kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
 from .error import KiPlotConfigurationError
 from .gs import GS
@@ -413,8 +412,7 @@ class Navigate_ResultsOptions(BaseOptions):
             # Only page 1
             file += '[0]'
         if ext == 'svg':
-            with NamedTemporaryFile(mode='w', suffix='.png', delete=False) as f:
-                tmp_name = f.name
+            tmp_name = GS.tmp_file(suffix='.png')
             logger.debug('Temporal convert: {} -> {}'.format(file, tmp_name))
             if not self.svg_to_png(file, tmp_name, BIG_ICON):
                 return False, None, None

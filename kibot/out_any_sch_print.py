@@ -4,7 +4,6 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from tempfile import mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .out_base import VariantOptions
@@ -81,7 +80,7 @@ class Any_SCH_PrintOptions(VariantOptions):
                 self.set_title(self.title, sch=True)
             if self._comps or self.title:
                 # Save it to a temporal dir
-                sch_dir = mkdtemp(prefix='tmp-kibot-'+self._expand_ext+'_sch_print-')
+                sch_dir = GS.mkdtemp(self._expand_ext+'_sch_print')
                 GS.copy_project_sch(sch_dir)
                 fname = GS.sch.save_variant(sch_dir)
                 sch_file = os.path.join(sch_dir, fname)

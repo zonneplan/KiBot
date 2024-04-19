@@ -14,7 +14,6 @@ from copy import deepcopy
 import os
 import re
 import json
-from tempfile import NamedTemporaryFile
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import run_command, config_output, register_xmp_import
@@ -760,16 +759,13 @@ class PanelizeOptions(VariantOptions):
                 cfg.name = str(c+1)
 
     def create_config(self, cfg):
-        with NamedTemporaryFile(mode='w', delete=False, suffix='.json', prefix='kibot_panel_cfg') as f:
-            logger.debug('Writing panel config to '+f.name)
-            cfg_d = {}
-            for k, v in cfg.get_attrs_gen():
-                if isinstance(v, PanelOptions):
-                    cfg_d[k] = {ky: va for ky, va in v.get_attrs_gen() if va is not None and v.get_user_defined(ky)}
-            js = json.dumps(cfg_d, indent=4)
-            logger.debugl(1, js)
-            f.write(js)
-            return f.name
+        cfg_d = {}
+        for k, v in cfg.get_attrs_gen():
+            if isinstance(v, PanelOptions):
+                cfg_d[k] = {ky: va for ky, va in v.get_attrs_gen() if va is not None and v.get_user_defined(ky)}
+        js = json.dumps(cfg_d, indent=4)
+        logger.debugl(1, js)
+        return GS.tmp_file(content=js, suffix='.json', prefix='panel_cfg', what='panel config', logger=logger)
 
     def create_preview_file(self, name):
         if not self.create_preview or not os.path.isfile(name):

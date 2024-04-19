@@ -18,6 +18,7 @@ from datetime import datetime
 import shlex
 from shutil import copy2
 from sys import exit, exc_info
+import tempfile
 from traceback import extract_stack, format_list, print_tb
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL, CORRUPTED_PRO
 from .log import get_logger
@@ -960,3 +961,20 @@ class GS(object):
                         x1 = min(x1, p.x)
                         y1 = min(y1, p.y)
         return x1, y1, x2, y2
+
+    @staticmethod
+    def tmp_file(content=None, prefix=None, suffix=None, dir=None, what=None, a_logger=None, binary=False, indent=False):
+        mode = 'wb' if binary else 'wt'
+        prefix = 'kibot_'+(prefix if prefix is not None else '')
+        with tempfile.NamedTemporaryFile(mode=mode, delete=False, suffix=suffix, prefix=prefix, dir=dir) as f:
+            if what is not None:
+                if a_logger is None:
+                    a_logger = logger
+                a_logger.debug(('- ' if indent else '')+f'Writing {what} to {f.name}')
+            if content:
+                f.write(content)
+        return f.name
+
+    @staticmethod
+    def mkdtemp(mod):
+        return tempfile.mkdtemp(prefix='tmp-kibot-'+mod+'-')

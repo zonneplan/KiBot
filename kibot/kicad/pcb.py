@@ -8,7 +8,6 @@ KiCad v5/6 PCB format.
 Currently used only for the paper size
 """
 import os
-from tempfile import NamedTemporaryFile
 from .config import KiConf
 from ..error import KiPlotConfigurationError
 from ..misc import W_NOLIB
@@ -88,11 +87,7 @@ def save_pcb_from_sexp(pcb, logger, replace_pcb=True):
     # Make it readable
     separated = make_separated(pcb[0])
     # Save it to a temporal
-    with NamedTemporaryFile(mode='wt', suffix='.kicad_pcb', delete=False) as f:
-        logger.debug('- Saving updated PCB to: '+f.name)
-        f.write(dumps(separated))
-        f.write('\n')
-        tmp_pcb = f.name
+    tmp_pcb = GS.tmp_file(content=dumps(separated)+'\n', suffix='.kicad_pcb', indent=True, what='updated PCB', logger=logger)
     # Also copy the project
     GS.copy_project(tmp_pcb)
     # Reload it

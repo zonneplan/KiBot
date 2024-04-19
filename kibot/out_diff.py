@@ -25,7 +25,6 @@ import os
 import re
 from shutil import rmtree, copy2
 from subprocess import CalledProcessError
-from tempfile import mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import load_any_sch, run_command, config_output, get_output_dir, run_output
@@ -371,7 +370,7 @@ class DiffOptions(AnyDiffOptions):
             # Checkout the target
             name_ori = name
             name = self.solve_git_name(name)
-            git_tmp_wd = mkdtemp()
+            git_tmp_wd = GS.mkdtemp('diff-checkout')
             logger.debug('Checking out '+name+' to '+git_tmp_wd)
             self.run_git(['worktree', 'add', '--detach', '--force', git_tmp_wd, name])
             self._worktrees_to_remove.append(git_tmp_wd)
@@ -426,7 +425,7 @@ class DiffOptions(AnyDiffOptions):
         else:
             if self._comps:
                 # We have a variant/filter applied
-                dir_name = mkdtemp()
+                dir_name = GS.mkdtemp('diff-variant')
                 fname = GS.sch.save_variant(dir_name)
                 GS.copy_project_sch(dir_name)
                 self.dirs_to_remove.append(dir_name)
@@ -509,7 +508,7 @@ class DiffOptions(AnyDiffOptions):
         # Solve the cache dir
         self.dirs_to_remove = []
         if not self.cache_dir:
-            self.cache_dir = mkdtemp()
+            self.cache_dir = GS.mkdtemp('diff-cache')
             self.dirs_to_remove.append(self.cache_dir)
         self.incl_file = None
         name_ori = name

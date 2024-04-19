@@ -4,7 +4,6 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
-from tempfile import NamedTemporaryFile
 from .gs import GS
 from .kiplot import run_command
 from .out_base import VariantOptions
@@ -71,8 +70,7 @@ class AnyDiffOptions(VariantOptions):
         kind = 'PCB' if ext == '.kicad_pcb' else 'schematic'
         if create_tmp:
             # Use a temporary file
-            with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
-                name = f.name
+            name = GS.tmp_file(suffix=ext)
             base = os.path.splitext(name)[0]
         to_remove = [name]
         logger.debug('Creating empty '+kind+': '+name)
@@ -98,9 +96,9 @@ class AnyDiffOptions(VariantOptions):
     def save_layers_incl(self, layers):
         self._solved_layers = layers
         logger.debug('Including layers:')
-        with NamedTemporaryFile(mode='w', suffix='.lst', delete=False) as f:
-            self.incl_file = f.name
-            for la in layers:
-                logger.debug('- {} ({})'.format(la.layer, la.id))
-                f.write(str(la.id)+'\n')
+        txt = ''
+        for la in layers:
+            logger.debug(f'- {la.layer} ({la.id})')
+            txt += str(la.id)+'\n'
+        self.incl_file = GS.tmp_file(content=txt, suffix='.lst')
         return self.incl_file

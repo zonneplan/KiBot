@@ -11,7 +11,6 @@ Dependencies:
 """
 import os
 from os.path import isfile, abspath, join, dirname
-from tempfile import mkdtemp
 from shutil import rmtree
 from .misc import (BOM_ERROR, DISTRIBUTORS, W_UNKDIST, ISO_CURRENCIES, W_UNKCUR, KICOST_SUBMODULE,
                    W_KICOSTFLD, W_MIXVARIANT)
@@ -156,7 +155,7 @@ class KiCostOptions(VariantOptions):
             if self.kicost_variant:
                 logger.warning(W_MIXVARIANT+'Avoid using KiCost variants and internal variants on the same output')
             # Write a custom netlist to a temporal dir
-            net_dir = mkdtemp(prefix='tmp-kibot-kicost-')
+            net_dir = GS.mkdtemp(prefix='kicost')
             netlist = os.path.join(net_dir, GS.sch_basename+'.xml')
             logger.debug('Creating variant netlist `{}`'.format(netlist))
             with open(netlist, 'wb') as f:

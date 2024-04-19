@@ -35,7 +35,6 @@ import os
 import importlib
 from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
 from shutil import rmtree
-from tempfile import NamedTemporaryFile, mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
@@ -715,9 +714,7 @@ class PCB_PrintOptions(VariantOptions):
         if monochrome:
             convert_command = self.ensure_tool('ImageMagick')
             for img in self.last_worksheet.images:
-                with NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as f:
-                    f.write(img.data)
-                    fname = f.name
+                fname = GS.tmp_file(content=img.data, suffix='.png', binary=True)
                 dest = fname.replace('.png', '_gray.png')
                 _run_command([convert_command, fname, '-set', 'colorspace', 'Gray', '-separate', '-average', dest])
                 with open(dest, 'rb') as f:
@@ -1140,12 +1137,9 @@ class PCB_PrintOptions(VariantOptions):
         # Avoid KiCad 5 complaining about fake vias diameter == drill == 0
         self.min_w = 2 if GS.ki5 else 0
         output_dir = os.path.dirname(output)
-        if self.keep_temporal_files:
-            temp_dir_base = output_dir
-        else:
-            temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
-        logger.debug('Starting to generate `{}`'.format(output))
-        logger.debug('- Temporal dir: {}'.format(temp_dir_base))
+        temp_dir_base = output_dir if self.keep_temporal_files else GS.mkdtemp('pcb_print')
+        logger.debug(f'Starting to generate `{output}`')
+        logger.debug(f'- Temporal dir: {temp_dir_base}')
         self.find_paper_size()
         if self.sheet_reference_layout:
             layout = self.sheet_reference_layout

@@ -24,7 +24,6 @@ import csv
 from copy import deepcopy
 import os
 import re
-from tempfile import NamedTemporaryFile
 from .gs import GS
 from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
 from .optionable import Optionable, BaseOptions
@@ -913,8 +912,7 @@ class BoMOptions(BaseOptions):
         ext = os.path.splitext(logo)[1]
         if ext.lower() != '.svg':
             return None
-        with NamedTemporaryFile(mode='w', suffix='.png', delete=False) as f:
-            png = f.name
+        png = GS.tmp_file(suffix='.png')
         cmd = [self.ensure_tool('RSVG'), '-w', str(w), '-f', 'png', '-o', png, logo]
         run_command(cmd)
         self._old_logo = logo

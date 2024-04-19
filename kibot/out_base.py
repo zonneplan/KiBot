@@ -8,7 +8,6 @@ import math
 import os
 import re
 from shutil import rmtree
-from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
 from .kicad.pcb import replace_footprints
 from .kiplot import load_sch, get_board_comps_data
@@ -712,11 +711,9 @@ class VariantOptions(BaseOptions):
     def create_3D_highlight_file(self):
         if self._highlight_3D_file:
             return
-        with NamedTemporaryFile(mode='w', suffix='.wrl', delete=False) as f:
-            self._highlight_3D_file = f.name
-            self._files_to_remove.append(f.name)
-            logger.debug('Creating temporal highlight file '+f.name)
-            f.write(HIGHLIGHT_3D_WRL)
+        tname = GS.tmp_file(content=HIGHLIGHT_3D_WRL, suffix='.wrl', what='temporal highlight', logger=logger)
+        self._highlight_3D_file = tname
+        self._files_to_remove.append(tname)
 
     def get_crtyd_bbox(self, board, m):
         fcrtyd = board.GetLayerID('F.CrtYd')
@@ -928,11 +925,7 @@ class VariantOptions(BaseOptions):
         """ Save the PCB to a temporal file.
             Advantage: all relative paths inside the file remains valid
             Disadvantage: the name of the file gets altered """
-        if dir is None:
-            dir = GS.pcb_dir
-        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False, dir=dir) as f:
-            fname = f.name
-        logger.debug('Storing modified PCB to `{}`'.format(fname))
+        fname = GS.tmp_file(suffix='.kicad_pcb', dir=GS.pcb_dir if dir is None else dir, what='modified PCB', logger=logger)
         GS.board.Save(fname)
         GS.copy_project(fname)
         self._files_to_remove.extend(GS.get_pcb_and_pro_names(fname))
@@ -956,7 +949,7 @@ class VariantOptions(BaseOptions):
         """ Save the PCB to a temporal dir.
             Disadvantage: all relative paths inside the file becomes useless
             Aadvantage: the name of the file remains the same """
-        pcb_dir = mkdtemp(prefix='tmp-kibot-'+id+'-') if force_dir is None else force_dir
+        pcb_dir = GS.mkdtemp(id) if force_dir is None else force_dir
         basename = forced_name if forced_name else GS.pcb_basename
         fname = os.path.join(pcb_dir, basename+'.kicad_pcb')
         logger.debug('Storing modified PCB to `{}`'.format(fname))

@@ -25,7 +25,6 @@ import pwd
 import os
 from shutil import copy2, rmtree
 from subprocess import CalledProcessError
-from tempfile import mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kicad.color_theme import load_color_theme
@@ -292,7 +291,7 @@ class KiRiOptions(AnyDiffOptions):
                         continue
                     if already_generated:
                         rmtree(dst_dir)
-                    git_tmp_wd = mkdtemp()
+                    git_tmp_wd = GS.mkdtemp('kiri-checkout')
                     logger.debug('Checking out '+hash+' to '+git_tmp_wd)
                     self.run_git(['worktree', 'add', '--detach', '--force', git_tmp_wd, hash])
                     self.run_git(['submodule', 'update', '--init', '--recursive'], cwd=git_tmp_wd)
