@@ -370,7 +370,8 @@ class SimpleFilter(object):
 
 
 def detect_ci_env():
-    return os.path.isfile('/etc/kiauto_tag') or ('GITLAB_CI' in os.environ) or ('GITHUB_RUN_ID' in os.environ)
+    GS.ci_cd_detected = os.path.isfile('/etc/kiauto_tag') or ('GITLAB_CI' in os.environ) or ('GITHUB_RUN_ID' in os.environ)
+    return GS.ci_cd_detected
 
 
 def apply_warning_filter(args):
@@ -429,6 +430,8 @@ def main():
 
     # Force iBoM to avoid the use of graphical stuff
     os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
+    # Tell git that we don't want interactive stuff
+    os.environ['GIT_TERMINAL_PROMPT'] = '0'
 
     # Parse global overwrite options
     parse_global_redef(args)

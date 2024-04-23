@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2021 Salvador E. Tropea
-# Copyright (c) 2020-2021 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # The algorithm is from KiCost project (https://github.com/xesscorp/KiCost)
 # Description: Implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
@@ -20,7 +20,14 @@ class Var_Rename_KiCost(BaseFilter):  # noqa: F821
     """ Variant Renamer KiCost style
         This filter implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use.
         It applies the KiCost concept of variants (a regex to match the VARIANT).
-        The internal `_var_rename_kicost` filter emulates the KiCost behavior """
+        As an example: a field named *kicost.V1:MPN* with value *1N4001* will change the field *MPN* to be
+        *1N4001* when a variant in use matches the *V1* string.
+        Note that this mechanism can be used to change a footprint, i.e. *kicost.VARIANT:Footprint* assigned
+        with *Diode_SMD:D_0805_2012Metric* will change the footprint when *VARIANT* is matched. Of course the
+        footprints should be similar, or your PCB will become invalid.
+        The internal `_var_rename_kicost` filter is configured to emulate the KiCost behavior. You can create
+        other filters to fine-tune the behavior, i.e. you can make the mechanism to be triggered by fields
+        like *kibot.VARIANT|FIELD* """
     def __init__(self):
         super().__init__()
         self._is_transform = True
@@ -75,10 +82,14 @@ class Var_Rename_KiCost(BaseFilter):  # noqa: F821
                     logger.debug(' Checking `{}` | `{}`'.format(f_variant, f_field))
                 if var_re.match(f_variant):
                     # Variant matched
+                    old_value = comp.get_field_value(f_field)
                     if GS.debug_level > 2:
                         logger.debug(' ref: {} {}: {} -> {}'.
-                                     format(comp.ref, f_field, comp.get_field_value(f_field), value))
+                                     format(comp.ref, f_field, old_value, value))
                     comp.set_field(f_field, value)
+                    if f_field == 'footprint' and old_value != value:
+                        # Ok, this is crazy, but we can change the footprint
+                        comp._footprint_variant = True
             elif self.variant_to_value and var_re.match(name):
                 # The field matches the variant and the user wants to change the value
                 if GS.debug_level > 2:

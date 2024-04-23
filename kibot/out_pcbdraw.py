@@ -18,8 +18,10 @@ Dependencies:
     downloader: python
     role: Automatically adjust SVG margin
 """
+PROFILE_PLOT = False
+if PROFILE_PLOT:
+    import cProfile
 import os
-from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
 from .kiplot import load_sch, get_board_comps_data, run_command
@@ -41,12 +43,6 @@ def mm2ki(val: float) -> int:
 
 def pcbdraw_warnings(tag, msg):
     logger.warning('{}({}) {}'.format(W_PCBDRAW, tag, msg))
-
-
-def _get_tmp_name(ext):
-    with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
-        f.close()
-    return f.name
 
 
 def _run_command(cmd):
@@ -432,11 +428,11 @@ class PcbDrawOptions(VariantOptions):
         if self.format != 'svg':
             # We need RSVG for anything other than SVG
             self.rsvg_command = self.ensure_tool('RSVG')
-            svg_save_output_name = _get_tmp_name('.svg')
+            svg_save_output_name = GS.tmp_file(suffix='.svg')
             # We need ImageMagick for anything other than SVG and PNG
             if self.format != 'png':
                 self.convert_command = self.ensure_tool('ImageMagick')
-                save_output_name = _get_tmp_name('.png')
+                save_output_name = GS.tmp_file(suffix='.png')
 
         try:
             plotter = PcbPlotter(board)
@@ -479,8 +475,16 @@ class PcbDrawOptions(VariantOptions):
             if plotter.compute_bbox:
                 self.ensure_tool('numpy')
             plotter.kicad_bb_only_edge = self.size_detection == 'kicad_edge'
-
-            image = plotter.plot()
+            # Plot it
+            if PROFILE_PLOT:
+                logger.error('Start')
+                with cProfile.Profile() as pr:
+                    image = plotter.plot()
+                    pr.print_stats(sort='time')
+                    pr.print_stats(sort='cumulative')
+                logger.error('End')
+            else:
+                image = plotter.plot()
         # Most errors are reported as RuntimeError
         # When the PCB can't be loaded we get IOError
         # When the SVG contains errors we get SyntaxError

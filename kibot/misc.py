@@ -297,6 +297,19 @@ W_BUG16418 = '(W137) '
 W_NOTHCMP = '(W138) '
 W_KEEPTMP = '(W139) '
 W_EXTRADOCS = '(W140) '
+W_ERCJSON = '(W141) '
+W_ERC = '(W142) '
+W_DEPR = '(W143) '
+W_FILXRC = '(W144) '
+W_DRC = '(W145) '
+W_DRCJSON = '(W146) '
+W_BADREF = '(W147) '
+W_MISLIBTAB = '(W148) '
+W_UPSTKUPTOO = '(W149) '
+W_INV3DLAYER = '(W150) '
+W_NEEDSK8 = '(W151) '
+W_NEEDSK7 = '(W152) '
+W_NEEDSK6 = '(W153) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -320,7 +333,77 @@ RENDERERS = ['pcbdraw', 'render_3d', 'blender_export']
 PCB_GENERATORS = ['pcb_variant', 'panelize']
 KIKIT_UNIT_ALIASES = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
 FONT_HELP_TEXT = '\n        If you use custom fonts and/or colors please consult the `resources_dir` global variable.'
-
+# CSS style for HTML tables used by BoM and ERC
+BG_GEN = "#DCF5E4"
+BG_KICAD = "#F5DCA9"
+BG_USER = "#DCEFF5"
+BG_EMPTY = "#F57676"
+BG_GEN_L = "#E6FFEE"
+BG_KICAD_L = "#FFE6B3"
+BG_USER_L = "#E6F9FF"
+BG_EMPTY_L = "#FF8080"
+HEAD_COLOR_R = "#982020"
+HEAD_COLOR_R_L = "#c85050"
+HEAD_COLOR_G = "#009879"
+HEAD_COLOR_G_L = "#30c8a9"
+HEAD_COLOR_B = "#0e4e8e"
+HEAD_COLOR_B_L = "#3e7ebe"
+STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
+                " .cell-info { vertical-align: top; padding: 1em;}\n"
+                " .cell-extra-info { vertical-align: top; padding: 1em;}\n"
+                " .cell-stats { vertical-align: top; padding: 1em;}\n"
+                " .title { font-size:2.5em; font-weight: bold; }\n"
+                " .subtitle { font-size:1.5em; font-weight: bold; }\n"
+                " .h2 { font-size:1.5em; font-weight: bold; }\n"
+                " .td-empty0 { text-align: center; background-color: "+BG_EMPTY+";}\n"
+                " .td-gen0 { text-align: center; background-color: "+BG_GEN+";}\n"
+                " .td-kicad0 { text-align: center; background-color: "+BG_KICAD+";}\n"
+                " .td-user0 { text-align: center; background-color: "+BG_USER+";}\n"
+                " .td-empty1 { text-align: center; background-color: "+BG_EMPTY_L+";}\n"
+                " .td-gen1 { text-align: center; background-color: "+BG_GEN_L+";}\n"
+                " .td-kicad1 { text-align: center; background-color: "+BG_KICAD_L+";}\n"
+                " .td-user1 { text-align: center; background-color: "+BG_USER_L+";}\n"
+                " .td-nocolor { text-align: center; }\n"
+                " .color-ref { margin: 25px 0; }\n"
+                " .color-ref th { text-align: left }\n"
+                " .color-ref td { padding: 5px 20px; }\n"
+                " .head-table { margin-bottom: 2em; }\n"
+                # Table sorting cursor. 60% transparent when disabled. Solid white when enabled.
+                " .tg-sort-header::-moz-selection{background:0 0}\n"
+                " .tg-sort-header::selection{background:0 0}.tg-sort-header{cursor:pointer}\n"
+                " .tg-sort-header:after{content:'';float:right;border-width:0 5px 5px;border-style:solid;\n"
+                "                       border-color:#ffffff transparent;visibility:hidden;opacity:.6}\n"
+                " .tg-sort-header:hover:after{visibility:visible}\n"
+                " .tg-sort-asc:after,.tg-sort-asc:hover:after,.tg-sort-desc:after{visibility:visible;opacity:1}\n"
+                " .tg-sort-desc:after{border-bottom:none;border-width:5px 5px 0}\n")
+TABLE_MODERN = """
+ .content-table {
+   border-collapse:
+   collapse;
+   margin-top: 5px;
+   margin-bottom: 4em;
+   font-size: 0.9em;
+   font-family: sans-serif;
+   min-width: 400px;
+   border-radius: 5px 5px 0 0;
+   overflow: hidden;
+   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+ }
+ .content-table thead tr { background-color: @bg@; color: #ffffff; text-align: left; }
+ .content-table th, .content-table td { padding: 12px 15px; }
+ .content-table tbody tr { border-bottom: 1px solid #dddddd; }
+ .content-table tbody tr:nth-of-type(even) { background-color: #f3f3f3; }
+ .content-table tbody tr:last-of-type { border-bottom: 2px solid @bg@; }
+ .content-table * tr:hover > td { background-color: @bgl@ !important }
+"""
+TABLE_CLASSIC = (" .content-table, .content-table th, .content-table td { border: 1px solid black; }\n"
+                 " .content-table * tr:hover > td { background-color: #B0B0B0 !important }\n")
+TD_ERC_CLASSES = """
+ .td-error { background-color: #db1218; }
+ .td-warning { background-color: #f2e30c; }
+ .td-excluded { color: #C0C0C0; }
+"""
+GENERATOR_CSS = " .generator { text-align: right; font-size: 0.6em; }\n"
 
 # Known rotations for JLC
 # Notes:
@@ -452,3 +535,7 @@ def read_png(file):
         return None, None, None
     w, h = unpack('>LL', s[16:24])
     return s, w, h
+
+
+def force_list(v):
+    return v if v is None or isinstance(v, list) else [v]

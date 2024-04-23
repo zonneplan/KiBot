@@ -13,7 +13,6 @@
 #     role: mandatory
 # """
 import os
-from tempfile import NamedTemporaryFile
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
 from .misc import W_PCBDRAW, RENDERERS
@@ -23,19 +22,11 @@ from .optionable import Optionable
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
-
-
 logger = log.get_logger()
 
 
 def pcbdraw_warnings(tag, msg):
     logger.warning('{}({}) {}'.format(W_PCBDRAW, tag, msg))
-
-
-def _get_tmp_name(ext):
-    with NamedTemporaryFile(mode='w', suffix=ext, delete=False) as f:
-        f.close()
-    return f.name
 
 
 class PopulateOptions(VariantOptions):

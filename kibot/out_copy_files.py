@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from copy import copy
 import fnmatch
@@ -11,7 +11,7 @@ import re
 from shutil import copy2
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kiplot import config_output, get_output_dir, run_output
+from .kiplot import config_output, get_output_dir, run_output, register_xmp_import
 from .kicad.config import KiConf, LibAlias, FP_LIB_TABLE, SYM_LIB_TABLE
 from .misc import WRONG_ARGUMENTS, INTERNAL_ERROR, W_COPYOVER, W_MISSLIB, W_MISSCMP
 from .optionable import Optionable
@@ -244,8 +244,11 @@ class Copy_FilesOptions(Base3DOptions):
             if dru_name:
                 extra_files.append(dru_name)
             # Worksheet
-            wks = GS.fix_page_layout(prj_name, dry=dry)
-            extra_files += [w for w in wks if w is not None]
+            prj_name_used = prj_name
+            if dry and prj_name_used is not None and not os.path.isfile(prj_name_used):
+                prj_name_used = GS.pro_file
+            wks = GS.fix_page_layout(prj_name_used, dry=dry)
+            extra_files += [w for w in wks if w]
             if mode_project:
                 extra_files += self.copy_footprints(f.dest, dry)
                 extra_files += self.copy_symbols(f.dest, dry)
@@ -399,12 +402,21 @@ class Copy_Files(BaseOutput):  # noqa: F821
         with document:
             self.options = Copy_FilesOptions
             """ *[dict] Options for the `copy_files` output """
-        self._none_related = True
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
+        # Mostly oriented to the project copy
+        self._category = ['PCB/docs', 'Schematic/docs']
+        self._any_related = True
 
     def get_dependencies(self):
         return self.options.get_dependencies()
+
+    @staticmethod
+    def get_conf_examples(name, layers):
+        if GS.pcb_file and GS.sch_file and GS.pro_file:
+            # Add it only when we have a full project
+            register_xmp_import('ExportProject')
+        return []
 
     def run(self, output_dir):
         # No output member, just a dir

@@ -35,7 +35,6 @@ import os
 import importlib
 from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
 from shutil import rmtree
-from tempfile import NamedTemporaryFile, mkdtemp
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
@@ -176,10 +175,14 @@ class PagesOptions(Optionable):
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
             self.sheet = 'Assembly'
-            """ Text to use for the `sheet` in the title block.
+            """ Text to use for the `SHEET` in the title block.
                 Pattern (%*) and text variables are expanded.
+                The %ll is the list of layers included in this page.
                 In addition when you use `repeat_for_layer` the following patterns are available:
-                %ln layer name, %ls layer suffix and %ld layer description """
+                %ln layer name, %ls layer suffix and %ld layer description  """
+            self.layer_var = '%ll'
+            """ Text to use for the `LAYER` in the title block.
+                All the expansions available for `sheet` are also available here """
             self.sheet_reference_color = ''
             """ Color to use for the frame and title block """
             self.line_width = 0.1
@@ -222,12 +225,13 @@ class PagesOptions(Optionable):
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
 
-    def expand_sheet_patterns(self, parent, layer=None):
+    def expand_sheet_patterns(self, parent, sheet, layers, layer=None):
+        sheet = sheet.replace('%ll', layers)
         if layer:
-            self.sheet = self.sheet.replace('%ln', layer.layer)
-            self.sheet = self.sheet.replace('%ls', layer.suffix)
-            self.sheet = self.sheet.replace('%ld', layer.description)
-        self.sheet = self.expand_filename_pcb(self.sheet)
+            sheet = sheet.replace('%ln', layer.layer)
+            sheet = sheet.replace('%ls', layer.suffix)
+            sheet = sheet.replace('%ld', layer.description)
+        return self.expand_filename_pcb(sheet)
 
     def config(self, parent):
         super().config(parent)
@@ -298,7 +302,7 @@ class PCB_PrintOptions(VariantOptions):
                 But it can't keep track of page numbers.
                 internal: KiBot loads the `.kicad_wks` and does the drawing work.
                 Best option, but some details are different from what the GUI generates.
-                plot: uses KiCad Python API. Only available for KiCad 6.
+                plot: uses KiCad Python API. Not available for KiCad 5.
                 You get the default frame and some substitutions doesn't work """
             self.pages = PagesOptions
             """ *[list(dict)] List of pages to include in the output document.
@@ -366,6 +370,14 @@ class PCB_PrintOptions(VariantOptions):
         super().__init__()
         self._expand_id = 'assembly'
 
+    def get_layers_for_page(self, page):
+        layer = ''
+        for la in page.layers:
+            if len(layer):
+                layer += '+'
+            layer = layer+la.layer
+        return layer
+
     def config(self, parent):
         super().config(parent)
         if isinstance(self.pages, type):
@@ -373,16 +385,19 @@ class PCB_PrintOptions(VariantOptions):
         # Expand any repeat_for_layer
         pages = []
         for page in self.pages:
+            layers_for_page = self.get_layers_for_page(page)
             if page.repeat_for_layer:
                 for la in page._repeat_layers:
                     new_page = deepcopy(page)
                     if page.repeat_inherit:
                         la.copy_extra_from(page._repeat_for_layer)
                     new_page.layers[page._repeat_for_layer_index] = la
-                    new_page.expand_sheet_patterns(parent, la)
+                    page.sheet = new_page.expand_sheet_patterns(parent, page.sheet, la.layer+'+'+layers_for_page, la)
+                    page.layer_var = new_page.expand_sheet_patterns(parent, page.layer_var, la.layer+'+'+layers_for_page, la)
                     pages.append(new_page)
             else:
-                page.expand_sheet_patterns(parent)
+                page.sheet = page.expand_sheet_patterns(parent, page.sheet, layers_for_page)
+                page.layer_var = page.expand_sheet_patterns(parent, page.layer_var, layers_for_page)
                 pages.append(page)
         self.pages = pages
         # Color theme
@@ -494,12 +509,7 @@ class PCB_PrintOptions(VariantOptions):
         vars['FILENAME'] = GS.pcb_basename+'.kicad_pcb'
         vars['SHEETNAME'] = p.sheet
         vars['SHEETPATH'] = ''  # Only relevant for an schematic
-        layer = ''
-        for la in p.layers:
-            if len(layer):
-                layer += '+'
-            layer = layer+la.layer
-        vars['LAYER'] = layer
+        vars['LAYER'] = p.layer_var
         vars['PAPER'] = self.paper
         return vars
 
@@ -704,9 +714,7 @@ class PCB_PrintOptions(VariantOptions):
         if monochrome:
             convert_command = self.ensure_tool('ImageMagick')
             for img in self.last_worksheet.images:
-                with NamedTemporaryFile(mode='wb', suffix='.png', delete=False) as f:
-                    f.write(img.data)
-                    fname = f.name
+                fname = GS.tmp_file(content=img.data, suffix='.png', binary=True)
                 dest = fname.replace('.png', '_gray.png')
                 _run_command([convert_command, fname, '-set', 'colorspace', 'Gray', '-separate', '-average', dest])
                 with open(dest, 'rb') as f:
@@ -1129,12 +1137,9 @@ class PCB_PrintOptions(VariantOptions):
         # Avoid KiCad 5 complaining about fake vias diameter == drill == 0
         self.min_w = 2 if GS.ki5 else 0
         output_dir = os.path.dirname(output)
-        if self.keep_temporal_files:
-            temp_dir_base = output_dir
-        else:
-            temp_dir_base = mkdtemp(prefix='tmp-kibot-pcb_print-')
-        logger.debug('Starting to generate `{}`'.format(output))
-        logger.debug('- Temporal dir: {}'.format(temp_dir_base))
+        temp_dir_base = output_dir if self.keep_temporal_files else GS.mkdtemp('pcb_print')
+        logger.debug(f'Starting to generate `{output}`')
+        logger.debug(f'- Temporal dir: {temp_dir_base}')
         self.find_paper_size()
         if self.sheet_reference_layout:
             layout = self.sheet_reference_layout

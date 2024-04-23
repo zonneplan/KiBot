@@ -12,6 +12,7 @@ Note that you can use the `compress` output to create archives
 
 Type: ``copy_files``
 
+Categories: **PCB/docs**, **Schematic/docs**
 
 Parameters:
 

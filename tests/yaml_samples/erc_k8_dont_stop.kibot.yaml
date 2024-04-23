@@ -1,0 +1,17 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  erc:
+    format: HTML,CSV,JSON,RPT
+    dont_stop: true
+    # warnings_as_errors: true
+    filters:
+      - filter: 'Ignore KiCad 6 lib_symbol_issues'
+        error: lib_symbol_issues
+        regex: ''
+        change_to: error
+#    - filter: 'Test'
+#      error: pin_to_pin
+#      regex: 'Symbol U1 Pin 2'

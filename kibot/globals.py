@@ -272,8 +272,8 @@ class Globals(FiltersOptions):
             """ Tries to reformat the PCB/SCH date using the `date_format`.
                 This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD) """
             self.units = ''
-            """ [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs.
-                Also KiCad 6 dimensions """
+            """ [millimeters,inches,mils] Default units. Affects `position`, `bom` and `panelize` outputs and
+                the `erc` and `drc` preflights. Also KiCad 6 dimensions """
             self.use_dir_for_preflights = True
             """ Use the global `dir` as subdir for the preflights """
             self.variant = ''
@@ -361,6 +361,10 @@ class Globals(FiltersOptions):
             self.allow_component_ranges = True
             """ Allow using ranges like *R5-R20* in the `show_components` and `highlight` options.
                 If you have references that looks like a range you should disable this option """
+            self.str_yes = 'yes'
+            """ String used for *yes*. Currently used by the **update_pcb_characteristics** preflight """
+            self.str_no = 'no'
+            """ String used for *no*. Currently used by the **update_pcb_characteristics** preflight """
         self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot

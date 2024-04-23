@@ -12,13 +12,13 @@ Dependencies:
     debian: python3-qrcodegen
 """
 import os
-from tempfile import NamedTemporaryFile
 from .gs import GS
 from .optionable import BaseOptions, Optionable
 from .error import KiPlotConfigurationError
-from .kicad.sexpdata import Symbol, dumps, Sep, load, SExpData, sexp_iter
+from .kicad.pcb import save_pcb_from_sexp
+from .kicad.sexpdata import Symbol, dumps, Sep, sexp_iter
+from .kicad.sexp_helpers import make_separated, load_sexp_file
 from .kicad.v6_sch import DrawRectangleV6, PointXY, Stroke, Fill, SchematicFieldV6, FontEffects
-from .kiplot import load_board
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 try:
@@ -27,26 +27,11 @@ except ImportError:
     qrcodegen = None
 
 logger = log.get_logger()
-TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
-               'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
 SHEET_FILE = {'Sheet file', 'Sheetfile'}
 
 
 def is_symbol(name, sexp):
     return isinstance(sexp, list) and len(sexp) >= 1 and isinstance(sexp[0], Symbol) and sexp[0].value() == name
-
-
-def make_separated(sexp):
-    if not isinstance(sexp, list):
-        return sexp
-    if not isinstance(sexp[0], Symbol) or sexp[0].value() not in TO_SEPARATE:
-        return sexp
-    separated = []
-    for s in sexp:
-        separated.append(make_separated(s))
-        if isinstance(s, list):
-            separated.append(Sep())
-    return separated
 
 
 def compute_size(qr, is_sch=True, use_mm=True):
@@ -380,7 +365,7 @@ class QR_LibOptions(BaseOptions):
     def update_footprints(self, known_qrs):
         # Replace known QRs in the PCB
         updated = False
-        pcb = self.load_sexp_file(GS.pcb_file)
+        pcb = load_sexp_file(GS.pcb_file)
         for iter in [sexp_iter(pcb, 'kicad_pcb/module'), sexp_iter(pcb, 'kicad_pcb/footprint')]:
             for s in iter:
                 if len(s) < 2:
@@ -394,26 +379,7 @@ class QR_LibOptions(BaseOptions):
                     self.update_footprint(name, s, known_qrs[name])
         # Save the resulting PCB
         if updated:
-            # Make it readable
-            separated = make_separated(pcb[0])
-            # Save it to a temporal
-            with NamedTemporaryFile(mode='wt', suffix='.kicad_pcb', delete=False) as f:
-                logger.debug('- Saving updated PCB to: '+f.name)
-                f.write(dumps(separated))
-                f.write('\n')
-                tmp_pcb = f.name
-            # Also copy the project
-            GS.copy_project(tmp_pcb)
-            # Reload it
-            logger.debug('- Loading the temporal PCB')
-            load_board(tmp_pcb, forced=True)
-            # Create a back-up and save it in the original place
-            logger.debug('- Replacing the old PCB')
-            os.remove(tmp_pcb)
-            GS.make_bkp(GS.pcb_file)
-            GS.board.Save(GS.pcb_file)
-            # After saving the file the name isn't changed, we must force it!!!
-            GS.board.SetFileName(GS.pcb_file)
+            save_pcb_from_sexp(pcb, logger)
 
     def update_symbol(self, name, c_name, sexp, qr):
         logger.debug('- Updating QR symbol: '+name)
@@ -469,20 +435,9 @@ class QR_LibOptions(BaseOptions):
                 f.write(dumps(separated))
                 f.write('\n')
 
-    def load_sexp_file(self, fname):
-        with open(fname, 'rt') as fh:
-            error = None
-            try:
-                ki_file = load(fh)
-            except SExpData as e:
-                error = str(e)
-            if error:
-                raise KiPlotConfigurationError(error)
-        return ki_file
-
     def load_k6_sheets(self, fname, sheets=None):
         logger.debug('- Loading '+fname)
-        sheet = self.load_sexp_file(fname)
+        sheet = load_sexp_file(fname)
         if sheets is None:
             sheets = {}
         sheets[fname] = sheet

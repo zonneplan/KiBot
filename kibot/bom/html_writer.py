@@ -12,71 +12,12 @@ import os
 from base64 import b64encode
 from .columnlist import ColumnList, BoMError
 from .kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
-from ..misc import read_png
+from ..misc import (read_png, STYLE_COMMON, TABLE_MODERN, TABLE_CLASSIC, HEAD_COLOR_R, HEAD_COLOR_R_L, HEAD_COLOR_G,
+                    HEAD_COLOR_G_L, HEAD_COLOR_B, HEAD_COLOR_B_L)
+from .. import log
+logger = log.get_logger()
 
-BG_GEN = "#DCF5E4"
-BG_KICAD = "#F5DCA9"
-BG_USER = "#DCEFF5"
-BG_EMPTY = "#F57676"
-BG_GEN_L = "#E6FFEE"
-BG_KICAD_L = "#FFE6B3"
-BG_USER_L = "#E6F9FF"
-BG_EMPTY_L = "#FF8080"
-HEAD_COLOR_R = "#982020"
-HEAD_COLOR_R_L = "#c85050"
-HEAD_COLOR_G = "#009879"
-HEAD_COLOR_G_L = "#30c8a9"
-HEAD_COLOR_B = "#0e4e8e"
-HEAD_COLOR_B_L = "#3e7ebe"
-STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
-                " .cell-info { vertical-align: top; padding: 1em;}\n"
-                " .cell-extra-info { vertical-align: top; padding: 1em;}\n"
-                " .cell-stats { vertical-align: top; padding: 1em;}\n"
-                " .title { font-size:2.5em; font-weight: bold; }\n"
-                " .subtitle { font-size:1.5em; font-weight: bold; }\n"
-                " .h2 { font-size:1.5em; font-weight: bold; }\n"
-                " .td-empty0 { text-align: center; background-color: "+BG_EMPTY+";}\n"
-                " .td-gen0 { text-align: center; background-color: "+BG_GEN+";}\n"
-                " .td-kicad0 { text-align: center; background-color: "+BG_KICAD+";}\n"
-                " .td-user0 { text-align: center; background-color: "+BG_USER+";}\n"
-                " .td-empty1 { text-align: center; background-color: "+BG_EMPTY_L+";}\n"
-                " .td-gen1 { text-align: center; background-color: "+BG_GEN_L+";}\n"
-                " .td-kicad1 { text-align: center; background-color: "+BG_KICAD_L+";}\n"
-                " .td-user1 { text-align: center; background-color: "+BG_USER_L+";}\n"
-                " .color-ref { margin: 25px 0; }\n"
-                " .color-ref th { text-align: left }\n"
-                " .color-ref td { padding: 5px 20px; }\n"
-                " .head-table { margin-bottom: 2em; }\n"
-                # Table sorting cursor. 60% transparent when disabled. Solid white when enabled.
-                " .tg-sort-header::-moz-selection{background:0 0}\n"
-                " .tg-sort-header::selection{background:0 0}.tg-sort-header{cursor:pointer}\n"
-                " .tg-sort-header:after{content:'';float:right;border-width:0 5px 5px;border-style:solid;\n"
-                "                       border-color:#ffffff transparent;visibility:hidden;opacity:.6}\n"
-                " .tg-sort-header:hover:after{visibility:visible}\n"
-                " .tg-sort-asc:after,.tg-sort-asc:hover:after,.tg-sort-desc:after{visibility:visible;opacity:1}\n"
-                " .tg-sort-desc:after{border-bottom:none;border-width:5px 5px 0}\n")
-TABLE_MODERN = """
- .content-table {
-   border-collapse:
-   collapse;
-   margin-top: 5px;
-   margin-bottom: 4em;
-   font-size: 0.9em;
-   font-family: sans-serif;
-   min-width: 400px;
-   border-radius: 5px 5px 0 0;
-   overflow: hidden;
-   box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
- }
- .content-table thead tr { background-color: @bg@; color: #ffffff; text-align: left; }
- .content-table th, .content-table td { padding: 12px 15px; }
- .content-table tbody tr { border-bottom: 1px solid #dddddd; }
- .content-table tbody tr:nth-of-type(even) { background-color: #f3f3f3; }
- .content-table tbody tr:last-of-type { border-bottom: 2px solid @bg@; }
- .content-table * tr:hover > td { background-color: @bgl@ !important }
-"""
-TABLE_CLASSIC = (" .content-table, .content-table th, .content-table td { border: 1px solid black; }\n"
-                 " .content-table * tr:hover > td { background-color: #B0B0B0 !important }\n")
+
 # JavaScript table sorter. Is floating around internet, i.e.:
 # - Stack Overflow: https://stackoverflow.com/questions/61122696/addeventlistener-after-change-event
 # - pimpmykicadbom: https://gitlab.com/antto/pimpmykicadbom
@@ -218,7 +159,7 @@ def link(text):
 
 
 def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, link_lcsc, col_colors,
-                  dnf=False):
+                  row_colors, dnf=False):
     cl = ''
     # Table start
     html.write('<table class="content-table">\n')
@@ -239,6 +180,13 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
     for i, group in enumerate(groups):
         if (cfg.ignore_dnf and not group.is_fitted()) != dnf:
             continue
+        # Check if the user wants a color for this row
+        row_color = None
+        for r_color in row_colors:
+            c = group.components[0]
+            if r_color.filter.filter(c):
+                row_color = r_color.color
+                break
         row = group.get_row(headings)
         if link_datasheet != -1:
             datasheet = group.get_field(ColumnList.COL_DATASHEET_L)
@@ -261,6 +209,10 @@ def content_table(html, groups, headings, head_names, cfg, link_datasheet, link_
                 else:
                     cl = cell_class(headings[n])
                 cl = ' class="td-{}{}"'.format(cl, rc % 2)
+            else:
+                cl = ' class="td-nocolor"'
+            if row_color is not None:
+                cl += f' style="background-color: {row_color}"'
             if headings[n] == ColumnList.COL_REFERENCE_L:
                 for ref in r.split(cfg.ref_separator):
                     r = '<div id="{}"></div>'.format(ref)+r
@@ -375,6 +327,7 @@ def write_html(filename, groups, headings, head_names, cfg):
     link_mouser = cfg.html.mouser_link
     link_lcsc = cfg.html.lcsc_link
     col_colors = cfg.html.col_colors
+    row_colors = cfg.html.row_colors
     # Compute the CSS
     style_name = cfg.html.style
     if os.path.isfile(style_name):
@@ -448,23 +401,31 @@ def write_html(filename, groups, headings, head_names, cfg):
         # Fitted groups
         html.write("<h2>Component Groups</h2>\n")
         content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, link_lcsc,
-                      col_colors)
+                      col_colors, row_colors)
 
         # DNF component groups
         if cfg.html.generate_dnf and cfg.n_total != cfg.n_fitted:
             html.write("<h2>Optional components (DNF=Do Not Fit)</h2>\n")
             content_table(html, groups, headings, head_names, cfg, link_datasheet, link_digikey, link_mouser, link_lcsc,
-                          col_colors, True)
+                          col_colors, row_colors, True)
 
         # Color reference
         if col_colors:
             html.write('<table class="color-ref">\n')
-            html.write('<tr><th>Color reference:</th></tr>\n')
+            html.write('<tr><th>Color reference for columns:</th></tr>\n')
             html.write('<tr><td class="td-kicad0">KiCad Fields (default)</td></tr>\n')
             html.write('<tr><td class="td-gen0">Generated Fields</td></tr>\n')
             html.write('<tr><td class="td-user0">User Fields</td></tr>\n')
             if cfg.html.highlight_empty:
                 html.write('<tr><td class="td-empty0">Empty Fields</td></tr>\n')
+            html.write('</table>\n')
+
+        if row_colors:
+            html.write('<table class="color-ref">\n')
+            html.write('<tr><th>Color reference for rows:</th></tr>\n')
+            for r_color in row_colors:
+                html.write('<tr><td style="background-color: '
+                           f'{r_color.color}">{r_color.description}</td></tr>\n')
             html.write('</table>\n')
 
         html.write(SORT_CODE)

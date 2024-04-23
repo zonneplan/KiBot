@@ -22,7 +22,6 @@ Dependencies:
 import os
 from subprocess import (check_output, STDOUT, CalledProcessError)
 from shutil import which, rmtree
-from tempfile import mkdtemp
 from .misc import BOM_ERROR, W_EXTNAME, W_NONETLIST
 from .gs import GS
 from .out_base import VariantOptions
@@ -184,7 +183,7 @@ class IBoMOptions(VariantOptions):
             # Write a custom netlist to a temporal dir
             prj_name = os.path.basename(self.expand_filename('', self.forced_name, 'ibom', '')) if self.forced_name \
                        else GS.pcb_basename
-            net_dir = mkdtemp(prefix='tmp-kibot-ibom-')
+            net_dir = GS.mkdtemp('ibom')
             netlist = os.path.join(net_dir, prj_name+'.xml')
             self.extra_data_file = netlist
             logger.debug('Creating variant netlist `{}`'.format(netlist))

@@ -124,12 +124,15 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
         Used to assign references according to footprint coordinates.
         The project must be fully annotated first """
     def __init__(self, name, value):
-        o = Annotate_PCBOptions()
-        o.set_tree(value)
-        o.config(self)
-        super().__init__(name, o)
+        super().__init__(name, value)
         self._sch_related = True
         self._pcb_related = True
+
+    def config(self):
+        o = Annotate_PCBOptions()
+        o.set_tree(self._value)
+        o.config(self)
+        self._value = o
 
     @classmethod
     def get_doc(cls):

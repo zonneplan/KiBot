@@ -18,6 +18,7 @@ import logging
 import pytest
 import os
 import re
+import shutil
 from subprocess import run, PIPE
 from . import context
 from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG, NETLIST_DIFF
@@ -34,6 +35,19 @@ def test_erc_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_k8_1(test_dir):
+    prj = 'bom'
+    ctx = context.TestContext(test_dir, prj, 'erc_k8', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html')
+    ctx.expect_out_file(prj+'-erc.rpt')
+    ctx.expect_out_file(prj+'-erc.csv')
+    ctx.expect_out_file(prj+'-erc.json')
+    ctx.clean_up()
+
+
 @pytest.mark.slow
 @pytest.mark.eeschema
 def test_erc_fail_1(test_dir):
@@ -43,6 +57,34 @@ def test_erc_fail_1(test_dir):
     ctx.run(ERC_ERROR)
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_fail_k8_1(test_dir):
+    """ Using an SCH with ERC errors """
+    prj = 'fail-erc'
+    ctx = context.TestContext(test_dir, prj, 'erc_k8', '')
+    ctx.run(ERC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html')
+    ctx.expect_out_file(prj+'-erc.rpt')
+    ctx.expect_out_file(prj+'-erc.csv')
+    ctx.expect_out_file(prj+'-erc.json')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_fail_k8_2(test_dir):
+    """ Test don't stop """
+    prj = 'fail-erc'
+    ctx = context.TestContext(test_dir, prj, 'erc_k8_dont_stop', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html')
+    ctx.expect_out_file(prj+'-erc.rpt')
+    ctx.expect_out_file(prj+'-erc.csv')
+    ctx.expect_out_file(prj+'-erc.json')
     ctx.clean_up()
 
 
@@ -67,6 +109,22 @@ def test_erc_warning_1(test_dir):
     ctx.clean_up(keep_project=context.ki7())
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_warning_k8_1(test_dir):
+    """ Using an SCH with ERC warnings """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_k8', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html')
+    ctx.expect_out_file(prj+'-erc.rpt')
+    ctx.expect_out_file(prj+'-erc.csv')
+    ctx.expect_out_file(prj+'-erc.json')
+    ctx.search_err(r"WARNING:\(W142\) 1 ERC warnings detected")
+    ctx.search_err(r"WARNING:\(W144\)")
+    ctx.clean_up(keep_project=context.ki7())
+
+
 @pytest.mark.slow
 @pytest.mark.eeschema
 def test_erc_warning_2(test_dir):
@@ -77,6 +135,18 @@ def test_erc_warning_2(test_dir):
     # Check all outputs are there
     ctx.expect_out_file(prj+'-erc.txt', sub=True)
     ctx.search_err(r"ERROR:1 ERC errors detected")
+    ctx.clean_up(keep_project=context.ki7())
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_warning_k8_2(test_dir):
+    """ Using an SCH with ERC warnings as errors """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w_k8', 'def_dir')
+    ctx.run(ERC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html', sub=True)
+    ctx.search_err(r"ERC warnings: 1, promoted as errors")
     ctx.clean_up(keep_project=context.ki7())
 
 
@@ -93,6 +163,30 @@ def test_erc_warning_3(test_dir):
     ctx.clean_up(keep_project=context.ki7())
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_warning_k8_3(test_dir):
+    """ Using an SCH with ERC warnings as errors """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w_2_k8', 'def_dir')
+    ctx.run(ERC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html', sub=True)
+    ctx.search_err(r"ERC warnings: 1, promoted as errors")
+    ctx.clean_up(keep_project=context.ki7())
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs ERC CLI")
+def test_erc_warning_k8_4(test_dir):
+    """ Using an SCH with ERC warnings as errors, using ERC options """
+    prj = 'warning-project'
+    ctx = context.TestContextSCH(test_dir, 'erc_warning/'+prj, 'erc_no_w2_k8', 'def_dir')
+    ctx.run(ERC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-erc.html', sub=True)
+    ctx.search_err(r"ERC warnings: 1, promoted as errors")
+    ctx.clean_up(keep_project=context.ki7())
+
+
 @pytest.mark.slow
 @pytest.mark.eeschema
 @pytest.mark.skipif(not context.ki7(), reason="KiCad 7 off grid check")
@@ -106,6 +200,8 @@ def test_erc_off_grid_1(test_dir):
     ctx.clean_up(keep_project=context.ki8())
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_1(test_dir):
     prj = name = 'bom'
     if context.ki7():
@@ -117,6 +213,21 @@ def test_drc_1(test_dir):
     ctx.clean_up(keep_project=context.ki7())
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_k8_1(test_dir):
+    prj = name = 'bom_ok_drc'
+    ctx = context.TestContext(test_dir, prj, 'drc_k8', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(name+'-drc.rpt')
+    ctx.expect_out_file(name+'-drc.html')
+    ctx.expect_out_file(name+'-drc.csv')
+    ctx.expect_out_file(name+'-drc.json')
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_filter_1(test_dir):
     """ Test using internal filters """
     prj = 'fail-project'
@@ -125,6 +236,20 @@ def test_drc_filter_1(test_dir):
     # Check all outputs are there
     ctx.expect_out_file(prj+'-drc.txt', sub=True)
     ctx.expect_out_file('kibot_errors.filter', sub=True)
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_filter_k8_1(test_dir):
+    """ Test using internal filters """
+    prj = 'fail-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_filter_k8', 'def_dir')
+    ctx.run(extra_debug=True)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html', sub=True)
+    ctx.expect_out_file(prj+'-drc.csv', sub=True)
+    ctx.expect_out_file(prj+'-drc.rpt', sub=True)
+    ctx.expect_out_file(prj+'-drc.json', sub=True)
     ctx.clean_up(keep_project=True)
 
 
@@ -142,6 +267,19 @@ def test_drc_filter_2(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_filter_ki8_2(test_dir):
+    """ Test using KiCad 6 exclusions """
+    prj = 'fail-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_filter_k8_exc', '')
+    ctx.run(extra_debug=True)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html')
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_unco_1(test_dir):
     """ Check we can ignore unconnected nets. Old style """
     prj = 'warning-project'
@@ -152,6 +290,19 @@ def test_drc_unco_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_unco_k8_1(test_dir):
+    """ Check we can ignore unconnected nets. Old style """
+    prj = 'warning-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_unco_k8', '')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html')
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_unco_2(test_dir):
     """ Check we can ignore unconnected nets. New style """
     prj = 'warning-project'
@@ -162,6 +313,19 @@ def test_drc_unco_2(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_unco_k8_2(test_dir):
+    """ Check we can ignore unconnected nets. New style """
+    prj = 'warning-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_unco_2_k8', 'def_dir')
+    ctx.run()
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html', sub=True)
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_error(test_dir):
     """ Check we catch DRC errors """
     prj = 'warning-project'
@@ -172,6 +336,19 @@ def test_drc_error(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_error_k8(test_dir):
+    """ Check we catch DRC errors """
+    prj = 'warning-project'
+    ctx = context.TestContext(test_dir, prj, 'drc_k8', '')
+    ctx.run(DRC_ERROR)
+    # Check all outputs are there
+    ctx.expect_out_file(prj+'-drc.html')
+    ctx.clean_up()
+
+
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_drc_fail(test_dir):
     """ Check we dummy PCB """
     prj = 'bom_no_xml'
@@ -180,6 +357,8 @@ def test_drc_fail(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 @pytest.mark.skipif(context.ki6(), reason="KiCad 6+ can't time-out")
 def test_drc_time_out(test_dir):
     prj = 'bom'
@@ -187,6 +366,21 @@ def test_drc_time_out(test_dir):
     ctx.run(DRC_ERROR)
     ctx.search_err('Time out detected')
     ctx.search_err('kiauto_wait_start must be integer')
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Needs DRC CLI")
+def test_drc_parity_1(test_dir):
+    prj = 'pcb_parity'
+    ctx = context.TestContext(test_dir, prj, 'drc_parity', '')
+    # ctx.run(ret_val=NETLIST_DIFF, extra_debug=True)
+    ctx.run(extra_debug=True)
+    ctx.search_err(["C1 footprint .Capacitor_SMD:C_0805_2012Metric. doesn't match that given by symbol",
+                    "Footprint R1 value .100. doesn't match symbol value .120.",
+                    "Missing footprint FID1 .Fiducial.",
+                    "Pad net .VCC. doesn't match net given by schematic .GND.",
+                    "Pad net .Net-.C1-Pad1.. doesn't match net given by schematic .unconnected-.C1-Pad1..",
+                    "Pad net .Net-.C1-Pad1.. doesn't match net given by schematic .Net-.R1-Pad2.."])
     ctx.clean_up()
 
 
@@ -390,3 +584,64 @@ def test_set_text_variables_2(test_dir):
         os.replace(file_back, file)
     ctx.expect_out_file(prj+'-bom_'+hash+'.csv')
     ctx.clean_up(keep_project=True)
+
+
+def test_update_footprint_1(test_dir):
+    """ Try updating 2 footprints from the lib """
+    prj = 'update_footprint_1'
+    ctx = context.TestContext(test_dir, 'update_footprint_1/update_footprint_1', prj, 'SVG')
+    # Copy the ref file
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.run(extra=[])
+    o = prj+'-F_Silk.svg'
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.expect_out_file_d(o)
+    ctx.compare_image(o, sub=True)
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Needs board characteristics")
+def test_update_pcb_characteristics_1(test_dir):
+    """ update_pcb_characteristics ENIG -> ENEPIG
+        update_stackup 21116 -> FR408-HR, add a Polyimide prepreg """
+    prj = 'board_characteristics'
+    ctx = context.TestContext(test_dir, prj, 'update_pcb_characteristics', relaxed=True)
+    # Copy the ref file
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.run(extra=[])
+    ctx.search_in_file(ctx.board_file, ['gr_text "ENEPIG"', 'gr_text "FR408-HR"', 'gr_text "Polyimide"'])
+    ctx.search_not_in_file(ctx.board_file, ['gr_text "ENIG"', 'gr_text "21116"'])
+    file_back = ctx.board_file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    os.remove(file_back)
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Needs board characteristics")
+def test_update_pcb_characteristics_2(test_dir):
+    """ update_stackup remove layers  """
+    prj = 'board_characteristics_2'
+    ctx = context.TestContext(test_dir, prj, 'update_pcb_characteristics', relaxed=True)
+    # Copy the ref file
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.run(extra=[])
+    ctx.search_not_in_file(ctx.board_file, ['gr_text "In1.Cu"', 'gr_text "In2.Cu"'])
+    file_back = ctx.board_file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    os.remove(file_back)
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Implemented for 7 and up")
+def test_draw_stackup_1(test_dir):
+    """ Draw a stackup and compare """
+    prj = 'draw_stackup'
+    ctx = context.TestContext(test_dir, prj, 'draw_stackup_1', relaxed=True)
+    # Copy the ref file
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    ctx.run(extra=['PDF'])
+    ctx.compare_pdf('stackup.pdf')
+    file_back = ctx.board_file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    os.remove(file_back)
+    ctx.clean_up()

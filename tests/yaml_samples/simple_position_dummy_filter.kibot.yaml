@@ -1,0 +1,11 @@
+kibot:
+  version: 1
+
+outputs:
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    options:
+      format: ASCII   # CSV or ASCII format
+      dnf_filter: _none

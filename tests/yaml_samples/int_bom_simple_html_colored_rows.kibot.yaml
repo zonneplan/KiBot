@@ -1,0 +1,44 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+filters:
+  - name: 'C2'
+    type: generic
+    invert: true
+    exclude_refs: ['C1', 'C2', 'C3', 'C4']
+  - name: 'R9'
+    type: generic
+    invert: true
+    exclude_refs: ['R9', 'R10']
+  - name: 'R7'
+    type: generic
+    invert: true
+    exclude_refs: ['R7']
+  - name: 'R8'
+    type: generic
+    invert: true
+    exclude_refs: ['R8']
+
+outputs:
+  - name: 'bom_internal'
+    comment: "Bill of Materials in HTML format"
+    type: bom
+    dir: BoM
+    options:
+      variant: ''
+      html:
+        col_colors: true
+        row_colors:
+          - description: Supplied by customer
+            filter: C2
+            color: "#33CCFF"
+          - description: Critical to the PCB design. Cannot be changed without changes to the PCB
+            filter: R9
+            color: "#FF8080"
+          - description: Important to the design. Appoved Mfg and P/N can be substituted for alternates with equivalent pinout and specification
+            filter: R7
+            color: "#FFE6B3"
+          - description: Non-critical component. Mfg and P/N should be determined by cost and availability.
+            filter: R8
+            color: "#E6FFEE"

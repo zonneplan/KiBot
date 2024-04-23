@@ -34,6 +34,7 @@ Parameters:
 
       -  **columns** :index:`: <pair: output - bom - options; columns>` [list(dict)|list(string)] List of columns to display.
          Can be just the name of the field.
+         In addition to all user defined fields you have various special columns, consult :ref:`bom_columns`.
 
          -  Valid keys:
 
@@ -118,6 +119,19 @@ Parameters:
             -  ``logo_width`` :index:`: <pair: output - bom - options - html; logo_width>` [number=370] Used when the logo is an SVG image. This width is used to render the SVG image.
             -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
 
+            -  ``row_colors`` :index:`: <pair: output - bom - options - html; row_colors>` [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+               Note that these rows won't have colored columns.
+
+               -  Valid keys:
+
+                  -  **color** :index:`: <pair: output - bom - options - html - row_colors; color>` [string='#FF8080'] Color used for this category.
+                  -  **description** :index:`: <pair: output - bom - options - html - row_colors; description>` [string=''] A description for this color, must be filled.
+                  -  **filter** :index:`: <pair: output - bom - options - html - row_colors; filter>` [string|list(string)='_none'] Name of the filter to match.
+                     Be careful because this filter should be coherent with the grouping fields.
+                     KiBot will assume that all the components grouped in the same group will
+                     return the same value when applying this filter.
+
+
             -  ``style`` :index:`: <pair: output - bom - options - html; style>` [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                Or you can provide a CSS file name. Please use .css as file extension..
 
@@ -167,6 +181,19 @@ Parameters:
             -  ``logo_width`` :index:`: <pair: output - bom - options - xlsx; logo_width>` [number=370] Used when the logo is an SVG image. This width is used to render the SVG image.
             -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [number=60] [20,999] Maximum column width (characters).
             -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
+
+            -  ``row_colors`` :index:`: <pair: output - bom - options - xlsx; row_colors>` [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+               Note that these rows won't have colored columns.
+
+               -  Valid keys:
+
+                  -  **color** :index:`: <pair: output - bom - options - xlsx - row_colors; color>` [string='#FF8080'] Color used for this category.
+                  -  **description** :index:`: <pair: output - bom - options - xlsx - row_colors; description>` [string=''] A description for this color, must be filled.
+                  -  **filter** :index:`: <pair: output - bom - options - xlsx - row_colors; filter>` [string|list(string)='_none'] Name of the filter to match.
+                     Be careful because this filter should be coherent with the grouping fields.
+                     KiBot will assume that all the components grouped in the same group will
+                     return the same value when applying this filter.
+
 
             -  ``specs_columns`` :index:`: <pair: output - bom - options - xlsx; specs_columns>` [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
                references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.

@@ -1,0 +1,12 @@
+# Example KiBot config file
+kibot:
+  version: 1
+  imported_global_has_less_priority: true
+
+global:
+  dir: 'def_dir'
+  use_dir_for_preflights: false
+
+preflight:
+  drc:
+    format: RPT,HTML,CSV,JSON

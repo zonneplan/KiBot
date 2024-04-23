@@ -65,6 +65,8 @@ Parameters:
             -  ``colored_holes`` :index:`: <pair: output - pcb_print - options - pages; colored_holes>` [boolean=true] Change the drill holes to be colored instead of white.
             -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - pcb_print - options - pages; exclude_pads_from_silkscreen>` [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
             -  ``holes_color`` :index:`: <pair: output - pcb_print - options - pages; holes_color>` [string='#000000'] Color used for the holes when `colored_holes` is enabled.
+            -  ``layer_var`` :index:`: <pair: output - pcb_print - options - pages; layer_var>` [string='%ll'] Text to use for the `LAYER` in the title block.
+               All the expansions available for `sheet` are also available here.
             -  ``line_width`` :index:`: <pair: output - pcb_print - options - pages; line_width>` [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
             -  ``mirror`` :index:`: <pair: output - pcb_print - options - pages; mirror>` [boolean=false] Print mirrored (X axis inverted).
             -  ``mirror_footprint_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_footprint_text>` [boolean=true] Mirror text in the footprints when mirror option is enabled and we plot a user layer.
@@ -96,8 +98,9 @@ Parameters:
                   -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; use_for_center>` [boolean=true] Use this layer for centering purposes.
                      You can invert the meaning using the `invert_use_for_center` option.
 
-            -  ``sheet`` :index:`: <pair: output - pcb_print - options - pages; sheet>` [string='Assembly'] Text to use for the `sheet` in the title block.
+            -  ``sheet`` :index:`: <pair: output - pcb_print - options - pages; sheet>` [string='Assembly'] Text to use for the `SHEET` in the title block.
                Pattern (%*) and text variables are expanded.
+               The %ll is the list of layers included in this page.
                In addition when you use `repeat_for_layer` the following patterns are available:
                %ln layer name, %ls layer suffix and %ld layer description.
             -  ``sheet_reference_color`` :index:`: <pair: output - pcb_print - options - pages; sheet_reference_color>` [string=''] Color to use for the frame and title block.
@@ -133,7 +136,7 @@ Parameters:
          But it can't keep track of page numbers.
          internal: KiBot loads the `.kicad_wks` and does the drawing work.
          Best option, but some details are different from what the GUI generates.
-         plot: uses KiCad Python API. Only available for KiCad 6.
+         plot: uses KiCad Python API. Not available for KiCad 5.
          You get the default frame and some substitutions doesn't work.
       -  ``hide_excluded`` :index:`: <pair: output - pcb_print - options; hide_excluded>` [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
          Affected by global options.

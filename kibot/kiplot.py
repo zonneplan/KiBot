@@ -24,7 +24,8 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    EXIT_BAD_CONFIG, WRONG_INSTALL, UI_SMD, UI_VIRTUAL, TRY_INSTALL_CHECK, MOD_SMD, MOD_THROUGH_HOLE,
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
-                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP)
+                   MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP,
+                   W_BADREF)
 from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -276,7 +277,7 @@ def create_component_from_footprint(m, ref):
     c = SchematicComponentV6()
     c.f_ref = c.ref = ref
     c.name = m.GetValue()
-    c.sheet_path_h = c.lib = ''
+    c.sheet_path_h = c.sheet_path = c.lib = ''
     c.project = GS.sch_basename
     c.id = m.m_Uuid.AsString() if hasattr(m, 'm_Uuid') else ''
     # Basic fields
@@ -314,7 +315,12 @@ def create_component_from_footprint(m, ref):
         f.visible(False)
         c.add_field(f)
     c._solve_fields(None)
-    c.split_ref()
+    try:
+        c.split_ref()
+    except SchError:
+        # Unusable ref, discard it
+        logger.warning(f'{W_BADREF}Not including component `{ref}` in filters because it has a malformed reference')
+        c = None
     return c
 
 
@@ -342,6 +348,8 @@ def get_board_comps_data(comps):
                 continue
             # Create a component for this so we can include/exclude it using filters
             c = create_component_from_footprint(m, ref)
+            if c is None:
+                continue
             comps_hash[ref] = [c]
             comps.append(c)
         for c in comps_hash[ref]:
@@ -404,6 +412,7 @@ def expand_fields(comps, dont_copy=False):
         new_comps = deepcopy(comps)
         for n_c, c in zip(new_comps, comps):
             n_c.original_copy = c
+    KiConf.init(GS.sch_file)
     env = KiConf.kicad_env
     env.update(GS.load_pro_variables())
     for c in comps:
@@ -413,7 +422,7 @@ def expand_fields(comps, dont_copy=False):
 
 def preflight_checks(skip_pre, targets):
     logger.debug("Preflight checks")
-
+    BasePreFlight.configure_all()
     if skip_pre is not None:
         if skip_pre == 'all':
             logger.debug("Skipping all preflight actions")
@@ -498,7 +507,7 @@ def run_output(out, dont_stop=False):
             logger.error(msg)
         else:
             config_error(msg)
-    except (PlotError, KiPlotError) as e:
+    except (PlotError, KiPlotError, SchError) as e:
         msg = "In output `"+str(out)+"`: "+str(e)
         GS.exit_with_error(msg, DONT_STOP if dont_stop else PLOT_ERROR)
     except KiConfError as e:
@@ -635,6 +644,7 @@ def gen_global_targets(f, pre_targets, out_targets, type):
 
 def get_pre_targets(targets, dependencies, is_pre):
     pcb_targets = sch_targets = ''
+    BasePreFlight.configure_all()
     prefs = BasePreFlight.get_in_use_objs()
     try:
         for pre in prefs:
@@ -952,6 +962,14 @@ def register_xmp_import(name, definitions=None):
     needed_imports[name] = definitions
 
 
+def check_we_cant_use(o):
+    """ Check if the output doesn't have what it needs, i.e. no PCB and this is PCB related """
+    return ((not (o.is_pcb() and GS.pcb_file) and
+             not (o.is_sch() and GS.sch_file) and
+             not (o.is_any() and (GS.pcb_file or GS.sch_file))) or
+            ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file)))
+
+
 def generate_one_example(dest_dir, types):
     """ Generate a example config for dest_dir """
     fname = discover_files(dest_dir)
@@ -980,6 +998,7 @@ def generate_one_example(dest_dir, types):
         fil = [{'number': 1007},  # No information for a component in a distributor
                {'number': 1015},  # More than one component in a search for a distributor
                {'number': 58},    # Missing project file
+               {'number': 107},   # Stencil.side auto, we always use it for the example
                ]
         glb = {'filters': fil}
         yaml_dump(f, {'global': glb})
@@ -987,6 +1006,22 @@ def generate_one_example(dest_dir, types):
         # A helper for the internal templates
         global needed_imports
         needed_imports = {}
+        # All the preflights
+        preflights = {}
+        for n, cls in OrderedDict(sorted(BasePreFlight.get_registered().items())).items():
+            o = cls(n, None)
+            if types and n not in types:
+                logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
+                continue
+            if check_we_cant_use(o):
+                logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
+                continue
+            tree = cls.get_conf_examples(n, layers)
+            if tree:
+                logger.debug('- {}, generated'.format(n))
+                preflights.update(tree)
+            else:
+                logger.debug('- {}, nothing to do'.format(n))
         # All the outputs
         outputs = []
         for n, cls in OrderedDict(sorted(outs.items())).items():
@@ -994,9 +1029,7 @@ def generate_one_example(dest_dir, types):
             if types and n not in types:
                 logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
-            if ((not (o.is_pcb() and GS.pcb_file) and not (o.is_sch() and GS.sch_file) and
-                 not (o.is_any() and (GS.pcb_file or GS.sch_file))) or
-               ((o.is_pcb() and o.is_sch()) and (not GS.pcb_file or not GS.sch_file))):
+            if check_we_cant_use(o):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
             tree = cls.get_conf_examples(n, layers)
@@ -1018,6 +1051,9 @@ def generate_one_example(dest_dir, types):
                 imports.append(content)
             yaml_dump(f, {'import': imports})
             f.write('\n')
+        if preflights:
+            yaml_dump(f, {'preflight': preflights})
+            f.write('\n')
         if outputs:
             yaml_dump(f, {'outputs': outputs})
         else:
@@ -1033,8 +1069,9 @@ def generate_targets(config_file):
     # Reset the board and schematic
     GS.board = None
     GS.sch = None
-    # Reset the list of outputs
+    # Reset the list of outputs and preflights
     RegOutput.reset()
+    BasePreFlight.reset()
     # Read the config file
     cr = CfgYamlReader()
     with open(config_file) as cf_file:

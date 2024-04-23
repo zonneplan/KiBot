@@ -212,6 +212,14 @@ def create_col_fmt(col_fields, col_colors, fmt_cols):
     return col_fmt
 
 
+def create_row_fmt(workbook, row_colors):
+    """ Assign a color to each highlighted row """
+    for r in row_colors:
+        fmt = workbook.add_format(DEFAULT_FMT)
+        fmt.set_bg_color(r.color)
+        r.xlsx_fmt = fmt
+
+
 def create_fmt_info(workbook, cfg):
     """ Formats for the PCB and stats info """
     if cfg.xlsx.hide_pcb_info and cfg.xlsx.hide_stats_info and not cfg.xlsx.extra_info:
@@ -239,24 +247,37 @@ def insert_logo(worksheet, image_data, scale):
     return 0
 
 
-def create_color_ref(workbook, col_colors, hl_empty, fmt_cols, do_kicost, kicost_colors):
+def create_color_ref(workbook, col_colors, hl_empty, fmt_cols, do_kicost, kicost_colors, row_colors):
     if not (col_colors or do_kicost):
         return
     row = 0
     worksheet = workbook.add_worksheet('Colors')
-    worksheet.set_column(0, 0, 50)
+    max_w = 50
     if col_colors:
-        worksheet.write_string(0, 0, 'KiCad Fields (default)', fmt_cols[1][0])
-        worksheet.write_string(1, 0, 'Generated Fields', fmt_cols[0][0])
-        worksheet.write_string(2, 0, 'User Fields', fmt_cols[2][0])
-        if hl_empty:
-            worksheet.write_string(3, 0, 'Empty Fields', fmt_cols[3][0])
+        worksheet.write_string(0, 0, 'Columns colors')
+        worksheet.write_string(1, 0, 'KiCad Fields (default)', fmt_cols[1][0])
+        worksheet.write_string(2, 0, 'Generated Fields', fmt_cols[0][0])
+        worksheet.write_string(3, 0, 'User Fields', fmt_cols[2][0])
         row = 5
+        if hl_empty:
+            worksheet.write_string(4, 0, 'Empty Fields', fmt_cols[3][0])
+            row = 6
+        max_w = 22
+    if row_colors:
+        worksheet.write_string(row, 0, 'Row colors')
+        row += 1
+        for r in row_colors:
+            worksheet.write_string(row, 0, r.description, r.xlsx_fmt)
+            max_w = max(max_w, len(r.description))
+            row += 1
+        row += 1
     if do_kicost:
-        worksheet.write_string(row, 0, 'Costs sheet')
+        worksheet.write_string(row, 0, 'Costs sheet colors')
         for label, format in kicost_colors.items():
             row += 1
             worksheet.write_string(row, 0, label, format)
+            max_w = max(max_w, len(label))
+    worksheet.set_column(0, 0, max_w)
 
 
 def get_spec(part, name):
@@ -752,6 +773,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
     # Column formats
     fmt_cols = create_fmt_cols(workbook, cfg.xlsx.col_colors)
     col_fmt = create_col_fmt(col_fields, cfg.xlsx.col_colors, fmt_cols)
+    create_row_fmt(workbook, cfg.xlsx.row_colors)
     # Page head
     # Logo
     image_data = get_logo_data(cfg.xlsx.logo)
@@ -796,10 +818,19 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             rows.append(row)
             if link_datasheet != -1:
                 datasheet = group.get_field(ColumnList.COL_DATASHEET_L)
+            # Check if the user wants a color for this row
+            row_fmt = None
+            for r_color in cfg.xlsx.row_colors:
+                c = group.components[0]
+                if r_color.filter.filter(c):
+                    row_fmt = r_color.xlsx_fmt
+                    break
             # Fill the row
             for i in range(len(row)):
                 cell = row[i]
-                if hl_empty and (len(cell) == 0 or cell.strip() == "~"):
+                if row_fmt is not None:
+                    fmt = row_fmt
+                elif hl_empty and (len(cell) == 0 or cell.strip() == "~"):
                     fmt = col_fmt[-1][row_count % 2]
                 else:
                     fmt = col_fmt[i][row_count % 2]
@@ -847,7 +878,8 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
         kicost_colors = create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_subtitle, fmt_head,
                                             fmt_cols, cfg)
     # Add a sheet for the color references
-    create_color_ref(workbook, cfg.xlsx.col_colors, hl_empty, fmt_cols, cfg.xlsx.kicost and KICOST_SUPPORT, kicost_colors)
+    create_color_ref(workbook, cfg.xlsx.col_colors, hl_empty, fmt_cols, cfg.xlsx.kicost and KICOST_SUPPORT, kicost_colors,
+                     cfg.xlsx.row_colors)
 
     workbook.close()
 

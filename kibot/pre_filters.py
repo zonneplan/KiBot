@@ -64,7 +64,7 @@ class FiltersOptions(Optionable):
                 where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
                 error = f.error
                 if not error:
-                    if not f.number:
+                    if not hasattr(f, 'number') or not f.number:
                         raise KiPlotConfigurationError('Missing `error`'+where)
                     error = str(f.number)
                 regex = f.regex
@@ -86,14 +86,18 @@ class FiltersOptions(Optionable):
 
 @pre_class
 class Filters(BasePreFlight):  # noqa: F821
-    """ [list(dict)] A list of entries to filter out ERC/DRC messages.
+    """ [list(dict)] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
+        Avoid using it with the new *erc* and *drc* preflights.
         Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
         To farther ignore these warnings use the `filters` option in the `global` section """
-    def __init__(self, name, value):
-        f = FiltersOptions()
-        f.set_tree({'filters': value})
-        f.config(self)
-        super().__init__(name, f.filters)
+#     def __init__(self, name, value):
+#         super().__init__(name, value)
+
+    def config(self):
+        self._filter_ops = FiltersOptions()
+        self._filter_ops.set_tree({'filters': self._value})
+        self._filter_ops.config(self)
+        self._value = self._filter_ops.filters
 
     def get_example():
         """ Returns a YAML value for the example config """
@@ -109,5 +113,6 @@ class Filters(BasePreFlight):  # noqa: F821
             our_dir = GS.global_dir if GS.global_use_dir_for_preflights else ''
             o_dir = get_output_dir(our_dir, self)
             GS.filter_file = os.path.join(o_dir, 'kibot_errors.filter')
+            GS.filters = self._filter_ops.unparsed
             with open(GS.filter_file, 'w') as f:
                 f.write(self._value)

@@ -1,10 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2023 Salvador E. Tropea
-# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .error import SchError
-from .sexpdata import Symbol
+from ..error import KiPlotConfigurationError
+from .sexpdata import Symbol, Sep, SExpData, load
+TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
+               'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
 
 
 class Point(object):
@@ -16,6 +19,32 @@ class Point(object):
     @staticmethod
     def parse(items):
         return Point(items)
+
+
+def make_separated(sexp):
+    """ Add separators to make the file more readable """
+    if not isinstance(sexp, list):
+        return sexp
+    if not isinstance(sexp[0], Symbol) or sexp[0].value() not in TO_SEPARATE:
+        return sexp
+    separated = []
+    for s in sexp:
+        separated.append(make_separated(s))
+        if isinstance(s, list):
+            separated.append(Sep())
+    return separated
+
+
+def load_sexp_file(fname):
+    with open(fname, 'rt') as fh:
+        error = None
+        try:
+            ki_file = load(fh)
+        except SExpData as e:
+            error = str(e)
+        if error:
+            raise KiPlotConfigurationError(error)
+    return ki_file
 
 
 def _check_is_symbol_list(e, allow_orphan_symbol=()):
@@ -159,3 +188,8 @@ def _get_points(items):
 def _get_size(items, pos, name):
     value = _check_symbol_value(items, pos, name, 'size')
     return _get_xy(value)
+
+
+def _get_symbol_name(items):
+    """ Check if items is a list and starts with a symbol, return its name, otherwise None """
+    return None if not isinstance(items, list) or not isinstance(items[0], Symbol) else items[0].value()

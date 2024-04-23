@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad bugs:
 # - Text bold doesn't work
 # - Shape Line and Rect swapped
 """
-KiCad v5/6 Worksheet format.
+KiCad v5/6/7/8 Worksheet format.
 A basic implementation of the .kicad_wks file format.
 Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 """
@@ -52,7 +52,8 @@ logger = log.get_logger()
 setup = None
 # The version of "kicad_wks" used for all tests is 20210606
 # 20220228 seems to be fully supported
-SUP_VERSION = 20220228
+# And now 20231118, but the documentation is from 2023-04-13 ...
+SUP_VERSION = 20231118
 # Hash to convert KiCad 5 "%X" markers to KiCad 6 "${XXX}" text variables
 KI5_2_KI6 = {'K': 'KICAD_VERSION', 'S': '#', 'N': '##', 'C0': 'COMMENT1', 'C1': 'COMMENT2', 'C2': 'COMMENT3',
              'C3': 'COMMENT4', 'C4': 'COMMENT5', 'C5': 'COMMENT6', 'C6': 'COMMENT7', 'C7': 'COMMENT8',
@@ -473,7 +474,7 @@ class Worksheet(object):
         global setup
         setup = WksSetup()
         version = 0
-        generator = ''
+        generator_version = generator = ''
         has_images = False
         for e in wks[1:]:
             e_type = _check_is_symbol_list(e)
@@ -498,10 +499,12 @@ class Worksheet(object):
                 if version > SUP_VERSION:
                     logger.warning(W_WKSVERSION+"Unsupported worksheet version, loading could fail")
             elif e_type == 'generator':
-                generator = _check_symbol(e, 1, e_type)
+                generator = _check_relaxed(e, 1, e_type)
+            elif e_type == 'generator_version':
+                generator_version = ' v'+_check_str(e, 1, e_type)
             else:
                 raise WksError('Unknown worksheet attribute `{}`'.format(e_type))
-        return Worksheet(setup, elements, version, generator, has_images)
+        return Worksheet(setup, elements, version, generator+generator_version, has_images)
 
     def set_page(self, pw, ph):
         pw = FromMM(pw)

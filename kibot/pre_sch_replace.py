@@ -44,10 +44,13 @@ class SCH_Replace(Base_Replace):  # noqa: F821
     _context = 'SCH'
 
     def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def config(self):
         o = SCH_ReplaceOptions()
-        o.set_tree(value)
+        o.set_tree(self._value)
         o.config(self)
-        super().__init__(name, o)
+        self._value = o
 
     @classmethod
     def get_doc(cls):

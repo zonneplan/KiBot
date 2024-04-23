@@ -19,7 +19,7 @@ import shutil
 import stat
 import subprocess
 import sys
-from tempfile import NamedTemporaryFile, TemporaryDirectory, mkdtemp
+from tempfile import TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .misc import PCB_GENERATORS, RENDERERS, W_MORERES
 from .gs import GS
@@ -35,10 +35,9 @@ logger = log.get_logger()
 
 
 def _get_tmp_name(ext):
-    with NamedTemporaryFile(mode='w', suffix='.'+ext, delete=False) as f:
-        f.close()
-    os.chmod(f.name, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
-    return f.name
+    fname = GS.tmp_file(suffix='.'+ext)
+    os.chmod(fname, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
+    return fname
 
 
 class PresentBoards(Optionable):
@@ -253,7 +252,7 @@ class PresentBoards(Optionable):
         return res[0]
 
     def solve_external(self):
-        tmp_dir = mkdtemp()
+        tmp_dir = GS.mkdtemp('kikit_present')
         self.temporals.append(tmp_dir)
         fname = self.new_pcb if self.solve_pcb(load_it=False) else GS.pcb_file
         cmd = [sys.argv[0], '-c', self.external_config, '-b', fname, '-d', tmp_dir]

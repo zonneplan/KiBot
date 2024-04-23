@@ -27,13 +27,13 @@ import pprint
 from shutil import copy2
 from math import ceil
 from struct import unpack
-from tempfile import NamedTemporaryFile
 from .bom.kibot_logo import KIBOT_LOGO, KIBOT_LOGO_W, KIBOT_LOGO_H
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable, BaseOptions
 from .kiplot import config_output, get_output_dir, run_command
-from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS, read_png
+from .misc import W_NOTYET, W_MISSTOOL, W_NOOUTPUTS, read_png, force_list
+from .pre_base import BasePreFlight
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
 from . import log, __version__
@@ -98,7 +98,8 @@ EXT_IMAGE = {'gbr': 'file_gbr',
              'sch': 'eeschema',
              'kicad_sch': 'eeschema',
              'blend': 'file_blend',
-             'pcb3d': 'file_pcb3d'}
+             'pcb3d': 'file_pcb3d',
+             'json': 'file_json'}
 for i in range(31):
     n = str(i)
     EXT_IMAGE['gl'+n] = 'file_gbr'
@@ -411,8 +412,7 @@ class Navigate_ResultsOptions(BaseOptions):
             # Only page 1
             file += '[0]'
         if ext == 'svg':
-            with NamedTemporaryFile(mode='w', suffix='.png', delete=False) as f:
-                tmp_name = f.name
+            tmp_name = GS.tmp_file(suffix='.png')
             logger.debug('Temporal convert: {} -> {}'.format(file, tmp_name))
             if not self.svg_to_png(file, tmp_name, BIG_ICON):
                 return False, None, None
@@ -538,6 +538,14 @@ class Navigate_ResultsOptions(BaseOptions):
             out_dir = get_output_dir(out.dir, out, dry=True)
             f.write('<tbody><tr>\n')
             targets, icons = out.get_navigate_targets(out_dir)
+            c_targets = len(targets)
+            # Make the icons a list with same len as targets
+            if icons is None:
+                icons = [None]*c_targets
+            else:
+                c_icons = len(icons)
+                if c_icons < c_targets:
+                    icons.extend([None]*(c_targets-c_icons))
             if len(targets) == 1:
                 tg_rel = os.path.relpath(os.path.abspath(targets[0]), start=self.out_dir)
                 img, _ = self.get_image_for_file(targets[0], out_name, image=icons[0] if icons else None)
@@ -545,12 +553,12 @@ class Navigate_ResultsOptions(BaseOptions):
                         format(OUT_COLS, tg_rel, img))
             else:
                 c = 0
-                for tg in targets:
+                for tg, icon in zip(targets, icons):
                     if c == OUT_COLS:
                         f.write('</tr>\n<tr>\n')
                         c = 0
                     tg_rel = os.path.relpath(os.path.abspath(tg), start=self.out_dir)
-                    img, wide = self.get_image_for_file(tg, out_name)
+                    img, wide = self.get_image_for_file(tg, out_name, image=icon)
                     # Check if we need to break this row
                     span = 1
                     if wide:
@@ -618,16 +626,22 @@ class Navigate_ResultsOptions(BaseOptions):
 
     def create_tree(self):
         o_tree = {}
+        BasePreFlight.configure_all()
+        for n in BasePreFlight.get_in_use_names():
+            pre = BasePreFlight.get_preflight(n)
+            cat = force_list(pre.get_category())
+            if not cat:
+                continue
+            for c in cat:
+                self.add_to_tree(c, pre, o_tree)
         for o in RegOutput.get_outputs():
             if not o.run_by_default and self.skip_not_run:
                 # Skip outputs that aren't generated in a regular run
                 continue
             config_output(o)
-            cat = o.category
+            cat = force_list(o.category)
             if cat is None:
                 continue
-            if isinstance(cat, str):
-                cat = [cat]
             for c in cat:
                 self.add_to_tree(c, o, o_tree)
         return o_tree

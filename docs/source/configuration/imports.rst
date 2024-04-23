@@ -221,6 +221,12 @@ Here is a list of currently defined templates and their outputs / groups:
 -  `Elecrow_stencil <https://www.elecrow.com/>`__: same as **Elecrow**,
    but also generates gerbers for *F.Paste* and *B.Paste* layers.
 
+-  ExportProject: creates a ZIP file containing a self-contained version of the project.
+   All footprint, symbols and 3D models are included.
+
+   -  **_ExportProject**: Exports the project. Not run by default, pulled by the compress.
+   -  **_ExportProject_compress**: Moves the files to a ZIP file
+
 -  `FusionPCB <https://www.seeedstudio.io/fusion.html>`__: contain
    fabrication outputs compatible with FusionPCB
 
@@ -362,6 +368,12 @@ CheckZoneFill:
 -  **_KIBOT_ROT_Y**: Y axis rotation (default: 0)
 -  **_KIBOT_ROT_Z**: Z axis rotation (default: 0)
 
+ExportProject:
+
+-  **_KIBOT_IMPORT_ID**: Suffix used for the output (default: '')
+-  **_KIBOT_IMPORT_DIR**: Target directory for the output (default: 'ExportedProject')
+-  **_KIBOT_DIR_COMP**: Target directory for the compressed ZIP (default: **_KIBOT_IMPORT_DIR**)
+-  **_KIBOT_COMPRESS_MOVE**: Move the generated files to the compressed archive (default: true)
 
 Note that manufacturer templates named *\*_stencil* are created using parameters.
 As an example: *Elecrow_stencil* is just *Elecrow* customized like this:

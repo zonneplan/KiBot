@@ -29,21 +29,40 @@ preflight:
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
-  # [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`.
+  # [boolean=False|dict] Draw the PCB stackup. Needs KiCad 7 or newer.
+  # To specify the position and size of the drawing you can use two methods.
+  # You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options.
+  # But you can also draw a rectangle in your PCB with the size and layer you want.
+  # Then draw another thing inside the rectangle, select both and create a group
+  # (right mouse button, then Grouping -> Group). Now edit the group and change its name
+  # to *kibot_stackup*. After running this preflight the rectangle will contain the
+  # stackup.
+  draw_stackup: true
+  # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
+  # This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
+  # GUI exclusions and schematic parity are supported.
+  drc: true
+  # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template.
+  # This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
+  erc: true
+  # [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.
   # Option for `run_erc`. ERC warnings are considered errors.
   erc_warnings: false
   # [boolean=false] Fill all zones again and save the PCB.
   fill_zones: true
-  # [list(dict)] A list of entries to filter out ERC/DRC messages.
+  # [list(dict)] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
+  # Avoid using it with the new *erc* and *drc* preflights.
   # Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
   # To farther ignore these warnings use the `filters` option in the `global` section.
   filters:
     - filter: 'Filter description'
       error: '10'
       regex: 'Regular expression to match'
-  # [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`.
+  # [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`/`drc`.
   # Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
-  # It will also ignore KiCad 6 warnings.
+  # It will also ignore KiCad 6 warnings when using `run_drc`.
   ignore_unconnected: false
   # [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
   # This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
@@ -63,7 +82,8 @@ preflight:
   # This will change in the future.
   # If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
   run_drc: true
-  # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # [boolean=false|dict] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
+  # To ensure the schematic is electrically correct.
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).
   run_erc: true
   # [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
@@ -86,10 +106,25 @@ preflight:
       command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
       before: 'Git hash: <'
       after: '>'
+  # [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
+  # This is useful to replace logos using freshly created versions.
+  update_footprint: QR1, QR2
+  # [boolean=False] Update the information in the Board Characteristics.
+  # Starting with KiCad 7 you can paste a block containing board information using
+  # *Place* -> *Add Board Characteristics*. But this information is static, so if
+  # you modify anything related to it the block will be obsolete.
+  # This preflight tries to refresh the information.
+  update_pcb_characteristics: true
   # [boolean=false] Update the QR codes.
   # Complements the `qr_lib` output.
   # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
   update_qr: true
+  # [boolean=False] Update the information in the Stackup Table.
+  # Starting with KiCad 7 you can paste a block containing board information using
+  # *Place* -> *Stackup Table*. But this information is static, so if
+  # you modify anything related to it the block will be obsolete.
+  # This preflight tries to refresh the information.
+  update_stackup: true
   # [boolean=false|dict] Update the XML version of the BoM (Bill of Materials).
   # To ensure our generated BoM is up to date.
   # Note that this isn't needed when using the internal BoM generator (`bom`).
@@ -335,7 +370,8 @@ outputs:
       # [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS)
       bottom_negative_x: false
       # [list(dict)|list(string)] List of columns to display.
-      # Can be just the name of the field
+      # Can be just the name of the field.
+      # In addition to all user defined fields you have various special columns, consult :ref:`bom_columns`
       columns:
         # [string=''] Used as explanation for this column. The XLSX output uses it
         - comment: ''
@@ -510,6 +546,18 @@ outputs:
         logo_width: 370
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
+        # [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+        # Note that these rows won't have colored columns
+        row_colors:
+          # [string='#FF8080'] Color used for this category
+          - color: '#FF8080'
+            # [string=''] A description for this color, must be filled
+            description: "Components that can't be replaced"
+            # [string|list(string)='_none'] Name of the filter to match.
+            # Be careful because this filter should be coherent with the grouping fields.
+            # KiBot will assume that all the components grouped in the same group will
+            # return the same value when applying this filter
+            filter: '_none'
         # [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
         # Or you can provide a CSS file name. Please use .css as file extension.
         style: 'modern-blue'
@@ -611,6 +659,18 @@ outputs:
         max_col_width: 60
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
+        # [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+        # Note that these rows won't have colored columns
+        row_colors:
+          # [string='#FF8080'] Color used for this category
+          - color: '#FF8080'
+            # [string=''] A description for this color, must be filled
+            description: "Components that can't be replaced"
+            # [string|list(string)='_none'] Name of the filter to match.
+            # Be careful because this filter should be coherent with the grouping fields.
+            # KiBot will assume that all the components grouped in the same group will
+            # return the same value when applying this filter
+            filter: '_none'
         # [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
         # Works with only some KiCost APIs
         specs: false
@@ -970,6 +1030,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      # This option works only when you print the toplevel sheet of a project and the project
+      # file is available
+      sheet_reference_layout: ''
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
@@ -1279,6 +1343,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      # This option works only when you print the toplevel sheet of a project and the project
+      # file is available
+      sheet_reference_layout: ''
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
@@ -2448,7 +2516,7 @@ outputs:
       # But it can't keep track of page numbers.
       # internal: KiBot loads the `.kicad_wks` and does the drawing work.
       # Best option, but some details are different from what the GUI generates.
-      # plot: uses KiCad Python API. Only available for KiCad 6.
+      # plot: uses KiCad Python API. Not available for KiCad 5.
       # You get the default frame and some substitutions doesn't work
       frame_plot_mechanism: 'internal'
       # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
@@ -2487,6 +2555,9 @@ outputs:
           exclude_pads_from_silkscreen: false
           # [string='#000000'] Color used for the holes when `colored_holes` is enabled
           holes_color: '#000000'
+          # [string='%ll'] Text to use for the `LAYER` in the title block.
+          # All the expansions available for `sheet` are also available here
+          layer_var: '%ll'
           # [list(dict)|list(string)|string] List of layers printed in this page.
           # Order is important, the last goes on top.
           # You can reuse other layers lists, some options aren't used here, but they are valid
@@ -2558,8 +2629,9 @@ outputs:
               use_for_center: true
           # [number=1.0] Scale factor (0 means autoscaling)
           scaling: 1.0
-          # [string='Assembly'] Text to use for the `sheet` in the title block.
+          # [string='Assembly'] Text to use for the `SHEET` in the title block.
           # Pattern (%*) and text variables are expanded.
+          # The %ll is the list of layers included in this page.
           # In addition when you use `repeat_for_layer` the following patterns are available:
           # %ln layer name, %ls layer suffix and %ld layer description
           sheet: 'Assembly'
@@ -2911,6 +2983,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      # This option works only when you print the toplevel sheet of a project and the project
+      # file is available
+      sheet_reference_layout: ''
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
@@ -3137,6 +3213,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      # This option works only when you print the toplevel sheet of a project and the project
+      # file is available
+      sheet_reference_layout: ''
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
@@ -3183,8 +3263,10 @@ outputs:
       # [boolean=true] Generate the libs relative to the schematic/PCB dir
       use_sch_dir: true
   # 3D render of the PCB:
+  # Use the Blender Export output if you want something with better quality
+  # and less dependent of the KiCad version
   - name: 'render_3d_example'
-    comment: "Exports the image generated by KiCad's 3D viewer."
+    comment: "Exports the image generated by KiCad's 3D viewer. *Deprecated*"
     type: 'render_3d'
     dir: 'Example/render_3d_dir'
     options:
@@ -3215,6 +3297,9 @@ outputs:
       # part number. The field containing the LCSC part number is defined by the
       # `field_lcsc_part` global variable
       download_lcsc: true
+      # [boolean=false] Tell KiCad to use the colors from the stackup. They are better than the unified KiBot colors.
+      # Needs KiCad 6 or newer
+      force_stackup_colors: false
       # [number=720] Image height (aprox.)
       height: 720
       # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
@@ -3249,7 +3334,8 @@ outputs:
       pre_transform: '_none'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
-      # [boolean=true] When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer
+      # [boolean=true] When disabled we use the colors of the layers used by the GUI. Needs KiCad 6 or 7.
+      # Is emulated on KiCad 8
       realistic: true
       # [number=0] Steps to rotate around the X axis, positive is clockwise.
       # Each step is currently 10 degrees. Only for KiCad 6 or newer
@@ -3264,14 +3350,32 @@ outputs:
       show_adhesive: false
       # [boolean=true] Show the PCB core material. KiCad 6 or newer
       show_board_body: true
-      # [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled
+      # [boolean=false] Show the content of the User.Comments and User.Drawings layer for KiCad 5, 6 and 7.
+      # On KiCad 8 this option controls only the User.Comments and you have a separated option for the
+      # User.Drawings called `show_drawings`
+      # Note that KiCad 5/6/7 doesn't show it when `realistic` is enabled, but KiCad 8 does it.
+      # Also note that KiCad 5 ray tracer shows comments outside the PCB, but newer KiCad versions
+      # doesn't
       show_comments: false
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
       # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
-      # [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled
+      # [boolean=false] Show the content of the User.Drawings layer. Only available for KiCad 8 and newer.
+      # Consult `show_comments` to learn when drawings are visible
+      show_drawings: false
+      # [boolean=false] Show the content of the Eco1.User/Eco2.User layers.
+      # For KiCad 8 `show_eco1` and `show_eco2` are available.
+      # Consult `show_comments` to learn when drawings are visible
       show_eco: false
+      # [boolean=false] Show the content of the Eco1.User layer. KiCad 8 supports individual Eco layer options, for 6 and 7
+      # use the `show_eco` option.
+      # Consult `show_comments` to learn when drawings are visible
+      show_eco1: false
+      # [boolean=false] Show the content of the Eco1.User layer. KiCad 8 supports individual Eco layer options, for 6 and 7
+      # use the `show_eco` option.
+      # Consult `show_comments` to learn when drawings are visible
+      show_eco2: false
       # [boolean=true] Show the silkscreen layers (KiCad 6+)
       show_silkscreen: true
       # [boolean=true] Show the solder mask layers (KiCad 6+)
@@ -3692,6 +3796,10 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
+      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      # This option works only when you print the toplevel sheet of a project and the project
+      # file is available
+      sheet_reference_layout: ''
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''

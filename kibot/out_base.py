@@ -8,8 +8,8 @@ import math
 import os
 import re
 from shutil import rmtree
-from tempfile import NamedTemporaryFile, mkdtemp
 from .gs import GS
+from .kicad.pcb import replace_footprints
 from .kiplot import load_sch, get_board_comps_data
 from .misc import Rect, W_WRONGPASTE, DISABLE_3D_MODEL_TEXT, W_NOCRTYD, MOD_ALLOW_MISSING_COURTYARD, W_MISSDIR, W_KEEPTMP
 if not GS.kicad_version_n:
@@ -51,7 +51,7 @@ Shape {
 }
 
 """
-comp_range_regex = re.compile(r'(\w+?)(\d+)-(\w+?)(\d+)')
+comp_range_regex = re.compile(r'([a-zA-Z]+)(\d+)-([a-zA-Z]+)(\d+)')
 
 
 class BaseOutput(RegOutput):
@@ -711,11 +711,9 @@ class VariantOptions(BaseOptions):
     def create_3D_highlight_file(self):
         if self._highlight_3D_file:
             return
-        with NamedTemporaryFile(mode='w', suffix='.wrl', delete=False) as f:
-            self._highlight_3D_file = f.name
-            self._files_to_remove.append(f.name)
-            logger.debug('Creating temporal highlight file '+f.name)
-            f.write(HIGHLIGHT_3D_WRL)
+        tname = GS.tmp_file(content=HIGHLIGHT_3D_WRL, suffix='.wrl', what='temporal highlight', a_logger=logger)
+        self._highlight_3D_file = tname
+        self._files_to_remove.append(tname)
 
     def get_crtyd_bbox(self, board, m):
         fcrtyd = board.GetLayerID('F.CrtYd')
@@ -799,6 +797,23 @@ class VariantOptions(BaseOptions):
         """ True if we will apply filters/variants """
         return self._comps or self._sub_pcb
 
+    def apply_footprint_variants(self, board, comps_hash):
+        """ Allows changing the footprints using variants """
+        if comps_hash is None:
+            return
+        # Check if we have footprints that needs change
+        to_change = {}
+        for m in GS.get_modules_board(board):
+            ref = m.GetReference()
+            c = comps_hash.get(ref, None)
+            if hasattr(c, '_footprint_variant') and c._footprint_variant:
+                to_change[c.ref] = c.get_field_value('footprint')
+        if not to_change:
+            return
+        # One or more needs a change
+        logger.debug(f'Replacing footprints from variant change {to_change}')
+        replace_footprints(GS.pcb_file, to_change, logger, replace_pcb=False)
+
     def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
         if not self.will_filter_pcb_components():
             return False
@@ -807,6 +822,7 @@ class VariantOptions(BaseOptions):
             self._sub_pcb.apply(self.comps_hash)
         if self._comps:
             if do_2D:
+                self.apply_footprint_variants(GS.board, self.comps_hash)
                 self.cross_modules(GS.board, self.comps_hash)
                 self.remove_paste_and_glue(GS.board, self.comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:
@@ -909,11 +925,7 @@ class VariantOptions(BaseOptions):
         """ Save the PCB to a temporal file.
             Advantage: all relative paths inside the file remains valid
             Disadvantage: the name of the file gets altered """
-        if dir is None:
-            dir = GS.pcb_dir
-        with NamedTemporaryFile(mode='w', suffix='.kicad_pcb', delete=False, dir=dir) as f:
-            fname = f.name
-        logger.debug('Storing modified PCB to `{}`'.format(fname))
+        fname = GS.tmp_file(suffix='.kicad_pcb', dir=GS.pcb_dir if dir is None else dir, what='modified PCB', a_logger=logger)
         GS.board.Save(fname)
         GS.copy_project(fname)
         self._files_to_remove.extend(GS.get_pcb_and_pro_names(fname))
@@ -937,7 +949,7 @@ class VariantOptions(BaseOptions):
         """ Save the PCB to a temporal dir.
             Disadvantage: all relative paths inside the file becomes useless
             Aadvantage: the name of the file remains the same """
-        pcb_dir = mkdtemp(prefix='tmp-kibot-'+id+'-') if force_dir is None else force_dir
+        pcb_dir = GS.mkdtemp(id) if force_dir is None else force_dir
         basename = forced_name if forced_name else GS.pcb_basename
         fname = os.path.join(pcb_dir, basename+'.kicad_pcb')
         logger.debug('Storing modified PCB to `{}`'.format(fname))

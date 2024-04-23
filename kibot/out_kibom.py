@@ -14,7 +14,6 @@ Dependencies:
 """
 import os
 from re import search
-from tempfile import NamedTemporaryFile
 from .misc import BOM_ERROR, W_EXTNAME
 from .gs import GS
 from .kiplot import run_command
@@ -26,6 +25,15 @@ from . import log
 
 logger = log.get_logger()
 CONFIG_FILENAME = 'config.kibom.ini'
+SIMPLE_CONFIG = """[BOM_OPTIONS]
+output_file_name = %O
+hide_pcb_info = 1
+
+[IGNORE_COLUMNS]
+
+[REGEX_EXCLUDE]
+Part\t.*
+"""
 
 
 class KiBoMRegex(Optionable):
@@ -188,15 +196,7 @@ class KiBoMConfig(Optionable):
     @staticmethod
     def _create_minimal_ini():
         """ KiBoM config to get only the headers """
-        with NamedTemporaryFile(mode='w', delete=False) as f:
-            f.write('[BOM_OPTIONS]\n')
-            f.write('output_file_name = %O\n')
-            f.write('hide_pcb_info = 1\n')
-            f.write('\n[IGNORE_COLUMNS]\n')
-            f.write('\n[REGEX_EXCLUDE]\n')
-            f.write('Part\t.*\n')
-            f.close()
-            return f.name
+        return GS.tmp_file(content=SIMPLE_CONFIG, what='minimal INI', a_logger=logger)
 
     @staticmethod
     def _get_columns():
@@ -210,8 +210,7 @@ class KiBoMConfig(Optionable):
         try:
             xml = GS.sch_no_ext+'.xml'
             config = os.path.abspath(KiBoMConfig._create_minimal_ini())
-            with NamedTemporaryFile(mode='w', suffix='.csv', delete=False) as f:
-                csv = f.name
+            csv = GS.tmp_file(suffix='.csv')
             cmd = [command, '--cfg', config, '-d', os.path.dirname(csv), '-s', ',', xml, csv]
             run_command(cmd, err_msg='Failed to get the column names for `'+xml+'`, error {ret}', err_lvl=BOM_ERROR)
             with open(csv, 'rt') as f:

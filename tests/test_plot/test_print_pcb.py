@@ -139,6 +139,8 @@ def test_pcb_print_simple_1(test_dir):
     ctx.clean_up(keep_project=True)
 
 
+@pytest.mark.slow
+@pytest.mark.pcbnew
 def test_pcb_print_simple_2(test_dir):
     if context.ki6():
         prj = 'pcb_print_rare'
@@ -166,4 +168,26 @@ def test_pcb_print_multizone_1(test_dir):
     ctx.compare_image(prj+'-assembly_page_01.png', tol=DIFF_TOL)
     # 7.0.1+f1f69c6 generates 48 diff compared to 7.0.1 release
     ctx.compare_image(prj+'-assembly_page_02.png', tol=DIFF_TOL2)
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Just checking with modern KiCad")
+def test_var_rename_footprint_1(test_dir):
+    prj = 'var_rename_footprint'
+    ctx = context.TestContext(test_dir, prj, prj, 'PNG')
+    ctx.run(extra=['-g', 'variant=production'])
+    ctx.compare_image(prj+'-assembly_page_01_(PROD).png', tol=DIFF_TOL, sub=True)
+    ctx.run(extra=['-g', 'variant=development'])
+    ctx.compare_image(prj+'-assembly_page_01_(DEV).png', tol=DIFF_TOL, sub=True)
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki7(), reason="Just checking with modern KiCad")
+def test_var_rename_kicost_footprint_1(test_dir):
+    prj = 'var_rename_kicost_footprint'
+    ctx = context.TestContext(test_dir, prj, prj, 'PNG')
+    ctx.run(extra=['-g', 'variant=production'])
+    ctx.compare_image(prj+'-assembly_page_01_(PROD).png', tol=DIFF_TOL, sub=True)
+    ctx.run(extra=['-g', 'variant=development'])
+    ctx.compare_image(prj+'-assembly_page_01_(DEV).png', tol=DIFF_TOL, sub=True)
     ctx.clean_up()

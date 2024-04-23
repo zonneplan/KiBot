@@ -18,6 +18,7 @@ from datetime import datetime
 import shlex
 from shutil import copy2
 from sys import exit, exc_info
+import tempfile
 from traceback import extract_stack, format_list, print_tb
 from .misc import EXIT_BAD_ARGS, W_DATEFORMAT, W_UNKVAR, WRONG_INSTALL, CORRUPTED_PRO
 from .log import get_logger
@@ -75,7 +76,9 @@ class GS(object):
     # Main output dir
     out_dir = None
     out_dir_in_cmd_line = False
+    # Content of the "filters" preflight
     filter_file = None
+    filters = None
     board = None
     sch = None
     debug_enabled = False
@@ -120,6 +123,7 @@ class GS(object):
     kikit_units_to_kicad = {'mm': IU_PER_MM, 'cm': 10*IU_PER_MM, 'dm': 100*IU_PER_MM,
                             'm': 1000*IU_PER_MM, 'mil': IU_PER_MILS, 'inch': 1000*IU_PER_MILS,
                             'in': 1000*IU_PER_MILS}
+    ci_cd_detected = False
     # Maximum recursive replace
     MAXDEPTH = 20
     #
@@ -185,6 +189,8 @@ class GS(object):
     global_solder_mask_color = None
     global_solder_mask_color_bottom = None
     global_solder_mask_color_top = None
+    global_str_yes = None
+    global_str_no = None
     global_time_format = None
     global_time_reformat = None
     global_units = None
@@ -391,6 +397,15 @@ class GS(object):
         # Inches
         return 0.001/IU_PER_MILS
 
+#     @staticmethod
+#     def unit_name_to_abrev(units):
+#         if units == 'millimeters':
+#             return 'mm'
+#         if units == 'mils':
+#             return 'mils'
+#         # Inches
+#         return 'in'
+
     @staticmethod
     def to_mm(val):
         return float(val)/IU_PER_MM
@@ -402,6 +417,11 @@ class GS(object):
     @staticmethod
     def to_mils(val):
         return val/IU_PER_MILS
+
+#     @staticmethod
+#     def to_global_units(val):
+#         scale = GS.unit_name_to_scale_factor(GS.global_units)
+#         return str(val*scale)+' '+GS.unit_name_to_abrev(GS.global_units)
 
     @staticmethod
     def make_bkp(fname):
@@ -890,3 +910,71 @@ class GS(object):
         if GS.ki6:  # 6
             return obj.GetShownText(a_depth, allow_extra_text)
         return obj.GetShownText()  # 5
+
+    @staticmethod
+    def compute_group_boundary(g):
+        x1 = y1 = x2 = y2 = None
+        for item in g.GetItems():
+            bb = GS.get_shape_bbox(item) if hasattr(item, 'GetWidth') else item.GetBoundingBox()
+            start = bb.GetOrigin()
+            end = bb.GetEnd()
+            if x1 is None:
+                x1 = x2 = start.x
+                y1 = y2 = start.y
+            for p in [start, end]:
+                x2 = max(x2, p.x)
+                y2 = max(y2, p.y)
+                x1 = min(x1, p.x)
+                y1 = min(y1, p.y)
+        return x1, y1, x2, y2
+
+    @staticmethod
+    def compute_pcb_boundary(board):
+        edge_layer = board.GetLayerID('Edge.Cuts')
+        x1 = y1 = x2 = y2 = None
+        for d in board.GetDrawings():
+            if d.GetClass() == GS.board_gr_type and d.GetLayer() == edge_layer:
+                bb = GS.get_shape_bbox(d)
+                start = bb.GetOrigin()
+                end = bb.GetEnd()
+                if x1 is None:
+                    x1 = x2 = start.x
+                    y1 = y2 = start.y
+                for p in [start, end]:
+                    x2 = max(x2, p.x)
+                    y2 = max(y2, p.y)
+                    x1 = min(x1, p.x)
+                    y1 = min(y1, p.y)
+        # This is a special case: the PCB edges are in a footprint
+        for m in GS.get_modules():
+            for gi in m.GraphicalItems():
+                if gi.GetClass() == GS.footprint_gr_type and gi.GetLayer() == edge_layer:
+                    bb = GS.get_shape_bbox(gi)
+                    start = bb.GetOrigin()
+                    end = bb.GetEnd()
+                    if x1 is None:
+                        x1 = x2 = start.x
+                        y1 = y2 = start.y
+                    for p in [start, end]:
+                        x2 = max(x2, p.x)
+                        y2 = max(y2, p.y)
+                        x1 = min(x1, p.x)
+                        y1 = min(y1, p.y)
+        return x1, y1, x2, y2
+
+    @staticmethod
+    def tmp_file(content=None, prefix=None, suffix=None, dir=None, what=None, a_logger=None, binary=False, indent=False):
+        mode = 'wb' if binary else 'wt'
+        prefix = 'kibot_'+(prefix if prefix is not None else '')
+        with tempfile.NamedTemporaryFile(mode=mode, delete=False, suffix=suffix, prefix=prefix, dir=dir) as f:
+            if what is not None:
+                if a_logger is None:
+                    a_logger = logger
+                a_logger.debug(('- ' if indent else '')+f'Writing {what} to {f.name}')
+            if content:
+                f.write(content)
+        return f.name
+
+    @staticmethod
+    def mkdtemp(mod):
+        return tempfile.mkdtemp(prefix='tmp-kibot-'+mod+'-')

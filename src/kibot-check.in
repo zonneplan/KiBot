@@ -388,6 +388,26 @@ try:
         kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting', 'plugins'))
 except FileNotFoundError:
     kicad_ok = False
+except ModuleNotFoundError:
+    kicad_ok = False
+    if which('kicad'):
+        error("KiCad installed but the Python support is broken")
+        res = run_command(['find', '/usr/lib', '-name', 'pcbnew.py'])
+        if res:
+            cand = res.split('\n')
+            if cand:
+                cand = [x for x in cand if 'pcbnewTransition' not in x]
+                if cand:
+                    if len(cand) == 1:
+                        dname = os.path.dirname(cand[0])
+                        if dname in sys.path:
+                            error(f"The pcbnew module should be loadable, but fails to load")
+                        else:
+                            error(f"Broken Python support {dname} not in sys.path ({sys.path})")
+                    else:
+                        error(f'Multiple pcbnew modules found: {str(cand)}')
+    else:
+        error("KiCad not installed or not available in the path")
 kicad_version = (0, 0, 0)
 if kicad_ok:
     try:

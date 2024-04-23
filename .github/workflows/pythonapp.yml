@@ -32,6 +32,8 @@ jobs:
       matrix:
         ki_release: [ki5, ki6, ki7, ki8]
         w_tests: [g1, g2, g3]
+        # ki_release: [ki8]
+        # w_tests: [g2]
 
     runs-on: ubuntu-latest
     container: ghcr.io/inti-cmnb/kicad_auto_test:${{ matrix.ki_release }}
@@ -43,18 +45,19 @@ jobs:
     - name: Test ${{ matrix.ki_release }}
       env:
         KI_RELEASE: ${{ matrix.ki_release }}
+        PIP_OPS: ${{ matrix.ki_release != 'ki5' && '--break-system-packages' || ''}}
       run: |
         rm -rf output
         rm -f tests/.local
         ##### Experimental stuff:
         ## Remove KiAuto
-        #dpkg --remove kiauto
+        dpkg --remove --force-all kiauto
         ## Install KiAuto@master
-        #curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip
-        #unzip pp.zip
-        #pip3 install KiAuto-master/
+        curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip
+        unzip pp.zip
+        pip3 install ${PIP_OPS} KiAuto-master/
         ## Clean the downloaded stuff
-        #rm -rf KiAuto-master/ pp.zip
+        rm -rf KiAuto-master/ pp.zip
         ## Check what we got
         #echo $PATH
         #ls -la /usr/bin/*_do || true
@@ -88,6 +91,8 @@ jobs:
         python3-coverage combine
         python3-coverage report
         python3-coverage html -d output/htmlcov_${{ matrix.w_tests }}
+        python3-coverage xml
+        ls -la coverage* .coverage*
     - name: Store results
       if: ${{ always() }}
       uses: actions/upload-artifact@v4
@@ -111,6 +116,38 @@ jobs:
         #coveralls --service=github
         #echo Disabled by now
         coveralls
+    - name: Upload Coverage optional
+      if: ${{ (matrix.ki_release == 'ki8') }}
+      env:
+        COVERALLS_DEBUG: true
+        COVERALLS_FLAG_NAME: ${{ matrix.ki_release }}_${{ matrix.w_tests }}
+        COVERALLS_PARALLEL: true
+        COVERALLS_ENDPOINT: https://coveralls.io
+        # COVERALLS_GIT_BRANCH: ${{ inputs.git-branch }}
+        # COVERALLS_GIT_COMMIT: ${{ inputs.git-commit }}
+        COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # COVERALLS_COMPARE_REF: ${{ inputs.compare-ref }}
+        # COVERALLS_COMPARE_SHA: ${{ inputs.compare-sha }}
+        COVERALLS_SOURCE_HEADER: github-action
+      run: |
+        ls -la coverage* .coverage*
+        mkdir -p ~/bin/
+        echo ~/bin >> $GITHUB_PATH
+        ln -s `which python3-coverage` /usr/bin/coverage
+        python3-coverage --version
+        coverage --version
+        export CURDIR=`pwd`
+        cd ~/bin/
+        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-linux.tar.gz
+        curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/download/v0.6.9/coveralls-checksums.txt
+        # curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-linux.tar.gz
+        # curl -sLO https://github.com/coverallsapp/coverage-reporter/releases/latest/download/coveralls-checksums.txt
+        cat coveralls-checksums.txt | grep coveralls-linux.tar.gz | sha256sum --check
+        tar -xzf coveralls-linux.tar.gz
+        rm coveralls-checksums.txt
+        ls -la ~/bin/
+        cd ${CURDIR}
+        ~/bin/coveralls report --debug --format python .coverage
 
   test_indep:
     strategy:

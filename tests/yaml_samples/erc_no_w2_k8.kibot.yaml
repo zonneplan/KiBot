@@ -1,0 +1,15 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+global:
+  dir: 'def_dir'
+  units: mils
+
+preflight:
+  erc:
+    warnings_as_errors: true
+    filters:
+      - filter: 'Ignore KiCad 6 lib_symbol_issues'
+        error: lib_symbol_issues
+        regex: ''

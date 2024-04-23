@@ -81,10 +81,13 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         The KiCad project file is modified.
         Warning: don't use `-s all` or this preflight will be skipped """
     def __init__(self, name, value):
+        super().__init__(name, value)
+
+    def config(self):
         f = Set_Text_VariablesOptions()
-        f.set_tree({'variables': value})
+        f.set_tree({'variables': self._value})
         f.config(self)
-        super().__init__(name, f.variables)
+        self._value = f.variables
 
     @classmethod
     def get_doc(cls):

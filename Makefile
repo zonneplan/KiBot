@@ -203,7 +203,7 @@ single_test:
 	-$(PY_COV) run src/kibot --help-list-outputs > /dev/null
 	-$(PYTEST) --log-cli-level debug -k "$(SINGLE_TEST)" --test_dir=pp
 	@echo "********************" Output
-	@cat pp/*/output.txt
+	#@cat pp/*/output.txt
 	@echo "********************" Error
 	@tail -n 30 pp/*/error.txt
 	@rm -f tests/input_samples/bom.ini
