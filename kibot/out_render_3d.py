@@ -1,20 +1,21 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2023 Salvador E. Tropea
-# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # KiCad 6/6.0.1 bug: https://gitlab.com/kicad/code/kicad/-/issues/9890
 """
 Dependencies:
   - from: KiAuto
     role: mandatory
-    version: 2.0.4
+    version: 2.3.1
   - from: ImageMagick
     role: Automatically crop images
 """
 import os
+from .error import KiPlotConfigurationError
 from .misc import (RENDER_3D_ERR, PCB_MAT_COLORS, PCB_FINISH_COLORS, SOLDER_COLORS, SILK_COLORS,
-                   KICAD_VERSION_6_0_2, MISSING_TOOL)
+                   KICAD_VERSION_6_0_2, MISSING_TOOL, W_INV3DLAYER, W_NEEDSK8, W_NEEDSK6)
 from .gs import GS
 from .out_base_3d import Base3DOptionsWithHL, Base3D
 from .kiplot import run_command
@@ -120,13 +121,35 @@ class Render3DOptions(Base3DOptionsWithHL):
             self.transparent_background_fuzz = 15
             """ [0,100] Chroma key tolerance (percent). Bigger values will remove more pixels """
             self.realistic = True
-            """ When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer """
+            """ When disabled we use the colors of the layers used by the GUI. Needs KiCad 6 or 7.
+                Is emulated on KiCad 8 """
+            self.force_stackup_colors = False
+            """ Tell KiCad to use the colors from the stackup. They are better than the unified KiBot colors.
+                Needs KiCad 6 or newer """
             self.show_board_body = True
             """ Show the PCB core material. KiCad 6 or newer """
             self.show_comments = False
-            """ Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled """
+            """ Show the content of the User.Comments and User.Drawings layer for KiCad 5, 6 and 7.
+                On KiCad 8 this option controls only the User.Comments and you have a separated option for the
+                User.Drawings called `show_drawings`
+                Note that KiCad 5/6/7 doesn't show it when `realistic` is enabled, but KiCad 8 does it.
+                Also note that KiCad 5 ray tracer shows comments outside the PCB, but newer KiCad versions
+                doesn't """
+            self.show_drawings = False
+            """ Show the content of the User.Drawings layer. Only available for KiCad 8 and newer.
+                Consult `show_comments` to learn when drawings are visible """
             self.show_eco = False
-            """ Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled """
+            """ Show the content of the Eco1.User/Eco2.User layers.
+                For KiCad 8 `show_eco1` and `show_eco2` are available.
+                Consult `show_comments` to learn when drawings are visible """
+            self.show_eco1 = False
+            """ Show the content of the Eco1.User layer. KiCad 8 supports individual Eco layer options, for 6 and 7
+                use the `show_eco` option.
+                Consult `show_comments` to learn when drawings are visible """
+            self.show_eco2 = False
+            """ Show the content of the Eco1.User layer. KiCad 8 supports individual Eco layer options, for 6 and 7
+                use the `show_eco` option.
+                Consult `show_comments` to learn when drawings are visible """
             self.show_adhesive = False
             """ Show the content of F.Adhesive/B.Adhesive layers. KiCad 6 or newer """
         super().__init__()
@@ -243,14 +266,38 @@ class Render3DOptions(Base3DOptionsWithHL):
             cmd.append('--dont_substrack_mask_from_silk')
         if not self.realistic:
             cmd.append('--use_layer_colors')
+        if self.force_stackup_colors:
+            cmd.append('--use_stackup_colors')
+        if self.force_stackup_colors and not self.realistic:
+            raise KiPlotConfigurationError("Choose to disable `realistic` or enable `force_stackup_colors`, not both")
         if not self.show_board_body:
             cmd.append('--hide_board_body')
         if self.show_comments:
             cmd.append('--show_comments')
+        if self.show_drawings:
+            cmd.append('--show_drawings')
         if self.show_eco:
             cmd.append('--show_eco')
+        if self.show_eco1:
+            cmd.append('--show_eco1')
+        if self.show_eco2:
+            cmd.append('--show_eco2')
         if self.show_adhesive:
             cmd.append('--show_adhesive')
+        if not GS.ki8:
+            if (self.show_comments or self.show_drawings or self.show_eco) and self.realistic:
+                logger.warning(W_INV3DLAYER+"The comments, drawings and eco layers aren't visible when realistic is enabled")
+            if self.show_drawings:
+                logger.warning(W_NEEDSK8+"`show_drawings` needs KiCad 8 or newer")
+            if self.show_eco1:
+                logger.warning(W_NEEDSK8+"`show_eco1` needs KiCad 8 or newer")
+            if self.show_eco2:
+                logger.warning(W_NEEDSK8+"`show_eco2` needs KiCad 8 or newer")
+        if not GS.ki6:
+            if self.force_stackup_colors:
+                logger.warning(W_NEEDSK6+"`force_stackup_colors` needs KiCad 6 or newer")
+            if not self.realistic:
+                logger.warning(W_NEEDSK6+"disabling `realistic` needs KiCad 6 or newer")
 
     def run(self, output):
         super().run(output)

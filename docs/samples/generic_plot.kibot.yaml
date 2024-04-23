@@ -3295,6 +3295,9 @@ outputs:
       # part number. The field containing the LCSC part number is defined by the
       # `field_lcsc_part` global variable
       download_lcsc: true
+      # [boolean=false] Tell KiCad to use the colors from the stackup. They are better than the unified KiBot colors.
+      # Needs KiCad 6 or newer
+      force_stackup_colors: false
       # [number=720] Image height (aprox.)
       height: 720
       # [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported
@@ -3329,7 +3332,8 @@ outputs:
       pre_transform: '_none'
       # [boolean=false] Enable the ray tracing. Much better result, but slow, and you'll need to adjust `wait_rt`
       ray_tracing: false
-      # [boolean=true] When disabled we use the colors of the layers used by the GUI. KiCad 6 or newer
+      # [boolean=true] When disabled we use the colors of the layers used by the GUI. Needs KiCad 6 or 7.
+      # Is emulated on KiCad 8
       realistic: true
       # [number=0] Steps to rotate around the X axis, positive is clockwise.
       # Each step is currently 10 degrees. Only for KiCad 6 or newer
@@ -3344,14 +3348,32 @@ outputs:
       show_adhesive: false
       # [boolean=true] Show the PCB core material. KiCad 6 or newer
       show_board_body: true
-      # [boolean=false] Show the content of the User.Comments layer. KiCad 6 or newer and ray tracing disabled
+      # [boolean=false] Show the content of the User.Comments and User.Drawings layer for KiCad 5, 6 and 7.
+      # On KiCad 8 this option controls only the User.Comments and you have a separated option for the
+      # User.Drawings called `show_drawings`
+      # Note that KiCad 5/6/7 doesn't show it when `realistic` is enabled, but KiCad 8 does it.
+      # Also note that KiCad 5 ray tracer shows comments outside the PCB, but newer KiCad versions
+      # doesn't
       show_comments: false
       # [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
       # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
       show_components: all
-      # [boolean=false] Show the content of the Eco1.User/Eco2.User layers. KiCad 6 or newer and ray tracing disabled
+      # [boolean=false] Show the content of the User.Drawings layer. Only available for KiCad 8 and newer.
+      # Consult `show_comments` to learn when drawings are visible
+      show_drawings: false
+      # [boolean=false] Show the content of the Eco1.User/Eco2.User layers.
+      # For KiCad 8 `show_eco1` and `show_eco2` are available.
+      # Consult `show_comments` to learn when drawings are visible
       show_eco: false
+      # [boolean=false] Show the content of the Eco1.User layer. KiCad 8 supports individual Eco layer options, for 6 and 7
+      # use the `show_eco` option.
+      # Consult `show_comments` to learn when drawings are visible
+      show_eco1: false
+      # [boolean=false] Show the content of the Eco1.User layer. KiCad 8 supports individual Eco layer options, for 6 and 7
+      # use the `show_eco` option.
+      # Consult `show_comments` to learn when drawings are visible
+      show_eco2: false
       # [boolean=true] Show the silkscreen layers (KiCad 6+)
       show_silkscreen: true
       # [boolean=true] Show the solder mask layers (KiCad 6+)

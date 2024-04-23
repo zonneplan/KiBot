@@ -306,6 +306,10 @@ W_DRCJSON = '(W146) '
 W_BADREF = '(W147) '
 W_MISLIBTAB = '(W148) '
 W_UPSTKUPTOO = '(W149) '
+W_INV3DLAYER = '(W150) '
+W_NEEDSK8 = '(W151) '
+W_NEEDSK7 = '(W152) '
+W_NEEDSK6 = '(W153) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -359,7 +363,7 @@ STYLE_COMMON = (" .cell-title { vertical-align: bottom; }\n"
                 " .td-gen1 { text-align: center; background-color: "+BG_GEN_L+";}\n"
                 " .td-kicad1 { text-align: center; background-color: "+BG_KICAD_L+";}\n"
                 " .td-user1 { text-align: center; background-color: "+BG_USER_L+";}\n"
-                " .td-nocolor { text-align: center;}\n"
+                " .td-nocolor { text-align: center; }\n"
                 " .color-ref { margin: 25px 0; }\n"
                 " .color-ref th { text-align: left }\n"
                 " .color-ref td { padding: 5px 20px; }\n"

@@ -41,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Control over the LAYER KiCad variable used in worksheets (layer_var ops)
 - Internal BoM:
   - Colored rows for HTML and XLSX (See #344)
+- Render 3D:
+  - Added options to control Eco1/Eco2/Drawings individually on KiCad 8 (#614)
 
 ### Fixed
 - Netlist generation problems with components on the PCB but not in schematic.

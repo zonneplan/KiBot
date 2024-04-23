@@ -72,6 +72,11 @@ Added
 
    -  Colored rows for HTML and XLSX (See #344)
 
+-  Render 3D:
+
+   -  Added options to control Eco1/Eco2/Drawings individually on KiCad
+      8 (#614)
+
 Fixed
 ~~~~~
 
