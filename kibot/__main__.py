@@ -11,7 +11,7 @@ Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--warn-ci-cd]
-         [--banner N] [TARGET...]
+         [--banner N] [--gui] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
@@ -52,6 +52,7 @@ Options:
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
+  --gui                            Open a graphic dialog
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs, preflights and
                                    groups (in the config file).
@@ -544,6 +545,9 @@ def main():
     if args.makefile:
         # Only create a makefile
         generate_makefile(args.makefile, plot_config, outputs)
+    elif args.gui:
+        from .GUI.gui import do_gui
+        do_gui(outputs)
     else:
         # Do all the job (preflight + outputs)
         generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,

@@ -140,6 +140,12 @@ class RegOutput(Optionable, Registrable):
         RegOutput._def_groups[name] = lst
 
     @staticmethod
+    def replace_group(old_name, name, lst):
+        if name != old_name:
+            del RegOutput._def_groups[old_name]
+        RegOutput._def_groups[name] = lst
+
+    @staticmethod
     def add_groups(objs, file=None):
         logger.debug('Adding groups: '+str(objs))
         for n, lst in objs.items():
