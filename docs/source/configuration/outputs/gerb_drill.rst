@@ -29,7 +29,7 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - gerb_drill - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``map`` :index:`: <pair: output - gerb_drill - options; map>` [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
+      -  ``map`` :index:`: <pair: output - gerb_drill - options; map>` [dict|string=None] [hpgl,ps,gerber,dxf,svg,pdf,None] Format for a graphical drill map.
          Not generated unless a format is specified.
 
          -  Valid keys:

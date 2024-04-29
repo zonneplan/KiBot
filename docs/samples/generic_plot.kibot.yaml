@@ -1053,7 +1053,7 @@ outputs:
       dnf_filter: '_none'
       # [number=0] number of digits for integer part of coordinates (0 is auto)
       left_digits: 0
-      # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
+      # [dict|string=None] [hpgl,ps,gerber,dxf,svg,pdf,None] Format for a graphical drill map.
       # Not generated unless a format is specified
       map:
         # [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options
@@ -1133,7 +1133,7 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_none'
-      # [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
+      # [dict|string=None] [hpgl,ps,gerber,dxf,svg,pdf,None] Format for a graphical drill map.
       # Not generated unless a format is specified
       map:
         # [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options
@@ -1402,7 +1402,7 @@ outputs:
       hide_pads: false
       # [boolean=false] Hide silkscreen by default
       hide_silkscreen: false
-      # [boolean|string] [none,all,selected] Highlight pin1 by default
+      # [boolean|string=false] [none,all,selected] Highlight pin1 by default
       highlight_pin1: false
       # [boolean=false] Include netlist information in output.
       include_nets: false
