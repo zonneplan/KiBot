@@ -18,68 +18,68 @@ Category: **PCB/docs**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - pdf_pcb_print; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - pdf_pcb_print; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - pdf_pcb_print; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - pdf_pcb_print; dir>` [:ref:`string <string>`] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - pdf_pcb_print; layers>` [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+-  **layers** :index:`: <pair: output - pdf_pcb_print; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`]
    List of PCB layers to include in the PDF.
 
    -  Valid keys:
 
-      -  ``description`` :index:`: <pair: output - pdf_pcb_print - layers; description>` [string=''] A description for the layer, for documentation purposes.
+      -  ``description`` :index:`: <pair: output - pdf_pcb_print - layers; description>` [:ref:`string <string>`] A description for the layer, for documentation purposes.
          A default can be specified using the `layer_defaults` global option.
-      -  ``layer`` :index:`: <pair: output - pdf_pcb_print - layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
-      -  ``suffix`` :index:`: <pair: output - pdf_pcb_print - layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+      -  ``layer`` :index:`: <pair: output - pdf_pcb_print - layers; layer>` [:ref:`string <string>`] Name of the layer. As you see it in KiCad.
+      -  ``suffix`` :index:`: <pair: output - pdf_pcb_print - layers; suffix>` [:ref:`string <string>`] Suffix used in file names related to this layer. Derived from the name if not specified.
          A default can be specified using the `layer_defaults` global option.
 
--  **name** :index:`: <pair: output - pdf_pcb_print; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - pdf_pcb_print; name>` [:ref:`string <string>`] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pdf_pcb_print; options>` [dict] Options for the `pdf_pcb_print` output.
+-  **options** :index:`: <pair: output - pdf_pcb_print; options>` [:ref:`dict <dict>`] Options for the `pdf_pcb_print` output.
 
    -  Valid keys:
 
-      -  **plot_sheet_reference** :index:`: <pair: output - pdf_pcb_print - options; plot_sheet_reference>` [boolean=true] Include the title-block.
-      -  **scaling** :index:`: <pair: output - pdf_pcb_print - options; scaling>` [number=1.0] Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it.
-      -  **separated** :index:`: <pair: output - pdf_pcb_print - options; separated>` [boolean=false] Print layers in separated pages.
-      -  ``color_theme`` :index:`: <pair: output - pdf_pcb_print - options; color_theme>` [string='_builtin_classic'] Selects the color theme. Onlyu applies to KiCad 6.
+      -  **plot_sheet_reference** :index:`: <pair: output - pdf_pcb_print - options; plot_sheet_reference>` [:ref:`boolean <boolean>`] Include the title-block.
+      -  **scaling** :index:`: <pair: output - pdf_pcb_print - options; scaling>` [:ref:`number <number>`] Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it.
+      -  **separated** :index:`: <pair: output - pdf_pcb_print - options; separated>` [:ref:`boolean <boolean>`] Print layers in separated pages.
+      -  ``color_theme`` :index:`: <pair: output - pdf_pcb_print - options; color_theme>` [:ref:`string <string>`] Selects the color theme. Onlyu applies to KiCad 6.
          To use the KiCad 6 default colors select `_builtin_default`.
          Usually user colors are stored as `user`, but you can give it another name.
-      -  ``dnf_filter`` :index:`: <pair: output - pdf_pcb_print - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - pdf_pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``drill_marks`` :index:`: <pair: output - pdf_pcb_print - options; drill_marks>` [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
-      -  ``force_edge_cuts`` :index:`: <pair: output - pdf_pcb_print - options; force_edge_cuts>` [boolean=true] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
+      -  ``drill_marks`` :index:`: <pair: output - pdf_pcb_print - options; drill_marks>` [:ref:`string <string>`] What to use to indicate the drill places, can be none, small or full (for real scale).
+      -  ``force_edge_cuts`` :index:`: <pair: output - pdf_pcb_print - options; force_edge_cuts>` [:ref:`boolean <boolean>`] Only useful for KiCad 6 when printing in one page, you can disable the edge here.
          KiCad 5 forces it by default, and you can't control it from config files.
          Same for KiCad 6 when printing to separated pages.
-      -  ``hide_excluded`` :index:`: <pair: output - pdf_pcb_print - options; hide_excluded>` [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+      -  ``hide_excluded`` :index:`: <pair: output - pdf_pcb_print - options; hide_excluded>` [:ref:`boolean <boolean>`] Hide components in the Fab layer that are marked as excluded by a variant.
          Affected by global options.
-      -  ``mirror`` :index:`: <pair: output - pdf_pcb_print - options; mirror>` [boolean=false] Print mirrored (X axis inverted). ONLY for KiCad 6.
-      -  ``monochrome`` :index:`: <pair: output - pdf_pcb_print - options; monochrome>` [boolean=false] Print in black and white.
-      -  ``output`` :index:`: <pair: output - pdf_pcb_print - options; output>` [string='%f-%i%I%v.%x'] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
+      -  ``mirror`` :index:`: <pair: output - pdf_pcb_print - options; mirror>` [:ref:`boolean <boolean>`] Print mirrored (X axis inverted). ONLY for KiCad 6.
+      -  ``monochrome`` :index:`: <pair: output - pdf_pcb_print - options; monochrome>` [:ref:`boolean <boolean>`] Print in black and white.
+      -  ``output`` :index:`: <pair: output - pdf_pcb_print - options; output>` [:ref:`string <string>`] Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
       -  *output_name* :index:`: <pair: output - pdf_pcb_print - options; output_name>` Alias for output.
-      -  ``pre_transform`` :index:`: <pair: output - pdf_pcb_print - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - pdf_pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``title`` :index:`: <pair: output - pdf_pcb_print - options; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      -  ``title`` :index:`: <pair: output - pdf_pcb_print - options; title>` [:ref:`string <string>`] Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
-      -  ``variant`` :index:`: <pair: output - pdf_pcb_print - options; variant>` [string=''] Board variant to apply.
+      -  ``variant`` :index:`: <pair: output - pdf_pcb_print - options; variant>` [:ref:`string <string>`] Board variant to apply.
 
 -  **type** :index:`: <pair: output - pdf_pcb_print; type>` 'pdf_pcb_print'
--  ``category`` :index:`: <pair: output - pdf_pcb_print; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - pdf_pcb_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - pdf_pcb_print; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - pdf_pcb_print; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - pdf_pcb_print; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - pdf_pcb_print; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - pdf_pcb_print; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - pdf_pcb_print; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - pdf_pcb_print; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - pdf_pcb_print; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - pdf_pcb_print; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - pdf_pcb_print; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - pdf_pcb_print; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - pdf_pcb_print; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
 

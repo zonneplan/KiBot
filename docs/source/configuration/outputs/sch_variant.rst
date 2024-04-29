@@ -15,43 +15,43 @@ Type: ``sch_variant``
 
 Parameters:
 
--  **comment** :index:`: <pair: output - sch_variant; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - sch_variant; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - sch_variant; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - sch_variant; dir>` [:ref:`string <string>`] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - sch_variant; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - sch_variant; name>` [:ref:`string <string>`] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - sch_variant; options>` [dict] Options for the `sch_variant` output.
+-  **options** :index:`: <pair: output - sch_variant; options>` [:ref:`dict <dict>`] Options for the `sch_variant` output.
 
    -  Valid keys:
 
-      -  ``copy_project`` :index:`: <pair: output - sch_variant - options; copy_project>` [boolean=false] Copy the KiCad project to the destination directory.
+      -  ``copy_project`` :index:`: <pair: output - sch_variant - options; copy_project>` [:ref:`boolean <boolean>`] Copy the KiCad project to the destination directory.
          Disabled by default for compatibility with older versions.
-      -  ``dnf_filter`` :index:`: <pair: output - sch_variant - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - sch_variant - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``pre_transform`` :index:`: <pair: output - sch_variant - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - sch_variant - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``title`` :index:`: <pair: output - sch_variant - options; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      -  ``title`` :index:`: <pair: output - sch_variant - options; title>` [:ref:`string <string>`] Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
-      -  ``variant`` :index:`: <pair: output - sch_variant - options; variant>` [string=''] Board variant to apply.
+      -  ``variant`` :index:`: <pair: output - sch_variant - options; variant>` [:ref:`string <string>`] Board variant to apply.
 
 -  **type** :index:`: <pair: output - sch_variant; type>` 'sch_variant'
--  ``category`` :index:`: <pair: output - sch_variant; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - sch_variant; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - sch_variant; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - sch_variant; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - sch_variant; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - sch_variant; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - sch_variant; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - sch_variant; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - sch_variant; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - sch_variant; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - sch_variant; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - sch_variant; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - sch_variant; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - sch_variant; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
 

@@ -23,57 +23,57 @@ Category: **Schematic/BoM**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - bom; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - bom; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - bom; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - bom; dir>` [:ref:`string <string>`] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - bom; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - bom; name>` [:ref:`string <string>`] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - bom; options>` [dict] Options for the `bom` output.
+-  **options** :index:`: <pair: output - bom; options>` [:ref:`dict <dict>`] Options for the `bom` output.
 
    -  Valid keys:
 
-      -  **columns** :index:`: <pair: output - bom - options; columns>` [list(dict)|list(string)] List of columns to display.
+      -  **columns** :index:`: <pair: output - bom - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] List of columns to display.
          Can be just the name of the field.
          In addition to all user defined fields you have various special columns, consult :ref:`bom_columns`.
 
          -  Valid keys:
 
-            -  **field** :index:`: <pair: output - bom - options - columns; field>` [string=''] Name of the field to use for this column.
+            -  **field** :index:`: <pair: output - bom - options - columns; field>` [:ref:`string <string>`] Name of the field to use for this column.
                Use `_field_lcsc_part` to get the value defined in the global options.
-            -  **name** :index:`: <pair: output - bom - options - columns; name>` [string=''] Name to display in the header. The field is used when empty.
-            -  ``comment`` :index:`: <pair: output - bom - options - columns; comment>` [string=''] Used as explanation for this column. The XLSX output uses it.
-            -  ``join`` :index:`: <pair: output - bom - options - columns; join>` [list(dict)|list(string)|string=''] List of fields to join to this column.
+            -  **name** :index:`: <pair: output - bom - options - columns; name>` [:ref:`string <string>`] Name to display in the header. The field is used when empty.
+            -  ``comment`` :index:`: <pair: output - bom - options - columns; comment>` [:ref:`string <string>`] Used as explanation for this column. The XLSX output uses it.
+            -  ``join`` :index:`: <pair: output - bom - options - columns; join>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] List of fields to join to this column.
 
                -  Valid keys:
 
-                  -  **field** :index:`: <pair: output - bom - options - columns - join; field>` [string=''] Name of the field.
-                  -  ``text`` :index:`: <pair: output - bom - options - columns - join; text>` [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                  -  **field** :index:`: <pair: output - bom - options - columns - join; field>` [:ref:`string <string>`] Name of the field.
+                  -  ``text`` :index:`: <pair: output - bom - options - columns - join; text>` [:ref:`string <string>`] Text to use instead of a field. This option is incompatible with the `field` option.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
-                  -  ``text_after`` :index:`: <pair: output - bom - options - columns - join; text_after>` [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                  -  ``text_after`` :index:`: <pair: output - bom - options - columns - join; text_after>` [:ref:`string <string>`] Text to add after the field content. Will be added only if the field isn't empty.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
-                  -  ``text_before`` :index:`: <pair: output - bom - options - columns - join; text_before>` [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                  -  ``text_before`` :index:`: <pair: output - bom - options - columns - join; text_before>` [:ref:`string <string>`] Text to add before the field content. Will be added only if the field isn't empty.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
 
-            -  ``level`` :index:`: <pair: output - bom - options - columns; level>` [number=0] Used to group columns. The XLSX output uses it to collapse columns.
+            -  ``level`` :index:`: <pair: output - bom - options - columns; level>` [:ref:`number <number>`] Used to group columns. The XLSX output uses it to collapse columns.
 
-      -  **csv** :index:`: <pair: output - bom - options; csv>` [dict] Options for the CSV, TXT and TSV formats.
+      -  **csv** :index:`: <pair: output - bom - options; csv>` [:ref:`dict <dict>`] Options for the CSV, TXT and TSV formats.
 
          -  Valid keys:
 
-            -  **quote_all** :index:`: <pair: output - bom - options - csv; quote_all>` [boolean=false] Enclose all values using double quotes.
-            -  **separator** :index:`: <pair: output - bom - options - csv; separator>` [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
+            -  **quote_all** :index:`: <pair: output - bom - options - csv; quote_all>` [:ref:`boolean <boolean>`] Enclose all values using double quotes.
+            -  **separator** :index:`: <pair: output - bom - options - csv; separator>` [:ref:`string <string>`] CSV Separator. TXT and TSV always use tab as delimiter.
                Only one character can be specified.
-            -  ``hide_header`` :index:`: <pair: output - bom - options - csv; hide_header>` [boolean=false] Hide the header line (names of the columns).
-            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - csv; hide_pcb_info>` [boolean=false] Hide project information.
-            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - csv; hide_stats_info>` [boolean=false] Hide statistics information.
+            -  ``hide_header`` :index:`: <pair: output - bom - options - csv; hide_header>` [:ref:`boolean <boolean>`] Hide the header line (names of the columns).
+            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - csv; hide_pcb_info>` [:ref:`boolean <boolean>`] Hide project information.
+            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - csv; hide_stats_info>` [:ref:`boolean <boolean>`] Hide statistics information.
 
-      -  **format** :index:`: <pair: output - bom - options; format>` [string=''] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
+      -  **format** :index:`: <pair: output - bom - options; format>` [:ref:`string <string>`] format for the BoM.
          Defaults to CSV or a guess according to the options.
          HRTXT stands for Human Readable TeXT.
-      -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [list(string)] List of fields used for sorting individual components into groups.
+      -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [:ref:`list(string) <list(string)>`] List of fields used for sorting individual components into groups.
          Components which match (comparing *all* fields) will be grouped together.
          Field names are case-insensitive.
          For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
@@ -84,148 +84,148 @@ Parameters:
          If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
          'Voltage', 'Tolerance', 'Current', 'Power'] is used.
 
-      -  **hrtxt** :index:`: <pair: output - bom - options; hrtxt>` [dict] Options for the HRTXT formats.
+      -  **hrtxt** :index:`: <pair: output - bom - options; hrtxt>` [:ref:`dict <dict>`] Options for the HRTXT formats.
 
          -  Valid keys:
 
-            -  **separator** :index:`: <pair: output - bom - options - hrtxt; separator>` [string='I'] Column Separator.
-            -  ``header_sep`` :index:`: <pair: output - bom - options - hrtxt; header_sep>` [string='-'] Separator between the header and the data.
-            -  ``hide_header`` :index:`: <pair: output - bom - options - hrtxt; hide_header>` [boolean=false] Hide the header line (names of the columns).
-            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - hrtxt; hide_pcb_info>` [boolean=false] Hide project information.
-            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - hrtxt; hide_stats_info>` [boolean=false] Hide statistics information.
-            -  ``justify`` :index:`: <pair: output - bom - options - hrtxt; justify>` [string='left'] [left,right,center] Text justification.
+            -  **separator** :index:`: <pair: output - bom - options - hrtxt; separator>` [:ref:`string <string>`] Column Separator.
+            -  ``header_sep`` :index:`: <pair: output - bom - options - hrtxt; header_sep>` [:ref:`string <string>`] Separator between the header and the data.
+            -  ``hide_header`` :index:`: <pair: output - bom - options - hrtxt; hide_header>` [:ref:`boolean <boolean>`] Hide the header line (names of the columns).
+            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - hrtxt; hide_pcb_info>` [:ref:`boolean <boolean>`] Hide project information.
+            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - hrtxt; hide_stats_info>` [:ref:`boolean <boolean>`] Hide statistics information.
+            -  ``justify`` :index:`: <pair: output - bom - options - hrtxt; justify>` [:ref:`string <string>`] Text justification.
 
-      -  **html** :index:`: <pair: output - bom - options; html>` [dict] Options for the HTML format.
+      -  **html** :index:`: <pair: output - bom - options; html>` [:ref:`dict <dict>`] Options for the HTML format.
 
          -  Valid keys:
 
-            -  **datasheet_as_link** :index:`: <pair: output - bom - options - html; datasheet_as_link>` [string=''] Column with links to the datasheet.
-            -  **generate_dnf** :index:`: <pair: output - bom - options - html; generate_dnf>` [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
-            -  **logo** :index:`: <pair: output - bom - options - html; logo>` [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+            -  **datasheet_as_link** :index:`: <pair: output - bom - options - html; datasheet_as_link>` [:ref:`string <string>`] Column with links to the datasheet.
+            -  **generate_dnf** :index:`: <pair: output - bom - options - html; generate_dnf>` [:ref:`boolean <boolean>`] Generate a separated section for DNF (Do Not Fit) components.
+            -  **logo** :index:`: <pair: output - bom - options - html; logo>` [:ref:`string <string>` | :ref:`boolean <boolean>`] PNG/SVG file to use as logo, use false to remove.
                Note that when using an SVG this is first converted to a PNG using `logo_width`.
 
-            -  **title** :index:`: <pair: output - bom - options - html; title>` [string='KiBot Bill of Materials'] BoM title.
-            -  ``col_colors`` :index:`: <pair: output - bom - options - html; col_colors>` [boolean=true] Use colors to show the field type.
-            -  ``digikey_link`` :index:`: <pair: output - bom - options - html; digikey_link>` [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
+            -  **title** :index:`: <pair: output - bom - options - html; title>` [:ref:`string <string>`] BoM title.
+            -  ``col_colors`` :index:`: <pair: output - bom - options - html; col_colors>` [:ref:`boolean <boolean>`] Use colors to show the field type.
+            -  ``digikey_link`` :index:`: <pair: output - bom - options - html; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Column/s containing Digi-Key part numbers, will be linked to web page.
 
-            -  ``extra_info`` :index:`: <pair: output - bom - options - html; extra_info>` [string|list(string)=''] Information to put after the title and before the pcb and stats info.
+            -  ``extra_info`` :index:`: <pair: output - bom - options - html; extra_info>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Information to put after the title and before the pcb and stats info.
 
-            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - html; hide_pcb_info>` [boolean=false] Hide project information.
-            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - html; hide_stats_info>` [boolean=false] Hide statistics information.
-            -  ``highlight_empty`` :index:`: <pair: output - bom - options - html; highlight_empty>` [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
-            -  ``lcsc_link`` :index:`: <pair: output - bom - options - html; lcsc_link>` [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - html; hide_pcb_info>` [:ref:`boolean <boolean>`] Hide project information.
+            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - html; hide_stats_info>` [:ref:`boolean <boolean>`] Hide statistics information.
+            -  ``highlight_empty`` :index:`: <pair: output - bom - options - html; highlight_empty>` [:ref:`boolean <boolean>`] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            -  ``lcsc_link`` :index:`: <pair: output - bom - options - html; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] Column/s containing LCSC part numbers, will be linked to web page.
                Use **true** to copy the value indicated by the `field_lcsc_part` global option.
 
-            -  ``logo_width`` :index:`: <pair: output - bom - options - html; logo_width>` [number=370] Used when the logo is an SVG image. This width is used to render the SVG image.
-            -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
+            -  ``logo_width`` :index:`: <pair: output - bom - options - html; logo_width>` [:ref:`number <number>`] Used when the logo is an SVG image. This width is used to render the SVG image.
+            -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Column/s containing Mouser part numbers, will be linked to web page.
 
-            -  ``row_colors`` :index:`: <pair: output - bom - options - html; row_colors>` [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+            -  ``row_colors`` :index:`: <pair: output - bom - options - html; row_colors>` [:ref:`list(dict) <list(dict)>`] Used to highlight rows using filters. Rows that match a filter can be colored.
                Note that these rows won't have colored columns.
 
                -  Valid keys:
 
-                  -  **color** :index:`: <pair: output - bom - options - html - row_colors; color>` [string='#FF8080'] Color used for this category.
-                  -  **description** :index:`: <pair: output - bom - options - html - row_colors; description>` [string=''] A description for this color, must be filled.
-                  -  **filter** :index:`: <pair: output - bom - options - html - row_colors; filter>` [string|list(string)='_none'] Name of the filter to match.
+                  -  **color** :index:`: <pair: output - bom - options - html - row_colors; color>` [:ref:`string <string>`] Color used for this category.
+                  -  **description** :index:`: <pair: output - bom - options - html - row_colors; description>` [:ref:`string <string>`] A description for this color, must be filled.
+                  -  **filter** :index:`: <pair: output - bom - options - html - row_colors; filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to match.
                      Be careful because this filter should be coherent with the grouping fields.
                      KiBot will assume that all the components grouped in the same group will
                      return the same value when applying this filter.
 
 
-            -  ``style`` :index:`: <pair: output - bom - options - html; style>` [string='modern-blue'] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
+            -  ``style`` :index:`: <pair: output - bom - options - html; style>` [:ref:`string <string>`] Page style. Internal styles: modern-blue, modern-green, modern-red and classic.
                Or you can provide a CSS file name. Please use .css as file extension..
 
-      -  **ignore_dnf** :index:`: <pair: output - bom - options; ignore_dnf>` [boolean=true] Exclude DNF (Do Not Fit) components.
-      -  **normalize_values** :index:`: <pair: output - bom - options; normalize_values>` [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes.
-      -  **number** :index:`: <pair: output - bom - options; number>` [number=1] Number of boards to build (components multiplier).
-      -  **output** :index:`: <pair: output - bom - options; output>` [string='%f-%i%I%v.%x'] filename for the output (%i=bom). Affected by global options.
-      -  **sort_style** :index:`: <pair: output - bom - options; sort_style>` [string='type_value'] [type_value,type_value_ref,ref] Sorting criteria.
-      -  **units** :index:`: <pair: output - bom - options; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+      -  **ignore_dnf** :index:`: <pair: output - bom - options; ignore_dnf>` [:ref:`boolean <boolean>`] Exclude DNF (Do Not Fit) components.
+      -  **normalize_values** :index:`: <pair: output - bom - options; normalize_values>` [:ref:`boolean <boolean>`] Try to normalize the R, L and C values, producing uniform units and prefixes.
+      -  **number** :index:`: <pair: output - bom - options; number>` [:ref:`number <number>`] Number of boards to build (components multiplier).
+      -  **output** :index:`: <pair: output - bom - options; output>` [:ref:`string <string>`] filename for the output (%i=bom). Affected by global options.
+      -  **sort_style** :index:`: <pair: output - bom - options; sort_style>` [:ref:`string <string>`] Sorting criteria.
+      -  **units** :index:`: <pair: output - bom - options; units>` [:ref:`string <string>`] Units used for the positions ('Footprint X' and 'Footprint Y' columns).
          Affected by global options.
-      -  **xlsx** :index:`: <pair: output - bom - options; xlsx>` [dict] Options for the XLSX format.
+      -  **xlsx** :index:`: <pair: output - bom - options; xlsx>` [:ref:`dict <dict>`] Options for the XLSX format.
 
          -  Valid keys:
 
-            -  **datasheet_as_link** :index:`: <pair: output - bom - options - xlsx; datasheet_as_link>` [string=''] Column with links to the datasheet.
-            -  **generate_dnf** :index:`: <pair: output - bom - options - xlsx; generate_dnf>` [boolean=true] Generate a separated section for DNF (Do Not Fit) components.
-            -  **kicost** :index:`: <pair: output - bom - options - xlsx; kicost>` [boolean=false] Enable KiCost worksheet creation.
+            -  **datasheet_as_link** :index:`: <pair: output - bom - options - xlsx; datasheet_as_link>` [:ref:`string <string>`] Column with links to the datasheet.
+            -  **generate_dnf** :index:`: <pair: output - bom - options - xlsx; generate_dnf>` [:ref:`boolean <boolean>`] Generate a separated section for DNF (Do Not Fit) components.
+            -  **kicost** :index:`: <pair: output - bom - options - xlsx; kicost>` [:ref:`boolean <boolean>`] Enable KiCost worksheet creation.
                Note: an example of how to use it on CI/CD can be found `here <https://github.com/set-soft/kicost_ci_test>`__.
-            -  **logo** :index:`: <pair: output - bom - options - xlsx; logo>` [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
+            -  **logo** :index:`: <pair: output - bom - options - xlsx; logo>` [:ref:`string <string>` | :ref:`boolean <boolean>`] PNG/SVG file to use as logo, use false to remove.
                Note that when using an SVG this is first converted to a PNG using `logo_width`.
 
-            -  **specs** :index:`: <pair: output - bom - options - xlsx; specs>` [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
+            -  **specs** :index:`: <pair: output - bom - options - xlsx; specs>` [:ref:`boolean <boolean>`] Enable Specs worksheet creation. Contains specifications for the components.
                Works with only some KiCost APIs.
-            -  **title** :index:`: <pair: output - bom - options - xlsx; title>` [string='KiBot Bill of Materials'] BoM title.
-            -  ``col_colors`` :index:`: <pair: output - bom - options - xlsx; col_colors>` [boolean=true] Use colors to show the field type.
-            -  ``digikey_link`` :index:`: <pair: output - bom - options - xlsx; digikey_link>` [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page.
+            -  **title** :index:`: <pair: output - bom - options - xlsx; title>` [:ref:`string <string>`] BoM title.
+            -  ``col_colors`` :index:`: <pair: output - bom - options - xlsx; col_colors>` [:ref:`boolean <boolean>`] Use colors to show the field type.
+            -  ``digikey_link`` :index:`: <pair: output - bom - options - xlsx; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Column/s containing Digi-Key part numbers, will be linked to web page.
 
-            -  ``extra_info`` :index:`: <pair: output - bom - options - xlsx; extra_info>` [string|list(string)=''] Information to put after the title and before the pcb and stats info.
+            -  ``extra_info`` :index:`: <pair: output - bom - options - xlsx; extra_info>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Information to put after the title and before the pcb and stats info.
 
-            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - xlsx; hide_pcb_info>` [boolean=false] Hide project information.
-            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - xlsx; hide_stats_info>` [boolean=false] Hide statistics information.
-            -  ``highlight_empty`` :index:`: <pair: output - bom - options - xlsx; highlight_empty>` [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`.
-            -  ``kicost_api_disable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_disable>` [string|list(string)=''] List of KiCost APIs to disable.
+            -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - xlsx; hide_pcb_info>` [:ref:`boolean <boolean>`] Hide project information.
+            -  ``hide_stats_info`` :index:`: <pair: output - bom - options - xlsx; hide_stats_info>` [:ref:`boolean <boolean>`] Hide statistics information.
+            -  ``highlight_empty`` :index:`: <pair: output - bom - options - xlsx; highlight_empty>` [:ref:`boolean <boolean>`] Use a color for empty cells. Applies only when `col_colors` is `true`.
+            -  ``kicost_api_disable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_disable>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of KiCost APIs to disable.
 
-            -  ``kicost_api_enable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_enable>` [string|list(string)=''] List of KiCost APIs to enable.
+            -  ``kicost_api_enable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_enable>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of KiCost APIs to enable.
 
-            -  ``kicost_config`` :index:`: <pair: output - bom - options - xlsx; kicost_config>` [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
+            -  ``kicost_config`` :index:`: <pair: output - bom - options - xlsx; kicost_config>` [:ref:`string <string>`] KiCost configuration file. It contains the keys for the different distributors APIs.
                The regular KiCost config is used when empty.
                Important for CI/CD environments: avoid exposing your API secrets!
                To understand how to achieve this, and also how to make use of the cache please visit the
                `kicost_ci_test <https://github.com/set-soft/kicost_ci_test>`__ repo.
-            -  ``kicost_dist_desc`` :index:`: <pair: output - bom - options - xlsx; kicost_dist_desc>` [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component.
-            -  ``lcsc_link`` :index:`: <pair: output - bom - options - xlsx; lcsc_link>` [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+            -  ``kicost_dist_desc`` :index:`: <pair: output - bom - options - xlsx; kicost_dist_desc>` [:ref:`boolean <boolean>`] Used to add a column with the distributor's description. So you can check this is the right component.
+            -  ``lcsc_link`` :index:`: <pair: output - bom - options - xlsx; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] Column/s containing LCSC part numbers, will be linked to web page.
                Use **true** to copy the value indicated by the `field_lcsc_part` global option.
 
-            -  ``logo_scale`` :index:`: <pair: output - bom - options - xlsx; logo_scale>` [number=2] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
-            -  ``logo_width`` :index:`: <pair: output - bom - options - xlsx; logo_width>` [number=370] Used when the logo is an SVG image. This width is used to render the SVG image.
-            -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [number=60] [20,999] Maximum column width (characters).
-            -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page.
+            -  ``logo_scale`` :index:`: <pair: output - bom - options - xlsx; logo_scale>` [:ref:`number <number>`] Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
+            -  ``logo_width`` :index:`: <pair: output - bom - options - xlsx; logo_width>` [:ref:`number <number>`] Used when the logo is an SVG image. This width is used to render the SVG image.
+            -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [:ref:`number <number>`] Maximum column width (characters).
+            -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Column/s containing Mouser part numbers, will be linked to web page.
 
-            -  ``row_colors`` :index:`: <pair: output - bom - options - xlsx; row_colors>` [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+            -  ``row_colors`` :index:`: <pair: output - bom - options - xlsx; row_colors>` [:ref:`list(dict) <list(dict)>`] Used to highlight rows using filters. Rows that match a filter can be colored.
                Note that these rows won't have colored columns.
 
                -  Valid keys:
 
-                  -  **color** :index:`: <pair: output - bom - options - xlsx - row_colors; color>` [string='#FF8080'] Color used for this category.
-                  -  **description** :index:`: <pair: output - bom - options - xlsx - row_colors; description>` [string=''] A description for this color, must be filled.
-                  -  **filter** :index:`: <pair: output - bom - options - xlsx - row_colors; filter>` [string|list(string)='_none'] Name of the filter to match.
+                  -  **color** :index:`: <pair: output - bom - options - xlsx - row_colors; color>` [:ref:`string <string>`] Color used for this category.
+                  -  **description** :index:`: <pair: output - bom - options - xlsx - row_colors; description>` [:ref:`string <string>`] A description for this color, must be filled.
+                  -  **filter** :index:`: <pair: output - bom - options - xlsx - row_colors; filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to match.
                      Be careful because this filter should be coherent with the grouping fields.
                      KiBot will assume that all the components grouped in the same group will
                      return the same value when applying this filter.
 
 
-            -  ``specs_columns`` :index:`: <pair: output - bom - options - xlsx; specs_columns>` [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+            -  ``specs_columns`` :index:`: <pair: output - bom - options - xlsx; specs_columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] Which columns are included in the Specs worksheet. Use `References` for the
                references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
 
                -  Valid keys:
 
-                  -  **field** :index:`: <pair: output - bom - options - xlsx - specs_columns; field>` [string=''] Name of the field to use for this column.
+                  -  **field** :index:`: <pair: output - bom - options - xlsx - specs_columns; field>` [:ref:`string <string>`] Name of the field to use for this column.
                      Use `_field_lcsc_part` to get the value defined in the global options.
-                  -  **name** :index:`: <pair: output - bom - options - xlsx - specs_columns; name>` [string=''] Name to display in the header. The field is used when empty.
-                  -  ``comment`` :index:`: <pair: output - bom - options - xlsx - specs_columns; comment>` [string=''] Used as explanation for this column. The XLSX output uses it.
-                  -  ``join`` :index:`: <pair: output - bom - options - xlsx - specs_columns; join>` [list(dict)|list(string)|string=''] List of fields to join to this column.
+                  -  **name** :index:`: <pair: output - bom - options - xlsx - specs_columns; name>` [:ref:`string <string>`] Name to display in the header. The field is used when empty.
+                  -  ``comment`` :index:`: <pair: output - bom - options - xlsx - specs_columns; comment>` [:ref:`string <string>`] Used as explanation for this column. The XLSX output uses it.
+                  -  ``join`` :index:`: <pair: output - bom - options - xlsx - specs_columns; join>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] List of fields to join to this column.
 
                      -  Valid keys:
 
-                        -  **field** :index:`: <pair: output - bom - options - xlsx - specs_columns - join; field>` [string=''] Name of the field.
-                        -  ``text`` :index:`: <pair: output - bom - options - xlsx - specs_columns - join; text>` [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                        -  **field** :index:`: <pair: output - bom - options - xlsx - specs_columns - join; field>` [:ref:`string <string>`] Name of the field.
+                        -  ``text`` :index:`: <pair: output - bom - options - xlsx - specs_columns - join; text>` [:ref:`string <string>`] Text to use instead of a field. This option is incompatible with the `field` option.
                            Any space to separate it should be added in the text.
                            Use \\n for newline and \\t for tab.
-                        -  ``text_after`` :index:`: <pair: output - bom - options - xlsx - specs_columns - join; text_after>` [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                        -  ``text_after`` :index:`: <pair: output - bom - options - xlsx - specs_columns - join; text_after>` [:ref:`string <string>`] Text to add after the field content. Will be added only if the field isn't empty.
                            Any space to separate it should be added in the text.
                            Use \\n for newline and \\t for tab.
-                        -  ``text_before`` :index:`: <pair: output - bom - options - xlsx - specs_columns - join; text_before>` [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                        -  ``text_before`` :index:`: <pair: output - bom - options - xlsx - specs_columns - join; text_before>` [:ref:`string <string>`] Text to add before the field content. Will be added only if the field isn't empty.
                            Any space to separate it should be added in the text.
                            Use \\n for newline and \\t for tab.
 
-                  -  ``level`` :index:`: <pair: output - bom - options - xlsx - specs_columns; level>` [number=0] Used to group columns. The XLSX output uses it to collapse columns.
+                  -  ``level`` :index:`: <pair: output - bom - options - xlsx - specs_columns; level>` [:ref:`number <number>`] Used to group columns. The XLSX output uses it to collapse columns.
 
-            -  ``style`` :index:`: <pair: output - bom - options - xlsx; style>` [string='modern-blue'] Head style: modern-blue, modern-green, modern-red and classic.
+            -  ``style`` :index:`: <pair: output - bom - options - xlsx; style>` [:ref:`string <string>`] Head style: modern-blue, modern-green, modern-red and classic.
 
-      -  ``aggregate`` :index:`: <pair: output - bom - options; aggregate>` [list(dict)] Add components from other projects.
+      -  ``aggregate`` :index:`: <pair: output - bom - options; aggregate>` [:ref:`list(dict) <list(dict)>`] Add components from other projects.
          You can use CSV files, the first row must contain the names of the fields.
          The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
          The `Part` column should contain the name/type of the component. This is important for
@@ -234,15 +234,15 @@ Parameters:
 
          -  Valid keys:
 
-            -  ``delimiter`` :index:`: <pair: output - bom - options - aggregate; delimiter>` [string=','] Delimiter used for CSV files.
-            -  ``file`` :index:`: <pair: output - bom - options - aggregate; file>` [string=''] Name of the schematic to aggregate.
-            -  ``name`` :index:`: <pair: output - bom - options - aggregate; name>` [string=''] Name to identify this source. If empty we use the name of the schematic.
-            -  ``number`` :index:`: <pair: output - bom - options - aggregate; number>` [number=1] Number of boards to build (components multiplier). Use negative to subtract.
-            -  ``ref_id`` :index:`: <pair: output - bom - options - aggregate; ref_id>` [string=''] A prefix to add to all the references from this project.
+            -  ``delimiter`` :index:`: <pair: output - bom - options - aggregate; delimiter>` [:ref:`string <string>`] Delimiter used for CSV files.
+            -  ``file`` :index:`: <pair: output - bom - options - aggregate; file>` [:ref:`string <string>`] Name of the schematic to aggregate.
+            -  ``name`` :index:`: <pair: output - bom - options - aggregate; name>` [:ref:`string <string>`] Name to identify this source. If empty we use the name of the schematic.
+            -  ``number`` :index:`: <pair: output - bom - options - aggregate; number>` [:ref:`number <number>`] Number of boards to build (components multiplier). Use negative to subtract.
+            -  ``ref_id`` :index:`: <pair: output - bom - options - aggregate; ref_id>` [:ref:`string <string>`] A prefix to add to all the references from this project.
 
-      -  ``angle_positive`` :index:`: <pair: output - bom - options; angle_positive>` [boolean=true] Always use positive values for the footprint rotation.
-      -  ``bottom_negative_x`` :index:`: <pair: output - bom - options; bottom_negative_x>` [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS).
-      -  ``component_aliases`` :index:`: <pair: output - bom - options; component_aliases>` [list(list(string))] A series of values which are considered to be equivalent for the part name.
+      -  ``angle_positive`` :index:`: <pair: output - bom - options; angle_positive>` [:ref:`boolean <boolean>`] Always use positive values for the footprint rotation.
+      -  ``bottom_negative_x`` :index:`: <pair: output - bom - options; bottom_negative_x>` [:ref:`boolean <boolean>`] Use negative X coordinates for footprints on bottom layer (for XYRS).
+      -  ``component_aliases`` :index:`: <pair: output - bom - options; component_aliases>` [:ref:`list(list(string)) <list(list(string))>`] A series of values which are considered to be equivalent for the part name.
          Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
          will ensure the equivalent capacitor symbols can be grouped together.
          If empty the following aliases are used:
@@ -254,107 +254,107 @@ Parameters:
          - ['zener', 'zenersmall']
          - ['d', 'diode', 'd_small'].
 
-      -  ``cost_extra_columns`` :index:`: <pair: output - bom - options; cost_extra_columns>` [list(dict)|list(string)] List of columns to add to the global section of the cost.
+      -  ``cost_extra_columns`` :index:`: <pair: output - bom - options; cost_extra_columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] List of columns to add to the global section of the cost.
          Can be just the name of the field.
 
          -  Valid keys:
 
-            -  **field** :index:`: <pair: output - bom - options - cost_extra_columns; field>` [string=''] Name of the field to use for this column.
+            -  **field** :index:`: <pair: output - bom - options - cost_extra_columns; field>` [:ref:`string <string>`] Name of the field to use for this column.
                Use `_field_lcsc_part` to get the value defined in the global options.
-            -  **name** :index:`: <pair: output - bom - options - cost_extra_columns; name>` [string=''] Name to display in the header. The field is used when empty.
-            -  ``comment`` :index:`: <pair: output - bom - options - cost_extra_columns; comment>` [string=''] Used as explanation for this column. The XLSX output uses it.
-            -  ``join`` :index:`: <pair: output - bom - options - cost_extra_columns; join>` [list(dict)|list(string)|string=''] List of fields to join to this column.
+            -  **name** :index:`: <pair: output - bom - options - cost_extra_columns; name>` [:ref:`string <string>`] Name to display in the header. The field is used when empty.
+            -  ``comment`` :index:`: <pair: output - bom - options - cost_extra_columns; comment>` [:ref:`string <string>`] Used as explanation for this column. The XLSX output uses it.
+            -  ``join`` :index:`: <pair: output - bom - options - cost_extra_columns; join>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] List of fields to join to this column.
 
                -  Valid keys:
 
-                  -  **field** :index:`: <pair: output - bom - options - cost_extra_columns - join; field>` [string=''] Name of the field.
-                  -  ``text`` :index:`: <pair: output - bom - options - cost_extra_columns - join; text>` [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
+                  -  **field** :index:`: <pair: output - bom - options - cost_extra_columns - join; field>` [:ref:`string <string>`] Name of the field.
+                  -  ``text`` :index:`: <pair: output - bom - options - cost_extra_columns - join; text>` [:ref:`string <string>`] Text to use instead of a field. This option is incompatible with the `field` option.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
-                  -  ``text_after`` :index:`: <pair: output - bom - options - cost_extra_columns - join; text_after>` [string=''] Text to add after the field content. Will be added only if the field isn't empty.
+                  -  ``text_after`` :index:`: <pair: output - bom - options - cost_extra_columns - join; text_after>` [:ref:`string <string>`] Text to add after the field content. Will be added only if the field isn't empty.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
-                  -  ``text_before`` :index:`: <pair: output - bom - options - cost_extra_columns - join; text_before>` [string=''] Text to add before the field content. Will be added only if the field isn't empty.
+                  -  ``text_before`` :index:`: <pair: output - bom - options - cost_extra_columns - join; text_before>` [:ref:`string <string>`] Text to add before the field content. Will be added only if the field isn't empty.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
 
-            -  ``level`` :index:`: <pair: output - bom - options - cost_extra_columns; level>` [number=0] Used to group columns. The XLSX output uses it to collapse columns.
+            -  ``level`` :index:`: <pair: output - bom - options - cost_extra_columns; level>` [:ref:`number <number>`] Used to group columns. The XLSX output uses it to collapse columns.
 
-      -  ``count_smd_tht`` :index:`: <pair: output - bom - options; count_smd_tht>` [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB.
-      -  ``distributors`` :index:`: <pair: output - bom - options; distributors>` [string|list(string)] Include this distributors list. Default is all the available.
+      -  ``count_smd_tht`` :index:`: <pair: output - bom - options; count_smd_tht>` [:ref:`boolean <boolean>`] Show the stats about how many of the components are SMD/THT. You must provide the PCB.
+      -  ``distributors`` :index:`: <pair: output - bom - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Include this distributors list. Default is all the available.
 
-      -  ``dnc_filter`` :index:`: <pair: output - bom - options; dnc_filter>` [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
+      -  ``dnc_filter`` :index:`: <pair: output - bom - options; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Change'.
          The default filter marks components with a DNC value or DNC in the Config field.
          This option is for simple cases, consider using a full variant for complex cases.
 
-      -  ``dnf_filter`` :index:`: <pair: output - bom - options; dnf_filter>` [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
+      -  ``dnf_filter`` :index:`: <pair: output - bom - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Fit'.
          The default filter marks components with a DNF value or DNF in the Config field.
          This option is for simple cases, consider using a full variant for complex cases.
 
-      -  ``exclude_filter`` :index:`: <pair: output - bom - options; exclude_filter>` [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
+      -  ``exclude_filter`` :index:`: <pair: output - bom - options; exclude_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to exclude components from BoM processing.
          The default filter (built-in filter '_mechanical') excludes test points, fiducial marks, mounting holes, etc.
          Please consult the built-in filters explanation to fully understand what is excluded by default.
          This option is for simple cases, consider using a full variant for complex cases.
 
-      -  ``exclude_marked_in_pcb`` :index:`: <pair: output - bom - options; exclude_marked_in_pcb>` [boolean=false] Exclude components marked with *Exclude from BOM* in the PCB.
+      -  ``exclude_marked_in_pcb`` :index:`: <pair: output - bom - options; exclude_marked_in_pcb>` [:ref:`boolean <boolean>`] Exclude components marked with *Exclude from BOM* in the PCB.
          This is a KiCad 6 option.
-      -  ``exclude_marked_in_sch`` :index:`: <pair: output - bom - options; exclude_marked_in_sch>` [boolean=true] Exclude components marked with *Exclude from bill of materials* in the schematic.
+      -  ``exclude_marked_in_sch`` :index:`: <pair: output - bom - options; exclude_marked_in_sch>` [:ref:`boolean <boolean>`] Exclude components marked with *Exclude from bill of materials* in the schematic.
          This is a KiCad 6 option.
-      -  ``expand_text_vars`` :index:`: <pair: output - bom - options; expand_text_vars>` [boolean=true] Expand KiCad 6 text variables after applying all filters and variants.
+      -  ``expand_text_vars`` :index:`: <pair: output - bom - options; expand_text_vars>` [:ref:`boolean <boolean>`] Expand KiCad 6 text variables after applying all filters and variants.
          This is done using a **_expand_text_vars** filter.
          If you need to customize the filter, or apply it before, you can disable this option and
          add a custom filter to the filter chain.
-      -  ``fit_field`` :index:`: <pair: output - bom - options; fit_field>` [string='Config'] Field name used for internal filters (not for variants).
-      -  ``footprint_populate_values`` :index:`: <pair: output - bom - options; footprint_populate_values>` [string|list(string)='no,yes'] Values for the `Footprint Populate` column.
+      -  ``fit_field`` :index:`: <pair: output - bom - options; fit_field>` [:ref:`string <string>`] Field name used for internal filters (not for variants).
+      -  ``footprint_populate_values`` :index:`: <pair: output - bom - options; footprint_populate_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Values for the `Footprint Populate` column.
 
-      -  ``footprint_type_values`` :index:`: <pair: output - bom - options; footprint_type_values>` [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column.
+      -  ``footprint_type_values`` :index:`: <pair: output - bom - options; footprint_type_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Values for the `Footprint Type` column.
 
-      -  ``group_connectors`` :index:`: <pair: output - bom - options; group_connectors>` [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector.
-      -  ``group_fields_fallbacks`` :index:`: <pair: output - bom - options; group_fields_fallbacks>` [list(string)] List of fields to be used when the fields in `group_fields` are empty.
+      -  ``group_connectors`` :index:`: <pair: output - bom - options; group_connectors>` [:ref:`boolean <boolean>`] Connectors with the same footprints will be grouped together, independent of the name of the connector.
+      -  ``group_fields_fallbacks`` :index:`: <pair: output - bom - options; group_fields_fallbacks>` [:ref:`list(string) <list(string)>`] List of fields to be used when the fields in `group_fields` are empty.
          The first field in this list is the fallback for the first in `group_fields`, and so on.
 
-      -  ``int_qtys`` :index:`: <pair: output - bom - options; int_qtys>` [boolean=true] Component quantities are always expressed as integers. Using the ceil() function.
-      -  ``merge_blank_fields`` :index:`: <pair: output - bom - options; merge_blank_fields>` [boolean=true] Component groups with blank fields will be merged into the most compatible group, where possible.
-      -  ``merge_both_blank`` :index:`: <pair: output - bom - options; merge_both_blank>` [boolean=true] When creating groups two components with empty/missing field will be interpreted as with the same value.
-      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [list(string)] List of fields where we tolerate conflicts.
+      -  ``int_qtys`` :index:`: <pair: output - bom - options; int_qtys>` [:ref:`boolean <boolean>`] Component quantities are always expressed as integers. Using the ceil() function.
+      -  ``merge_blank_fields`` :index:`: <pair: output - bom - options; merge_blank_fields>` [:ref:`boolean <boolean>`] Component groups with blank fields will be merged into the most compatible group, where possible.
+      -  ``merge_both_blank`` :index:`: <pair: output - bom - options; merge_both_blank>` [:ref:`boolean <boolean>`] When creating groups two components with empty/missing field will be interpreted as with the same value.
+      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [:ref:`list(string) <list(string)>`] List of fields where we tolerate conflicts.
          Use it to avoid undesired warnings.
          By default the field indicated in `fit_field`, the field used for variants and
          the field `part` are excluded.
 
-      -  ``no_distributors`` :index:`: <pair: output - bom - options; no_distributors>` [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`.
+      -  ``no_distributors`` :index:`: <pair: output - bom - options; no_distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Exclude this distributors list. They are removed after computing `distributors`.
 
-      -  ``normalize_locale`` :index:`: <pair: output - bom - options; normalize_locale>` [boolean=false] When normalizing values use the locale decimal point.
-      -  ``parse_value`` :index:`: <pair: output - bom - options; parse_value>` [boolean=true] Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
+      -  ``normalize_locale`` :index:`: <pair: output - bom - options; normalize_locale>` [:ref:`boolean <boolean>`] When normalizing values use the locale decimal point.
+      -  ``parse_value`` :index:`: <pair: output - bom - options; parse_value>` [:ref:`boolean <boolean>`] Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
          Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
          extra information split it in separated fields, add the fields to `group_fields` and disable
          `merge_blank_fields`.
-      -  ``pre_transform`` :index:`: <pair: output - bom - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - bom - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
          This option is for simple cases, consider using a full variant for complex cases.
 
-      -  ``ref_id`` :index:`: <pair: output - bom - options; ref_id>` [string=''] A prefix to add to all the references from this project. Used for multiple projects.
-      -  ``ref_separator`` :index:`: <pair: output - bom - options; ref_separator>` [string=' '] Separator used for the list of references.
-      -  ``source_by_id`` :index:`: <pair: output - bom - options; source_by_id>` [boolean=false] Generate the `Source BoM` column using the reference ID instead of the project name.
-      -  ``use_alt`` :index:`: <pair: output - bom - options; use_alt>` [boolean=false] Print grouped references in the alternate compressed style eg: R1-R7,R18.
-      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - bom - options; use_aux_axis_as_origin>` [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).
-      -  ``variant`` :index:`: <pair: output - bom - options; variant>` [string=''] Board variant, used to determine which components
+      -  ``ref_id`` :index:`: <pair: output - bom - options; ref_id>` [:ref:`string <string>`] A prefix to add to all the references from this project. Used for multiple projects.
+      -  ``ref_separator`` :index:`: <pair: output - bom - options; ref_separator>` [:ref:`string <string>`] Separator used for the list of references.
+      -  ``source_by_id`` :index:`: <pair: output - bom - options; source_by_id>` [:ref:`boolean <boolean>`] Generate the `Source BoM` column using the reference ID instead of the project name.
+      -  ``use_alt`` :index:`: <pair: output - bom - options; use_alt>` [:ref:`boolean <boolean>`] Print grouped references in the alternate compressed style eg: R1-R7,R18.
+      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - bom - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).
+      -  ``variant`` :index:`: <pair: output - bom - options; variant>` [:ref:`string <string>`] Board variant, used to determine which components
          are output to the BoM..
 
 -  **type** :index:`: <pair: output - bom; type>` 'bom'
--  ``category`` :index:`: <pair: output - bom; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - bom; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - bom; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - bom; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - bom; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - bom; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - bom; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - bom; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - bom; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - bom; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - bom; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - bom; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - bom; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - bom; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
 

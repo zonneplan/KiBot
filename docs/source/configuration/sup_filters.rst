@@ -8,28 +8,28 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: filter - expand_text_vars; comment>` [string=''] A comment for documentation purposes.
-      -  ``include_kicad_env`` :index:`: <pair: filter - expand_text_vars; include_kicad_env>` [boolean=true] Also expand KiCad environment variables.
-      -  ``include_os_env`` :index:`: <pair: filter - expand_text_vars; include_os_env>` [boolean=false] Also expand system environment variables.
-      -  ``name`` :index:`: <pair: filter - expand_text_vars; name>` [string=''] Used to identify this particular filter definition.
+      -  ``comment`` :index:`: <pair: filter - expand_text_vars; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``include_kicad_env`` :index:`: <pair: filter - expand_text_vars; include_kicad_env>` [:ref:`boolean <boolean>`] Also expand KiCad environment variables.
+      -  ``include_os_env`` :index:`: <pair: filter - expand_text_vars; include_os_env>` [:ref:`boolean <boolean>`] Also expand system environment variables.
+      -  ``name`` :index:`: <pair: filter - expand_text_vars; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
 
 -  **field_modify**: (**Field Modifier**)
    Changes the content of one or more fields.
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: filter - field_modify; comment>` [string=''] A comment for documentation purposes.
-      -  ``fields`` :index:`: <pair: filter - field_modify; fields>` [string|list(string)='Datasheet'] Fields to convert.
+      -  ``comment`` :index:`: <pair: filter - field_modify; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``fields`` :index:`: <pair: filter - field_modify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Fields to convert.
 
-      -  ``include`` :index:`: <pair: filter - field_modify; include>` [string|list(string)=''] Name of the filter to select which components will be affected.
+      -  ``include`` :index:`: <pair: filter - field_modify; include>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to select which components will be affected.
          Applied to all if nothing specified here.
 
-      -  ``name`` :index:`: <pair: filter - field_modify; name>` [string=''] Used to identify this particular filter definition.
-      -  ``regex`` :index:`: <pair: filter - field_modify; regex>` [string='(https?://\\S+)'] Regular expression to match the field content.
+      -  ``name`` :index:`: <pair: filter - field_modify; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
+      -  ``regex`` :index:`: <pair: filter - field_modify; regex>` [:ref:`string <string>`] Regular expression to match the field content.
          Only fields that matches will be modified.
          An empty regex will match anything.
          The example matches an HTTP URL.
-      -  ``replace`` :index:`: <pair: filter - field_modify; replace>` [string='<a href="\\1">\\1</a>'] Text to replace, can contain references to sub-expressions.
+      -  ``replace`` :index:`: <pair: filter - field_modify; replace>` [:ref:`string <string>`] Text to replace, can contain references to sub-expressions.
          The example converts an HTTP URL into an HTML link, like the URLify filter.
 
 -  **field_rename**: (**Field Renamer**)
@@ -38,14 +38,14 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: filter - field_rename; comment>` [string=''] A comment for documentation purposes.
-      -  ``name`` :index:`: <pair: filter - field_rename; name>` [string=''] Used to identify this particular filter definition.
-      -  ``rename`` :index:`: <pair: filter - field_rename; rename>` [list(dict)] Fields to rename.
+      -  ``comment`` :index:`: <pair: filter - field_rename; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``name`` :index:`: <pair: filter - field_rename; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
+      -  ``rename`` :index:`: <pair: filter - field_rename; rename>` [:ref:`list(dict) <list(dict)>`] Fields to rename.
 
          -  Valid keys:
 
-            -  ``field`` :index:`: <pair: filter - field_rename - rename; field>` [string=''] Name of the field to rename.
-            -  ``name`` :index:`: <pair: filter - field_rename - rename; name>` [string=''] New name.
+            -  ``field`` :index:`: <pair: filter - field_rename - rename; field>` [:ref:`string <string>`] Name of the field to rename.
+            -  ``name`` :index:`: <pair: filter - field_rename - rename; name>` [:ref:`string <string>`] New name.
 
 
 -  **generic**: (**Generic filter**)
@@ -57,65 +57,65 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: filter - generic; comment>` [string=''] A comment for documentation purposes.
-      -  ``config_field`` :index:`: <pair: filter - generic; config_field>` [string='Config'] Name of the field used to classify components.
-      -  ``config_separators`` :index:`: <pair: filter - generic; config_separators>` [string=' ,'] Characters used to separate options inside the config field.
-      -  ``exclude_all_hash_ref`` :index:`: <pair: filter - generic; exclude_all_hash_ref>` [boolean=false] Exclude all components with a reference starting with #.
-      -  ``exclude_any`` :index:`: <pair: filter - generic; exclude_any>` [list(dict)] A series of regular expressions used to exclude parts.
+      -  ``comment`` :index:`: <pair: filter - generic; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``config_field`` :index:`: <pair: filter - generic; config_field>` [:ref:`string <string>`] Name of the field used to classify components.
+      -  ``config_separators`` :index:`: <pair: filter - generic; config_separators>` [:ref:`string <string>`] Characters used to separate options inside the config field.
+      -  ``exclude_all_hash_ref`` :index:`: <pair: filter - generic; exclude_all_hash_ref>` [:ref:`boolean <boolean>`] Exclude all components with a reference starting with #.
+      -  ``exclude_any`` :index:`: <pair: filter - generic; exclude_any>` [:ref:`list(dict) <list(dict)>`] A series of regular expressions used to exclude parts.
          If a component matches ANY of these, it will be excluded.
          Column names are case-insensitive.
 
          -  Valid keys:
 
-            -  ``column`` :index:`: <pair: filter - generic - exclude_any; column>` [string=''] Name of the column to apply the regular expression.
+            -  ``column`` :index:`: <pair: filter - generic - exclude_any; column>` [:ref:`string <string>`] Name of the column to apply the regular expression.
                Use `_field_lcsc_part` to get the value defined in the global options.
             -  *field* :index:`: <pair: filter - generic - exclude_any; field>` Alias for column.
-            -  ``invert`` :index:`: <pair: filter - generic - exclude_any; invert>` [boolean=false] Invert the regex match result.
-            -  ``match_if_field`` :index:`: <pair: filter - generic - exclude_any; match_if_field>` [boolean=false] Match if the field exists, no regex applied. Not affected by `invert`.
-            -  ``match_if_no_field`` :index:`: <pair: filter - generic - exclude_any; match_if_no_field>` [boolean=false] Match if the field doesn't exists, no regex applied. Not affected by `invert`.
-            -  ``regex`` :index:`: <pair: filter - generic - exclude_any; regex>` [string=''] Regular expression to match.
+            -  ``invert`` :index:`: <pair: filter - generic - exclude_any; invert>` [:ref:`boolean <boolean>`] Invert the regex match result.
+            -  ``match_if_field`` :index:`: <pair: filter - generic - exclude_any; match_if_field>` [:ref:`boolean <boolean>`] Match if the field exists, no regex applied. Not affected by `invert`.
+            -  ``match_if_no_field`` :index:`: <pair: filter - generic - exclude_any; match_if_no_field>` [:ref:`boolean <boolean>`] Match if the field doesn't exists, no regex applied. Not affected by `invert`.
+            -  ``regex`` :index:`: <pair: filter - generic - exclude_any; regex>` [:ref:`string <string>`] Regular expression to match.
             -  *regexp* :index:`: <pair: filter - generic - exclude_any; regexp>` Alias for regex.
-            -  ``skip_if_no_field`` :index:`: <pair: filter - generic - exclude_any; skip_if_no_field>` [boolean=false] Skip this test if the field doesn't exist.
+            -  ``skip_if_no_field`` :index:`: <pair: filter - generic - exclude_any; skip_if_no_field>` [:ref:`boolean <boolean>`] Skip this test if the field doesn't exist.
 
-      -  ``exclude_bottom`` :index:`: <pair: filter - generic; exclude_bottom>` [boolean=false] Exclude components on the bottom side of the PCB.
-      -  ``exclude_config`` :index:`: <pair: filter - generic; exclude_config>` [boolean=false] Exclude components containing a key value in the config field.
+      -  ``exclude_bottom`` :index:`: <pair: filter - generic; exclude_bottom>` [:ref:`boolean <boolean>`] Exclude components on the bottom side of the PCB.
+      -  ``exclude_config`` :index:`: <pair: filter - generic; exclude_config>` [:ref:`boolean <boolean>`] Exclude components containing a key value in the config field.
          Separators are applied.
-      -  ``exclude_empty_val`` :index:`: <pair: filter - generic; exclude_empty_val>` [boolean=false] Exclude components with empty 'Value'.
-      -  ``exclude_field`` :index:`: <pair: filter - generic; exclude_field>` [boolean=false] Exclude components if a field is named as any of the keys.
-      -  ``exclude_not_in_bom`` :index:`: <pair: filter - generic; exclude_not_in_bom>` [boolean=false] Exclude components marked *Exclude from bill of materials* (KiCad 6+).
-      -  ``exclude_not_on_board`` :index:`: <pair: filter - generic; exclude_not_on_board>` [boolean=false] Exclude components marked *Exclude from board* (KiCad 6+).
-      -  ``exclude_refs`` :index:`: <pair: filter - generic; exclude_refs>` [list(string)] List of references to be excluded.
+      -  ``exclude_empty_val`` :index:`: <pair: filter - generic; exclude_empty_val>` [:ref:`boolean <boolean>`] Exclude components with empty 'Value'.
+      -  ``exclude_field`` :index:`: <pair: filter - generic; exclude_field>` [:ref:`boolean <boolean>`] Exclude components if a field is named as any of the keys.
+      -  ``exclude_not_in_bom`` :index:`: <pair: filter - generic; exclude_not_in_bom>` [:ref:`boolean <boolean>`] Exclude components marked *Exclude from bill of materials* (KiCad 6+).
+      -  ``exclude_not_on_board`` :index:`: <pair: filter - generic; exclude_not_on_board>` [:ref:`boolean <boolean>`] Exclude components marked *Exclude from board* (KiCad 6+).
+      -  ``exclude_refs`` :index:`: <pair: filter - generic; exclude_refs>` [:ref:`list(string) <list(string)>`] List of references to be excluded.
          Use R* for all references with R prefix.
 
-      -  ``exclude_smd`` :index:`: <pair: filter - generic; exclude_smd>` [boolean=false] Exclude components marked as smd in the PCB.
-      -  ``exclude_tht`` :index:`: <pair: filter - generic; exclude_tht>` [boolean=false] Exclude components marked as through-hole in the PCB.
-      -  ``exclude_top`` :index:`: <pair: filter - generic; exclude_top>` [boolean=false] Exclude components on the top side of the PCB.
-      -  ``exclude_value`` :index:`: <pair: filter - generic; exclude_value>` [boolean=false] Exclude components if their 'Value' is any of the keys.
-      -  ``exclude_virtual`` :index:`: <pair: filter - generic; exclude_virtual>` [boolean=false] Exclude components marked as virtual in the PCB.
-      -  ``include_only`` :index:`: <pair: filter - generic; include_only>` [list(dict)] A series of regular expressions used to include parts.
+      -  ``exclude_smd`` :index:`: <pair: filter - generic; exclude_smd>` [:ref:`boolean <boolean>`] Exclude components marked as smd in the PCB.
+      -  ``exclude_tht`` :index:`: <pair: filter - generic; exclude_tht>` [:ref:`boolean <boolean>`] Exclude components marked as through-hole in the PCB.
+      -  ``exclude_top`` :index:`: <pair: filter - generic; exclude_top>` [:ref:`boolean <boolean>`] Exclude components on the top side of the PCB.
+      -  ``exclude_value`` :index:`: <pair: filter - generic; exclude_value>` [:ref:`boolean <boolean>`] Exclude components if their 'Value' is any of the keys.
+      -  ``exclude_virtual`` :index:`: <pair: filter - generic; exclude_virtual>` [:ref:`boolean <boolean>`] Exclude components marked as virtual in the PCB.
+      -  ``include_only`` :index:`: <pair: filter - generic; include_only>` [:ref:`list(dict) <list(dict)>`] A series of regular expressions used to include parts.
          If there are any regex defined here, only components that match against ANY of them will be included.
          Column/field names are case-insensitive.
          If empty this rule is ignored.
 
          -  Valid keys:
 
-            -  ``column`` :index:`: <pair: filter - generic - include_only; column>` [string=''] Name of the column to apply the regular expression.
+            -  ``column`` :index:`: <pair: filter - generic - include_only; column>` [:ref:`string <string>`] Name of the column to apply the regular expression.
                Use `_field_lcsc_part` to get the value defined in the global options.
             -  *field* :index:`: <pair: filter - generic - include_only; field>` Alias for column.
-            -  ``invert`` :index:`: <pair: filter - generic - include_only; invert>` [boolean=false] Invert the regex match result.
-            -  ``match_if_field`` :index:`: <pair: filter - generic - include_only; match_if_field>` [boolean=false] Match if the field exists, no regex applied. Not affected by `invert`.
-            -  ``match_if_no_field`` :index:`: <pair: filter - generic - include_only; match_if_no_field>` [boolean=false] Match if the field doesn't exists, no regex applied. Not affected by `invert`.
-            -  ``regex`` :index:`: <pair: filter - generic - include_only; regex>` [string=''] Regular expression to match.
+            -  ``invert`` :index:`: <pair: filter - generic - include_only; invert>` [:ref:`boolean <boolean>`] Invert the regex match result.
+            -  ``match_if_field`` :index:`: <pair: filter - generic - include_only; match_if_field>` [:ref:`boolean <boolean>`] Match if the field exists, no regex applied. Not affected by `invert`.
+            -  ``match_if_no_field`` :index:`: <pair: filter - generic - include_only; match_if_no_field>` [:ref:`boolean <boolean>`] Match if the field doesn't exists, no regex applied. Not affected by `invert`.
+            -  ``regex`` :index:`: <pair: filter - generic - include_only; regex>` [:ref:`string <string>`] Regular expression to match.
             -  *regexp* :index:`: <pair: filter - generic - include_only; regexp>` Alias for regex.
-            -  ``skip_if_no_field`` :index:`: <pair: filter - generic - include_only; skip_if_no_field>` [boolean=false] Skip this test if the field doesn't exist.
+            -  ``skip_if_no_field`` :index:`: <pair: filter - generic - include_only; skip_if_no_field>` [:ref:`boolean <boolean>`] Skip this test if the field doesn't exist.
 
-      -  ``invert`` :index:`: <pair: filter - generic; invert>` [boolean=false] Invert the result of the filter.
-      -  ``keys`` :index:`: <pair: filter - generic; keys>` [string|list(string)=dnf_list] [dnc_list,dnf_list] List of keys to match.
+      -  ``invert`` :index:`: <pair: filter - generic; invert>` [:ref:`boolean <boolean>`] Invert the result of the filter.
+      -  ``keys`` :index:`: <pair: filter - generic; keys>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of keys to match.
          The `dnf_list` and `dnc_list` internal lists can be specified as strings.
          Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
          Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
 
-      -  ``name`` :index:`: <pair: filter - generic; name>` [string=''] Used to identify this particular filter definition.
+      -  ``name`` :index:`: <pair: filter - generic; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
 
 -  **rot_footprint**: (**Footprint Rotator**)
    This filter can rotate footprints, used for the positions file generation. |br|
@@ -125,60 +125,60 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``bennymeg_mode`` :index:`: <pair: filter - rot_footprint; bennymeg_mode>` [boolean=true] Implements the `rot_fields` and `offset_fields` in the same way that the bennymeg/JLC-Plugin-for-KiCad tool.
+      -  ``bennymeg_mode`` :index:`: <pair: filter - rot_footprint; bennymeg_mode>` [:ref:`boolean <boolean>`] Implements the `rot_fields` and `offset_fields` in the same way that the bennymeg/JLC-Plugin-for-KiCad tool.
          Note that the computation for bottom rotations is wrong, forcing the user to uses arbitrary rotations.
          The correct computation is `(180 - component rot) + angle` but the plugin does `180 - (component rot + angle)`.
          This option forces the wrong computation for compatibility.
          This option also controls the way offset signs are interpreted. When enabled the offsets matches this plugin,
          when disabled matches the interpretation used by the matthewlai/JLCKicadTools plugin.
          Disabling this option you'll get better algorithms, but loose compatibility with this plugin.
-      -  ``comment`` :index:`: <pair: filter - rot_footprint; comment>` [string=''] A comment for documentation purposes.
-      -  ``extend`` :index:`: <pair: filter - rot_footprint; extend>` [boolean=true] Extends the internal list of rotations with the one provided.
+      -  ``comment`` :index:`: <pair: filter - rot_footprint; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``extend`` :index:`: <pair: filter - rot_footprint; extend>` [:ref:`boolean <boolean>`] Extends the internal list of rotations with the one provided.
          Otherwise just use the provided list.
          Note that the provided list has more precedence than the internal list.
-      -  ``invert_bottom`` :index:`: <pair: filter - rot_footprint; invert_bottom>` [boolean=false] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)`
+      -  ``invert_bottom`` :index:`: <pair: filter - rot_footprint; invert_bottom>` [:ref:`boolean <boolean>`] Rotation for bottom components is negated, resulting in either: `(- component rot - angle)`
          or when combined with `negative_bottom`, `(angle - component rot)`.
-      -  ``mirror_bottom`` :index:`: <pair: filter - rot_footprint; mirror_bottom>` [boolean=false] The original component rotation for components in the bottom is mirrored before applying
+      -  ``mirror_bottom`` :index:`: <pair: filter - rot_footprint; mirror_bottom>` [:ref:`boolean <boolean>`] The original component rotation for components in the bottom is mirrored before applying
          the adjust so you get `(180 - component rot + angle)`. This is used by JLCPCB.
-      -  ``name`` :index:`: <pair: filter - rot_footprint; name>` [string=''] Used to identify this particular filter definition.
-      -  ``negative_bottom`` :index:`: <pair: filter - rot_footprint; negative_bottom>` [boolean=true] Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
-      -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [string|list(string)='JLCPCB Position Offset,JLCPosOffset'] List of fields that can contain a position offset.
+      -  ``name`` :index:`: <pair: filter - rot_footprint; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
+      -  ``negative_bottom`` :index:`: <pair: filter - rot_footprint; negative_bottom>` [:ref:`boolean <boolean>`] Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
+      -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of fields that can contain a position offset.
          The optional fields can contain a comma separated x,y position offset.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
-      -  ``offsets`` :index:`: <pair: filter - rot_footprint; offsets>` [list(list(string))] A list of pairs regular expression/offset.
+      -  ``offsets`` :index:`: <pair: filter - rot_footprint; offsets>` [:ref:`list(list(string)) <list(list(string))>`] A list of pairs regular expression/offset.
          Footprints matching the regular expression will be moved the specified offset.
          The offset must be two numbers separated by a comma. The first is the X offset.
          The signs matches the matthewlai/JLCKicadTools plugin specs.
 
-      -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [string|list(string)='JLCPCB Rotation Offset,JLCRotOffset'] List of fields that can contain a rotation offset.
+      -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of fields that can contain a rotation offset.
          The optional fields can contain a counter-clockwise orientation offset in degrees.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
-      -  ``rotations`` :index:`: <pair: filter - rot_footprint; rotations>` [list(list(string))] A list of pairs regular expression/rotation.
+      -  ``rotations`` :index:`: <pair: filter - rot_footprint; rotations>` [:ref:`list(list(string)) <list(list(string))>`] A list of pairs regular expression/rotation.
          Footprints matching the regular expression will be rotated the indicated angle.
          The angle matches the matthewlai/JLCKicadTools plugin specs.
 
-      -  ``rotations_and_offsets`` :index:`: <pair: filter - rot_footprint; rotations_and_offsets>` [list(dict)] A list of rules to match components and specify the rotation and offsets.
+      -  ``rotations_and_offsets`` :index:`: <pair: filter - rot_footprint; rotations_and_offsets>` [:ref:`list(dict) <list(dict)>`] A list of rules to match components and specify the rotation and offsets.
          This is a more flexible version of the `rotations` and `offsets` options.
          Note that this list has more precedence.
 
          -  Valid keys:
 
-            -  ``angle`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; angle>` [number=0.0] Rotation offset to apply to the matched component.
-            -  ``apply_angle`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; apply_angle>` [boolean=true] Apply the angle offset.
-            -  ``apply_offset`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; apply_offset>` [boolean=true] Apply the position offset.
-            -  ``field`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; field>` [string='footprint'] Name of field to apply the regular expression.
+            -  ``angle`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; angle>` [:ref:`number <number>`] Rotation offset to apply to the matched component.
+            -  ``apply_angle`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; apply_angle>` [:ref:`boolean <boolean>`] Apply the angle offset.
+            -  ``apply_offset`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; apply_offset>` [:ref:`boolean <boolean>`] Apply the position offset.
+            -  ``field`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; field>` [:ref:`string <string>`] Name of field to apply the regular expression.
                Use `_field_lcsc_part` to get the value defined in the global options.
                Use `Footprint` for the name of the footprint without a library.
                Use `Full Footprint` for the name of the footprint including the library.
-            -  ``offset_x`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; offset_x>` [number=0.0] X position offset to apply to the matched component.
-            -  ``offset_y`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; offset_y>` [number=0.0] Y position offset to apply to the matched component.
-            -  ``regex`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; regex>` [string=''] Regular expression to match.
+            -  ``offset_x`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; offset_x>` [:ref:`number <number>`] X position offset to apply to the matched component.
+            -  ``offset_y`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; offset_y>` [:ref:`number <number>`] Y position offset to apply to the matched component.
+            -  ``regex`` :index:`: <pair: filter - rot_footprint - rotations_and_offsets; regex>` [:ref:`string <string>`] Regular expression to match.
             -  *regexp* :index:`: <pair: filter - rot_footprint - rotations_and_offsets; regexp>` Alias for regex.
 
-      -  ``skip_bottom`` :index:`: <pair: filter - rot_footprint; skip_bottom>` [boolean=false] Do not rotate components on the bottom.
-      -  ``skip_top`` :index:`: <pair: filter - rot_footprint; skip_top>` [boolean=false] Do not rotate components on the top.
+      -  ``skip_bottom`` :index:`: <pair: filter - rot_footprint; skip_bottom>` [:ref:`boolean <boolean>`] Do not rotate components on the bottom.
+      -  ``skip_top`` :index:`: <pair: filter - rot_footprint; skip_top>` [:ref:`boolean <boolean>`] Do not rotate components on the top.
 
 -  **spec_to_field**: (**Spec to Field**)
    This filter extracts information from the specs obtained from component distributors
@@ -190,65 +190,65 @@ Supported filters
 
    -  Valid keys:
 
-      -  **from_output** :index:`: <pair: filter - spec_to_field; from_output>` [string=''] Name of the output used to collect the specs.
+      -  **from_output** :index:`: <pair: filter - spec_to_field; from_output>` [:ref:`string <string>`] Name of the output used to collect the specs.
          Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs.
-      -  **specs** :index:`: <pair: filter - spec_to_field; specs>` [list(dict)|dict] One or more specs to be copied.
+      -  **specs** :index:`: <pair: filter - spec_to_field; specs>` [:ref:`list(dict) <list(dict)>` | :ref:`dict <dict>`] One or more specs to be copied.
 
          -  Valid keys:
 
-            -  **field** :index:`: <pair: filter - spec_to_field - specs; field>` [string=''] Name of the destination field.
-            -  **spec** :index:`: <pair: filter - spec_to_field - specs; spec>` [string|list(string)=''] Name/s of the source spec/s.
+            -  **field** :index:`: <pair: filter - spec_to_field - specs; field>` [:ref:`string <string>`] Name of the destination field.
+            -  **spec** :index:`: <pair: filter - spec_to_field - specs; spec>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name/s of the source spec/s.
                The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size'.
 
-            -  ``collision`` :index:`: <pair: filter - spec_to_field - specs; collision>` [string='warning'] [warning,error,ignore] How to report a collision between the current value and the new value.
-            -  ``policy`` :index:`: <pair: filter - spec_to_field - specs; policy>` [string='overwrite'] [overwrite,update,new] Controls the behavior of the copy mechanism.
+            -  ``collision`` :index:`: <pair: filter - spec_to_field - specs; collision>` [:ref:`string <string>`] How to report a collision between the current value and the new value.
+            -  ``policy`` :index:`: <pair: filter - spec_to_field - specs; policy>` [:ref:`string <string>`] Controls the behavior of the copy mechanism.
                `overwrite` always copy the spec value,
                `update` copy only if the field already exist,
                `new` copy only if the field doesn't exist..
             -  ``type`` :index:`: <pair: filter - spec_to_field - specs; type>` [string='string'] [percent,voltage,power,current,value,string] How we compare the current value to determine a collision.
                `value` is the component value i.e. resistance for R*.
 
-      -  ``check_dist_coherence`` :index:`: <pair: filter - spec_to_field; check_dist_coherence>` [boolean=true] Check that the data we got from different distributors is equivalent.
-      -  ``check_dist_fields`` :index:`: <pair: filter - spec_to_field; check_dist_fields>` [string|list(string)=''] List of fields to include in the check.
+      -  ``check_dist_coherence`` :index:`: <pair: filter - spec_to_field; check_dist_coherence>` [:ref:`boolean <boolean>`] Check that the data we got from different distributors is equivalent.
+      -  ``check_dist_fields`` :index:`: <pair: filter - spec_to_field; check_dist_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of fields to include in the check.
          For a full list of fields consult the `specs` option.
 
-      -  ``comment`` :index:`: <pair: filter - spec_to_field; comment>` [string=''] A comment for documentation purposes.
-      -  ``name`` :index:`: <pair: filter - spec_to_field; name>` [string=''] Used to identify this particular filter definition.
+      -  ``comment`` :index:`: <pair: filter - spec_to_field; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``name`` :index:`: <pair: filter - spec_to_field; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
 
 -  **subparts**: (**Subparts**)
    This filter implements the KiCost subparts mechanism.
 
    -  Valid keys:
 
-      -  ``check_multiplier`` :index:`: <pair: filter - subparts; check_multiplier>` [list(string)] List of fields to include for multiplier computation.
+      -  ``check_multiplier`` :index:`: <pair: filter - subparts; check_multiplier>` [:ref:`list(string) <list(string)>`] List of fields to include for multiplier computation.
          If empty all fields in `split_fields` and `manf_pn_field` are used.
 
-      -  ``comment`` :index:`: <pair: filter - subparts; comment>` [string=''] A comment for documentation purposes.
-      -  ``manf_field`` :index:`: <pair: filter - subparts; manf_field>` [string='manf'] Field for the manufacturer name.
-      -  ``manf_pn_field`` :index:`: <pair: filter - subparts; manf_pn_field>` [string='manf#'] Field for the manufacturer part number.
-      -  ``modify_first_value`` :index:`: <pair: filter - subparts; modify_first_value>` [boolean=true] Modify even the value for the first component in the list (KiCost behavior).
-      -  ``modify_value`` :index:`: <pair: filter - subparts; modify_value>` [boolean=true] Add '- p N/M' to the value.
-      -  ``mult_separators`` :index:`: <pair: filter - subparts; mult_separators>` [string=':'] Separators used for the multiplier. Each character in this string is a valid separator.
-      -  ``multiplier`` :index:`: <pair: filter - subparts; multiplier>` [boolean=true] Enables the subpart multiplier mechanism.
-      -  ``name`` :index:`: <pair: filter - subparts; name>` [string=''] Used to identify this particular filter definition.
-      -  ``ref_sep`` :index:`: <pair: filter - subparts; ref_sep>` [string='#'] Separator used in the reference (i.e. R10#1).
-      -  ``separators`` :index:`: <pair: filter - subparts; separators>` [string=';,'] Separators used between subparts. Each character in this string is a valid separator.
-      -  ``split_fields`` :index:`: <pair: filter - subparts; split_fields>` [list(string)] List of fields to split, usually the distributors part numbers.
+      -  ``comment`` :index:`: <pair: filter - subparts; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``manf_field`` :index:`: <pair: filter - subparts; manf_field>` [:ref:`string <string>`] Field for the manufacturer name.
+      -  ``manf_pn_field`` :index:`: <pair: filter - subparts; manf_pn_field>` [:ref:`string <string>`] Field for the manufacturer part number.
+      -  ``modify_first_value`` :index:`: <pair: filter - subparts; modify_first_value>` [:ref:`boolean <boolean>`] Modify even the value for the first component in the list (KiCost behavior).
+      -  ``modify_value`` :index:`: <pair: filter - subparts; modify_value>` [:ref:`boolean <boolean>`] Add '- p N/M' to the value.
+      -  ``mult_separators`` :index:`: <pair: filter - subparts; mult_separators>` [:ref:`string <string>`] Separators used for the multiplier. Each character in this string is a valid separator.
+      -  ``multiplier`` :index:`: <pair: filter - subparts; multiplier>` [:ref:`boolean <boolean>`] Enables the subpart multiplier mechanism.
+      -  ``name`` :index:`: <pair: filter - subparts; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
+      -  ``ref_sep`` :index:`: <pair: filter - subparts; ref_sep>` [:ref:`string <string>`] Separator used in the reference (i.e. R10#1).
+      -  ``separators`` :index:`: <pair: filter - subparts; separators>` [:ref:`string <string>`] Separators used between subparts. Each character in this string is a valid separator.
+      -  ``split_fields`` :index:`: <pair: filter - subparts; split_fields>` [:ref:`list(string) <list(string)>`] List of fields to split, usually the distributors part numbers.
 
-      -  ``split_fields_expand`` :index:`: <pair: filter - subparts; split_fields_expand>` [boolean=false] When `true` the fields in `split_fields` are added to the internal names.
-      -  ``use_ref_sep_for_first`` :index:`: <pair: filter - subparts; use_ref_sep_for_first>` [boolean=true] Force the reference separator use even for the first component in the list (KiCost behavior).
-      -  ``value_alt_field`` :index:`: <pair: filter - subparts; value_alt_field>` [string='value_subparts'] Field containing replacements for the `Value` field. So we get real values for split parts.
+      -  ``split_fields_expand`` :index:`: <pair: filter - subparts; split_fields_expand>` [:ref:`boolean <boolean>`] When `true` the fields in `split_fields` are added to the internal names.
+      -  ``use_ref_sep_for_first`` :index:`: <pair: filter - subparts; use_ref_sep_for_first>` [:ref:`boolean <boolean>`] Force the reference separator use even for the first component in the list (KiCost behavior).
+      -  ``value_alt_field`` :index:`: <pair: filter - subparts; value_alt_field>` [:ref:`string <string>`] Field containing replacements for the `Value` field. So we get real values for split parts.
 
 -  **urlify**: (**URLify**)
    Converts URL text in fields to HTML URLs.
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: filter - urlify; comment>` [string=''] A comment for documentation purposes.
-      -  ``fields`` :index:`: <pair: filter - urlify; fields>` [string|list(string)='Datasheet'] Fields to convert.
+      -  ``comment`` :index:`: <pair: filter - urlify; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``fields`` :index:`: <pair: filter - urlify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Fields to convert.
 
-      -  ``name`` :index:`: <pair: filter - urlify; name>` [string=''] Used to identify this particular filter definition.
+      -  ``name`` :index:`: <pair: filter - urlify; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
 
 -  **value_split**: (**Value Splitter**)
    This filter extracts information from the value and fills other fields. |br|
@@ -257,22 +257,22 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``autoplace`` :index:`: <pair: filter - value_split; autoplace>` [boolean=true] Try to figure out the position for the added fields.
-      -  ``autoplace_mechanism`` :index:`: <pair: filter - value_split; autoplace_mechanism>` [string='bottom'] [bottom,top] Put the new field at the bottom/top of the last field.
-      -  ``comment`` :index:`: <pair: filter - value_split; comment>` [string=''] A comment for documentation purposes.
-      -  ``name`` :index:`: <pair: filter - value_split; name>` [string=''] Used to identify this particular filter definition.
-      -  ``package`` :index:`: <pair: filter - value_split; package>` [string='yes'] [yes,no,soft] Policy for the package.
+      -  ``autoplace`` :index:`: <pair: filter - value_split; autoplace>` [:ref:`boolean <boolean>`] Try to figure out the position for the added fields.
+      -  ``autoplace_mechanism`` :index:`: <pair: filter - value_split; autoplace_mechanism>` [:ref:`string <string>`] Put the new field at the bottom/top of the last field.
+      -  ``comment`` :index:`: <pair: filter - value_split; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``name`` :index:`: <pair: filter - value_split; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
+      -  ``package`` :index:`: <pair: filter - value_split; package>` [:ref:`string <string>`] Policy for the package.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
-      -  ``power`` :index:`: <pair: filter - value_split; power>` [string='yes'] [yes,no,soft] Policy for the power rating.
+      -  ``power`` :index:`: <pair: filter - value_split; power>` [:ref:`string <string>`] Policy for the power rating.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
-      -  ``replace_source`` :index:`: <pair: filter - value_split; replace_source>` [boolean=true] Replace the content of the source field using a normalized representation of the interpreted value.
-      -  ``source`` :index:`: <pair: filter - value_split; source>` [string='Value'] Name of the field to use as source of information.
-      -  ``temp_coef`` :index:`: <pair: filter - value_split; temp_coef>` [string='yes'] [yes,no,soft] Policy for the temperature coefficient.
+      -  ``replace_source`` :index:`: <pair: filter - value_split; replace_source>` [:ref:`boolean <boolean>`] Replace the content of the source field using a normalized representation of the interpreted value.
+      -  ``source`` :index:`: <pair: filter - value_split; source>` [:ref:`string <string>`] Name of the field to use as source of information.
+      -  ``temp_coef`` :index:`: <pair: filter - value_split; temp_coef>` [:ref:`string <string>`] Policy for the temperature coefficient.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
-      -  ``tolerance`` :index:`: <pair: filter - value_split; tolerance>` [string='yes'] [yes,no,soft] Policy for the tolerance.
+      -  ``tolerance`` :index:`: <pair: filter - value_split; tolerance>` [:ref:`string <string>`] Policy for the tolerance.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
-      -  ``visible`` :index:`: <pair: filter - value_split; visible>` [boolean=false] Make visible the modified fields.
-      -  ``voltage`` :index:`: <pair: filter - value_split; voltage>` [string='yes'] [yes,no,soft] Policy for the voltage rating.
+      -  ``visible`` :index:`: <pair: filter - value_split; visible>` [:ref:`boolean <boolean>`] Make visible the modified fields.
+      -  ``voltage`` :index:`: <pair: filter - value_split; voltage>` [:ref:`string <string>`] Policy for the voltage rating.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
 
 -  **var_rename**: (**Variant Renamer**)
@@ -285,11 +285,11 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: filter - var_rename; comment>` [string=''] A comment for documentation purposes.
-      -  ``force_variant`` :index:`: <pair: filter - var_rename; force_variant>` [string=''] Use this variant instead of the current variant. Useful for IBoM variants.
-      -  ``name`` :index:`: <pair: filter - var_rename; name>` [string=''] Used to identify this particular filter definition.
-      -  ``separator`` :index:`: <pair: filter - var_rename; separator>` [string=':'] Separator used between the variant and the field name.
-      -  ``variant_to_value`` :index:`: <pair: filter - var_rename; variant_to_value>` [boolean=false] Rename fields matching the variant to the value of the component.
+      -  ``comment`` :index:`: <pair: filter - var_rename; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``force_variant`` :index:`: <pair: filter - var_rename; force_variant>` [:ref:`string <string>`] Use this variant instead of the current variant. Useful for IBoM variants.
+      -  ``name`` :index:`: <pair: filter - var_rename; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
+      -  ``separator`` :index:`: <pair: filter - var_rename; separator>` [:ref:`string <string>`] Separator used between the variant and the field name.
+      -  ``variant_to_value`` :index:`: <pair: filter - var_rename; variant_to_value>` [:ref:`boolean <boolean>`] Rename fields matching the variant to the value of the component.
 
 -  **var_rename_kicost**: (**Variant Renamer KiCost style**)
    This filter implements the kicost.VARIANT:FIELD=VALUE renamer to get FIELD=VALUE when VARIANT is in use. |br|
@@ -305,11 +305,11 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: filter - var_rename_kicost; comment>` [string=''] A comment for documentation purposes.
-      -  ``name`` :index:`: <pair: filter - var_rename_kicost; name>` [string=''] Used to identify this particular filter definition.
-      -  ``prefix`` :index:`: <pair: filter - var_rename_kicost; prefix>` [string='kicost.'] A mandatory prefix. Is not case sensitive.
-      -  ``separator`` :index:`: <pair: filter - var_rename_kicost; separator>` [string=':'] Separator used between the variant and the field name.
-      -  ``variant`` :index:`: <pair: filter - var_rename_kicost; variant>` [string=''] Variant regex to match the VARIANT part.
+      -  ``comment`` :index:`: <pair: filter - var_rename_kicost; comment>` [:ref:`string <string>`] A comment for documentation purposes.
+      -  ``name`` :index:`: <pair: filter - var_rename_kicost; name>` [:ref:`string <string>`] Used to identify this particular filter definition.
+      -  ``prefix`` :index:`: <pair: filter - var_rename_kicost; prefix>` [:ref:`string <string>`] A mandatory prefix. Is not case sensitive.
+      -  ``separator`` :index:`: <pair: filter - var_rename_kicost; separator>` [:ref:`string <string>`] Separator used between the variant and the field name.
+      -  ``variant`` :index:`: <pair: filter - var_rename_kicost; variant>` [:ref:`string <string>`] Variant regex to match the VARIANT part.
          When empty the currently selected variant is used.
-      -  ``variant_to_value`` :index:`: <pair: filter - var_rename_kicost; variant_to_value>` [boolean=false] Rename fields matching the variant to the value of the component.
+      -  ``variant_to_value`` :index:`: <pair: filter - var_rename_kicost; variant_to_value>` [:ref:`boolean <boolean>`] Rename fields matching the variant to the value of the component.
 
