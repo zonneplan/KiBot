@@ -1,3 +1,9 @@
+kibot (1.7.1-1) UNRELEASED; urgency=medium
+
+  * Next release
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Mon, 29 Apr 2024 09:25:37 -0300
+
 kibot (1.7.0-1) stable; urgency=medium
 
   * New preflights: erc, drc, update_footprint, draw_stackup,
