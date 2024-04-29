@@ -1402,7 +1402,7 @@ outputs:
       hide_pads: false
       # [boolean=false] Hide silkscreen by default
       hide_silkscreen: false
-      # [boolean|none,all,selected] Highlight pin1 by default
+      # [boolean|string] [none,all,selected] Highlight pin1 by default
       highlight_pin1: false
       # [boolean=false] Include netlist information in output.
       include_nets: false
