@@ -130,6 +130,28 @@ class Optionable(object):
             return 'list({})'.format(Optionable._typeof(v[0]))
         return 'None'
 
+    def get_valid_types(self, doc):
+        # Separate the valid types for this key
+        valid = doc[1:].split(']')[0].split('|')
+        # Remove the XXXX=Value
+        if '=' in valid[-1]:
+            valid[-1] = valid[-1].split('=')[0]
+        extra = []
+        for v in valid:
+            if v == 'number' or v == 'list(number)':
+                m = Optionable._num_range_re.search(doc)
+                if m:
+                    min = float(m.group(1))
+                    max = float(m.group(2))
+                    extra.append((min, max))
+            elif v == 'string' or v == 'list(string)':
+                m = Optionable._str_values_re.search(doc)
+                if m:
+                    extra.append(m.group(1).split(','))
+            else:
+                extra.append(None)
+        return valid, extra
+
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
         attrs = self.get_attrs_for()

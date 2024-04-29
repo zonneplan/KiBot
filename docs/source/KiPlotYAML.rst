@@ -31,6 +31,8 @@ We use three basic data types:
 -  **boolean**: can take only two values *true* and *false*.
 -  **string**: almost anything else.
 
+.. _number:
+
 Here are some examples for numbers:
 
 .. code:: yaml
@@ -42,12 +44,16 @@ Here are some examples for numbers:
 Note that the decimal point is always a point, no matters what your
 locale settings indicate.
 
+.. _boolean:
+
 Here are some examples for booleans:
 
 .. code:: yaml
 
    v1: true
    v2: false
+
+.. _string:
 
 And here are some examples for strings:
 
@@ -57,6 +63,7 @@ And here are some examples for strings:
    v2: '3'
    v3: "true"
    v4: "  I have spaces  "
+   v5: '# I have special chars'
 
 Note that quotes are optional and can be used to disambiguate.
 
@@ -70,6 +77,8 @@ We use two types:
 -  **dict**: dictionaries or maps. Just a bunch of label with associated
    data.
 
+.. _list(string):
+
 Here is an example for a list of strings (**list(string)** in our case):
 
 .. code:: yaml
@@ -79,6 +88,8 @@ Here is an example for a list of strings (**list(string)** in our case):
    - "true"
    - "  I have spaces  "
 
+.. _dict:
+
 And here an example for a dict:
 
 .. code:: yaml
@@ -87,6 +98,8 @@ And here an example for a dict:
    v2: '3'
    v3: "true"
    v4: "  I have spaces  "
+
+Here the dict is mapping "Hi!" to the "v1" key, "3" to the "v2" key, etc.
 
 The list and dict elements can also be other lists and/or dicts. To
 understand how this is achieved we need one more thing.
@@ -130,6 +143,8 @@ And here is a mix of both:
 The indentation shows that ``age`` and ``gender`` are attached to
 ``John``, not directly applied to ``people``.
 
+.. _list(list(string)):
+
 Note that lists can be nested, here is a list of lists
 (**list(list(string))**):
 
@@ -146,6 +161,20 @@ Note that lists can be nested, here is a list of lists
 
 In this example we have a list with two elements, the first is a list
 with three elements and the second a list with four elements.
+
+.. _list(dict):
+
+Here is an example of a list of dicts (**list(dict)**):
+
+.. code:: yaml
+
+   list_of_lists:
+     - name: John
+       age: 25
+       gender: male
+     - name: Cindy
+       age: 32
+       gender: female
 
 Compact notation
 ----------------

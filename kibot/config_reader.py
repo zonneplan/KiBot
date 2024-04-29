@@ -832,9 +832,12 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         else:
             entry = '``{}``: ' if rst_mode else '`{}`: '
         entry = ind_base_sp+entry
-        if help is None:
-            help = 'Undocumented'
-            logger.non_critical_error(f'Undocumented option: `{k}`')
+        assert help is not None, f'Undocumented option: `{k}`'
+        if not is_alias and k != 'type':
+            assert help[0] == '[', f'Missing option data type: `{k}`: {help}'
+            valid, _ = obj.get_valid_types(help)
+            new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
+            help = re.sub(r'^\[(.*)\]', new_data_type, help)
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         if rst_mode and context:

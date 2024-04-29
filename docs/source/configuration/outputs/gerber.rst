@@ -16,90 +16,90 @@ Category: **PCB/fabrication/gerber**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - gerber; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - gerber; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - gerber; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - gerber; dir>` [:ref:`string <string>`] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - gerber; layers>` [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+-  **layers** :index:`: <pair: output - gerber; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`]
    List of PCB layers to plot.
 
    -  Valid keys:
 
-      -  ``description`` :index:`: <pair: output - gerber - layers; description>` [string=''] A description for the layer, for documentation purposes.
+      -  ``description`` :index:`: <pair: output - gerber - layers; description>` [:ref:`string <string>`] A description for the layer, for documentation purposes.
          A default can be specified using the `layer_defaults` global option.
-      -  ``layer`` :index:`: <pair: output - gerber - layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
-      -  ``suffix`` :index:`: <pair: output - gerber - layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+      -  ``layer`` :index:`: <pair: output - gerber - layers; layer>` [:ref:`string <string>`] Name of the layer. As you see it in KiCad.
+      -  ``suffix`` :index:`: <pair: output - gerber - layers; suffix>` [:ref:`string <string>`] Suffix used in file names related to this layer. Derived from the name if not specified.
          A default can be specified using the `layer_defaults` global option.
 
--  **name** :index:`: <pair: output - gerber; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - gerber; name>` [:ref:`string <string>`] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - gerber; options>` [dict] Options for the `gerber` output.
+-  **options** :index:`: <pair: output - gerber; options>` [:ref:`dict <dict>`] Options for the `gerber` output.
 
    -  Valid keys:
 
-      -  **create_gerber_job_file** :index:`: <pair: output - gerber - options; create_gerber_job_file>` [boolean=true] Creates a file with information about all the generated gerbers.
+      -  **create_gerber_job_file** :index:`: <pair: output - gerber - options; create_gerber_job_file>` [:ref:`boolean <boolean>`] Creates a file with information about all the generated gerbers.
          You can use it in gerbview to load all gerbers at once.
-      -  **output** :index:`: <pair: output - gerber - options; output>` [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
+      -  **output** :index:`: <pair: output - gerber - options; output>` [:ref:`string <string>`] Output file name, the default KiCad name if empty.
          IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
          For this reason you must avoid generating two variants at the same directory when one of
          them uses the default KiCad name. Affected by global options.
-      -  **plot_sheet_reference** :index:`: <pair: output - gerber - options; plot_sheet_reference>` [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
+      -  **plot_sheet_reference** :index:`: <pair: output - gerber - options; plot_sheet_reference>` [:ref:`boolean <boolean>`] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
          (i.e. always the default worksheet style, also problems expanding text variables).
          The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
-      -  **subtract_mask_from_silk** :index:`: <pair: output - gerber - options; subtract_mask_from_silk>` [boolean=false] Subtract the solder mask from the silk screen.
-      -  **use_gerber_net_attributes** :index:`: <pair: output - gerber - options; use_gerber_net_attributes>` [boolean=true] Include netlist metadata.
-      -  **use_gerber_x2_attributes** :index:`: <pair: output - gerber - options; use_gerber_x2_attributes>` [boolean=true] Use the extended X2 format (otherwise use X1 formerly RS-274X).
-      -  **use_protel_extensions** :index:`: <pair: output - gerber - options; use_protel_extensions>` [boolean=false] Use legacy Protel file extensions.
-      -  ``custom_reports`` :index:`: <pair: output - gerber - options; custom_reports>` [list(dict)] A list of customized reports for the manufacturer.
+      -  **subtract_mask_from_silk** :index:`: <pair: output - gerber - options; subtract_mask_from_silk>` [:ref:`boolean <boolean>`] Subtract the solder mask from the silk screen.
+      -  **use_gerber_net_attributes** :index:`: <pair: output - gerber - options; use_gerber_net_attributes>` [:ref:`boolean <boolean>`] Include netlist metadata.
+      -  **use_gerber_x2_attributes** :index:`: <pair: output - gerber - options; use_gerber_x2_attributes>` [:ref:`boolean <boolean>`] Use the extended X2 format (otherwise use X1 formerly RS-274X).
+      -  **use_protel_extensions** :index:`: <pair: output - gerber - options; use_protel_extensions>` [:ref:`boolean <boolean>`] Use legacy Protel file extensions.
+      -  ``custom_reports`` :index:`: <pair: output - gerber - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] A list of customized reports for the manufacturer.
 
          -  Valid keys:
 
-            -  ``content`` :index:`: <pair: output - gerber - options - custom_reports; content>` [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
+            -  ``content`` :index:`: <pair: output - gerber - options - custom_reports; content>` [:ref:`string <string>`] Content for the report. Use ``${basename}`` for the project name without extension.
                Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
-            -  ``output`` :index:`: <pair: output - gerber - options - custom_reports; output>` [string='Custom_report.txt'] File name for the custom report.
+            -  ``output`` :index:`: <pair: output - gerber - options - custom_reports; output>` [:ref:`string <string>`] File name for the custom report.
 
-      -  ``disable_aperture_macros`` :index:`: <pair: output - gerber - options; disable_aperture_macros>` [boolean=false] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
-      -  ``dnf_filter`` :index:`: <pair: output - gerber - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      -  ``disable_aperture_macros`` :index:`: <pair: output - gerber - options; disable_aperture_macros>` [:ref:`boolean <boolean>`] Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
+      -  ``dnf_filter`` :index:`: <pair: output - gerber - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``edge_cut_extension`` :index:`: <pair: output - gerber - options; edge_cut_extension>` [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
-      -  ``exclude_edge_layer`` :index:`: <pair: output - gerber - options; exclude_edge_layer>` [boolean=true] Do not include the PCB edge layer.
-      -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - gerber - options; exclude_pads_from_silkscreen>` [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
-      -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - gerber - options; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.
-      -  ``gerber_job_file`` :index:`: <pair: output - gerber - options; gerber_job_file>` [string='%f-%i%I%v.%x'] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
-      -  ``gerber_precision`` :index:`: <pair: output - gerber - options; gerber_precision>` [number=4.6] This the gerber coordinate format, can be 4.5 or 4.6.
-      -  ``inner_extension_pattern`` :index:`: <pair: output - gerber - options; inner_extension_pattern>` [string=''] Used to change the Protel style extensions for inner layers.
+      -  ``edge_cut_extension`` :index:`: <pair: output - gerber - options; edge_cut_extension>` [:ref:`string <string>`] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
+      -  ``exclude_edge_layer`` :index:`: <pair: output - gerber - options; exclude_edge_layer>` [:ref:`boolean <boolean>`] Do not include the PCB edge layer.
+      -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - gerber - options; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] Do not plot the component pads in the silk screen (KiCad 5.x only).
+      -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - gerber - options; force_plot_invisible_refs_vals>` [:ref:`boolean <boolean>`] Include references and values even when they are marked as invisible.
+      -  ``gerber_job_file`` :index:`: <pair: output - gerber - options; gerber_job_file>` [:ref:`string <string>`] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
+      -  ``gerber_precision`` :index:`: <pair: output - gerber - options; gerber_precision>` [:ref:`number <number>`] This the gerber coordinate format, can be 4.5 or 4.6.
+      -  ``inner_extension_pattern`` :index:`: <pair: output - gerber - options; inner_extension_pattern>` [:ref:`string <string>`] Used to change the Protel style extensions for inner layers.
          The replacement pattern can contain %n for the inner layer number and %N for the layer number.
          Example '.g%n'.
-      -  ``line_width`` :index:`: <pair: output - gerber - options; line_width>` [number=0.1] [0.02,2] Line_width for objects without width [mm] (KiCad 5).
-      -  ``plot_footprint_refs`` :index:`: <pair: output - gerber - options; plot_footprint_refs>` [boolean=true] Include the footprint references.
-      -  ``plot_footprint_values`` :index:`: <pair: output - gerber - options; plot_footprint_values>` [boolean=true] Include the footprint values.
-      -  ``pre_transform`` :index:`: <pair: output - gerber - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      -  ``line_width`` :index:`: <pair: output - gerber - options; line_width>` [:ref:`number <number>`] (KiCad 5).
+      -  ``plot_footprint_refs`` :index:`: <pair: output - gerber - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] Include the footprint references.
+      -  ``plot_footprint_values`` :index:`: <pair: output - gerber - options; plot_footprint_values>` [:ref:`boolean <boolean>`] Include the footprint values.
+      -  ``pre_transform`` :index:`: <pair: output - gerber - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``sketch_pad_line_width`` :index:`: <pair: output - gerber - options; sketch_pad_line_width>` [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      -  ``sketch_pad_line_width`` :index:`: <pair: output - gerber - options; sketch_pad_line_width>` [:ref:`number <number>`], see `sketch_pads_on_fab_layers` (KiCad 6+)
          Note that this value is currently ignored by KiCad (6.0.9).
-      -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - gerber - options; sketch_pads_on_fab_layers>` [boolean=false] Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
-      -  ``tent_vias`` :index:`: <pair: output - gerber - options; tent_vias>` [boolean=true] Cover the vias.
-      -  ``uppercase_extensions`` :index:`: <pair: output - gerber - options; uppercase_extensions>` [boolean=false] Use uppercase names for the extensions.
-      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - gerber - options; use_aux_axis_as_origin>` [boolean=false] Use the auxiliary axis as origin for coordinates.
-      -  ``variant`` :index:`: <pair: output - gerber - options; variant>` [string=''] Board variant to apply.
+      -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - gerber - options; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
+      -  ``tent_vias`` :index:`: <pair: output - gerber - options; tent_vias>` [:ref:`boolean <boolean>`] Cover the vias.
+      -  ``uppercase_extensions`` :index:`: <pair: output - gerber - options; uppercase_extensions>` [:ref:`boolean <boolean>`] Use uppercase names for the extensions.
+      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - gerber - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] Use the auxiliary axis as origin for coordinates.
+      -  ``variant`` :index:`: <pair: output - gerber - options; variant>` [:ref:`string <string>`] Board variant to apply.
 
 -  **type** :index:`: <pair: output - gerber; type>` 'gerber'
--  ``category`` :index:`: <pair: output - gerber; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - gerber; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - gerber; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - gerber; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - gerber; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - gerber; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - gerber; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - gerber; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - gerber; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - gerber; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - gerber; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - gerber; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - gerber; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - gerber; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
 

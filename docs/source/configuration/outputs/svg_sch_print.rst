@@ -17,51 +17,51 @@ Category: **Schematic/docs**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - svg_sch_print; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - svg_sch_print; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - svg_sch_print; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - svg_sch_print; dir>` [:ref:`string <string>`] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - svg_sch_print; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - svg_sch_print; name>` [:ref:`string <string>`] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - svg_sch_print; options>` [dict] Options for the `svg_sch_print` output.
+-  **options** :index:`: <pair: output - svg_sch_print; options>` [:ref:`dict <dict>`] Options for the `svg_sch_print` output.
 
    -  Valid keys:
 
-      -  **frame** :index:`: <pair: output - svg_sch_print - options; frame>` [boolean=true] Include the frame and title block.
-      -  ``all_pages`` :index:`: <pair: output - svg_sch_print - options; all_pages>` [boolean=true] Generate with all hierarchical sheets.
-      -  ``background_color`` :index:`: <pair: output - svg_sch_print - options; background_color>` [boolean=false] Use the background color from the `color_theme` (KiCad 6).
-      -  ``color_theme`` :index:`: <pair: output - svg_sch_print - options; color_theme>` [string=''] Color theme used, this must exist in the KiCad config (KiCad 6).
-      -  ``dnf_filter`` :index:`: <pair: output - svg_sch_print - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      -  **frame** :index:`: <pair: output - svg_sch_print - options; frame>` [:ref:`boolean <boolean>`] Include the frame and title block.
+      -  ``all_pages`` :index:`: <pair: output - svg_sch_print - options; all_pages>` [:ref:`boolean <boolean>`] Generate with all hierarchical sheets.
+      -  ``background_color`` :index:`: <pair: output - svg_sch_print - options; background_color>` [:ref:`boolean <boolean>`] Use the background color from the `color_theme` (KiCad 6).
+      -  ``color_theme`` :index:`: <pair: output - svg_sch_print - options; color_theme>` [:ref:`string <string>`] Color theme used, this must exist in the KiCad config (KiCad 6).
+      -  ``dnf_filter`` :index:`: <pair: output - svg_sch_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``monochrome`` :index:`: <pair: output - svg_sch_print - options; monochrome>` [boolean=false] Generate a monochromatic output.
-      -  ``output`` :index:`: <pair: output - svg_sch_print - options; output>` [string='%f-%i%I%v.%x'] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
-      -  ``pre_transform`` :index:`: <pair: output - svg_sch_print - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      -  ``monochrome`` :index:`: <pair: output - svg_sch_print - options; monochrome>` [:ref:`boolean <boolean>`] Generate a monochromatic output.
+      -  ``output`` :index:`: <pair: output - svg_sch_print - options; output>` [:ref:`string <string>`] Filename for the output SVG (%i=schematic, %x=svg). Affected by global options.
+      -  ``pre_transform`` :index:`: <pair: output - svg_sch_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``sheet_reference_layout`` :index:`: <pair: output - svg_sch_print - options; sheet_reference_layout>` [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      -  ``sheet_reference_layout`` :index:`: <pair: output - svg_sch_print - options; sheet_reference_layout>` [:ref:`string <string>`] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
          This option works only when you print the toplevel sheet of a project and the project
          file is available.
-      -  ``title`` :index:`: <pair: output - svg_sch_print - options; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      -  ``title`` :index:`: <pair: output - svg_sch_print - options; title>` [:ref:`string <string>`] Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
-      -  ``variant`` :index:`: <pair: output - svg_sch_print - options; variant>` [string=''] Board variant to apply.
+      -  ``variant`` :index:`: <pair: output - svg_sch_print - options; variant>` [:ref:`string <string>`] Board variant to apply.
          Not fitted components are crossed.
 
 -  **type** :index:`: <pair: output - svg_sch_print; type>` 'svg_sch_print'
--  ``category`` :index:`: <pair: output - svg_sch_print; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - svg_sch_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - svg_sch_print; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - svg_sch_print; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - svg_sch_print; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - svg_sch_print; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - svg_sch_print; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - svg_sch_print; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - svg_sch_print; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - svg_sch_print; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - svg_sch_print; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - svg_sch_print; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - svg_sch_print; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - svg_sch_print; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
 

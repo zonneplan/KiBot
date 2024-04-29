@@ -16,121 +16,121 @@ Category: **PCB/docs**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - pcb_print; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - pcb_print; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - pcb_print; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - pcb_print; dir>` [:ref:`string <string>`] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - pcb_print; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - pcb_print; name>` [:ref:`string <string>`] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pcb_print; options>` [dict] Options for the `pcb_print` output.
+-  **options** :index:`: <pair: output - pcb_print; options>` [:ref:`dict <dict>`] Options for the `pcb_print` output.
 
    -  Valid keys:
 
-      -  **color_theme** :index:`: <pair: output - pcb_print - options; color_theme>` [string='_builtin_classic'] Selects the color theme. Only applies to KiCad 6.
+      -  **color_theme** :index:`: <pair: output - pcb_print - options; color_theme>` [:ref:`string <string>`] Selects the color theme. Only applies to KiCad 6.
          To use the KiCad 6 default colors select `_builtin_default`.
          Usually user colors are stored as `user`, but you can give it another name.
-      -  **force_edge_cuts** :index:`: <pair: output - pcb_print - options; force_edge_cuts>` [boolean=false] Add the `Edge.Cuts` to all the pages.
-      -  **format** :index:`: <pair: output - pcb_print - options; format>` [string='PDF'] [PDF,SVG,PNG,EPS,PS] Format for the output file/s.
+      -  **force_edge_cuts** :index:`: <pair: output - pcb_print - options; force_edge_cuts>` [:ref:`boolean <boolean>`] Add the `Edge.Cuts` to all the pages.
+      -  **format** :index:`: <pair: output - pcb_print - options; format>` [:ref:`string <string>`] Format for the output file/s.
          Note that for PS you need `ghostscript` which isn't part of the default docker images.
-      -  **output** :index:`: <pair: output - pcb_print - options; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
+      -  **output** :index:`: <pair: output - pcb_print - options; output>` [:ref:`string <string>`] Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
          Consult the `page_number_as_extension` and `page_id` options. Affected by global options.
       -  *output_name* :index:`: <pair: output - pcb_print - options; output_name>` Alias for output.
-      -  **pages** :index:`: <pair: output - pcb_print - options; pages>` [list(dict)] List of pages to include in the output document.
+      -  **pages** :index:`: <pair: output - pcb_print - options; pages>` [:ref:`list(dict) <list(dict)>`] List of pages to include in the output document.
          Each page contains one or more layers of the PCB.
 
          -  Valid keys:
 
-            -  **layers** :index:`: <pair: output - pcb_print - options - pages; layers>` [list(dict)|list(string)|string] List of layers printed in this page.
+            -  **layers** :index:`: <pair: output - pcb_print - options - pages; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] List of layers printed in this page.
                Order is important, the last goes on top.
                You can reuse other layers lists, some options aren't used here, but they are valid.
 
                -  Valid keys:
 
-                  -  ``color`` :index:`: <pair: output - pcb_print - options - pages - layers; color>` [string=''] Color used for this layer.
+                  -  ``color`` :index:`: <pair: output - pcb_print - options - pages - layers; color>` [:ref:`string <string>`] Color used for this layer.
                      KiCad 6+: don't forget the alpha channel for layers like the solder mask.
-                  -  ``description`` :index:`: <pair: output - pcb_print - options - pages - layers; description>` [string=''] A description for the layer, for documentation purposes.
+                  -  ``description`` :index:`: <pair: output - pcb_print - options - pages - layers; description>` [:ref:`string <string>`] A description for the layer, for documentation purposes.
                      A default can be specified using the `layer_defaults` global option.
-                  -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - layers; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.
-                  -  ``layer`` :index:`: <pair: output - pcb_print - options - pages - layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
-                  -  ``plot_footprint_refs`` :index:`: <pair: output - pcb_print - options - pages - layers; plot_footprint_refs>` [boolean=true] Include the footprint references.
-                  -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - layers; plot_footprint_values>` [boolean=true] Include the footprint values.
-                  -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+                  -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - layers; force_plot_invisible_refs_vals>` [:ref:`boolean <boolean>`] Include references and values even when they are marked as invisible.
+                  -  ``layer`` :index:`: <pair: output - pcb_print - options - pages - layers; layer>` [:ref:`string <string>`] Name of the layer. As you see it in KiCad.
+                  -  ``plot_footprint_refs`` :index:`: <pair: output - pcb_print - options - pages - layers; plot_footprint_refs>` [:ref:`boolean <boolean>`] Include the footprint references.
+                  -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - layers; plot_footprint_values>` [:ref:`boolean <boolean>`] Include the footprint values.
+                  -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - layers; suffix>` [:ref:`string <string>`] Suffix used in file names related to this layer. Derived from the name if not specified.
                      A default can be specified using the `layer_defaults` global option.
-                  -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - layers; use_for_center>` [boolean=true] Use this layer for centering purposes.
+                  -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - layers; use_for_center>` [:ref:`boolean <boolean>`] Use this layer for centering purposes.
                      You can invert the meaning using the `invert_use_for_center` option.
 
-            -  **scaling** :index:`: <pair: output - pcb_print - options - pages; scaling>` [number=1.0] Scale factor (0 means autoscaling).
-            -  **sort_layers** :index:`: <pair: output - pcb_print - options - pages; sort_layers>` [boolean=false] Try to sort the layers in the same order that uses KiCad for printing.
-            -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_x>` [number=0] Horizontal margin used for the autoscaling mode [mm].
-            -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_y>` [number=0] Vertical margin used for the autoscaling mode [mm].
-            -  ``colored_holes`` :index:`: <pair: output - pcb_print - options - pages; colored_holes>` [boolean=true] Change the drill holes to be colored instead of white.
-            -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - pcb_print - options - pages; exclude_pads_from_silkscreen>` [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
-            -  ``holes_color`` :index:`: <pair: output - pcb_print - options - pages; holes_color>` [string='#000000'] Color used for the holes when `colored_holes` is enabled.
-            -  ``layer_var`` :index:`: <pair: output - pcb_print - options - pages; layer_var>` [string='%ll'] Text to use for the `LAYER` in the title block.
+            -  **scaling** :index:`: <pair: output - pcb_print - options - pages; scaling>` [:ref:`number <number>`] Scale factor (0 means autoscaling).
+            -  **sort_layers** :index:`: <pair: output - pcb_print - options - pages; sort_layers>` [:ref:`boolean <boolean>`] Try to sort the layers in the same order that uses KiCad for printing.
+            -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_x>` [:ref:`number <number>`].
+            -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_y>` [:ref:`number <number>`].
+            -  ``colored_holes`` :index:`: <pair: output - pcb_print - options - pages; colored_holes>` [:ref:`boolean <boolean>`] Change the drill holes to be colored instead of white.
+            -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - pcb_print - options - pages; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] Do not plot the component pads in the silk screen (KiCad 5.x only).
+            -  ``holes_color`` :index:`: <pair: output - pcb_print - options - pages; holes_color>` [:ref:`string <string>`] Color used for the holes when `colored_holes` is enabled.
+            -  ``layer_var`` :index:`: <pair: output - pcb_print - options - pages; layer_var>` [:ref:`string <string>`] Text to use for the `LAYER` in the title block.
                All the expansions available for `sheet` are also available here.
-            -  ``line_width`` :index:`: <pair: output - pcb_print - options - pages; line_width>` [number=0.1] [0.02,2] For objects without width [mm] (KiCad 5).
-            -  ``mirror`` :index:`: <pair: output - pcb_print - options - pages; mirror>` [boolean=false] Print mirrored (X axis inverted).
-            -  ``mirror_footprint_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_footprint_text>` [boolean=true] Mirror text in the footprints when mirror option is enabled and we plot a user layer.
-            -  ``mirror_pcb_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_pcb_text>` [boolean=true] Mirror text in the PCB when mirror option is enabled and we plot a user layer.
-            -  ``monochrome`` :index:`: <pair: output - pcb_print - options - pages; monochrome>` [boolean=false] Print in gray scale.
-            -  ``negative_plot`` :index:`: <pair: output - pcb_print - options - pages; negative_plot>` [boolean=false] Invert black and white. Only useful for a single layer.
-            -  ``page_id`` :index:`: <pair: output - pcb_print - options - pages; page_id>` [string='%02d'] Text to differentiate the pages. Use %d (like in C) to get the page number.
-            -  ``repeat_for_layer`` :index:`: <pair: output - pcb_print - options - pages; repeat_for_layer>` [string=''] Use this page as a pattern to create more pages.
+            -  ``line_width`` :index:`: <pair: output - pcb_print - options - pages; line_width>` [:ref:`number <number>`] (KiCad 5).
+            -  ``mirror`` :index:`: <pair: output - pcb_print - options - pages; mirror>` [:ref:`boolean <boolean>`] Print mirrored (X axis inverted).
+            -  ``mirror_footprint_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_footprint_text>` [:ref:`boolean <boolean>`] Mirror text in the footprints when mirror option is enabled and we plot a user layer.
+            -  ``mirror_pcb_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_pcb_text>` [:ref:`boolean <boolean>`] Mirror text in the PCB when mirror option is enabled and we plot a user layer.
+            -  ``monochrome`` :index:`: <pair: output - pcb_print - options - pages; monochrome>` [:ref:`boolean <boolean>`] Print in gray scale.
+            -  ``negative_plot`` :index:`: <pair: output - pcb_print - options - pages; negative_plot>` [:ref:`boolean <boolean>`] Invert black and white. Only useful for a single layer.
+            -  ``page_id`` :index:`: <pair: output - pcb_print - options - pages; page_id>` [:ref:`string <string>`] Text to differentiate the pages. Use %d (like in C) to get the page number.
+            -  ``repeat_for_layer`` :index:`: <pair: output - pcb_print - options - pages; repeat_for_layer>` [:ref:`string <string>`] Use this page as a pattern to create more pages.
                The other pages will change the layer mentioned here.
                This can be used to generate a page for each copper layer, here you put `F.Cu`.
                See `repeat_layers`.
-            -  ``repeat_inherit`` :index:`: <pair: output - pcb_print - options - pages; repeat_inherit>` [boolean=true] If we will inherit the options of the layer we are replacing.
+            -  ``repeat_inherit`` :index:`: <pair: output - pcb_print - options - pages; repeat_inherit>` [:ref:`boolean <boolean>`] If we will inherit the options of the layer we are replacing.
                Disable it if you specify the options in `repeat_layers`, which is unlikely.
-            -  ``repeat_layers`` :index:`: <pair: output - pcb_print - options - pages; repeat_layers>` [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
+            -  ``repeat_layers`` :index:`: <pair: output - pcb_print - options - pages; repeat_layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] List of layers to replace `repeat_for_layer`.
                This can be used to generate a page for each copper layer, here you put `copper`.
 
                -  Valid keys:
 
-                  -  ``color`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; color>` [string=''] Color used for this layer.
+                  -  ``color`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; color>` [:ref:`string <string>`] Color used for this layer.
                      KiCad 6+: don't forget the alpha channel for layers like the solder mask.
-                  -  ``description`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; description>` [string=''] A description for the layer, for documentation purposes.
+                  -  ``description`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; description>` [:ref:`string <string>`] A description for the layer, for documentation purposes.
                      A default can be specified using the `layer_defaults` global option.
-                  -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.
-                  -  ``layer`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
-                  -  ``plot_footprint_refs`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; plot_footprint_refs>` [boolean=true] Include the footprint references.
-                  -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; plot_footprint_values>` [boolean=true] Include the footprint values.
-                  -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
+                  -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; force_plot_invisible_refs_vals>` [:ref:`boolean <boolean>`] Include references and values even when they are marked as invisible.
+                  -  ``layer`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; layer>` [:ref:`string <string>`] Name of the layer. As you see it in KiCad.
+                  -  ``plot_footprint_refs`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; plot_footprint_refs>` [:ref:`boolean <boolean>`] Include the footprint references.
+                  -  ``plot_footprint_values`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; plot_footprint_values>` [:ref:`boolean <boolean>`] Include the footprint values.
+                  -  ``suffix`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; suffix>` [:ref:`string <string>`] Suffix used in file names related to this layer. Derived from the name if not specified.
                      A default can be specified using the `layer_defaults` global option.
-                  -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; use_for_center>` [boolean=true] Use this layer for centering purposes.
+                  -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - repeat_layers; use_for_center>` [:ref:`boolean <boolean>`] Use this layer for centering purposes.
                      You can invert the meaning using the `invert_use_for_center` option.
 
-            -  ``sheet`` :index:`: <pair: output - pcb_print - options - pages; sheet>` [string='Assembly'] Text to use for the `SHEET` in the title block.
+            -  ``sheet`` :index:`: <pair: output - pcb_print - options - pages; sheet>` [:ref:`string <string>`] Text to use for the `SHEET` in the title block.
                Pattern (%*) and text variables are expanded.
                The %ll is the list of layers included in this page.
                In addition when you use `repeat_for_layer` the following patterns are available:
                %ln layer name, %ls layer suffix and %ld layer description.
-            -  ``sheet_reference_color`` :index:`: <pair: output - pcb_print - options - pages; sheet_reference_color>` [string=''] Color to use for the frame and title block.
-            -  ``sketch_pad_line_width`` :index:`: <pair: output - pcb_print - options - pages; sketch_pad_line_width>` [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
+            -  ``sheet_reference_color`` :index:`: <pair: output - pcb_print - options - pages; sheet_reference_color>` [:ref:`string <string>`] Color to use for the frame and title block.
+            -  ``sketch_pad_line_width`` :index:`: <pair: output - pcb_print - options - pages; sketch_pad_line_width>` [:ref:`number <number>`], see `sketch_pads_on_fab_layers` (KiCad 6+)
                Note that this value is currently ignored by KiCad (6.0.9).
-            -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - pcb_print - options - pages; sketch_pads_on_fab_layers>` [boolean=false] Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
-            -  ``tent_vias`` :index:`: <pair: output - pcb_print - options - pages; tent_vias>` [boolean=true] Cover the vias.
-            -  ``title`` :index:`: <pair: output - pcb_print - options - pages; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+            -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - pcb_print - options - pages; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
+            -  ``tent_vias`` :index:`: <pair: output - pcb_print - options - pages; tent_vias>` [:ref:`boolean <boolean>`] Cover the vias.
+            -  ``title`` :index:`: <pair: output - pcb_print - options - pages; title>` [:ref:`string <string>`] Text used to replace the sheet title. %VALUE expansions are allowed.
                If it starts with `+` the text is concatenated.
 
-      -  **plot_sheet_reference** :index:`: <pair: output - pcb_print - options; plot_sheet_reference>` [boolean=true] Include the title-block (worksheet, frame, etc.).
-      -  **scaling** :index:`: <pair: output - pcb_print - options; scaling>` [number=1.0] Default scale factor (0 means autoscaling).
-      -  ``add_background`` :index:`: <pair: output - pcb_print - options; add_background>` [boolean=false] Add a background to the pages, see `background_color`.
-      -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options; autoscale_margin_x>` [number=0] Default horizontal margin used for the autoscaling mode [mm].
-      -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options; autoscale_margin_y>` [number=0] Default vertical margin used for the autoscaling mode [mm].
-      -  ``background_color`` :index:`: <pair: output - pcb_print - options; background_color>` [string='#FFFFFF'] Color for the background when `add_background` is enabled.
-      -  ``background_image`` :index:`: <pair: output - pcb_print - options; background_image>` [string=''] Background image, must be an SVG, only when `add_background` is enabled.
-      -  ``blind_via_color`` :index:`: <pair: output - pcb_print - options; blind_via_color>` [string=''] Color used for blind/buried `colored_vias`.
-      -  ``colored_pads`` :index:`: <pair: output - pcb_print - options; colored_pads>` [boolean=true] Plot through-hole in a different color. Like KiCad GUI does.
-      -  ``colored_vias`` :index:`: <pair: output - pcb_print - options; colored_vias>` [boolean=true] Plot vias in a different color. Like KiCad GUI does.
-      -  ``dnf_filter`` :index:`: <pair: output - pcb_print - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      -  **plot_sheet_reference** :index:`: <pair: output - pcb_print - options; plot_sheet_reference>` [:ref:`boolean <boolean>`] Include the title-block (worksheet, frame, etc.).
+      -  **scaling** :index:`: <pair: output - pcb_print - options; scaling>` [:ref:`number <number>`] Default scale factor (0 means autoscaling).
+      -  ``add_background`` :index:`: <pair: output - pcb_print - options; add_background>` [:ref:`boolean <boolean>`] Add a background to the pages, see `background_color`.
+      -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options; autoscale_margin_x>` [:ref:`number <number>`].
+      -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options; autoscale_margin_y>` [:ref:`number <number>`].
+      -  ``background_color`` :index:`: <pair: output - pcb_print - options; background_color>` [:ref:`string <string>`] Color for the background when `add_background` is enabled.
+      -  ``background_image`` :index:`: <pair: output - pcb_print - options; background_image>` [:ref:`string <string>`] Background image, must be an SVG, only when `add_background` is enabled.
+      -  ``blind_via_color`` :index:`: <pair: output - pcb_print - options; blind_via_color>` [:ref:`string <string>`] Color used for blind/buried `colored_vias`.
+      -  ``colored_pads`` :index:`: <pair: output - pcb_print - options; colored_pads>` [:ref:`boolean <boolean>`] Plot through-hole in a different color. Like KiCad GUI does.
+      -  ``colored_vias`` :index:`: <pair: output - pcb_print - options; colored_vias>` [:ref:`boolean <boolean>`] Plot vias in a different color. Like KiCad GUI does.
+      -  ``dnf_filter`` :index:`: <pair: output - pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``dpi`` :index:`: <pair: output - pcb_print - options; dpi>` [number=360] [36,1200] Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
+      -  ``dpi`` :index:`: <pair: output - pcb_print - options; dpi>` [:ref:`number <number>`] Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
          like the the solder mask are handled as images by the conversion tools.
-      -  ``drill_marks`` :index:`: <pair: output - pcb_print - options; drill_marks>` [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
-      -  ``forced_edge_cuts_color`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_color>` [string=''] Color used for the `force_edge_cuts` option.
-      -  ``forced_edge_cuts_use_for_center`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_use_for_center>` [boolean=true] Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
+      -  ``drill_marks`` :index:`: <pair: output - pcb_print - options; drill_marks>` [:ref:`string <string>`] What to use to indicate the drill places, can be none, small or full (for real scale).
+      -  ``forced_edge_cuts_color`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_color>` [:ref:`string <string>`] Color used for the `force_edge_cuts` option.
+      -  ``forced_edge_cuts_use_for_center`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_use_for_center>` [:ref:`boolean <boolean>`] Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
          layer.
-      -  ``frame_plot_mechanism`` :index:`: <pair: output - pcb_print - options; frame_plot_mechanism>` [string='internal'] [gui,internal,plot] Plotting the frame from Python is problematic.
+      -  ``frame_plot_mechanism`` :index:`: <pair: output - pcb_print - options; frame_plot_mechanism>` [:ref:`string <string>`] Plotting the frame from Python is problematic.
          This option selects a workaround strategy.
          gui: uses KiCad GUI to do it. Is slow but you get the correct frame.
          But it can't keep track of page numbers.
@@ -138,50 +138,50 @@ Parameters:
          Best option, but some details are different from what the GUI generates.
          plot: uses KiCad Python API. Not available for KiCad 5.
          You get the default frame and some substitutions doesn't work.
-      -  ``hide_excluded`` :index:`: <pair: output - pcb_print - options; hide_excluded>` [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
+      -  ``hide_excluded`` :index:`: <pair: output - pcb_print - options; hide_excluded>` [:ref:`boolean <boolean>`] Hide components in the Fab layer that are marked as excluded by a variant.
          Affected by global options.
-      -  ``individual_page_scaling`` :index:`: <pair: output - pcb_print - options; individual_page_scaling>` [boolean=true] Tell KiCad to apply the scaling for each page as a separated entity.
+      -  ``individual_page_scaling`` :index:`: <pair: output - pcb_print - options; individual_page_scaling>` [:ref:`boolean <boolean>`] Tell KiCad to apply the scaling for each page as a separated entity.
          Disabling it the pages are coherent and can be superposed.
-      -  ``invert_use_for_center`` :index:`: <pair: output - pcb_print - options; invert_use_for_center>` [boolean=false] Invert the meaning of the `use_for_center` layer option.
+      -  ``invert_use_for_center`` :index:`: <pair: output - pcb_print - options; invert_use_for_center>` [:ref:`boolean <boolean>`] Invert the meaning of the `use_for_center` layer option.
          This can be used to just select the edge cuts for centering, in this case enable this option
          and disable the `use_for_center` option of the edge cuts layer.
-      -  ``keep_temporal_files`` :index:`: <pair: output - pcb_print - options; keep_temporal_files>` [boolean=false] Store the temporal page and layer files in the output dir and don't delete them.
-      -  ``micro_via_color`` :index:`: <pair: output - pcb_print - options; micro_via_color>` [string=''] Color used for micro `colored_vias`.
-      -  ``pad_color`` :index:`: <pair: output - pcb_print - options; pad_color>` [string=''] Color used for `colored_pads`.
-      -  ``page_number_as_extension`` :index:`: <pair: output - pcb_print - options; page_number_as_extension>` [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
+      -  ``keep_temporal_files`` :index:`: <pair: output - pcb_print - options; keep_temporal_files>` [:ref:`boolean <boolean>`] Store the temporal page and layer files in the output dir and don't delete them.
+      -  ``micro_via_color`` :index:`: <pair: output - pcb_print - options; micro_via_color>` [:ref:`string <string>`] Color used for micro `colored_vias`.
+      -  ``pad_color`` :index:`: <pair: output - pcb_print - options; pad_color>` [:ref:`string <string>`] Color used for `colored_pads`.
+      -  ``page_number_as_extension`` :index:`: <pair: output - pcb_print - options; page_number_as_extension>` [:ref:`boolean <boolean>`] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
          Note: page numbers can be customized using the `page_id` option for each page.
-      -  ``png_width`` :index:`: <pair: output - pcb_print - options; png_width>` [number=1280] [0,7680] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
-      -  ``pre_transform`` :index:`: <pair: output - pcb_print - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      -  ``png_width`` :index:`: <pair: output - pcb_print - options; png_width>` [:ref:`number <number>`] Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
+      -  ``pre_transform`` :index:`: <pair: output - pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``realistic_solder_mask`` :index:`: <pair: output - pcb_print - options; realistic_solder_mask>` [boolean=true] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
+      -  ``realistic_solder_mask`` :index:`: <pair: output - pcb_print - options; realistic_solder_mask>` [:ref:`boolean <boolean>`] Try to draw the solder mask as a real solder mask, not the negative used for fabrication.
          In order to get a good looking select a color with transparency, i.e. '#14332440'.
          PcbDraw must be installed in order to use this option.
-      -  ``sheet_reference_layout`` :index:`: <pair: output - pcb_print - options; sheet_reference_layout>` [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
-      -  ``svg_precision`` :index:`: <pair: output - pcb_print - options; svg_precision>` [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
+      -  ``sheet_reference_layout`` :index:`: <pair: output - pcb_print - options; sheet_reference_layout>` [:ref:`string <string>`] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      -  ``svg_precision`` :index:`: <pair: output - pcb_print - options; svg_precision>` [:ref:`number <number>`] Scale factor used to represent 1 mm in the SVG (KiCad 6).
          The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
          Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
-      -  ``title`` :index:`: <pair: output - pcb_print - options; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
+      -  ``title`` :index:`: <pair: output - pcb_print - options; title>` [:ref:`string <string>`] Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
-      -  ``variant`` :index:`: <pair: output - pcb_print - options; variant>` [string=''] Board variant to apply.
-      -  ``via_color`` :index:`: <pair: output - pcb_print - options; via_color>` [string=''] Color used for through-hole `colored_vias`.
+      -  ``variant`` :index:`: <pair: output - pcb_print - options; variant>` [:ref:`string <string>`] Board variant to apply.
+      -  ``via_color`` :index:`: <pair: output - pcb_print - options; via_color>` [:ref:`string <string>`] Color used for through-hole `colored_vias`.
 
 -  **type** :index:`: <pair: output - pcb_print; type>` 'pcb_print'
--  ``category`` :index:`: <pair: output - pcb_print; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - pcb_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - pcb_print; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - pcb_print; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - pcb_print; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - pcb_print; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - pcb_print; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - pcb_print; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - pcb_print; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - pcb_print; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - pcb_print; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - pcb_print; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - pcb_print; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - pcb_print; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
 

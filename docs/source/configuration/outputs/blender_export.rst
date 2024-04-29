@@ -22,125 +22,125 @@ Category: **PCB/3D**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - blender_export; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - blender_export; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - blender_export; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - blender_export; dir>` [:ref:`string <string>`] Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - blender_export; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - blender_export; name>` [:ref:`string <string>`] Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - blender_export; options>` [dict] Options for the `blender_export` output.
+-  **options** :index:`: <pair: output - blender_export; options>` [:ref:`dict <dict>`] Options for the `blender_export` output.
 
    -  Valid keys:
 
-      -  **pcb3d** :index:`: <pair: output - blender_export - options; pcb3d>` [string|dict] Options to export the PCB to Blender.
+      -  **pcb3d** :index:`: <pair: output - blender_export - options; pcb3d>` [:ref:`string <string>` | :ref:`dict <dict>`] Options to export the PCB to Blender.
          You can also specify the name of the output that generates the PCB3D file.
          See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates.
 
          -  Valid keys:
 
-            -  **download** :index:`: <pair: output - blender_export - options - pcb3d; download>` [boolean=true] Downloads missing 3D models from KiCad git.
+            -  **download** :index:`: <pair: output - blender_export - options - pcb3d; download>` [:ref:`boolean <boolean>`] Downloads missing 3D models from KiCad git.
                Only applies to models in KISYS3DMOD and KICAD6_3DMODEL_DIR.
                They are downloaded to a temporal directory and discarded.
                If you want to cache the downloaded files specify a directory using the
                KIBOT_3D_MODELS environment variable.
-            -  **no_virtual** :index:`: <pair: output - blender_export - options - pcb3d; no_virtual>` [boolean=false] Used to exclude 3D models for components with 'virtual' attribute.
-            -  **show_components** :index:`: <pair: output - blender_export - options - pcb3d; show_components>` [list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+            -  **no_virtual** :index:`: <pair: output - blender_export - options - pcb3d; no_virtual>` [:ref:`boolean <boolean>`] Used to exclude 3D models for components with 'virtual' attribute.
+            -  **show_components** :index:`: <pair: output - blender_export - options - pcb3d; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] List of components to draw, can be also a string for `none` or `all`.
                Ranges like *R5-R10* are supported.
                Unlike the `pcbdraw` output, the default is `all`.
 
-            -  ``dnf_filter`` :index:`: <pair: output - blender_export - options - pcb3d; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+            -  ``dnf_filter`` :index:`: <pair: output - blender_export - options - pcb3d; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
                A short-cut to use for simple cases where a variant is an overkill.
 
-            -  ``download_lcsc`` :index:`: <pair: output - blender_export - options - pcb3d; download_lcsc>` [boolean=true] In addition to try to download the 3D models from KiCad git also try to get
+            -  ``download_lcsc`` :index:`: <pair: output - blender_export - options - pcb3d; download_lcsc>` [:ref:`boolean <boolean>`] In addition to try to download the 3D models from KiCad git also try to get
                them from LCSC database. In order to work you'll need to provide the LCSC
                part number. The field containing the LCSC part number is defined by the
                `field_lcsc_part` global variable.
-            -  ``highlight`` :index:`: <pair: output - blender_export - options - pcb3d; highlight>` [list(string)=[]] List of components to highlight. Ranges like *R5-R10* are supported.
+            -  ``highlight`` :index:`: <pair: output - blender_export - options - pcb3d; highlight>` [:ref:`list(string) <list(string)>`] List of components to highlight. Ranges like *R5-R10* are supported.
 
-            -  ``highlight_on_top`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_on_top>` [boolean=false] Highlight over the component (not under).
-            -  ``highlight_padding`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_padding>` [number=1.5] [0,1000] How much the highlight extends around the component [mm].
-            -  ``kicad_3d_url`` :index:`: <pair: output - blender_export - options - pcb3d; kicad_3d_url>` [string='https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'] Base URL for the KiCad 3D models.
-            -  ``kicad_3d_url_suffix`` :index:`: <pair: output - blender_export - options - pcb3d; kicad_3d_url_suffix>` [string=''] Text added to the end of the download URL.
+            -  ``highlight_on_top`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_on_top>` [:ref:`boolean <boolean>`] Highlight over the component (not under).
+            -  ``highlight_padding`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_padding>` [:ref:`number <number>`].
+            -  ``kicad_3d_url`` :index:`: <pair: output - blender_export - options - pcb3d; kicad_3d_url>` [:ref:`string <string>`] Base URL for the KiCad 3D models.
+            -  ``kicad_3d_url_suffix`` :index:`: <pair: output - blender_export - options - pcb3d; kicad_3d_url_suffix>` [:ref:`string <string>`] Text added to the end of the download URL.
                Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
-            -  ``output`` :index:`: <pair: output - blender_export - options - pcb3d; output>` [string='%f-%i%I%v.%x'] Name for the generated PCB3D file (%i='blender_export' %x='pcb3d'). Affected by global options.
-            -  ``pre_transform`` :index:`: <pair: output - blender_export - options - pcb3d; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+            -  ``output`` :index:`: <pair: output - blender_export - options - pcb3d; output>` [:ref:`string <string>`] Name for the generated PCB3D file (%i='blender_export' %x='pcb3d'). Affected by global options.
+            -  ``pre_transform`` :index:`: <pair: output - blender_export - options - pcb3d; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
                A short-cut to use for simple cases where a variant is an overkill.
 
-            -  ``solder_paste_for_populated`` :index:`: <pair: output - blender_export - options - pcb3d; solder_paste_for_populated>` [boolean=true] Add solder paste only for the populated components.
+            -  ``solder_paste_for_populated`` :index:`: <pair: output - blender_export - options - pcb3d; solder_paste_for_populated>` [:ref:`boolean <boolean>`] Add solder paste only for the populated components.
                Populated components are the ones listed in `show_components`.
-            -  ``variant`` :index:`: <pair: output - blender_export - options - pcb3d; variant>` [string=''] Board variant to apply.
-            -  ``version`` :index:`: <pair: output - blender_export - options - pcb3d; version>` [string='2.7'] [2.1,2.1_haschtl,2.7] Variant of the format used.
+            -  ``variant`` :index:`: <pair: output - blender_export - options - pcb3d; variant>` [:ref:`string <string>`] Board variant to apply.
+            -  ``version`` :index:`: <pair: output - blender_export - options - pcb3d; version>` [:ref:`string <string>`] Variant of the format used.
 
-      -  **point_of_view** :index:`: <pair: output - blender_export - options; point_of_view>` [dict|list(dict)] How the object is viewed by the camera.
+      -  **point_of_view** :index:`: <pair: output - blender_export - options; point_of_view>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] How the object is viewed by the camera.
 
          -  Valid keys:
 
-            -  **view** :index:`: <pair: output - blender_export - options - point_of_view; view>` [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
+            -  **view** :index:`: <pair: output - blender_export - options - point_of_view; view>` [:ref:`string <string>`] Point of view.
                Compatible with `render_3d`.
-            -  ``file_id`` :index:`: <pair: output - blender_export - options - point_of_view; file_id>` [string=''] String to differentiate the name of this point of view.
+            -  ``file_id`` :index:`: <pair: output - blender_export - options - point_of_view; file_id>` [:ref:`string <string>`] String to differentiate the name of this point of view.
                When empty we use the `default_file_id` or the `view`.
-            -  ``rotate_x`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_x>` [number=0] Angle to rotate the board in the X axis, positive is clockwise [degrees].
-            -  ``rotate_y`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_y>` [number=0] Angle to rotate the board in the Y axis, positive is clockwise [degrees].
-            -  ``rotate_z`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_z>` [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees].
-            -  ``steps`` :index:`: <pair: output - blender_export - options - point_of_view; steps>` [number=1] [1-1000] Generate this amount of steps using the rotation angles as increments.
+            -  ``rotate_x`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_x>` [:ref:`number <number>`].
+            -  ``rotate_y`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_y>` [:ref:`number <number>`].
+            -  ``rotate_z`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_z>` [:ref:`number <number>`].
+            -  ``steps`` :index:`: <pair: output - blender_export - options - point_of_view; steps>` [:ref:`number <number>`] Generate this amount of steps using the rotation angles as increments.
                Use a value of 1 (default) to interpret the angles as absolute.
                Used for animations. You should define the `default_file_id` to something like
                '_%03d' to get the animation frames.
 
-      -  **render_options** :index:`: <pair: output - blender_export - options; render_options>` [dict] Controls how the render is done for the `render` output type.
+      -  **render_options** :index:`: <pair: output - blender_export - options; render_options>` [:ref:`dict <dict>`] Controls how the render is done for the `render` output type.
 
          -  Valid keys:
 
-            -  **samples** :index:`: <pair: output - blender_export - options - render_options; samples>` [number=10] How many samples we create. Each sample is a raytracing render.
+            -  **samples** :index:`: <pair: output - blender_export - options - render_options; samples>` [:ref:`number <number>`] How many samples we create. Each sample is a raytracing render.
                Use 1 for a raw preview, 10 for a draft and 100 or more for the final render.
-            -  **transparent_background** :index:`: <pair: output - blender_export - options - render_options; transparent_background>` [boolean=false] Make the background transparent.
-            -  ``auto_crop`` :index:`: <pair: output - blender_export - options - render_options; auto_crop>` [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
+            -  **transparent_background** :index:`: <pair: output - blender_export - options - render_options; transparent_background>` [:ref:`boolean <boolean>`] Make the background transparent.
+            -  ``auto_crop`` :index:`: <pair: output - blender_export - options - render_options; auto_crop>` [:ref:`boolean <boolean>`] When enabled the image will be post-processed to remove the empty space around the image.
                In this mode the `background2` is changed to be the same as `background1`.
-            -  ``background1`` :index:`: <pair: output - blender_export - options - render_options; background1>` [string='#66667F'] First color for the background gradient.
-            -  ``background2`` :index:`: <pair: output - blender_export - options - render_options; background2>` [string='#CCCCE5'] Second color for the background gradient.
+            -  ``background1`` :index:`: <pair: output - blender_export - options - render_options; background1>` [:ref:`string <string>`] First color for the background gradient.
+            -  ``background2`` :index:`: <pair: output - blender_export - options - render_options; background2>` [:ref:`string <string>`] Second color for the background gradient.
             -  *height* :index:`: <pair: output - blender_export - options - render_options; height>` Alias for resolution_y.
-            -  ``no_denoiser`` :index:`: <pair: output - blender_export - options - render_options; no_denoiser>` [boolean=false] Used to disable the render denoiser on old hardware, or when the functionality isn't compiled.
+            -  ``no_denoiser`` :index:`: <pair: output - blender_export - options - render_options; no_denoiser>` [:ref:`boolean <boolean>`] Used to disable the render denoiser on old hardware, or when the functionality isn't compiled.
                Note that the impact in quality is huge, you should increase the amount of samples 10 times.
-            -  ``resolution_x`` :index:`: <pair: output - blender_export - options - render_options; resolution_x>` [number=1280] Width of the image.
-            -  ``resolution_y`` :index:`: <pair: output - blender_export - options - render_options; resolution_y>` [number=720] Height of the image.
+            -  ``resolution_x`` :index:`: <pair: output - blender_export - options - render_options; resolution_x>` [:ref:`number <number>`] Width of the image.
+            -  ``resolution_y`` :index:`: <pair: output - blender_export - options - render_options; resolution_y>` [:ref:`number <number>`] Height of the image.
             -  *width* :index:`: <pair: output - blender_export - options - render_options; width>` Alias for resolution_x.
 
-      -  ``add_default_light`` :index:`: <pair: output - blender_export - options; add_default_light>` [boolean=true] Add a default light when none specified.
+      -  ``add_default_light`` :index:`: <pair: output - blender_export - options; add_default_light>` [:ref:`boolean <boolean>`] Add a default light when none specified.
          The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB.
-      -  ``auto_camera_z_axis_factor`` :index:`: <pair: output - blender_export - options; auto_camera_z_axis_factor>` [number=1.1] Value to multiply the Z axis coordinate after computing the automatically generated camera.
+      -  ``auto_camera_z_axis_factor`` :index:`: <pair: output - blender_export - options; auto_camera_z_axis_factor>` [:ref:`number <number>`] Value to multiply the Z axis coordinate after computing the automatically generated camera.
          Used to avoid collision of the camera and the object.
-      -  ``camera`` :index:`: <pair: output - blender_export - options; camera>` [dict] Options for the camera.
+      -  ``camera`` :index:`: <pair: output - blender_export - options; camera>` [:ref:`dict <dict>`] Options for the camera.
          If none specified KiBot will create a suitable camera.
          If no position is specified for the camera KiBot will look for a suitable position.
 
          -  Valid keys:
 
-            -  ``clip_start`` :index:`: <pair: output - blender_export - options - camera; clip_start>` [number=-1] Minimum distance for objects to the camera. Any object closer than this distance won't be visible.
+            -  ``clip_start`` :index:`: <pair: output - blender_export - options - camera; clip_start>` [:ref:`number <number>`] Minimum distance for objects to the camera. Any object closer than this distance won't be visible.
                Only positive values have effect. A negative value has a special meaning.
                For a camera with defined position, a negative value means to use Blender defaults (i.e. 0.1 m).
                For cameras without position KiBot will ask Blender to compute its position and the use a clip
                distance that is 1/10th of the Z distance.
-            -  ``name`` :index:`: <pair: output - blender_export - options - camera; name>` [string=''] Name for the camera.
-            -  ``pos_x`` :index:`: <pair: output - blender_export - options - camera; pos_x>` [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_y`` :index:`: <pair: output - blender_export - options - camera; pos_y>` [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_z`` :index:`: <pair: output - blender_export - options - camera; pos_z>` [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``name`` :index:`: <pair: output - blender_export - options - camera; name>` [:ref:`string <string>`] Name for the camera.
+            -  ``pos_x`` :index:`: <pair: output - blender_export - options - camera; pos_x>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_y`` :index:`: <pair: output - blender_export - options - camera; pos_y>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_z`` :index:`: <pair: output - blender_export - options - camera; pos_z>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``type`` :index:`: <pair: output - blender_export - options - camera; type>` [string='perspective'] [perspective,orthographic,panoramic] Type of camera.
 
-      -  ``default_file_id`` :index:`: <pair: output - blender_export - options; default_file_id>` [string=''] Default value for the `file_id` in the `point_of_view` options.
+      -  ``default_file_id`` :index:`: <pair: output - blender_export - options; default_file_id>` [:ref:`string <string>`] Default value for the `file_id` in the `point_of_view` options.
          Use something like '_%03d' for animations.
-      -  ``fixed_auto_camera`` :index:`: <pair: output - blender_export - options; fixed_auto_camera>` [boolean=false] When using the automatically generated camera and multiple points of view this option computes the camera
+      -  ``fixed_auto_camera`` :index:`: <pair: output - blender_export - options; fixed_auto_camera>` [:ref:`boolean <boolean>`] When using the automatically generated camera and multiple points of view this option computes the camera
          position just once. Suitable for videos.
-      -  ``light`` :index:`: <pair: output - blender_export - options; light>` [dict|list(dict)] Options for the light/s.
+      -  ``light`` :index:`: <pair: output - blender_export - options; light>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Options for the light/s.
 
          -  Valid keys:
 
-            -  ``energy`` :index:`: <pair: output - blender_export - options - light; energy>` [number=0] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful.
-            -  ``name`` :index:`: <pair: output - blender_export - options - light; name>` [string=''] Name for the light.
-            -  ``pos_x`` :index:`: <pair: output - blender_export - options - light; pos_x>` [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_y`` :index:`: <pair: output - blender_export - options - light; pos_y>` [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_z`` :index:`: <pair: output - blender_export - options - light; pos_z>` [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``energy`` :index:`: <pair: output - blender_export - options - light; energy>` [:ref:`number <number>`] How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful.
+            -  ``name`` :index:`: <pair: output - blender_export - options - light; name>` [:ref:`string <string>`] Name for the light.
+            -  ``pos_x`` :index:`: <pair: output - blender_export - options - light; pos_x>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_y`` :index:`: <pair: output - blender_export - options - light; pos_y>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_z`` :index:`: <pair: output - blender_export - options - light; pos_z>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``type`` :index:`: <pair: output - blender_export - options - light; type>` [string='POINT'] [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly.
 
-      -  ``outputs`` :index:`: <pair: output - blender_export - options; outputs>` [dict|list(dict)] Outputs to generate in the same run.
+      -  ``outputs`` :index:`: <pair: output - blender_export - options; outputs>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Outputs to generate in the same run.
 
          -  Valid keys:
 
@@ -151,42 +151,42 @@ Parameters:
                format, 'ply' is Polygon File Format (Stanford).
                Note that some formats includes the light and camera and others are just the 3D model
                (i.e. STL and PLY).
-            -  ``dir`` :index:`: <pair: output - blender_export - options - outputs; dir>` [string=''] Subdirectory for this output.
-            -  ``output`` :index:`: <pair: output - blender_export - options - outputs; output>` [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
+            -  ``dir`` :index:`: <pair: output - blender_export - options - outputs; dir>` [:ref:`string <string>`] Subdirectory for this output.
+            -  ``output`` :index:`: <pair: output - blender_export - options - outputs; output>` [:ref:`string <string>`] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                The extension is selected from the type. Affected by global options.
 
-      -  ``pcb_import`` :index:`: <pair: output - blender_export - options; pcb_import>` [dict] Options to configure how Blender imports the PCB.
+      -  ``pcb_import`` :index:`: <pair: output - blender_export - options; pcb_import>` [:ref:`dict <dict>`] Options to configure how Blender imports the PCB.
          The default values are good for most cases.
 
          -  Valid keys:
 
-            -  ``center`` :index:`: <pair: output - blender_export - options - pcb_import; center>` [boolean=true] Center the PCB at the coordinates origin.
-            -  ``components`` :index:`: <pair: output - blender_export - options - pcb_import; components>` [boolean=true] Import the components.
-            -  ``cut_boards`` :index:`: <pair: output - blender_export - options - pcb_import; cut_boards>` [boolean=true] Separate the sub-PCBs in separated 3D models.
-            -  ``enhance_materials`` :index:`: <pair: output - blender_export - options - pcb_import; enhance_materials>` [boolean=true] Create good looking materials.
-            -  ``merge_materials`` :index:`: <pair: output - blender_export - options - pcb_import; merge_materials>` [boolean=true] Reuse materials.
-            -  ``solder_joints`` :index:`: <pair: output - blender_export - options - pcb_import; solder_joints>` [string='SMART'] [NONE,SMART,ALL] The plug-in can add nice looking solder joints.
+            -  ``center`` :index:`: <pair: output - blender_export - options - pcb_import; center>` [:ref:`boolean <boolean>`] Center the PCB at the coordinates origin.
+            -  ``components`` :index:`: <pair: output - blender_export - options - pcb_import; components>` [:ref:`boolean <boolean>`] Import the components.
+            -  ``cut_boards`` :index:`: <pair: output - blender_export - options - pcb_import; cut_boards>` [:ref:`boolean <boolean>`] Separate the sub-PCBs in separated 3D models.
+            -  ``enhance_materials`` :index:`: <pair: output - blender_export - options - pcb_import; enhance_materials>` [:ref:`boolean <boolean>`] Create good looking materials.
+            -  ``merge_materials`` :index:`: <pair: output - blender_export - options - pcb_import; merge_materials>` [:ref:`boolean <boolean>`] Reuse materials.
+            -  ``solder_joints`` :index:`: <pair: output - blender_export - options - pcb_import; solder_joints>` [:ref:`string <string>`] The plug-in can add nice looking solder joints.
                This option controls if we add it for none, all or only for THT/SMD pads with solder paste.
-            -  ``stack_boards`` :index:`: <pair: output - blender_export - options - pcb_import; stack_boards>` [boolean=true] Move the sub-PCBs to their relative position.
-            -  ``texture_dpi`` :index:`: <pair: output - blender_export - options - pcb_import; texture_dpi>` [number=1016.0] [508-2032] Texture density in dots per inch.
+            -  ``stack_boards`` :index:`: <pair: output - blender_export - options - pcb_import; stack_boards>` [:ref:`boolean <boolean>`] Move the sub-PCBs to their relative position.
+            -  ``texture_dpi`` :index:`: <pair: output - blender_export - options - pcb_import; texture_dpi>` [:ref:`number <number>`] Texture density in dots per inch.
 
 
 -  **type** :index:`: <pair: output - blender_export; type>` 'blender_export'
--  ``category`` :index:`: <pair: output - blender_export; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - blender_export; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - blender_export; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - blender_export; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - blender_export; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - blender_export; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - blender_export; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - blender_export; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - blender_export; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - blender_export; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - blender_export; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - blender_export; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - blender_export; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - blender_export; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
 
