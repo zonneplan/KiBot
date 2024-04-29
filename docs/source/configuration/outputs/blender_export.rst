@@ -155,7 +155,7 @@ Parameters:
             -  ``output`` :index:`: <pair: output - blender_export - options - outputs; output>` [string='%f-%i%I%v.%x'] Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                The extension is selected from the type. Affected by global options.
 
-      -  ``pcb_import`` :index:`: <pair: output - blender_export - options; pcb_import>` Options to configure how Blender imports the PCB.
+      -  ``pcb_import`` :index:`: <pair: output - blender_export - options; pcb_import>` [dict] Options to configure how Blender imports the PCB.
          The default values are good for most cases.
 
          -  Valid keys:

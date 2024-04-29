@@ -313,7 +313,7 @@ class Blender_ExportOptions(BaseOptions):
                 You can also specify the name of the output that generates the PCB3D file.
                 See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates """
             self.pcb_import = PCB2BlenderOptions
-            """ Options to configure how Blender imports the PCB.
+            """ [dict] Options to configure how Blender imports the PCB.
                 The default values are good for most cases """
             self.outputs = BlenderOutputOptions
             """ [dict|list(dict)] Outputs to generate in the same run """

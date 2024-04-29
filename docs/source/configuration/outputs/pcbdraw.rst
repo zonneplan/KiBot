@@ -86,7 +86,7 @@ Parameters:
       -  ``pre_transform`` :index:`: <pair: output - pcbdraw - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+      -  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [dict|string=None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
          Use `remap_components` instead.
 
       -  ``remap_components`` :index:`: <pair: output - pcbdraw - options; remap_components>` [list(dict)] Replacements for PCB references using specified components.

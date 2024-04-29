@@ -177,7 +177,7 @@ class PcbDrawOptions(VariantOptions):
             self.placeholder = False
             """ Show placeholder for missing components """
             self.remap = PcbDrawRemap
-            """ [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+            """ [dict|string=None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
                 Use `remap_components` instead """
             self.remap_components = PcbDrawRemapComponents
             """ [list(dict)] Replacements for PCB references using specified components.
@@ -292,6 +292,8 @@ class PcbDrawOptions(VariantOptions):
                     self._remap[ref] = tuple(lib_comp)
                 else:
                     raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))
+        elif isinstance(self.remap, str) and self.remap != 'None':
+            raise KiPlotConfigurationError(f"Unknown `{self.remap}` option")
         if isinstance(self.remap_components, list):
             for mapping in self.remap_components:
                 self._remap[mapping.ref] = (mapping.lib, mapping.comp)

@@ -14,7 +14,6 @@ from . import log
 
 logger = log.get_logger()
 VALID_SOURCE = {'schematic', 'pcb', 'project'}
-URL_SCRIPT = 'https://kicanvas.org/kicanvas/kicanvas.js'
 SCRIPT_NAME = 'kicanvas.js'
 JS_TEST = """
 function ready()
@@ -49,7 +48,7 @@ class KiCanvasOptions(VariantOptions):
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
-            self.url_script = URL_SCRIPT
+            self.url_script = 'https://kicanvas.org/kicanvas/kicanvas.js'
             """ URL for the KiCanvas script """
             self.controls = 'full'
             """ [full,basic,none] Which controls are displayed """
