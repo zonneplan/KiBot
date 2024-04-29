@@ -34,8 +34,8 @@ def _cl(text):
 class Optionable(object):
     """ A class to validate and hold configuration outputs/options.
         Is configured from a dict and the collected values are stored in its attributes. """
-    _str_values_re = compile(r"string=.*\] \[([^\]]+)\]")
-    _num_range_re = compile(r"number=.*\] \[(-?\d+),(-?\d+)\]")
+    _str_values_re = compile(r"string.*\](?:\[.*\])* \[([^\]]+)\]")
+    _num_range_re = compile(r"number.*\](?:\[.*\])* \[(-?\d+),(-?\d+)\]")
     _default = None
 
     _color_re = re.compile(r"#("+HEX_DIGIT+"){3}$")

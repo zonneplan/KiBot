@@ -46,7 +46,7 @@ class IBoMOptions(VariantOptions):
             self.hide_silkscreen = False
             """ Hide silkscreen by default """
             self.highlight_pin1 = False
-            """ [boolean|none,all,selected] Highlight pin1 by default """
+            """ [boolean|string=false] [none,all,selected] Highlight pin1 by default """
             self.no_redraw_on_drag = False
             """ Do not redraw pcb on drag by default """
             self.board_rotation = 0
