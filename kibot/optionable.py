@@ -70,7 +70,6 @@ class Optionable(object):
         m = Optionable._str_values_re.search(doc)
         if m:
             vals = m.group(1).split(',')
-            logger.error(vals)
             if val not in vals and '*' not in vals:
                 raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
 
