@@ -58,7 +58,7 @@ Parameters:
          Affected by global options.
       -  ``hide_pads`` :index:`: <pair: output - ibom - options; hide_pads>` [boolean=false] Hide footprint pads by default.
       -  ``hide_silkscreen`` :index:`: <pair: output - ibom - options; hide_silkscreen>` [boolean=false] Hide silkscreen by default.
-      -  ``highlight_pin1`` :index:`: <pair: output - ibom - options; highlight_pin1>` [boolean|string] [none,all,selected] Highlight pin1 by default.
+      -  ``highlight_pin1`` :index:`: <pair: output - ibom - options; highlight_pin1>` [boolean|string=false] [none,all,selected] Highlight pin1 by default.
       -  ``include_nets`` :index:`: <pair: output - ibom - options; include_nets>` [boolean=false] Include netlist information in output..
       -  ``name_format`` :index:`: <pair: output - ibom - options; name_format>` [string='ibom'] Output file name format supports substitutions:
          %f : original pcb file name without extension.
