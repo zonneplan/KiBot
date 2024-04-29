@@ -254,7 +254,7 @@ outputs:
         variant: ''
         # [string='2.7'] [2.1,2.1_haschtl,2.7] Variant of the format used
         version: '2.7'
-      # Options to configure how Blender imports the PCB.
+      # [dict] Options to configure how Blender imports the PCB.
       # The default values are good for most cases
       pcb_import:
         # [boolean=true] Center the PCB at the coordinates origin
@@ -1625,7 +1625,7 @@ outputs:
       # [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
       # If it starts with `+` the text is concatenated
       title: ''
-      # URL for the KiCanvas script
+      # [string='https://kicanvas.org/kicanvas/kicanvas.js'] URL for the KiCanvas script
       url_script: 'https://kicanvas.org/kicanvas/kicanvas.js'
       # [string=''] Board variant to apply
       variant: ''
@@ -2759,7 +2759,7 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+      # [dict|string=None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
       # Use `remap_components` instead
       remap:
       # [list(dict)] Replacements for PCB references using specified components.

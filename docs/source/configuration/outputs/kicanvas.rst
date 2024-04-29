@@ -42,7 +42,7 @@ Parameters:
 
       -  ``title`` :index:`: <pair: output - kicanvas - options; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
-      -  ``url_script`` :index:`: <pair: output - kicanvas - options; url_script>` URL for the KiCanvas script.
+      -  ``url_script`` :index:`: <pair: output - kicanvas - options; url_script>` [string='https://kicanvas.org/kicanvas/kicanvas.js'] URL for the KiCanvas script.
       -  ``variant`` :index:`: <pair: output - kicanvas - options; variant>` [string=''] Board variant to apply.
 
 -  **output** :index:`: <pair: output - kicanvas; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=kicanvas, %x=html). Affected by global options.
