@@ -78,7 +78,7 @@ def test_ibom_all_ops(test_dir):
                                     r'"show_pads": false',
                                     r'"show_fabrication": true',
                                     r'"show_silkscreen": false',
-                                    r'"highlight_pin1": "all"',
+                                    r'"highlight_pin1": "selected"',
                                     r'"redraw_on_drag": false',
                                     r'"board_rotation": 18.0',  # 90/5
                                     r'"offset_back_rotation": true',

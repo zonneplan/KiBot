@@ -12,7 +12,7 @@ outputs:
       hide_pads: true
       show_fabrication: true
       hide_silkscreen: true
-      highlight_pin1: true
+      highlight_pin1: selected
       no_redraw_on_drag: true
       board_rotation: 90
       checkboxes: 'Sourced,Placed,Bogus'
