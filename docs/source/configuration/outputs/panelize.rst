@@ -102,7 +102,7 @@ Parameters:
                   -  ``chamferheight`` :index:`: <pair: output - panelize - options - configs - framing; chamferheight>` [:ref:`number <number>` | :ref:`string <string>`] Height of the chamfer frame corners, used for non 45 degrees chamfer.
                   -  ``chamferwidth`` :index:`: <pair: output - panelize - options - configs - framing; chamferwidth>` [:ref:`number <number>` | :ref:`string <string>`] Width of the chamfer frame corners, used for non 45 degrees chamfer.
                   -  ``code`` :index:`: <pair: output - panelize - options - configs - framing; code>` [:ref:`string <string>`] (default: ``''``) Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
-                  -  ``cuts`` :index:`: <pair: output - panelize - options - configs - framing; cuts>` [:ref:`string <string>`] (default: ``'both'``) Specify whether to add cuts to the corners of the frame for easy removal.
+                  -  ``cuts`` :index:`: <pair: output - panelize - options - configs - framing; cuts>` [:ref:`string <string>`] (default: ``'both'``) (choices: "none", "both", "v", "h") Specify whether to add cuts to the corners of the frame for easy removal.
                      Used for *frame*.
                   -  ``fillet`` :index:`: <pair: output - panelize - options - configs - framing; fillet>` [:ref:`number <number>` | :ref:`string <string>`] Specify radius of fillet frame corners.
                   -  ``hspace`` :index:`: <pair: output - panelize - options - configs - framing; hspace>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal space between PCB and the frame/rail.
@@ -128,7 +128,7 @@ Parameters:
 
                   -  **cols** :index:`: <pair: output - panelize - options - configs - layout; cols>` [:ref:`number <number>`] (default: ``1``) Specify the number of columns of boards in the grid pattern.
                   -  **rows** :index:`: <pair: output - panelize - options - configs - layout; rows>` [:ref:`number <number>`] (default: ``1``) Specify the number of rows of boards in the grid pattern.
-                  -  ``alternation`` :index:`: <pair: output - panelize - options - configs - layout; alternation>` [:ref:`string <string>`] (default: ``'none'``) Specify alternations of board rotation.
+                  -  ``alternation`` :index:`: <pair: output - panelize - options - configs - layout; alternation>` [:ref:`string <string>`] (default: ``'none'``) (choices: "none", "rows", "cols", "rowsCols") Specify alternations of board rotation.
                      none: Do not alternate.
                      rows: Rotate boards by 180° on every next row.
                      cols: Rotate boards by 180° on every next column.
@@ -178,7 +178,7 @@ Parameters:
                      A3-portrait,A4-portrait,A5-portrait,A-portrait,B-portrait,C-portrait,D-portrait,E-portrait,
                      USLetter-portrait,USLegal-portrait,USLedger-portrait] Paper size. The default `inherit` option inherits
                      paper size from the source board. This feature is not supported on KiCAD 5.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - page; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - page; anchor>` [:ref:`string <string>`] (default: ``'mt'``) (choices: "tl", "tr", "bl", "br", "mt", "mb", "ml", "mr", "c") Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
                      (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - page; height>` [:ref:`number <number>` | :ref:`string <string>`] Height for the `custom` paper size.
                   -  *pos_x* :index:`: <pair: output - panelize - options - configs - page; pos_x>` Alias for posx.
@@ -261,7 +261,7 @@ Parameters:
                   -  ``trace`` :index:`: <pair: output - panelize - options - configs - debug; trace>` [:ref:`boolean <boolean>`] (default: ``false``) Trace.
 
             -  ``expand_text`` :index:`: <pair: output - panelize - options - configs; expand_text>` [:ref:`boolean <boolean>`] (default: ``true``) Expand text variables and KiBot %X markers in text objects.
-            -  ``extends`` :index:`: <pair: output - panelize - options - configs; extends>` [:ref:`string <string>`] (default: ``''``)`.
+            -  ``extends`` :index:`: <pair: output - panelize - options - configs; extends>` [:ref:`string <string>`] (default: ``''``) A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`.
             -  ``name`` :index:`: <pair: output - panelize - options - configs; name>` [:ref:`string <string>`] (default: ``''``) A name to identify this configuration. If empty will be the order in the list, starting with 1.
                Don't use just a number or it will be confused as an index.
             -  ``post`` :index:`: <pair: output - panelize - options - configs; post>` [:ref:`dict <dict>`] Finishing touches to the panel.
@@ -278,7 +278,7 @@ Parameters:
                      Specify mill radius (usually 1 mm). 0 radius disables the functionality.
                   -  ``millradiusouter`` :index:`: <pair: output - panelize - options - configs - post; millradiusouter>` [:ref:`number <number>` | :ref:`string <string>`] Like `millradius`, but modifies only board outer counter.
                      No internal features of the board are affected.
-                  -  ``origin`` :index:`: <pair: output - panelize - options - configs - post; origin>` [:ref:`string <string>`] (default: ``'tl'``) Specify if the auxiliary origin an grid origin should be placed.
+                  -  ``origin`` :index:`: <pair: output - panelize - options - configs - post; origin>` [:ref:`string <string>`] (default: ``'tl'``) (choices: "tl", "tr", "bl", "br", "mt", "mb", "ml", "mr", "c") Specify if the auxiliary origin an grid origin should be placed.
                      Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr (middle of sides), c (center).
                      Empty string does not changes the origin.
                   -  *reconstruct_arcs* :index:`: <pair: output - panelize - options - configs - post; reconstruct_arcs>` Alias for reconstructarcs.
@@ -307,7 +307,7 @@ Parameters:
                   -  ``brx`` :index:`: <pair: output - panelize - options - configs - source; brx>` [:ref:`number <number>` | :ref:`string <string>`] Bottom right X coordinate of the rectangle used. Used for *rectangle*.
                   -  ``bry`` :index:`: <pair: output - panelize - options - configs - source; bry>` [:ref:`number <number>` | :ref:`string <string>`] Bottom right Y coordinate of the rectangle used. Used for *rectangle*.
                   -  ``ref`` :index:`: <pair: output - panelize - options - configs - source; ref>` [:ref:`string <string>`] (default: ``''``) Reference for the kikit:Board footprint used to select the contour. Used for *annotation*.
-                  -  ``stack`` :index:`: <pair: output - panelize - options - configs - source; stack>` [:ref:`string <string>`] (default: ``'inherit'``) Used to reduce the number of layers used for the panel.
+                  -  ``stack`` :index:`: <pair: output - panelize - options - configs - source; stack>` [:ref:`string <string>`] (default: ``'inherit'``) (choices: "inherit", "2layer", "4layer", "6layer") Used to reduce the number of layers used for the panel.
                   -  ``tlx`` :index:`: <pair: output - panelize - options - configs - source; tlx>` [:ref:`number <number>` | :ref:`string <string>`] Top left X coordinate of the rectangle used. Used for *rectangle*.
                   -  ``tly`` :index:`: <pair: output - panelize - options - configs - source; tly>` [:ref:`number <number>` | :ref:`string <string>`] Top left Y coordinate of the rectangle used. Used for *rectangle*.
                   -  ``tolerance`` :index:`: <pair: output - panelize - options - configs - source; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*.
@@ -325,16 +325,16 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text; anchor>` [:ref:`string <string>`] (default: ``'mt'``) (choices: "tl", "tr", "bl", "br", "mt", "mb", "ml", "mr", "c") Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text; hjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                   -  ``layer`` :index:`: <pair: output - panelize - options - configs - text; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
                   -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text; vjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
@@ -351,16 +351,16 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text2; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text2; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text2; anchor>` [:ref:`string <string>`] (default: ``'mt'``) (choices: "tl", "tr", "bl", "br", "mt", "mb", "ml", "mr", "c") Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text2; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text2; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text2; hjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text2; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                   -  ``layer`` :index:`: <pair: output - panelize - options - configs - text2; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text2; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
                   -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text2; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text2; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text2; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text2; vjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text2; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text2; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
@@ -377,16 +377,16 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text3; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text3; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text3; anchor>` [:ref:`string <string>`] (default: ``'mt'``) (choices: "tl", "tr", "bl", "br", "mt", "mb", "ml", "mr", "c") Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text3; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text3; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text3; hjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text3; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                   -  ``layer`` :index:`: <pair: output - panelize - options - configs - text3; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text3; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
                   -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text3; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text3; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text3; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text3; vjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text3; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text3; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
@@ -403,23 +403,23 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text4; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text4; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text4; anchor>` [:ref:`string <string>`] (default: ``'mt'``) (choices: "tl", "tr", "bl", "br", "mt", "mb", "ml", "mr", "c") Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text4; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text4; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text4; hjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text4; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
                   -  ``layer`` :index:`: <pair: output - panelize - options - configs - text4; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text4; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
                   -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text4; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text4; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text4; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text4; vjustify>` [:ref:`string <string>`] (default: ``'center'``) (choices: "left", "right", "center") Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text4; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text4; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
 
       -  **output** :index:`: <pair: output - panelize - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=panel, %x=kicad_pcb). Affected by global options.
       -  ``create_preview`` :index:`: <pair: output - panelize - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``false``) Use PcbDraw to create a preview of the panel.
-      -  ``default_angles`` :index:`: <pair: output - panelize - options; default_angles>` [:ref:`string <string>`] (default: ``'deg'``) Angles used when omitted.
+      -  ``default_angles`` :index:`: <pair: output - panelize - options; default_angles>` [:ref:`string <string>`] (default: ``'deg'``) (choices: "deg", "°", "rad") Angles used when omitted.
       -  ``dnf_filter`` :index:`: <pair: output - panelize - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
@@ -428,7 +428,7 @@ Parameters:
 
       -  ``title`` :index:`: <pair: output - panelize - options; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
-      -  ``units`` :index:`: <pair: output - panelize - options; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
+      -  ``units`` :index:`: <pair: output - panelize - options; units>` [:ref:`string <string>`] (default: ``'mm'``) (choices: "millimeters", "inches", "mils", "mm", "cm", "dm", "m", "mil", "inch", "in") Units used when omitted.
       -  ``variant`` :index:`: <pair: output - panelize - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - panelize; type>` 'panelize'
@@ -446,7 +446,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - panelize; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - panelize; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - panelize; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - panelize; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

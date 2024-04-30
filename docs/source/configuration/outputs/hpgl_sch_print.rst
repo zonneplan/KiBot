@@ -33,9 +33,9 @@ Parameters:
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``monochrome`` :index:`: <pair: output - hpgl_sch_print - options; monochrome>` [:ref:`boolean <boolean>`] (default: ``false``) Generate a monochromatic output.
-      -  ``origin`` :index:`: <pair: output - hpgl_sch_print - options; origin>` [:ref:`string <string>`] (default: ``'bottom_left'``) Origin and scale.
+      -  ``origin`` :index:`: <pair: output - hpgl_sch_print - options; origin>` [:ref:`string <string>`] (default: ``'bottom_left'``) (choices: "bottom_left", "centered", "page_fit", "content_fit") Origin and scale.
       -  ``output`` :index:`: <pair: output - hpgl_sch_print - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output HPGL (%i=schematic, %x=plt). Affected by global options.
-      -  ``pen_size`` :index:`: <pair: output - hpgl_sch_print - options; pen_size>` [:ref:`number <number>`] (default: ``0.4826``).
+      -  ``pen_size`` :index:`: <pair: output - hpgl_sch_print - options; pen_size>` [:ref:`number <number>`] (default: ``0.4826``) Pen size (diameter) [mm].
       -  ``pre_transform`` :index:`: <pair: output - hpgl_sch_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
@@ -62,7 +62,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - hpgl_sch_print; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - hpgl_sch_print; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - hpgl_sch_print; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - hpgl_sch_print; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

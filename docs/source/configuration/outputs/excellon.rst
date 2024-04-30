@@ -33,7 +33,7 @@ Parameters:
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``left_digits`` :index:`: <pair: output - excellon - options; left_digits>` [:ref:`number <number>`] (default: ``0``) number of digits for integer part of coordinates (0 is auto).
-      -  ``map`` :index:`: <pair: output - excellon - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``None``) Format for a graphical drill map.
+      -  ``map`` :index:`: <pair: output - excellon - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``None``) (choices: "hpgl", "ps", "gerber", "dxf", "svg", "pdf", "None") Format for a graphical drill map.
          Not generated unless a format is specified.
 
          -  Valid keys:
@@ -59,7 +59,7 @@ Parameters:
       -  ``use_aux_axis_as_origin`` :index:`: <pair: output - excellon - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Use the auxiliary axis as origin for coordinates.
       -  ``variant`` :index:`: <pair: output - excellon - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
          Used for sub-PCBs.
-      -  ``zeros_format`` :index:`: <pair: output - excellon - options; zeros_format>` [:ref:`string <string>`] (default: ``'DECIMAL_FORMAT'``) How to handle the zeros.
+      -  ``zeros_format`` :index:`: <pair: output - excellon - options; zeros_format>` [:ref:`string <string>`] (default: ``'DECIMAL_FORMAT'``) (choices: "DECIMAL_FORMAT", "SUPPRESS_LEADING", "SUPPRESS_TRAILING", "KEEP_ZEROS") How to handle the zeros.
 
 -  **type** :index:`: <pair: output - excellon; type>` 'excellon'
 -  ``category`` :index:`: <pair: output - excellon; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
@@ -76,7 +76,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - excellon; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - excellon; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - excellon; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - excellon; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

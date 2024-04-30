@@ -27,7 +27,7 @@ Parameters:
 
    -  Valid keys:
 
-      -  **format** :index:`: <pair: output - kibom - options; format>` [:ref:`string <string>`] (default: ``'HTML'``) Format for the BoM.
+      -  **format** :index:`: <pair: output - kibom - options; format>` [:ref:`string <string>`] (default: ``'HTML'``) (choices: "HTML", "CSV", "XML", "XLSX") Format for the BoM.
       -  **number** :index:`: <pair: output - kibom - options; number>` [:ref:`number <number>`] (default: ``1``) Number of boards to build (components multiplier).
       -  **output** :index:`: <pair: output - kibom - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=bom). Affected by global options.
       -  ``conf`` :index:`: <pair: output - kibom - options; conf>` [:ref:`string <string>` | :ref:`dict <dict>`] BoM configuration file, relative to PCB. Environment variables and ~ allowed.
@@ -145,7 +145,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - kibom; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - kibom; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - kibom; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - kibom; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

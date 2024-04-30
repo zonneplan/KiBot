@@ -55,7 +55,7 @@ Parameters:
                If empty we use the first `gerber` output.
                *file*: the name of a compressed archive.
                *external*: ignored, we use `extrenal_config`.
-            -  ``mode`` :index:`: <pair: output - kikit_present - options - boards; mode>` [:ref:`string <string>`] (default: ``'local'``) How images and gerbers are obtained.
+            -  ``mode`` :index:`: <pair: output - kikit_present - options - boards; mode>` [:ref:`string <string>`] (default: ``'local'``) (choices: "local", "file", "external") How images and gerbers are obtained.
                *local*: Only applies to the currently selected PCB.
                You must provide the names of the outputs used to render
                the images and compress the gerbers.
@@ -103,7 +103,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - kikit_present; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - kikit_present; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - kikit_present; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - kikit_present; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

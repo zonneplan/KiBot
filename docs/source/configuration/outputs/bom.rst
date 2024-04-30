@@ -70,7 +70,7 @@ Parameters:
             -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - csv; hide_pcb_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide project information.
             -  ``hide_stats_info`` :index:`: <pair: output - bom - options - csv; hide_stats_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide statistics information.
 
-      -  **format** :index:`: <pair: output - bom - options; format>` [:ref:`string <string>`] (default: ``''``) format for the BoM.
+      -  **format** :index:`: <pair: output - bom - options; format>` [:ref:`string <string>`] (default: ``''``) (choices: "HTML", "CSV", "TXT", "TSV", "XML", "XLSX", "HRTXT") format for the BoM.
          Defaults to CSV or a guess according to the options.
          HRTXT stands for Human Readable TeXT.
       -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [:ref:`list(string) <list(string)>`] List of fields used for sorting individual components into groups.
@@ -93,7 +93,7 @@ Parameters:
             -  ``hide_header`` :index:`: <pair: output - bom - options - hrtxt; hide_header>` [:ref:`boolean <boolean>`] (default: ``false``) Hide the header line (names of the columns).
             -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - hrtxt; hide_pcb_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide project information.
             -  ``hide_stats_info`` :index:`: <pair: output - bom - options - hrtxt; hide_stats_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide statistics information.
-            -  ``justify`` :index:`: <pair: output - bom - options - hrtxt; justify>` [:ref:`string <string>`] (default: ``'left'``) Text justification.
+            -  ``justify`` :index:`: <pair: output - bom - options - hrtxt; justify>` [:ref:`string <string>`] (default: ``'left'``) (choices: "left", "right", "center") Text justification.
 
       -  **html** :index:`: <pair: output - bom - options; html>` [:ref:`dict <dict>`] Options for the HTML format.
 
@@ -139,8 +139,8 @@ Parameters:
       -  **normalize_values** :index:`: <pair: output - bom - options; normalize_values>` [:ref:`boolean <boolean>`] (default: ``false``) Try to normalize the R, L and C values, producing uniform units and prefixes.
       -  **number** :index:`: <pair: output - bom - options; number>` [:ref:`number <number>`] (default: ``1``) Number of boards to build (components multiplier).
       -  **output** :index:`: <pair: output - bom - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) filename for the output (%i=bom). Affected by global options.
-      -  **sort_style** :index:`: <pair: output - bom - options; sort_style>` [:ref:`string <string>`] (default: ``'type_value'``) Sorting criteria.
-      -  **units** :index:`: <pair: output - bom - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the positions ('Footprint X' and 'Footprint Y' columns).
+      -  **sort_style** :index:`: <pair: output - bom - options; sort_style>` [:ref:`string <string>`] (default: ``'type_value'``) (choices: "type_value", "type_value_ref", "ref") Sorting criteria.
+      -  **units** :index:`: <pair: output - bom - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions ('Footprint X' and 'Footprint Y' columns).
          Affected by global options.
       -  **xlsx** :index:`: <pair: output - bom - options; xlsx>` [:ref:`dict <dict>`] Options for the XLSX format.
 
@@ -179,7 +179,7 @@ Parameters:
 
             -  ``logo_scale`` :index:`: <pair: output - bom - options - xlsx; logo_scale>` [:ref:`number <number>`] (default: ``2``) Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             -  ``logo_width`` :index:`: <pair: output - bom - options - xlsx; logo_width>` [:ref:`number <number>`] (default: ``370``) Used when the logo is an SVG image. This width is used to render the SVG image.
-            -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [:ref:`number <number>`] (default: ``60``) Maximum column width (characters).
+            -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [:ref:`number <number>`] (default: ``60``) (range: 20 to 999) Maximum column width (characters).
             -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Mouser part numbers, will be linked to web page.
 
             -  ``row_colors`` :index:`: <pair: output - bom - options - xlsx; row_colors>` [:ref:`list(dict) <list(dict)>`] Used to highlight rows using filters. Rows that match a filter can be colored.
@@ -354,7 +354,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - bom; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - bom; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - bom; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - bom; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

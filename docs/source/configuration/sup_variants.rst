@@ -58,10 +58,10 @@ Supported variants
             -  ``tly`` :index:`: <pair: variant - ibom - sub_pcbs; tly>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tolerance`` :index:`: <pair: variant - ibom - sub_pcbs; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Used to enlarge the selected rectangle to include elements outside the board.
                KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
-            -  ``tool`` :index:`: <pair: variant - ibom - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) Tool used to extract the sub-PCB..
+            -  ``tool`` :index:`: <pair: variant - ibom - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) (choices: "internal", "kikit") Tool used to extract the sub-PCB..
             -  *top_left_x* :index:`: <pair: variant - ibom - sub_pcbs; top_left_x>` Alias for tlx.
             -  *top_left_y* :index:`: <pair: variant - ibom - sub_pcbs; top_left_y>` Alias for tly.
-            -  ``units`` :index:`: <pair: variant - ibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
+            -  ``units`` :index:`: <pair: variant - ibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) (choices: "millimeters", "inches", "mils", "mm", "cm", "dm", "m", "mil", "inch", "in") Units used when omitted.
 
       -  ``variant_field`` :index:`: <pair: variant - ibom; variant_field>` [:ref:`string <string>`] (default: ``'Config'``) Name of the field that stores board variant for component.
       -  ``variants_blacklist`` :index:`: <pair: variant - ibom; variants_blacklist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of board variants to exclude from the BOM.
@@ -125,10 +125,10 @@ Supported variants
             -  ``tly`` :index:`: <pair: variant - kibom - sub_pcbs; tly>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tolerance`` :index:`: <pair: variant - kibom - sub_pcbs; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Used to enlarge the selected rectangle to include elements outside the board.
                KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
-            -  ``tool`` :index:`: <pair: variant - kibom - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) Tool used to extract the sub-PCB..
+            -  ``tool`` :index:`: <pair: variant - kibom - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) (choices: "internal", "kikit") Tool used to extract the sub-PCB..
             -  *top_left_x* :index:`: <pair: variant - kibom - sub_pcbs; top_left_x>` Alias for tlx.
             -  *top_left_y* :index:`: <pair: variant - kibom - sub_pcbs; top_left_y>` Alias for tly.
-            -  ``units`` :index:`: <pair: variant - kibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
+            -  ``units`` :index:`: <pair: variant - kibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) (choices: "millimeters", "inches", "mils", "mm", "cm", "dm", "m", "mil", "inch", "in") Units used when omitted.
 
       -  ``variant`` :index:`: <pair: variant - kibom; variant>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Board variant(s).
 
@@ -193,10 +193,10 @@ Supported variants
             -  ``tly`` :index:`: <pair: variant - kicost - sub_pcbs; tly>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tolerance`` :index:`: <pair: variant - kicost - sub_pcbs; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Used to enlarge the selected rectangle to include elements outside the board.
                KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
-            -  ``tool`` :index:`: <pair: variant - kicost - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) Tool used to extract the sub-PCB..
+            -  ``tool`` :index:`: <pair: variant - kicost - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) (choices: "internal", "kikit") Tool used to extract the sub-PCB..
             -  *top_left_x* :index:`: <pair: variant - kicost - sub_pcbs; top_left_x>` Alias for tlx.
             -  *top_left_y* :index:`: <pair: variant - kicost - sub_pcbs; top_left_y>` Alias for tly.
-            -  ``units`` :index:`: <pair: variant - kicost - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
+            -  ``units`` :index:`: <pair: variant - kicost - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) (choices: "millimeters", "inches", "mils", "mm", "cm", "dm", "m", "mil", "inch", "in") Units used when omitted.
 
       -  ``variant`` :index:`: <pair: variant - kicost; variant>` [:ref:`string <string>`] (default: ``''``) Variants to match (regex).
       -  ``variant_field`` :index:`: <pair: variant - kicost; variant_field>` [:ref:`string <string>`] (default: ``'variant'``) Name of the field that stores board variant/s for component.

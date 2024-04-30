@@ -27,7 +27,7 @@ Parameters:
    -  Valid keys:
 
       -  **output** :index:`: <pair: output - info - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=info, %x=txt). Affected by global options.
-      -  ``environment`` :index:`: <pair: output - info - options; environment>` [:ref:`string <string>`] (default: ``'names'``) List environment variables.
+      -  ``environment`` :index:`: <pair: output - info - options; environment>` [:ref:`string <string>`] (default: ``'names'``) (choices: "names", "none", "full") List environment variables.
          IMPORTANT: Don't use `full` unless you know you are not leaking sensitive information.
 
 -  **type** :index:`: <pair: output - info; type>` 'info'
@@ -45,7 +45,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - info; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - info; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - info; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - info; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

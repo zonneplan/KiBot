@@ -20,7 +20,7 @@ Parameters:
 -  **comment** :index:`: <pair: output - ps; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - ps; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - ps; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`]
+-  **layers** :index:`: <pair: output - ps; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string)
    List of PCB layers to plot.
 
    -  Valid keys:
@@ -57,7 +57,7 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - ps - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``drill_marks`` :index:`: <pair: output - ps - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) What to use to indicate the drill places, can be none, small or full (for real scale).
+      -  ``drill_marks`` :index:`: <pair: output - ps - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
       -  ``edge_cut_extension`` :index:`: <pair: output - ps - options; edge_cut_extension>` [:ref:`string <string>`] (default: ``''``) Used to configure the edge cuts layer extension for Protel mode. Include the dot.
       -  ``exclude_edge_layer`` :index:`: <pair: output - ps - options; exclude_edge_layer>` [:ref:`boolean <boolean>`] (default: ``true``) Do not include the PCB edge layer.
       -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - ps - options; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -67,7 +67,7 @@ Parameters:
       -  ``inner_extension_pattern`` :index:`: <pair: output - ps - options; inner_extension_pattern>` [:ref:`string <string>`] (default: ``''``) Used to change the Protel style extensions for inner layers.
          The replacement pattern can contain %n for the inner layer number and %N for the layer number.
          Example '.g%n'.
-      -  ``line_width`` :index:`: <pair: output - ps - options; line_width>` [:ref:`number <number>`] (default: ``0.15``) (KiCad 5).
+      -  ``line_width`` :index:`: <pair: output - ps - options; line_width>` [:ref:`number <number>`] (default: ``0.15``) For objects without width [mm] (KiCad 5).
       -  ``mirror_plot`` :index:`: <pair: output - ps - options; mirror_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Plot mirrored.
       -  ``negative_plot`` :index:`: <pair: output - ps - options; negative_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Invert black and white.
       -  ``plot_footprint_refs`` :index:`: <pair: output - ps - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
@@ -77,7 +77,7 @@ Parameters:
 
       -  ``scale_adjust_x`` :index:`: <pair: output - ps - options; scale_adjust_x>` [:ref:`number <number>`] (default: ``1.0``) Fine grain adjust for the X scale (floating point multiplier).
       -  ``scale_adjust_y`` :index:`: <pair: output - ps - options; scale_adjust_y>` [:ref:`number <number>`] (default: ``1.0``) Fine grain adjust for the Y scale (floating point multiplier).
-      -  ``sketch_pad_line_width`` :index:`: <pair: output - ps - options; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``), see `sketch_pads_on_fab_layers` (KiCad 6+)
+      -  ``sketch_pad_line_width`` :index:`: <pair: output - ps - options; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``) Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
          Note that this value is currently ignored by KiCad (6.0.9).
       -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - ps - options; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
       -  ``sketch_plot`` :index:`: <pair: output - ps - options; sketch_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Don't fill objects, just draw the outline.
@@ -102,7 +102,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - ps; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - ps; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - ps; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - ps; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

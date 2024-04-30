@@ -29,7 +29,7 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - gerb_drill - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``map`` :index:`: <pair: output - gerb_drill - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``None``) Format for a graphical drill map.
+      -  ``map`` :index:`: <pair: output - gerb_drill - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``None``) (choices: "hpgl", "ps", "gerber", "dxf", "svg", "pdf", "None") Format for a graphical drill map.
          Not generated unless a format is specified.
 
          -  Valid keys:
@@ -68,7 +68,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - gerb_drill; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - gerb_drill; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - gerb_drill; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - gerb_drill; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

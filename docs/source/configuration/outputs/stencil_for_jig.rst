@@ -30,9 +30,9 @@ Parameters:
       -  *jig_height* :index:`: <pair: output - stencil_for_jig - options; jig_height>` Alias for jigheight.
       -  *jig_thickness* :index:`: <pair: output - stencil_for_jig - options; jig_thickness>` Alias for jigthickness.
       -  *jig_width* :index:`: <pair: output - stencil_for_jig - options; jig_width>` Alias for jigwidth.
-      -  **jigheight** :index:`: <pair: output - stencil_for_jig - options; jigheight>` [:ref:`number <number>`] (default: ``100``).
-      -  **jigthickness** :index:`: <pair: output - stencil_for_jig - options; jigthickness>` [:ref:`number <number>`] (default: ``3``).
-      -  **jigwidth** :index:`: <pair: output - stencil_for_jig - options; jigwidth>` [:ref:`number <number>`] (default: ``100``).
+      -  **jigheight** :index:`: <pair: output - stencil_for_jig - options; jigheight>` [:ref:`number <number>`] (default: ``100``) Jig frame height [mm].
+      -  **jigthickness** :index:`: <pair: output - stencil_for_jig - options; jigthickness>` [:ref:`number <number>`] (default: ``3``) Jig thickness [mm].
+      -  **jigwidth** :index:`: <pair: output - stencil_for_jig - options; jigwidth>` [:ref:`number <number>`] (default: ``100``) Jig frame width [mm].
       -  **output** :index:`: <pair: output - stencil_for_jig - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
          %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'|'png'). Affected by global options.
       -  ``create_preview`` :index:`: <pair: output - stencil_for_jig - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``true``) Creates a PNG showing the generated 3D model.
@@ -44,17 +44,17 @@ Parameters:
 
       -  ``include_scad`` :index:`: <pair: output - stencil_for_jig - options; include_scad>` [:ref:`boolean <boolean>`] (default: ``true``) Include the generated OpenSCAD files.
       -  *pcb_thickness* :index:`: <pair: output - stencil_for_jig - options; pcb_thickness>` Alias for pcbthickness.
-      -  ``pcbthickness`` :index:`: <pair: output - stencil_for_jig - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``). If 0 we will ask KiCad.
+      -  ``pcbthickness`` :index:`: <pair: output - stencil_for_jig - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``) PCB thickness [mm]. If 0 we will ask KiCad.
       -  ``pre_transform`` :index:`: <pair: output - stencil_for_jig - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  *register_border_inner* :index:`: <pair: output - stencil_for_jig - options; register_border_inner>` Alias for registerborderinner.
       -  *register_border_outer* :index:`: <pair: output - stencil_for_jig - options; register_border_outer>` Alias for registerborderouter.
-      -  ``registerborderinner`` :index:`: <pair: output - stencil_for_jig - options; registerborderinner>` [:ref:`number <number>`] (default: ``1``).
-      -  ``registerborderouter`` :index:`: <pair: output - stencil_for_jig - options; registerborderouter>` [:ref:`number <number>`] (default: ``3``).
-      -  ``side`` :index:`: <pair: output - stencil_for_jig - options; side>` [:ref:`string <string>`] (default: ``'auto'``) Which side of the PCB we want. Using `auto` will detect which
+      -  ``registerborderinner`` :index:`: <pair: output - stencil_for_jig - options; registerborderinner>` [:ref:`number <number>`] (default: ``1``) Inner register border [mm].
+      -  ``registerborderouter`` :index:`: <pair: output - stencil_for_jig - options; registerborderouter>` [:ref:`number <number>`] (default: ``3``) Outer register border [mm].
+      -  ``side`` :index:`: <pair: output - stencil_for_jig - options; side>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "top", "bottom", "auto", "both") Which side of the PCB we want. Using `auto` will detect which
          side contains solder paste.
-      -  ``tolerance`` :index:`: <pair: output - stencil_for_jig - options; tolerance>` [:ref:`number <number>`] (default: ``0.05``).
+      -  ``tolerance`` :index:`: <pair: output - stencil_for_jig - options; tolerance>` [:ref:`number <number>`] (default: ``0.05``) Enlarges the register by the tolerance value [mm].
       -  ``variant`` :index:`: <pair: output - stencil_for_jig - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - stencil_for_jig; type>` 'stencil_for_jig'
@@ -72,7 +72,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - stencil_for_jig; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - stencil_for_jig; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - stencil_for_jig; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - stencil_for_jig; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

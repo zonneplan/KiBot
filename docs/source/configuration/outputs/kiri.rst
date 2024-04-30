@@ -25,7 +25,7 @@ Parameters:
 -  **comment** :index:`: <pair: output - kiri; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - kiri; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - kiri; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`]
+-  **layers** :index:`: <pair: output - kiri; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string)
    List of PCB layers to use. When empty all available layers are used.
    Note that if you want to support adding/removing layers you should specify a list here.
 
@@ -58,7 +58,7 @@ Parameters:
       -  ``revision`` :index:`: <pair: output - kiri - options; revision>` [:ref:`string <string>`] (default: ``'HEAD'``) Starting point for the commits, can be a branch, a hash, etc.
          Note that this can be a revision-range, consult the gitrevisions manual for more information.
       -  ``variant`` :index:`: <pair: output - kiri - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-      -  ``zones`` :index:`: <pair: output - kiri - options; zones>` [:ref:`string <string>`] (default: ``'global'``) How to handle PCB zones. The default is *global* and means that we
+      -  ``zones`` :index:`: <pair: output - kiri - options; zones>` [:ref:`string <string>`] (default: ``'global'``) (choices: "global", "fill", "unfill", "none") How to handle PCB zones. The default is *global* and means that we
          fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
          a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
          Be careful with the *keep_generated* option when changing this setting.
@@ -78,7 +78,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - kiri; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - kiri; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - kiri; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - kiri; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

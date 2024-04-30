@@ -792,6 +792,33 @@ def trim(docstring):
     return trimmed
 
 
+def process_help_data_type(obj, help):
+    valid, validations, def_val = obj.get_valid_types(help)
+    new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
+    if def_val:
+        new_data_type += f' (default: ``{def_val}``)'
+    string_added = False
+    number_added = False
+    for tp, validation in zip(valid, validations):
+        if validation is None:
+            continue
+        if not string_added and 'string' in tp:
+            string_added = True
+            any_str = False
+            if validation[-1] == '*':
+                validation = validation[:-1]
+                any_str = True
+            new_data_type += ' (choices: "'+'", "'.join(validation)+'")'
+            if any_str:
+                new_data_type += ' (also accepts any string)'
+        elif not number_added and 'number' in tp:
+            number_added = True
+            new_data_type += f' (range: {validation[0]} to {validation[1]})'
+    m = re.search(r'^\[[^\]]+\]( \[[^\]]+\])*', help)
+    help = new_data_type+help[m.end(0):]
+    return help
+
+
 def print_output_options(name, cl, indent, context=None, skip_keys=False):
     ind_str = indent*' '
     obj = cl()
@@ -835,12 +862,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         assert help is not None, f'Undocumented option: `{k}`'
         if not is_alias and k != 'type':
             assert help[0] == '[', f'Missing option data type: `{k}`: {help}'
-            valid, _, def_val = obj.get_valid_types(help)
-            new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
-            if def_val:
-                new_data_type += f' (default: ``{def_val}``)'
-            m = re.search(r'^\[(.*)\]', help)
-            help = new_data_type+help[m.end(0):]
+            help = process_help_data_type(obj, help)
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         if rst_mode and context:

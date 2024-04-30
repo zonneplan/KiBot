@@ -24,7 +24,7 @@ Parameters:
 
    -  Valid keys:
 
-      -  **format** :index:`: <pair: output - netlist - options; format>` [:ref:`string <string>`] (default: ``'classic'``) The `classic` format is the KiCad internal format, and is generated
+      -  **format** :index:`: <pair: output - netlist - options; format>` [:ref:`string <string>`] (default: ``'classic'``) (choices: "classic", "ipc") The `classic` format is the KiCad internal format, and is generated
          from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
          testing, is generated from the PCB.
       -  **output** :index:`: <pair: output - netlist - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
@@ -52,7 +52,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - netlist; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - netlist; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - netlist; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - netlist; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

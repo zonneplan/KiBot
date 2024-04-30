@@ -27,7 +27,7 @@ Parameters:
 
    -  Valid keys:
 
-      -  **format** :index:`: <pair: output - populate - options; format>` [:ref:`string <string>`] (default: ``'html'``) Format for the generated output.
+      -  **format** :index:`: <pair: output - populate - options; format>` [:ref:`string <string>`] (default: ``'html'``) (choices: "html", "md") Format for the generated output.
       -  **input** :index:`: <pair: output - populate - options; input>` [:ref:`string <string>`] (default: ``''``) Name of the input file describing the assembly. Must be a markdown file.
          Note that the YAML section of the file will be skipped, all the needed information
          comes from this output and the `renderer` output.
@@ -64,7 +64,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - populate; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - populate; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - populate; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - populate; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
