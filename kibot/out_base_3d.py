@@ -586,7 +586,7 @@ class Base3DOptionsWithHL(Base3DOptions):
     def __init__(self):
         with document:
             self.show_components = Optionable
-            """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+            """ *[list(string)|string=all] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
                 Ranges like *R5-R10* are supported.
                 Unlike the `pcbdraw` output, the default is `all` """
             self.highlight = Optionable
@@ -606,7 +606,10 @@ class Base3DOptionsWithHL(Base3DOptions):
         if isinstance(self.show_components, str):
             if self.show_components == 'all':
                 self._show_all_components = True
-            self.show_components = []
+            elif self.show_components == 'none':
+                self.show_components = []
+            else:
+                self.show_components = self.solve_kf_filters([self.show_components])
         elif isinstance(self.show_components, type):
             # Default is all
             self._show_all_components = True

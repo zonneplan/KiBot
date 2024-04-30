@@ -192,7 +192,7 @@ class PcbDrawOptions(VariantOptions):
             """ [list(string)=[]] List of components to highlight. Filter expansion is also allowed here,
                 see `show_components` """
             self.show_components = Optionable
-            """ *[list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
+            """ *[list(string)|string=none] [none,all,*] List of components to draw, can be also a string for none or all.
                 The default is none.
                 There two ways of using this option, please consult the `add_to_variant` option.
                 You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
@@ -272,9 +272,11 @@ class PcbDrawOptions(VariantOptions):
         elif isinstance(self.show_components, str):
             if self.show_components == 'none':
                 self.show_components = None
-            else:  # self.show_components == 'all'
+            elif self.show_components == 'all':
                 # Empty list: means we don't filter
                 self.show_components = []
+            else:
+                self.show_components = self.solve_kf_filters([self.show_components])
         else:  # A list
             self.show_components = self.solve_kf_filters(self.show_components)
         # Resistors remap/flip
