@@ -17,5 +17,5 @@ outputs:
       variant: default
       format: png
       # This isn't a good idea, but works
-      show_components: 'C1'
+      show_components: 3
 
