@@ -64,10 +64,10 @@ Parameters:
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``dpi`` :index:`: <pair: output - pcbdraw - options; dpi>` [:ref:`number <number>`] (default: ``300``) (range: 10 to 1200) Dots per inch (resolution) of the generated image.
-      -  ``highlight`` :index:`: <pair: output - pcbdraw - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of components to highlight. Filter expansion is also allowed here,
+      -  ``highlight`` :index:`: <pair: output - pcbdraw - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of components to highlight. Filter expansion is also allowed here,
          see `show_components`.
 
-      -  ``libs`` :index:`: <pair: output - pcbdraw - options; libs>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of libraries.
+      -  ``libs`` :index:`: <pair: output - pcbdraw - options; libs>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of libraries.
 
       -  ``margin`` :index:`: <pair: output - pcbdraw - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] Margin around the generated image [mm].
          Using a number the margin is the same in the four directions.

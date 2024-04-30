@@ -133,7 +133,9 @@ class Optionable(object):
 
     def get_valid_types(self, doc):
         # Separate the valid types for this key
-        valid = doc[1:].split('] ')[0].split('|')
+        sections = doc[1:].split('] ')
+        valid = sections[0].split('|')
+        real_help = ' '+'] '.join([x for x in sections[1:] if x[0] != '['])
         # Remove the XXXX=Value
         def_val = None
         if '=' in valid[-1]:
@@ -158,7 +160,7 @@ class Optionable(object):
                     validation.append(m.group(1).split(','))
             else:
                 validation.append(None)
-        return valid, validation, def_val
+        return valid, validation, def_val, real_help
 
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
