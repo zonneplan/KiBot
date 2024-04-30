@@ -154,12 +154,13 @@ class Optionable(object):
                     if int(max) == max:
                         max = int(max)
                     validation.append((min, max))
-            elif v == 'string' or v == 'list(string)':
+                    continue
+            if v == 'string' or v == 'list(string)':
                 m = Optionable._str_values_re.search(doc)
                 if m:
                     validation.append(m.group(1).split(','))
-            else:
-                validation.append(None)
+                    continue
+            validation.append(None)
         return valid, validation, def_val, real_help
 
     def _perform_config_mapping(self):
