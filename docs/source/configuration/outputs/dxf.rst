@@ -19,7 +19,7 @@ Parameters:
 -  **comment** :index:`: <pair: output - dxf; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - dxf; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - dxf; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`]
+-  **layers** :index:`: <pair: output - dxf; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string)
    List of PCB layers to plot.
 
    -  Valid keys:
@@ -55,7 +55,7 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - dxf - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``drill_marks`` :index:`: <pair: output - dxf - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) What to use to indicate the drill places, can be none, small or full (for real scale).
+      -  ``drill_marks`` :index:`: <pair: output - dxf - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
       -  ``edge_cut_extension`` :index:`: <pair: output - dxf - options; edge_cut_extension>` [:ref:`string <string>`] (default: ``''``) Used to configure the edge cuts layer extension for Protel mode. Include the dot.
       -  ``exclude_edge_layer`` :index:`: <pair: output - dxf - options; exclude_edge_layer>` [:ref:`boolean <boolean>`] (default: ``true``) Do not include the PCB edge layer.
       -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - dxf - options; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Do not plot the component pads in the silk screen (KiCad 5.x only).
@@ -73,7 +73,7 @@ Parameters:
       -  ``pre_transform`` :index:`: <pair: output - dxf - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``sketch_pad_line_width`` :index:`: <pair: output - dxf - options; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``), see `sketch_pads_on_fab_layers` (KiCad 6+)
+      -  ``sketch_pad_line_width`` :index:`: <pair: output - dxf - options; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``) Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
          Note that this value is currently ignored by KiCad (6.0.9).
       -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - dxf - options; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
       -  ``sketch_plot`` :index:`: <pair: output - dxf - options; sketch_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Don't fill objects, just draw the outline.
@@ -97,7 +97,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - dxf; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - dxf; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - dxf; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - dxf; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

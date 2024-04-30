@@ -31,7 +31,7 @@ Parameters:
 
       -  **output** :index:`: <pair: output - stencil_3d - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
          %x='stl'|'scad'|'dxf'|'png'). Affected by global options.
-      -  **thickness** :index:`: <pair: output - stencil_3d - options; thickness>` [:ref:`number <number>`] (default: ``0.15``). Defines amount of paste dispensed.
+      -  **thickness** :index:`: <pair: output - stencil_3d - options; thickness>` [:ref:`number <number>`] (default: ``0.15``) Stencil thickness [mm]. Defines amount of paste dispensed.
       -  ``create_preview`` :index:`: <pair: output - stencil_3d - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``true``) Creates a PNG showing the generated 3D model.
       -  ``cutout`` :index:`: <pair: output - stencil_3d - options; cutout>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of components to add a cutout based on the component courtyard.
          This is useful when you have already pre-populated board and you want to populate more
@@ -43,16 +43,16 @@ Parameters:
       -  ``enlargeholes`` :index:`: <pair: output - stencil_3d - options; enlargeholes>` [:ref:`number <number>`] (default: ``0``) Enlarge pad holes by x mm.
       -  *frame_clearance* :index:`: <pair: output - stencil_3d - options; frame_clearance>` Alias for frameclearance.
       -  *frame_width* :index:`: <pair: output - stencil_3d - options; frame_width>` Alias for framewidth.
-      -  ``frameclearance`` :index:`: <pair: output - stencil_3d - options; frameclearance>` [:ref:`number <number>`] (default: ``0``).
+      -  ``frameclearance`` :index:`: <pair: output - stencil_3d - options; frameclearance>` [:ref:`number <number>`] (default: ``0``) Clearance for the stencil register [mm].
       -  ``framewidth`` :index:`: <pair: output - stencil_3d - options; framewidth>` [:ref:`number <number>`] (default: ``1``) Register frame width.
       -  ``include_scad`` :index:`: <pair: output - stencil_3d - options; include_scad>` [:ref:`boolean <boolean>`] (default: ``true``) Include the generated OpenSCAD files.
          Note that this also includes the DXF files.
       -  *pcb_thickness* :index:`: <pair: output - stencil_3d - options; pcb_thickness>` Alias for pcbthickness.
-      -  ``pcbthickness`` :index:`: <pair: output - stencil_3d - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``). If 0 we will ask KiCad.
+      -  ``pcbthickness`` :index:`: <pair: output - stencil_3d - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``) PCB thickness [mm]. If 0 we will ask KiCad.
       -  ``pre_transform`` :index:`: <pair: output - stencil_3d - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``side`` :index:`: <pair: output - stencil_3d - options; side>` [:ref:`string <string>`] (default: ``'auto'``) Which side of the PCB we want. Using `auto` will detect which
+      -  ``side`` :index:`: <pair: output - stencil_3d - options; side>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "top", "bottom", "auto", "both") Which side of the PCB we want. Using `auto` will detect which
          side contains solder paste.
       -  ``variant`` :index:`: <pair: output - stencil_3d - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
@@ -71,7 +71,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - stencil_3d; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - stencil_3d; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - stencil_3d; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - stencil_3d; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

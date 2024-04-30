@@ -30,10 +30,10 @@ Parameters:
    -  Valid keys:
 
       -  **bottom** :index:`: <pair: output - pcbdraw - options; bottom>` [:ref:`boolean <boolean>`] (default: ``false``) Render the bottom side of the board (default is top side).
-      -  **format** :index:`: <pair: output - pcbdraw - options; format>` [:ref:`string <string>`] (default: ``'svg'``) Output format. Only used if no `output` is specified.
+      -  **format** :index:`: <pair: output - pcbdraw - options; format>` [:ref:`string <string>`] (default: ``'svg'``) (choices: "svg", "png", "jpg", "bmp") Output format. Only used if no `output` is specified.
       -  **mirror** :index:`: <pair: output - pcbdraw - options; mirror>` [:ref:`boolean <boolean>`] (default: ``false``) Mirror the board.
       -  **output** :index:`: <pair: output - pcbdraw - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated file. Affected by global options.
-      -  **show_components** :index:`: <pair: output - pcbdraw - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``none``) List of components to draw, can be also a string for none or all.
+      -  **show_components** :index:`: <pair: output - pcbdraw - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``none``) (choices: "none", "all") (also accepts any string) List of components to draw, can be also a string for none or all.
          The default is none.
          There two ways of using this option, please consult the `add_to_variant` option.
          You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
@@ -50,7 +50,7 @@ Parameters:
             -  **pads** :index:`: <pair: output - pcbdraw - options - style; pads>` [:ref:`string <string>`] (default: ``'#8b898c'``) Color for the exposed pads (metal finish).
             -  **silk** :index:`: <pair: output - pcbdraw - options - style; silk>` [:ref:`string <string>`] (default: ``'#d5dce4'``) Color for the silk screen.
             -  ``highlight_on_top`` :index:`: <pair: output - pcbdraw - options - style; highlight_on_top>` [:ref:`boolean <boolean>`] (default: ``false``) Highlight over the component (not under).
-            -  ``highlight_padding`` :index:`: <pair: output - pcbdraw - options - style; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``).
+            -  ``highlight_padding`` :index:`: <pair: output - pcbdraw - options - style; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``) (range: 0 to 1000) How much the highlight extends around the component [mm].
             -  ``highlight_style`` :index:`: <pair: output - pcbdraw - options - style; highlight_style>` [:ref:`string <string>`] (default: ``'stroke:none;fill:#ff0000;opacity:0.5;'``) SVG code for the highlight style.
             -  ``vcut`` :index:`: <pair: output - pcbdraw - options - style; vcut>` [:ref:`string <string>`] (default: ``'#bf2600'``) Color for the V-CUTS.
 
@@ -63,24 +63,24 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - pcbdraw - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``dpi`` :index:`: <pair: output - pcbdraw - options; dpi>` [:ref:`number <number>`] (default: ``300``) Dots per inch (resolution) of the generated image.
-      -  ``highlight`` :index:`: <pair: output - pcbdraw - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[``) List of components to highlight. Filter expansion is also allowed here,
+      -  ``dpi`` :index:`: <pair: output - pcbdraw - options; dpi>` [:ref:`number <number>`] (default: ``300``) (range: 10 to 1200) Dots per inch (resolution) of the generated image.
+      -  ``highlight`` :index:`: <pair: output - pcbdraw - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of components to highlight. Filter expansion is also allowed here,
          see `show_components`.
 
-      -  ``libs`` :index:`: <pair: output - pcbdraw - options; libs>` [:ref:`list(string) <list(string)>`] (default: ``[``) List of libraries.
+      -  ``libs`` :index:`: <pair: output - pcbdraw - options; libs>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of libraries.
 
-      -  ``margin`` :index:`: <pair: output - pcbdraw - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`].
+      -  ``margin`` :index:`: <pair: output - pcbdraw - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] Margin around the generated image [mm].
          Using a number the margin is the same in the four directions.
 
          -  Valid keys:
 
-            -  ``bottom`` :index:`: <pair: output - pcbdraw - options - margin; bottom>` [:ref:`number <number>`] (default: ``0``).
-            -  ``left`` :index:`: <pair: output - pcbdraw - options - margin; left>` [:ref:`number <number>`] (default: ``0``).
-            -  ``right`` :index:`: <pair: output - pcbdraw - options - margin; right>` [:ref:`number <number>`] (default: ``0``).
-            -  ``top`` :index:`: <pair: output - pcbdraw - options - margin; top>` [:ref:`number <number>`] (default: ``0``).
+            -  ``bottom`` :index:`: <pair: output - pcbdraw - options - margin; bottom>` [:ref:`number <number>`] (default: ``0``) Bottom margin [mm].
+            -  ``left`` :index:`: <pair: output - pcbdraw - options - margin; left>` [:ref:`number <number>`] (default: ``0``) Left margin [mm].
+            -  ``right`` :index:`: <pair: output - pcbdraw - options - margin; right>` [:ref:`number <number>`] (default: ``0``) Right margin [mm].
+            -  ``top`` :index:`: <pair: output - pcbdraw - options - margin; top>` [:ref:`number <number>`] (default: ``0``) Top margin [mm].
 
       -  ``no_drillholes`` :index:`: <pair: output - pcbdraw - options; no_drillholes>` [:ref:`boolean <boolean>`] (default: ``false``) Do not make holes transparent.
-      -  ``outline_width`` :index:`: <pair: output - pcbdraw - options; outline_width>` [:ref:`number <number>`] (default: ``0.15``).
+      -  ``outline_width`` :index:`: <pair: output - pcbdraw - options; outline_width>` [:ref:`number <number>`] (default: ``0.15``) (range: 0 to 10) Width of the trace to draw the PCB border [mm].
          Note this also affects the drill holes.
       -  ``placeholder`` :index:`: <pair: output - pcbdraw - options; placeholder>` [:ref:`boolean <boolean>`] (default: ``false``) Show placeholder for missing components.
       -  ``pre_transform`` :index:`: <pair: output - pcbdraw - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
@@ -113,21 +113,21 @@ Parameters:
             -  *value* :index:`: <pair: output - pcbdraw - options - resistor_remap; value>` Alias for val.
 
       -  ``show_solderpaste`` :index:`: <pair: output - pcbdraw - options; show_solderpaste>` [:ref:`boolean <boolean>`] (default: ``true``) Show the solder paste layers.
-      -  ``size_detection`` :index:`: <pair: output - pcbdraw - options; size_detection>` [:ref:`string <string>`] (default: ``'kicad_edge'``) Method used to detect the size of the resulting image.
+      -  ``size_detection`` :index:`: <pair: output - pcbdraw - options; size_detection>` [:ref:`string <string>`] (default: ``'kicad_edge'``) (choices: "kicad_edge", "kicad_all", "svg_paths") Method used to detect the size of the resulting image.
          The `kicad_edge` method uses the size of the board as reported by KiCad,
          components that extend beyond the PCB limit will be cropped. You can manually
          adjust the margins to make them visible.
          The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
          The `svg_paths` uses all visible drawings in the image. To use this method you
          must install the `numpy` Python module (may not be available in docker images).
-      -  ``svg_precision`` :index:`: <pair: output - pcbdraw - options; svg_precision>` [:ref:`number <number>`] (default: ``4``) Scale factor used to represent 1 mm in the SVG (KiCad 6).
+      -  ``svg_precision`` :index:`: <pair: output - pcbdraw - options; svg_precision>` [:ref:`number <number>`] (default: ``4``) (range: 3 to 6) Scale factor used to represent 1 mm in the SVG (KiCad 6).
          The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
          Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
       -  ``variant`` :index:`: <pair: output - pcbdraw - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
       -  ``vcuts`` :index:`: <pair: output - pcbdraw - options; vcuts>` [:ref:`boolean <boolean>`] (default: ``false``) Render V-CUTS on the `vcuts_layer` layer.
       -  ``vcuts_layer`` :index:`: <pair: output - pcbdraw - options; vcuts_layer>` [:ref:`string <string>`] (default: ``'Cmts.User'``) Layer to render the V-CUTS, only used when `vcuts` is enabled.
          Note that any other content from this layer will be included.
-      -  ``warnings`` :index:`: <pair: output - pcbdraw - options; warnings>` [:ref:`string <string>`] (default: ``'visible'``) Using visible only the warnings about components in the visible side are generated.
+      -  ``warnings`` :index:`: <pair: output - pcbdraw - options; warnings>` [:ref:`string <string>`] (default: ``'visible'``) (choices: "visible", "all", "none") Using visible only the warnings about components in the visible side are generated.
 
 -  **type** :index:`: <pair: output - pcbdraw; type>` 'pcbdraw'
 -  ``category`` :index:`: <pair: output - pcbdraw; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
@@ -144,7 +144,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - pcbdraw; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - pcbdraw; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - pcbdraw; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - pcbdraw; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

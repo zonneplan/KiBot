@@ -30,8 +30,8 @@ Parameters:
    -  Valid keys:
 
       -  **local_script** :index:`: <pair: output - kicanvas - options; local_script>` [:ref:`boolean <boolean>`] (default: ``true``) Download the script and use a copy.
-      -  **source** :index:`: <pair: output - kicanvas - options; source>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Source to display.
-      -  ``controls`` :index:`: <pair: output - kicanvas - options; controls>` [:ref:`string <string>`] (default: ``'full'``) Which controls are displayed.
+      -  **source** :index:`: <pair: output - kicanvas - options; source>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (choices: "schematic", "pcb", "project") Source to display.
+      -  ``controls`` :index:`: <pair: output - kicanvas - options; controls>` [:ref:`string <string>`] (default: ``'full'``) (choices: "full", "basic", "none") Which controls are displayed.
       -  ``dnf_filter`` :index:`: <pair: output - kicanvas - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
@@ -61,7 +61,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - kicanvas; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - kicanvas; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - kicanvas; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - kicanvas; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

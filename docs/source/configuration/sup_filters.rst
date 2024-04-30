@@ -110,7 +110,7 @@ Supported filters
             -  ``skip_if_no_field`` :index:`: <pair: filter - generic - include_only; skip_if_no_field>` [:ref:`boolean <boolean>`] (default: ``false``) Skip this test if the field doesn't exist.
 
       -  ``invert`` :index:`: <pair: filter - generic; invert>` [:ref:`boolean <boolean>`] (default: ``false``) Invert the result of the filter.
-      -  ``keys`` :index:`: <pair: filter - generic; keys>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``dnf_list``) List of keys to match.
+      -  ``keys`` :index:`: <pair: filter - generic; keys>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``dnf_list``) (choices: "dnc_list", "dnf_list") List of keys to match.
          The `dnf_list` and `dnc_list` internal lists can be specified as strings.
          Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
          Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
@@ -201,8 +201,8 @@ Supported filters
                The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size'.
 
-            -  ``collision`` :index:`: <pair: filter - spec_to_field - specs; collision>` [:ref:`string <string>`] (default: ``'warning'``) How to report a collision between the current value and the new value.
-            -  ``policy`` :index:`: <pair: filter - spec_to_field - specs; policy>` [:ref:`string <string>`] (default: ``'overwrite'``) Controls the behavior of the copy mechanism.
+            -  ``collision`` :index:`: <pair: filter - spec_to_field - specs; collision>` [:ref:`string <string>`] (default: ``'warning'``) (choices: "warning", "error", "ignore") How to report a collision between the current value and the new value.
+            -  ``policy`` :index:`: <pair: filter - spec_to_field - specs; policy>` [:ref:`string <string>`] (default: ``'overwrite'``) (choices: "overwrite", "update", "new") Controls the behavior of the copy mechanism.
                `overwrite` always copy the spec value,
                `update` copy only if the field already exist,
                `new` copy only if the field doesn't exist..
@@ -258,21 +258,21 @@ Supported filters
    -  Valid keys:
 
       -  ``autoplace`` :index:`: <pair: filter - value_split; autoplace>` [:ref:`boolean <boolean>`] (default: ``true``) Try to figure out the position for the added fields.
-      -  ``autoplace_mechanism`` :index:`: <pair: filter - value_split; autoplace_mechanism>` [:ref:`string <string>`] (default: ``'bottom'``) Put the new field at the bottom/top of the last field.
+      -  ``autoplace_mechanism`` :index:`: <pair: filter - value_split; autoplace_mechanism>` [:ref:`string <string>`] (default: ``'bottom'``) (choices: "bottom", "top") Put the new field at the bottom/top of the last field.
       -  ``comment`` :index:`: <pair: filter - value_split; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
       -  ``name`` :index:`: <pair: filter - value_split; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
-      -  ``package`` :index:`: <pair: filter - value_split; package>` [:ref:`string <string>`] (default: ``'yes'``) Policy for the package.
+      -  ``package`` :index:`: <pair: filter - value_split; package>` [:ref:`string <string>`] (default: ``'yes'``) (choices: "yes", "no", "soft") Policy for the package.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
-      -  ``power`` :index:`: <pair: filter - value_split; power>` [:ref:`string <string>`] (default: ``'yes'``) Policy for the power rating.
+      -  ``power`` :index:`: <pair: filter - value_split; power>` [:ref:`string <string>`] (default: ``'yes'``) (choices: "yes", "no", "soft") Policy for the power rating.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
       -  ``replace_source`` :index:`: <pair: filter - value_split; replace_source>` [:ref:`boolean <boolean>`] (default: ``true``) Replace the content of the source field using a normalized representation of the interpreted value.
       -  ``source`` :index:`: <pair: filter - value_split; source>` [:ref:`string <string>`] (default: ``'Value'``) Name of the field to use as source of information.
-      -  ``temp_coef`` :index:`: <pair: filter - value_split; temp_coef>` [:ref:`string <string>`] (default: ``'yes'``) Policy for the temperature coefficient.
+      -  ``temp_coef`` :index:`: <pair: filter - value_split; temp_coef>` [:ref:`string <string>`] (default: ``'yes'``) (choices: "yes", "no", "soft") Policy for the temperature coefficient.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
-      -  ``tolerance`` :index:`: <pair: filter - value_split; tolerance>` [:ref:`string <string>`] (default: ``'yes'``) Policy for the tolerance.
+      -  ``tolerance`` :index:`: <pair: filter - value_split; tolerance>` [:ref:`string <string>`] (default: ``'yes'``) (choices: "yes", "no", "soft") Policy for the tolerance.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
       -  ``visible`` :index:`: <pair: filter - value_split; visible>` [:ref:`boolean <boolean>`] (default: ``false``) Make visible the modified fields.
-      -  ``voltage`` :index:`: <pair: filter - value_split; voltage>` [:ref:`string <string>`] (default: ``'yes'``) Policy for the voltage rating.
+      -  ``voltage`` :index:`: <pair: filter - value_split; voltage>` [:ref:`string <string>`] (default: ``'yes'``) (choices: "yes", "no", "soft") Policy for the voltage rating.
          yes = overwrite existing value, no = don't touch, soft = copy if not defined.
 
 -  **var_rename**: (**Variant Renamer**)

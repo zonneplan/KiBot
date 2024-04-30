@@ -18,7 +18,7 @@ Parameters:
 -  **comment** :index:`: <pair: output - diff; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - diff; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - diff; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`]
+-  **layers** :index:`: <pair: output - diff; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string)
    List of PCB layers to use. When empty all available layers are used.
    Note that if you want to support adding/removing layers you should specify a list here.
 
@@ -48,7 +48,7 @@ Parameters:
       -  ``color_removed`` :index:`: <pair: output - diff - options; color_removed>` [:ref:`string <string>`] (default: ``'#FF0000'``) Color used for the removed stuff in the '2color' mode.
       -  ``copy_instead_of_link`` :index:`: <pair: output - diff - options; copy_instead_of_link>` [:ref:`boolean <boolean>`] (default: ``false``) Modifies the behavior of `add_link_id` to create a copy of the file instead of a
          symlink. Useful for some Windows setups.
-      -  ``diff_mode`` :index:`: <pair: output - diff - options; diff_mode>` [:ref:`string <string>`] (default: ``'red_green'``) In the `red_green` mode added stuff is green and red when removed.
+      -  ``diff_mode`` :index:`: <pair: output - diff - options; diff_mode>` [:ref:`string <string>`] (default: ``'red_green'``) (choices: "red_green", "stats", "2color") In the `red_green` mode added stuff is green and red when removed.
          The `stats` mode is used to measure the amount of difference. In this mode all
          changes are red, but you can abort if the difference is bigger than certain threshold.
          The '2color' mode is like 'red_green', but you can customize the colors.
@@ -60,10 +60,10 @@ Parameters:
          to do a checkout, even after stashing, this option can workaround the problem.
          Note that using it you could potentially lose modified files. For more information
          read https://stackoverflow.com/questions/1248029/git-pull-error-entry-foo-not-uptodate-cannot-merge.
-      -  ``fuzz`` :index:`: <pair: output - diff - options; fuzz>` [:ref:`number <number>`] (default: ``5``) Color tolerance (fuzzyness) for the `stats` mode.
+      -  ``fuzz`` :index:`: <pair: output - diff - options; fuzz>` [:ref:`number <number>`] (default: ``5``) (range: 0 to 100) Color tolerance (fuzzyness) for the `stats` mode.
       -  ``new`` :index:`: <pair: output - diff - options; new>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The file you want to compare. Leave it blank for the current PCB/SCH.
          A list is accepted only for the `multivar` type. Consult the `old` option for more information.
-      -  ``new_type`` :index:`: <pair: output - diff - options; new_type>` [:ref:`string <string>`] (default: ``'current'``) How to interpret the `new` name. Use `git` for a git hash, branch, etc.
+      -  ``new_type`` :index:`: <pair: output - diff - options; new_type>` [:ref:`string <string>`] (default: ``'current'``) (choices: "git", "file", "output", "multivar", "current") How to interpret the `new` name. Use `git` for a git hash, branch, etc.
          Use `current` for the currently loaded PCB/Schematic.
          Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
          Use `multivar` to compare a set of variants, in this mode `new` is the list of outputs for the variants.
@@ -78,7 +78,7 @@ Parameters:
          Use `KIBOT_TAG-n` to search for the last tag skipping `n` tags.
          Important: when using the `checkout` GitHub action you just get the
          last commit. To clone the full repo use `fetch-depth: '0'`.
-      -  ``old_type`` :index:`: <pair: output - diff - options; old_type>` [:ref:`string <string>`] (default: ``'git'``) How to interpret the `old` name. Use `git` for a git hash, branch, etc.
+      -  ``old_type`` :index:`: <pair: output - diff - options; old_type>` [:ref:`string <string>`] (default: ``'git'``) (choices: "git", "file", "output", "multivar") How to interpret the `old` name. Use `git` for a git hash, branch, etc.
          Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
          Use `multivar` to specify a reference file when `new_type` is also `multivar`.
       -  ``only_different`` :index:`: <pair: output - diff - options; only_different>` [:ref:`boolean <boolean>`] (default: ``false``) Only include the pages with differences in the output PDF.
@@ -88,13 +88,13 @@ Parameters:
       -  ``pre_transform`` :index:`: <pair: output - diff - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``threshold`` :index:`: <pair: output - diff - options; threshold>` [:ref:`number <number>`] (default: ``0``) Error threshold for the `stats` mode, 0 is no error. When specified a
+      -  ``threshold`` :index:`: <pair: output - diff - options; threshold>` [:ref:`number <number>`] (default: ``0``) (range: 0 to 1000000) Error threshold for the `stats` mode, 0 is no error. When specified a
          difference bigger than the indicated value will make the diff fail.
          KiBot will return error level 29 and the diff generation will be aborted.
       -  ``use_file_id`` :index:`: <pair: output - diff - options; use_file_id>` [:ref:`boolean <boolean>`] (default: ``false``) When creating the link name of an output file related to a variant use the variant
          `file_id` instead of its name.
       -  ``variant`` :index:`: <pair: output - diff - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-      -  ``zones`` :index:`: <pair: output - diff - options; zones>` [:ref:`string <string>`] (default: ``'global'``) How to handle PCB zones. The default is *global* and means that we
+      -  ``zones`` :index:`: <pair: output - diff - options; zones>` [:ref:`string <string>`] (default: ``'global'``) (choices: "global", "fill", "unfill", "none") How to handle PCB zones. The default is *global* and means that we
          fill zones if the *check_zone_fills* preflight is enabled. The *fill* option always forces
          a refill, *unfill* forces a zone removal and *none* lets the zones unchanged.
          Be careful with the cache when changing this setting.
@@ -114,7 +114,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - diff; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - diff; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - diff; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - diff; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

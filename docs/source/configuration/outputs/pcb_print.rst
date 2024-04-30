@@ -29,7 +29,7 @@ Parameters:
          To use the KiCad 6 default colors select `_builtin_default`.
          Usually user colors are stored as `user`, but you can give it another name.
       -  **force_edge_cuts** :index:`: <pair: output - pcb_print - options; force_edge_cuts>` [:ref:`boolean <boolean>`] (default: ``false``) Add the `Edge.Cuts` to all the pages.
-      -  **format** :index:`: <pair: output - pcb_print - options; format>` [:ref:`string <string>`] (default: ``'PDF'``) Format for the output file/s.
+      -  **format** :index:`: <pair: output - pcb_print - options; format>` [:ref:`string <string>`] (default: ``'PDF'``) (choices: "PDF", "SVG", "PNG", "EPS", "PS") Format for the output file/s.
          Note that for PS you need `ghostscript` which isn't part of the default docker images.
       -  **output** :index:`: <pair: output - pcb_print - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
          Consult the `page_number_as_extension` and `page_id` options. Affected by global options.
@@ -60,14 +60,14 @@ Parameters:
 
             -  **scaling** :index:`: <pair: output - pcb_print - options - pages; scaling>` [:ref:`number <number>`] (default: ``1.0``) Scale factor (0 means autoscaling).
             -  **sort_layers** :index:`: <pair: output - pcb_print - options - pages; sort_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Try to sort the layers in the same order that uses KiCad for printing.
-            -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_x>` [:ref:`number <number>`] (default: ``0``).
-            -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_y>` [:ref:`number <number>`] (default: ``0``).
+            -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_x>` [:ref:`number <number>`] (default: ``0``) Horizontal margin used for the autoscaling mode [mm].
+            -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_y>` [:ref:`number <number>`] (default: ``0``) Vertical margin used for the autoscaling mode [mm].
             -  ``colored_holes`` :index:`: <pair: output - pcb_print - options - pages; colored_holes>` [:ref:`boolean <boolean>`] (default: ``true``) Change the drill holes to be colored instead of white.
             -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - pcb_print - options - pages; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Do not plot the component pads in the silk screen (KiCad 5.x only).
             -  ``holes_color`` :index:`: <pair: output - pcb_print - options - pages; holes_color>` [:ref:`string <string>`] (default: ``'#000000'``) Color used for the holes when `colored_holes` is enabled.
             -  ``layer_var`` :index:`: <pair: output - pcb_print - options - pages; layer_var>` [:ref:`string <string>`] (default: ``'%ll'``) Text to use for the `LAYER` in the title block.
                All the expansions available for `sheet` are also available here.
-            -  ``line_width`` :index:`: <pair: output - pcb_print - options - pages; line_width>` [:ref:`number <number>`] (default: ``0.1``) (KiCad 5).
+            -  ``line_width`` :index:`: <pair: output - pcb_print - options - pages; line_width>` [:ref:`number <number>`] (default: ``0.1``) For objects without width [mm] (KiCad 5).
             -  ``mirror`` :index:`: <pair: output - pcb_print - options - pages; mirror>` [:ref:`boolean <boolean>`] (default: ``false``) Print mirrored (X axis inverted).
             -  ``mirror_footprint_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_footprint_text>` [:ref:`boolean <boolean>`] (default: ``true``) Mirror text in the footprints when mirror option is enabled and we plot a user layer.
             -  ``mirror_pcb_text`` :index:`: <pair: output - pcb_print - options - pages; mirror_pcb_text>` [:ref:`boolean <boolean>`] (default: ``true``) Mirror text in the PCB when mirror option is enabled and we plot a user layer.
@@ -104,7 +104,7 @@ Parameters:
                In addition when you use `repeat_for_layer` the following patterns are available:
                %ln layer name, %ls layer suffix and %ld layer description.
             -  ``sheet_reference_color`` :index:`: <pair: output - pcb_print - options - pages; sheet_reference_color>` [:ref:`string <string>`] (default: ``''``) Color to use for the frame and title block.
-            -  ``sketch_pad_line_width`` :index:`: <pair: output - pcb_print - options - pages; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``), see `sketch_pads_on_fab_layers` (KiCad 6+)
+            -  ``sketch_pad_line_width`` :index:`: <pair: output - pcb_print - options - pages; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``) Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
                Note that this value is currently ignored by KiCad (6.0.9).
             -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - pcb_print - options - pages; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
             -  ``tent_vias`` :index:`: <pair: output - pcb_print - options - pages; tent_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Cover the vias.
@@ -114,8 +114,8 @@ Parameters:
       -  **plot_sheet_reference** :index:`: <pair: output - pcb_print - options; plot_sheet_reference>` [:ref:`boolean <boolean>`] (default: ``true``) Include the title-block (worksheet, frame, etc.).
       -  **scaling** :index:`: <pair: output - pcb_print - options; scaling>` [:ref:`number <number>`] (default: ``1.0``) Default scale factor (0 means autoscaling).
       -  ``add_background`` :index:`: <pair: output - pcb_print - options; add_background>` [:ref:`boolean <boolean>`] (default: ``false``) Add a background to the pages, see `background_color`.
-      -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options; autoscale_margin_x>` [:ref:`number <number>`] (default: ``0``).
-      -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options; autoscale_margin_y>` [:ref:`number <number>`] (default: ``0``).
+      -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options; autoscale_margin_x>` [:ref:`number <number>`] (default: ``0``) Default horizontal margin used for the autoscaling mode [mm].
+      -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options; autoscale_margin_y>` [:ref:`number <number>`] (default: ``0``) Default vertical margin used for the autoscaling mode [mm].
       -  ``background_color`` :index:`: <pair: output - pcb_print - options; background_color>` [:ref:`string <string>`] (default: ``'#FFFFFF'``) Color for the background when `add_background` is enabled.
       -  ``background_image`` :index:`: <pair: output - pcb_print - options; background_image>` [:ref:`string <string>`] (default: ``''``) Background image, must be an SVG, only when `add_background` is enabled.
       -  ``blind_via_color`` :index:`: <pair: output - pcb_print - options; blind_via_color>` [:ref:`string <string>`] (default: ``''``) Color used for blind/buried `colored_vias`.
@@ -124,13 +124,13 @@ Parameters:
       -  ``dnf_filter`` :index:`: <pair: output - pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``dpi`` :index:`: <pair: output - pcb_print - options; dpi>` [:ref:`number <number>`] (default: ``360``) Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
+      -  ``dpi`` :index:`: <pair: output - pcb_print - options; dpi>` [:ref:`number <number>`] (default: ``360``) (range: 36 to 1200) Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
          like the the solder mask are handled as images by the conversion tools.
-      -  ``drill_marks`` :index:`: <pair: output - pcb_print - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) What to use to indicate the drill places, can be none, small or full (for real scale).
+      -  ``drill_marks`` :index:`: <pair: output - pcb_print - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
       -  ``forced_edge_cuts_color`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_color>` [:ref:`string <string>`] (default: ``''``) Color used for the `force_edge_cuts` option.
       -  ``forced_edge_cuts_use_for_center`` :index:`: <pair: output - pcb_print - options; forced_edge_cuts_use_for_center>` [:ref:`boolean <boolean>`] (default: ``true``) Used when enabling the `force_edge_cuts`, in this case this is the `use_for_center` option of the forced
          layer.
-      -  ``frame_plot_mechanism`` :index:`: <pair: output - pcb_print - options; frame_plot_mechanism>` [:ref:`string <string>`] (default: ``'internal'``) Plotting the frame from Python is problematic.
+      -  ``frame_plot_mechanism`` :index:`: <pair: output - pcb_print - options; frame_plot_mechanism>` [:ref:`string <string>`] (default: ``'internal'``) (choices: "gui", "internal", "plot") Plotting the frame from Python is problematic.
          This option selects a workaround strategy.
          gui: uses KiCad GUI to do it. Is slow but you get the correct frame.
          But it can't keep track of page numbers.
@@ -150,7 +150,7 @@ Parameters:
       -  ``pad_color`` :index:`: <pair: output - pcb_print - options; pad_color>` [:ref:`string <string>`] (default: ``''``) Color used for `colored_pads`.
       -  ``page_number_as_extension`` :index:`: <pair: output - pcb_print - options; page_number_as_extension>` [:ref:`boolean <boolean>`] (default: ``false``) When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
          Note: page numbers can be customized using the `page_id` option for each page.
-      -  ``png_width`` :index:`: <pair: output - pcb_print - options; png_width>` [:ref:`number <number>`] (default: ``1280``) Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
+      -  ``png_width`` :index:`: <pair: output - pcb_print - options; png_width>` [:ref:`number <number>`] (default: ``1280``) (range: 0 to 7680) Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
       -  ``pre_transform`` :index:`: <pair: output - pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
@@ -158,7 +158,7 @@ Parameters:
          In order to get a good looking select a color with transparency, i.e. '#14332440'.
          PcbDraw must be installed in order to use this option.
       -  ``sheet_reference_layout`` :index:`: <pair: output - pcb_print - options; sheet_reference_layout>` [:ref:`string <string>`] (default: ``''``) Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
-      -  ``svg_precision`` :index:`: <pair: output - pcb_print - options; svg_precision>` [:ref:`number <number>`] (default: ``4``) Scale factor used to represent 1 mm in the SVG (KiCad 6).
+      -  ``svg_precision`` :index:`: <pair: output - pcb_print - options; svg_precision>` [:ref:`number <number>`] (default: ``4``) (range: 0 to 6) Scale factor used to represent 1 mm in the SVG (KiCad 6).
          The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
          Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
       -  ``title`` :index:`: <pair: output - pcb_print - options; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.
@@ -181,7 +181,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - pcb_print; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - pcb_print; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - pcb_print; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - pcb_print; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

@@ -12,7 +12,7 @@ Supported preflights
 
       -  ``bottom_main_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_main_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the main axis in ascending order for the bottom layer.
          For X this is left to right and for Y top to bottom.
-      -  ``bottom_main_axis`` :index:`: <pair: preflight - annotate_pcb; bottom_main_axis>` [:ref:`string <string>`] (default: ``'y'``) Use this axis as main sorting criteria for the bottom layer.
+      -  ``bottom_main_axis`` :index:`: <pair: preflight - annotate_pcb; bottom_main_axis>` [:ref:`string <string>`] (default: ``'y'``) (choices: "x", "y") Use this axis as main sorting criteria for the bottom layer.
       -  ``bottom_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_secondary_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the secondary axis in ascending order for the bottom layer.
          For X this is left to right and for Y top to bottom.
       -  ``bottom_start`` :index:`: <pair: preflight - annotate_pcb; bottom_start>` [:ref:`number <number>`] (default: ``101``) First number for references at the bottom layer.
@@ -20,11 +20,11 @@ Supported preflights
       -  ``grid`` :index:`: <pair: preflight - annotate_pcb; grid>` [:ref:`number <number>`] (default: ``1.0``) Grid size in millimeters.
       -  ``top_main_ascending`` :index:`: <pair: preflight - annotate_pcb; top_main_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the main axis in ascending order for the top layer.
          For X this is left to right and for Y top to bottom.
-      -  ``top_main_axis`` :index:`: <pair: preflight - annotate_pcb; top_main_axis>` [:ref:`string <string>`] (default: ``'y'``) Use this axis as main sorting criteria for the top layer.
+      -  ``top_main_axis`` :index:`: <pair: preflight - annotate_pcb; top_main_axis>` [:ref:`string <string>`] (default: ``'y'``) (choices: "x", "y") Use this axis as main sorting criteria for the top layer.
       -  ``top_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; top_secondary_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the secondary axis in ascending order for the top layer.
          For X this is left to right and for Y top to bottom.
       -  ``top_start`` :index:`: <pair: preflight - annotate_pcb; top_start>` [:ref:`number <number>`] (default: ``1``) First number for references at the top layer.
-      -  ``use_position_of`` :index:`: <pair: preflight - annotate_pcb; use_position_of>` [:ref:`string <string>`] (default: ``'footprint'``) Which coordinate is used.
+      -  ``use_position_of`` :index:`: <pair: preflight - annotate_pcb; use_position_of>` [:ref:`string <string>`] (default: ``'footprint'``) (choices: "footprint", "reference") Which coordinate is used.
 
 -  **annotate_power**: :index:`: <pair: preflights; annotate_power>` [boolean=false] Annotates all power components.
    This preflight modifies the schematic, use it only in revision control environments. |br|
@@ -56,7 +56,7 @@ Supported preflights
 
          -  Valid keys:
 
-            -  ``change_to`` :index:`: <pair: preflight - drc - filters; change_to>` [:ref:`string <string>`] (default: ``'ignore'``) The action of the filter.
+            -  ``change_to`` :index:`: <pair: preflight - drc - filters; change_to>` [:ref:`string <string>`] (default: ``'ignore'``) (choices: "error", "warning", "ignore") The action of the filter.
                Changing to *ignore* is the default and is used to suppress a violation, but you can also change
                it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
                so you can revert a GUI exclusion.
@@ -66,12 +66,12 @@ Supported preflights
             -  ``regex`` :index:`: <pair: preflight - drc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
             -  *regexp* :index:`: <pair: preflight - drc - filters; regexp>` Alias for regex.
 
-      -  ``format`` :index:`: <pair: preflight - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) Format/s used for the report.
+      -  ``format`` :index:`: <pair: preflight - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``)[RPT,HTML,CSV,JSON] Format/s used for the report.
          You can specify multiple formats.
 
       -  ``ignore_unconnected`` :index:`: <pair: preflight - drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
       -  ``schematic_parity`` :index:`: <pair: preflight - drc; schematic_parity>` [:ref:`boolean <boolean>`] (default: ``true``) Check if the PCB and the schematic are coincident.
-      -  ``units`` :index:`: <pair: preflight - drc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the positions. Affected by global options.
+      -  ``units`` :index:`: <pair: preflight - drc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
       -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc**: :index:`: <pair: preflights; erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
@@ -88,7 +88,7 @@ Supported preflights
 
          -  Valid keys:
 
-            -  ``change_to`` :index:`: <pair: preflight - erc - filters; change_to>` [:ref:`string <string>`] (default: ``'ignore'``) The action of the filter.
+            -  ``change_to`` :index:`: <pair: preflight - erc - filters; change_to>` [:ref:`string <string>`] (default: ``'ignore'``) (choices: "error", "warning", "ignore") The action of the filter.
                Changing to *ignore* is the default and is used to suppress a violation, but you can also change
                it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
                so you can revert a GUI exclusion.
@@ -98,10 +98,10 @@ Supported preflights
             -  ``regex`` :index:`: <pair: preflight - erc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
             -  *regexp* :index:`: <pair: preflight - erc - filters; regexp>` Alias for regex.
 
-      -  ``format`` :index:`: <pair: preflight - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) Format/s used for the report.
+      -  ``format`` :index:`: <pair: preflight - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``)[RPT,HTML,CSV,JSON] Format/s used for the report.
          You can specify multiple formats.
 
-      -  ``units`` :index:`: <pair: preflight - erc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the positions. Affected by global options.
+      -  ``units`` :index:`: <pair: preflight - erc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
       -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.

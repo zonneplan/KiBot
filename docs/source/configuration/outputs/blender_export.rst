@@ -43,7 +43,7 @@ Parameters:
                If you want to cache the downloaded files specify a directory using the
                KIBOT_3D_MODELS environment variable.
             -  **no_virtual** :index:`: <pair: output - blender_export - options - pcb3d; no_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Used to exclude 3D models for components with 'virtual' attribute.
-            -  **show_components** :index:`: <pair: output - blender_export - options - pcb3d; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) List of components to draw, can be also a string for `none` or `all`.
+            -  **show_components** :index:`: <pair: output - blender_export - options - pcb3d; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) (choices: "none", "all") (also accepts any string) List of components to draw, can be also a string for `none` or `all`.
                Ranges like *R5-R10* are supported.
                Unlike the `pcbdraw` output, the default is `all`.
 
@@ -54,10 +54,10 @@ Parameters:
                them from LCSC database. In order to work you'll need to provide the LCSC
                part number. The field containing the LCSC part number is defined by the
                `field_lcsc_part` global variable.
-            -  ``highlight`` :index:`: <pair: output - blender_export - options - pcb3d; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[``) List of components to highlight. Ranges like *R5-R10* are supported.
+            -  ``highlight`` :index:`: <pair: output - blender_export - options - pcb3d; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of components to highlight. Ranges like *R5-R10* are supported.
 
             -  ``highlight_on_top`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_on_top>` [:ref:`boolean <boolean>`] (default: ``false``) Highlight over the component (not under).
-            -  ``highlight_padding`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``).
+            -  ``highlight_padding`` :index:`: <pair: output - blender_export - options - pcb3d; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``) (range: 0 to 1000) How much the highlight extends around the component [mm].
             -  ``kicad_3d_url`` :index:`: <pair: output - blender_export - options - pcb3d; kicad_3d_url>` [:ref:`string <string>`] (default: ``'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'``) Base URL for the KiCad 3D models.
             -  ``kicad_3d_url_suffix`` :index:`: <pair: output - blender_export - options - pcb3d; kicad_3d_url_suffix>` [:ref:`string <string>`] (default: ``''``) Text added to the end of the download URL.
                Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
@@ -68,19 +68,19 @@ Parameters:
             -  ``solder_paste_for_populated`` :index:`: <pair: output - blender_export - options - pcb3d; solder_paste_for_populated>` [:ref:`boolean <boolean>`] (default: ``true``) Add solder paste only for the populated components.
                Populated components are the ones listed in `show_components`.
             -  ``variant`` :index:`: <pair: output - blender_export - options - pcb3d; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-            -  ``version`` :index:`: <pair: output - blender_export - options - pcb3d; version>` [:ref:`string <string>`] (default: ``'2.7'``) Variant of the format used.
+            -  ``version`` :index:`: <pair: output - blender_export - options - pcb3d; version>` [:ref:`string <string>`] (default: ``'2.7'``) (choices: "2.1", "2.1_haschtl", "2.7") Variant of the format used.
 
       -  **point_of_view** :index:`: <pair: output - blender_export - options; point_of_view>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] How the object is viewed by the camera.
 
          -  Valid keys:
 
-            -  **view** :index:`: <pair: output - blender_export - options - point_of_view; view>` [:ref:`string <string>`] (default: ``'top'``) Point of view.
+            -  **view** :index:`: <pair: output - blender_export - options - point_of_view; view>` [:ref:`string <string>`] (default: ``'top'``) (choices: "top", "bottom", "front", "rear", "right", "left", "z", "Z", "y", "Y", "x", "X") Point of view.
                Compatible with `render_3d`.
             -  ``file_id`` :index:`: <pair: output - blender_export - options - point_of_view; file_id>` [:ref:`string <string>`] (default: ``''``) String to differentiate the name of this point of view.
                When empty we use the `default_file_id` or the `view`.
-            -  ``rotate_x`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_x>` [:ref:`number <number>`] (default: ``0``).
-            -  ``rotate_y`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_y>` [:ref:`number <number>`] (default: ``0``).
-            -  ``rotate_z`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_z>` [:ref:`number <number>`] (default: ``0``).
+            -  ``rotate_x`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_x>` [:ref:`number <number>`] (default: ``0``) Angle to rotate the board in the X axis, positive is clockwise [degrees].
+            -  ``rotate_y`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_y>` [:ref:`number <number>`] (default: ``0``) Angle to rotate the board in the Y axis, positive is clockwise [degrees].
+            -  ``rotate_z`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_z>` [:ref:`number <number>`] (default: ``0``) Angle to rotate the board in the Z axis, positive is clockwise [degrees].
             -  ``steps`` :index:`: <pair: output - blender_export - options - point_of_view; steps>` [:ref:`number <number>`] (default: ``1``) Generate this amount of steps using the rotation angles as increments.
                Use a value of 1 (default) to interpret the angles as absolute.
                Used for animations. You should define the `default_file_id` to something like
@@ -120,9 +120,9 @@ Parameters:
                For cameras without position KiBot will ask Blender to compute its position and the use a clip
                distance that is 1/10th of the Z distance.
             -  ``name`` :index:`: <pair: output - blender_export - options - camera; name>` [:ref:`string <string>`] (default: ``''``) Name for the camera.
-            -  ``pos_x`` :index:`: <pair: output - blender_export - options - camera; pos_x>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_y`` :index:`: <pair: output - blender_export - options - camera; pos_y>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_z`` :index:`: <pair: output - blender_export - options - camera; pos_z>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_x`` :index:`: <pair: output - blender_export - options - camera; pos_x>` [:ref:`number <number>` | :ref:`string <string>`] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_y`` :index:`: <pair: output - blender_export - options - camera; pos_y>` [:ref:`number <number>` | :ref:`string <string>`] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_z`` :index:`: <pair: output - blender_export - options - camera; pos_z>` [:ref:`number <number>` | :ref:`string <string>`] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``type`` :index:`: <pair: output - blender_export - options - camera; type>` [string='perspective'] [perspective,orthographic,panoramic] Type of camera.
 
       -  ``default_file_id`` :index:`: <pair: output - blender_export - options; default_file_id>` [:ref:`string <string>`] (default: ``''``) Default value for the `file_id` in the `point_of_view` options.
@@ -135,9 +135,9 @@ Parameters:
 
             -  ``energy`` :index:`: <pair: output - blender_export - options - light; energy>` [:ref:`number <number>`] (default: ``0``) How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful.
             -  ``name`` :index:`: <pair: output - blender_export - options - light; name>` [:ref:`string <string>`] (default: ``''``) Name for the light.
-            -  ``pos_x`` :index:`: <pair: output - blender_export - options - light; pos_x>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_y`` :index:`: <pair: output - blender_export - options - light; pos_y>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_z`` :index:`: <pair: output - blender_export - options - light; pos_z>` [:ref:`number <number>` | :ref:`string <string>`]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_x`` :index:`: <pair: output - blender_export - options - light; pos_x>` [:ref:`number <number>` | :ref:`string <string>`] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_y`` :index:`: <pair: output - blender_export - options - light; pos_y>` [:ref:`number <number>` | :ref:`string <string>`] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_z`` :index:`: <pair: output - blender_export - options - light; pos_z>` [:ref:`number <number>` | :ref:`string <string>`] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``type`` :index:`: <pair: output - blender_export - options - light; type>` [string='POINT'] [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly.
 
       -  ``outputs`` :index:`: <pair: output - blender_export - options; outputs>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Outputs to generate in the same run.
@@ -165,7 +165,7 @@ Parameters:
             -  ``cut_boards`` :index:`: <pair: output - blender_export - options - pcb_import; cut_boards>` [:ref:`boolean <boolean>`] (default: ``true``) Separate the sub-PCBs in separated 3D models.
             -  ``enhance_materials`` :index:`: <pair: output - blender_export - options - pcb_import; enhance_materials>` [:ref:`boolean <boolean>`] (default: ``true``) Create good looking materials.
             -  ``merge_materials`` :index:`: <pair: output - blender_export - options - pcb_import; merge_materials>` [:ref:`boolean <boolean>`] (default: ``true``) Reuse materials.
-            -  ``solder_joints`` :index:`: <pair: output - blender_export - options - pcb_import; solder_joints>` [:ref:`string <string>`] (default: ``'SMART'``) The plug-in can add nice looking solder joints.
+            -  ``solder_joints`` :index:`: <pair: output - blender_export - options - pcb_import; solder_joints>` [:ref:`string <string>`] (default: ``'SMART'``) (choices: "NONE", "SMART", "ALL") The plug-in can add nice looking solder joints.
                This option controls if we add it for none, all or only for THT/SMD pads with solder paste.
             -  ``stack_boards`` :index:`: <pair: output - blender_export - options - pcb_import; stack_boards>` [:ref:`boolean <boolean>`] (default: ``true``) Move the sub-PCBs to their relative position.
             -  ``texture_dpi`` :index:`: <pair: output - blender_export - options - pcb_import; texture_dpi>` [:ref:`number <number>`] (default: ``1016.0``) Texture density in dots per inch.
@@ -186,7 +186,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - blender_export; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - blender_export; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - blender_export; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - blender_export; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

@@ -43,11 +43,11 @@ Parameters:
          Each step is currently 10 degrees. Only for KiCad 6 or newer.
       -  **rotate_z** :index:`: <pair: output - render_3d - options; rotate_z>` [:ref:`number <number>`] (default: ``0``) Steps to rotate around the Z axis, positive is clockwise.
          Each step is currently 10 degrees. Only for KiCad 6 or newer.
-      -  **show_components** :index:`: <pair: output - render_3d - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) List of components to draw, can be also a string for `none` or `all`.
+      -  **show_components** :index:`: <pair: output - render_3d - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) (choices: "none", "all") (also accepts any string) List of components to draw, can be also a string for `none` or `all`.
          Ranges like *R5-R10* are supported.
          Unlike the `pcbdraw` output, the default is `all`.
 
-      -  **view** :index:`: <pair: output - render_3d - options; view>` [:ref:`string <string>`] (default: ``'top'``) Point of view.
+      -  **view** :index:`: <pair: output - render_3d - options; view>` [:ref:`string <string>`] (default: ``'top'``) (choices: "top", "bottom", "front", "rear", "right", "left", "z", "Z", "y", "Y", "x", "X") Point of view.
       -  **zoom** :index:`: <pair: output - render_3d - options; zoom>` [:ref:`number <number>`] (default: ``0``) Zoom steps. Use positive to enlarge, get closer, and negative to reduce.
          Same result as using the mouse wheel in the 3D viewer.
          Note that KiCad 8 starts with a zoom to fit, so you might not even need it.
@@ -68,10 +68,10 @@ Parameters:
       -  ``force_stackup_colors`` :index:`: <pair: output - render_3d - options; force_stackup_colors>` [:ref:`boolean <boolean>`] (default: ``false``) Tell KiCad to use the colors from the stackup. They are better than the unified KiBot colors.
          Needs KiCad 6 or newer.
       -  ``height`` :index:`: <pair: output - render_3d - options; height>` [:ref:`number <number>`] (default: ``720``) Image height (aprox.).
-      -  ``highlight`` :index:`: <pair: output - render_3d - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[``) List of components to highlight. Ranges like *R5-R10* are supported.
+      -  ``highlight`` :index:`: <pair: output - render_3d - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of components to highlight. Ranges like *R5-R10* are supported.
 
       -  ``highlight_on_top`` :index:`: <pair: output - render_3d - options; highlight_on_top>` [:ref:`boolean <boolean>`] (default: ``false``) Highlight over the component (not under).
-      -  ``highlight_padding`` :index:`: <pair: output - render_3d - options; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``).
+      -  ``highlight_padding`` :index:`: <pair: output - render_3d - options; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``) (range: 0 to 1000) How much the highlight extends around the component [mm].
       -  ``kicad_3d_url`` :index:`: <pair: output - render_3d - options; kicad_3d_url>` [:ref:`string <string>`] (default: ``'https://gitlab.com/kicad/libraries/kicad-packages3D/-/raw/master/'``) Base URL for the KiCad 3D models.
       -  ``kicad_3d_url_suffix`` :index:`: <pair: output - render_3d - options; kicad_3d_url_suffix>` [:ref:`string <string>`] (default: ``''``) Text added to the end of the download URL.
          Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
@@ -113,7 +113,7 @@ Parameters:
       -  ``transparent_background`` :index:`: <pair: output - render_3d - options; transparent_background>` [:ref:`boolean <boolean>`] (default: ``false``) When enabled the image will be post-processed to make the background transparent.
          In this mode the `background1` and `background2` colors are ignored.
       -  ``transparent_background_color`` :index:`: <pair: output - render_3d - options; transparent_background_color>` [:ref:`string <string>`] (default: ``'#00ff00'``) Color used for the chroma key. Adjust it if some regions of the board becomes transparent.
-      -  ``transparent_background_fuzz`` :index:`: <pair: output - render_3d - options; transparent_background_fuzz>` [:ref:`number <number>`] (default: ``15``) Chroma key tolerance (percent). Bigger values will remove more pixels.
+      -  ``transparent_background_fuzz`` :index:`: <pair: output - render_3d - options; transparent_background_fuzz>` [:ref:`number <number>`] (default: ``15``) (range: 0 to 100) Chroma key tolerance (percent). Bigger values will remove more pixels.
       -  ``variant`` :index:`: <pair: output - render_3d - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
       -  *wait_ray_tracing* :index:`: <pair: output - render_3d - options; wait_ray_tracing>` Alias for wait_render.
       -  ``wait_render`` :index:`: <pair: output - render_3d - options; wait_render>` [:ref:`number <number>`] (default: ``-600``) How many seconds we must wait before capturing the render (ray tracing or normal).
@@ -137,7 +137,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - render_3d; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - render_3d; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - render_3d; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - render_3d; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

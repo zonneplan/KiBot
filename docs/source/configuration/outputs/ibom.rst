@@ -26,11 +26,11 @@ Parameters:
    -  Valid keys:
 
       -  **board_rotation** :index:`: <pair: output - ibom - options; board_rotation>` [:ref:`number <number>`] (default: ``0``) Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
-      -  **bom_view** :index:`: <pair: output - ibom - options; bom_view>` [:ref:`string <string>`] (default: ``'left-right'``) Default BOM view.
+      -  **bom_view** :index:`: <pair: output - ibom - options; bom_view>` [:ref:`string <string>`] (default: ``'left-right'``) (choices: "bom-only", "left-right", "top-bottom") Default BOM view.
       -  **extra_fields** :index:`: <pair: output - ibom - options; extra_fields>` [:ref:`string <string>`] (default: ``''``) Comma separated list of extra fields to pull from netlist or xml file.
          Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y'.
       -  **include_tracks** :index:`: <pair: output - ibom - options; include_tracks>` [:ref:`boolean <boolean>`] (default: ``false``) Include track/zone information in output. F.Cu and B.Cu layers only.
-      -  **layer_view** :index:`: <pair: output - ibom - options; layer_view>` [:ref:`string <string>`] (default: ``'FB'``) Default layer view.
+      -  **layer_view** :index:`: <pair: output - ibom - options; layer_view>` [:ref:`string <string>`] (default: ``'FB'``) (choices: "F", "FB", "B") Default layer view.
       -  **normalize_field_case** :index:`: <pair: output - ibom - options; normalize_field_case>` [:ref:`boolean <boolean>`] (default: ``false``) Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
       -  **output** :index:`: <pair: output - ibom - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
       -  **show_fields** :index:`: <pair: output - ibom - options; show_fields>` [:ref:`string <string>`] (default: ``''``) Comma separated list of fields to show in the BOM.
@@ -58,7 +58,7 @@ Parameters:
          Affected by global options.
       -  ``hide_pads`` :index:`: <pair: output - ibom - options; hide_pads>` [:ref:`boolean <boolean>`] (default: ``false``) Hide footprint pads by default.
       -  ``hide_silkscreen`` :index:`: <pair: output - ibom - options; hide_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Hide silkscreen by default.
-      -  ``highlight_pin1`` :index:`: <pair: output - ibom - options; highlight_pin1>` [:ref:`boolean <boolean>` | :ref:`string <string>`] (default: ``false``) Highlight pin1 by default.
+      -  ``highlight_pin1`` :index:`: <pair: output - ibom - options; highlight_pin1>` [:ref:`boolean <boolean>` | :ref:`string <string>`] (default: ``false``) (choices: "none", "all", "selected") Highlight pin1 by default.
       -  ``include_nets`` :index:`: <pair: output - ibom - options; include_nets>` [:ref:`boolean <boolean>`] (default: ``false``) Include netlist information in output..
       -  ``name_format`` :index:`: <pair: output - ibom - options; name_format>` [:ref:`string <string>`] (default: ``'ibom'``) Output file name format supports substitutions:
          %f : original pcb file name without extension.
@@ -105,7 +105,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - ibom; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - ibom; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - ibom; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - ibom; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

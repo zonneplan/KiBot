@@ -39,9 +39,9 @@ Parameters:
                Note that it only applies when using `from_output` and no `dest` is specified.
                It has more prescedence than `from_cwd`.
 
-      -  **format** :index:`: <pair: output - compress - options; format>` [:ref:`string <string>`] (default: ``'ZIP'``) Output file format.
+      -  **format** :index:`: <pair: output - compress - options; format>` [:ref:`string <string>`] (default: ``'ZIP'``) (choices: "ZIP", "TAR", "RAR") Output file format.
       -  **output** :index:`: <pair: output - compress - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
-      -  ``compression`` :index:`: <pair: output - compress - options; compression>` [:ref:`string <string>`] (default: ``'auto'``) Compression algorithm. Use auto to let KiBot select a suitable one.
+      -  ``compression`` :index:`: <pair: output - compress - options; compression>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "auto", "stored", "deflated", "bzip2", "lzma") Compression algorithm. Use auto to let KiBot select a suitable one.
       -  ``follow_links`` :index:`: <pair: output - compress - options; follow_links>` [:ref:`boolean <boolean>`] (default: ``true``) Store the file pointed by symlinks, not the symlink.
       -  ``move_files`` :index:`: <pair: output - compress - options; move_files>` [:ref:`boolean <boolean>`] (default: ``false``) Move the files to the archive. In other words: remove the files after adding them to the archive.
       -  *remove_files* :index:`: <pair: output - compress - options; remove_files>` Alias for move_files.
@@ -62,7 +62,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - compress; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - compress; priority>` [:ref:`number <number>`] (default: ``10``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - compress; priority>` [:ref:`number <number>`] (default: ``10``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - compress; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

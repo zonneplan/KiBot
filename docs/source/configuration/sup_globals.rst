@@ -54,7 +54,7 @@
          Current KiCad version is 6.0.7 and the bug is still there.
       -  ``drill_size_increment`` :index:`: <pair: global options; drill_size_increment>` [:ref:`number <number>`] (default: ``0.05``) This is the difference between drill tools in millimeters.
          A manufacturer with 0.05 of increment has drills for 0.1, 0.15, 0.2, 0.25, etc..
-      -  ``edge_connector`` :index:`: <pair: global options; edge_connector>` [:ref:`string <string>`] (default: ``'no'``) Has the PCB edge connectors?
+      -  ``edge_connector`` :index:`: <pair: global options; edge_connector>` [:ref:`string <string>`] (default: ``'no'``) (choices: "yes", "no", "bevelled") Has the PCB edge connectors?
          KiCad 6: you should set this in the Board Setup -> Board Finish -> Edge card connectors.
       -  ``edge_plating`` :index:`: <pair: global options; edge_plating>` [:ref:`boolean <boolean>`] (default: ``false``) Has the PCB a plated board edge?
          KiCad 6: you should set this in the Board Setup -> Board Finish -> Plated board edge.
@@ -125,7 +125,7 @@
             -  ``regex`` :index:`: <pair: global options - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
             -  *regexp* :index:`: <pair: global options - filters; regexp>` Alias for regex.
 
-      -  ``git_diff_strategy`` :index:`: <pair: global options; git_diff_strategy>` [:ref:`string <string>`] (default: ``'worktree'``) When computing a PCB/SCH diff it configures how do we preserve the current
+      -  ``git_diff_strategy`` :index:`: <pair: global options; git_diff_strategy>` [:ref:`string <string>`] (default: ``'worktree'``) (choices: "worktree", "stash") When computing a PCB/SCH diff it configures how do we preserve the current
          working state. The *worktree* mechanism creates a separated worktree, that then is just removed.
          The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
          is the preferred mechanism.
@@ -134,7 +134,7 @@
          KiCad 6: you should set this in the Board Setup -> Physical Stackup.
       -  ``include_components_from_pcb`` :index:`: <pair: global options; include_components_from_pcb>` [:ref:`boolean <boolean>`] (default: ``true``) Include components that are only in the PCB, not in the schematic, for filter and variants processing.
          Note that version 1.6.3 and older ignored them.
-      -  ``invalidate_pcb_text_cache`` :index:`: <pair: global options; invalidate_pcb_text_cache>` [:ref:`string <string>`] (default: ``'auto'``) Remove any cached text variable in the PCB. This is needed in order to force a text
+      -  ``invalidate_pcb_text_cache`` :index:`: <pair: global options; invalidate_pcb_text_cache>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "auto", "yes", "no") Remove any cached text variable in the PCB. This is needed in order to force a text
          variables update when using `set_text_variables`. You might want to disable it when applying some
          changes to the PCB and create a new copy to send to somebody without changing the cached values.
          The `auto` value will remove the cached values only when using `set_text_variables`.
@@ -197,7 +197,7 @@
       -  ``time_format`` :index:`: <pair: global options; time_format>` [:ref:`string <string>`] (default: ``'%H-%M-%S'``) Format used for the time we started the script. Uses the `strftime` format.
       -  ``time_reformat`` :index:`: <pair: global options; time_reformat>` [:ref:`boolean <boolean>`] (default: ``true``) Tries to reformat the PCB/SCH date using the `date_format`.
          This assumes you let KiCad fill this value and hence the time is in ISO format (YY-MM-DD).
-      -  ``units`` :index:`: <pair: global options; units>` [:ref:`string <string>`] (default: ``''``) Default units. Affects `position`, `bom` and `panelize` outputs and
+      -  ``units`` :index:`: <pair: global options; units>` [:ref:`string <string>`] (default: ``''``) (choices: "millimeters", "inches", "mils") Default units. Affects `position`, `bom` and `panelize` outputs and
          the `erc` and `drc` preflights. Also KiCad 6 dimensions.
       -  ``use_dir_for_preflights`` :index:`: <pair: global options; use_dir_for_preflights>` [:ref:`boolean <boolean>`] (default: ``true``) Use the global `dir` as subdir for the preflights.
       -  ``use_os_env_for_expand`` :index:`: <pair: global options; use_os_env_for_expand>` [:ref:`boolean <boolean>`] (default: ``true``) In addition to KiCad text variables also use the OS environment variables when expanding `${VARIABLE}`.

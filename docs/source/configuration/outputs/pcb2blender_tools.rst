@@ -30,7 +30,7 @@ Parameters:
    -  Valid keys:
 
       -  **output** :index:`: <pair: output - pcb2blender_tools - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=pcb2blender, %x=pcb3d). Affected by global options.
-      -  **show_components** :index:`: <pair: output - pcb2blender_tools - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) List of components to include in the pads list,
+      -  **show_components** :index:`: <pair: output - pcb2blender_tools - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) (choices: "none", "all") (also accepts any string) List of components to include in the pads list,
          can be also a string for `none` or `all`. The default is `all`.
          Ranges like *R5-R10* are supported.
 
@@ -49,7 +49,7 @@ Parameters:
       -  ``stackup_create`` :index:`: <pair: output - pcb2blender_tools - options; stackup_create>` [:ref:`boolean <boolean>`] (default: ``false``) Create a file containing the board stackup.
       -  ``stackup_dir`` :index:`: <pair: output - pcb2blender_tools - options; stackup_dir>` [:ref:`string <string>`] (default: ``'.'``) Directory for the stackup file. Use 'layers' for 2.7+.
       -  ``stackup_file`` :index:`: <pair: output - pcb2blender_tools - options; stackup_file>` [:ref:`string <string>`] (default: ``'board.yaml'``) Name for the stackup file. Use 'stackup' for 2.7+.
-      -  ``stackup_format`` :index:`: <pair: output - pcb2blender_tools - options; stackup_format>` [:ref:`string <string>`] (default: ``'JSON'``) Format for the stackup file. Use 'BIN' for 2.7+.
+      -  ``stackup_format`` :index:`: <pair: output - pcb2blender_tools - options; stackup_format>` [:ref:`string <string>`] (default: ``'JSON'``) (choices: "JSON", "BIN") Format for the stackup file. Use 'BIN' for 2.7+.
       -  ``sub_boards_bounds_file`` :index:`: <pair: output - pcb2blender_tools - options; sub_boards_bounds_file>` [:ref:`string <string>`] (default: ``'bounds'``) File name for the sub-PCBs bounds.
       -  ``sub_boards_create`` :index:`: <pair: output - pcb2blender_tools - options; sub_boards_create>` [:ref:`boolean <boolean>`] (default: ``true``) Extract sub-PCBs and their Z axis position.
       -  ``sub_boards_dir`` :index:`: <pair: output - pcb2blender_tools - options; sub_boards_dir>` [:ref:`string <string>`] (default: ``'boards'``) Directory for the boards definitions.
@@ -71,7 +71,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - pcb2blender_tools; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - pcb2blender_tools; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - pcb2blender_tools; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - pcb2blender_tools; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

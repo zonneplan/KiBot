@@ -25,20 +25,20 @@ Parameters:
 
    -  Valid keys:
 
-      -  **format** :index:`: <pair: output - position - options; format>` [:ref:`string <string>`] (default: ``'ASCII'``) Format for the position file.
+      -  **format** :index:`: <pair: output - position - options; format>` [:ref:`string <string>`] (default: ``'ASCII'``) (choices: "ASCII", "CSV", "GBR") Format for the position file.
          Note that the gerber format (GBR) needs KiCad 7+ and doesn't support most of the options.
          Only the options that explicitly say the format is supported.
       -  **only_smd** :index:`: <pair: output - position - options; only_smd>` [:ref:`boolean <boolean>`] (default: ``true``) Only include the surface mount components.
       -  **output** :index:`: <pair: output - position - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
          Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
       -  **separate_files_for_front_and_back** :index:`: <pair: output - position - options; separate_files_for_front_and_back>` [:ref:`boolean <boolean>`] (default: ``true``) Generate two separated files, one for the top and another for the bottom.
-      -  **units** :index:`: <pair: output - position - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the positions. Affected by global options.
+      -  **units** :index:`: <pair: output - position - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
       -  ``bottom_negative_x`` :index:`: <pair: output - position - options; bottom_negative_x>` [:ref:`boolean <boolean>`] (default: ``false``) Use negative X coordinates for footprints on bottom layer.
       -  ``columns`` :index:`: <pair: output - position - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] Which columns are included in the output.
 
          -  Valid keys:
 
-            -  **id** :index:`: <pair: output - position - options - columns; id>` [:ref:`string <string>`] (default: ``''``) Internal name.
+            -  **id** :index:`: <pair: output - position - options - columns; id>` [:ref:`string <string>`] (default: ``''``) (choices: "Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side") Internal name.
             -  ``name`` :index:`: <pair: output - position - options - columns; name>` [:ref:`string <string>`] (default: ``''``) Name to use in the output file. The id is used when empty.
 
       -  ``dnf_filter`` :index:`: <pair: output - position - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
@@ -72,7 +72,7 @@ Parameters:
    needed.
 
 -  ``output_id`` :index:`: <pair: output - position; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - position; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
+-  ``priority`` :index:`: <pair: output - position; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - position; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
