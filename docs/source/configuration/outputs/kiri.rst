@@ -25,8 +25,8 @@ Parameters:
 -  **comment** :index:`: <pair: output - kiri; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - kiri; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - kiri; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string)
-   List of PCB layers to use. When empty all available layers are used.
+-  **layers** :index:`: <pair: output - kiri; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
+   of PCB layers to use. When empty all available layers are used.
    Note that if you want to support adding/removing layers you should specify a list here.
 
    -  Valid keys:

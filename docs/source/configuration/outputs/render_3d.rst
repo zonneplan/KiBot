@@ -68,7 +68,7 @@ Parameters:
       -  ``force_stackup_colors`` :index:`: <pair: output - render_3d - options; force_stackup_colors>` [:ref:`boolean <boolean>`] (default: ``false``) Tell KiCad to use the colors from the stackup. They are better than the unified KiBot colors.
          Needs KiCad 6 or newer.
       -  ``height`` :index:`: <pair: output - render_3d - options; height>` [:ref:`number <number>`] (default: ``720``) Image height (aprox.).
-      -  ``highlight`` :index:`: <pair: output - render_3d - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of components to highlight. Ranges like *R5-R10* are supported.
+      -  ``highlight`` :index:`: <pair: output - render_3d - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of components to highlight. Ranges like *R5-R10* are supported.
 
       -  ``highlight_on_top`` :index:`: <pair: output - render_3d - options; highlight_on_top>` [:ref:`boolean <boolean>`] (default: ``false``) Highlight over the component (not under).
       -  ``highlight_padding`` :index:`: <pair: output - render_3d - options; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``) (range: 0 to 1000) How much the highlight extends around the component [mm].

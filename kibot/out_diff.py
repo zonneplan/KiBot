@@ -563,8 +563,8 @@ class Diff(BaseOutput):  # noqa: F821
             self.options = DiffOptions
             """ *[dict] Options for the `diff` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
-                List of PCB layers to use. When empty all available layers are used.
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*] List
+                of PCB layers to use. When empty all available layers are used.
                 Note that if you want to support adding/removing layers you should specify a list here """
 
     def config(self, parent):

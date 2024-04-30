@@ -66,7 +66,7 @@ Supported preflights
             -  ``regex`` :index:`: <pair: preflight - drc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
             -  *regexp* :index:`: <pair: preflight - drc - filters; regexp>` Alias for regex.
 
-      -  ``format`` :index:`: <pair: preflight - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``)[RPT,HTML,CSV,JSON] Format/s used for the report.
+      -  ``format`` :index:`: <pair: preflight - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``) Format/s used for the report.
          You can specify multiple formats.
 
       -  ``ignore_unconnected`` :index:`: <pair: preflight - drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
@@ -98,7 +98,7 @@ Supported preflights
             -  ``regex`` :index:`: <pair: preflight - erc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
             -  *regexp* :index:`: <pair: preflight - erc - filters; regexp>` Alias for regex.
 
-      -  ``format`` :index:`: <pair: preflight - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``)[RPT,HTML,CSV,JSON] Format/s used for the report.
+      -  ``format`` :index:`: <pair: preflight - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``) Format/s used for the report.
          You can specify multiple formats.
 
       -  ``units`` :index:`: <pair: preflight - erc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.

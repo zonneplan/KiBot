@@ -298,8 +298,8 @@ class AnyLayer(BaseOutput):
         super().__init__()
         with document:
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
-                List of PCB layers to plot """
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*] List
+                of PCB layers to plot """
 
     def config(self, parent):
         super().config(parent)

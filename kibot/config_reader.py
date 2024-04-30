@@ -793,7 +793,7 @@ def trim(docstring):
 
 
 def process_help_data_type(obj, help):
-    valid, validations, def_val = obj.get_valid_types(help)
+    valid, validations, def_val, real_help = obj.get_valid_types(help)
     new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
     if def_val:
         new_data_type += f' (default: ``{def_val}``)'
@@ -814,8 +814,7 @@ def process_help_data_type(obj, help):
         elif not number_added and 'number' in tp:
             number_added = True
             new_data_type += f' (range: {validation[0]} to {validation[1]})'
-    m = re.search(r'^\[[^\]]+\]( \[[^\]]+\])*', help)
-    help = new_data_type+help[m.end(0):]
+    help = new_data_type+real_help
     return help
 
 

@@ -46,7 +46,7 @@ Parameters:
          them from LCSC database. In order to work you'll need to provide the LCSC
          part number. The field containing the LCSC part number is defined by the
          `field_lcsc_part` global variable.
-      -  ``highlight`` :index:`: <pair: output - vrml - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``)] List of components to highlight. Ranges like *R5-R10* are supported.
+      -  ``highlight`` :index:`: <pair: output - vrml - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of components to highlight. Ranges like *R5-R10* are supported.
 
       -  ``highlight_on_top`` :index:`: <pair: output - vrml - options; highlight_on_top>` [:ref:`boolean <boolean>`] (default: ``false``) Highlight over the component (not under).
       -  ``highlight_padding`` :index:`: <pair: output - vrml - options; highlight_padding>` [:ref:`number <number>`] (default: ``1.5``) (range: 0 to 1000) How much the highlight extends around the component [mm].
