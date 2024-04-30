@@ -146,7 +146,11 @@ class Optionable(object):
                 m = Optionable._num_range_re.search(doc)
                 if m:
                     min = float(m.group(1))
+                    if int(min) == min:
+                        min = int(min)
                     max = float(m.group(2))
+                    if int(max) == max:
+                        max = int(max)
                     validation.append((min, max))
             elif v == 'string' or v == 'list(string)':
                 m = Optionable._str_values_re.search(doc)
