@@ -133,7 +133,7 @@ class Optionable(object):
 
     def get_valid_types(self, doc):
         # Separate the valid types for this key
-        valid = doc[1:].split(']')[0].split('|')
+        valid = doc[1:].split('] ')[0].split('|')
         # Remove the XXXX=Value
         def_val = None
         if '=' in valid[-1]:
