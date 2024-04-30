@@ -16,63 +16,63 @@ Category: **PCB/fabrication/assembly**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - position; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - position; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - position; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - position; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - position; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - position; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - position; options>` [:ref:`dict <dict>`] Options for the `position` output.
 
    -  Valid keys:
 
-      -  **format** :index:`: <pair: output - position - options; format>` [:ref:`string <string>`] Format for the position file.
+      -  **format** :index:`: <pair: output - position - options; format>` [:ref:`string <string>`] (default: ``'ASCII'``) Format for the position file.
          Note that the gerber format (GBR) needs KiCad 7+ and doesn't support most of the options.
          Only the options that explicitly say the format is supported.
-      -  **only_smd** :index:`: <pair: output - position - options; only_smd>` [:ref:`boolean <boolean>`] Only include the surface mount components.
-      -  **output** :index:`: <pair: output - position - options; output>` [:ref:`string <string>`] Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
+      -  **only_smd** :index:`: <pair: output - position - options; only_smd>` [:ref:`boolean <boolean>`] (default: ``true``) Only include the surface mount components.
+      -  **output** :index:`: <pair: output - position - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
          Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
-      -  **separate_files_for_front_and_back** :index:`: <pair: output - position - options; separate_files_for_front_and_back>` [:ref:`boolean <boolean>`] Generate two separated files, one for the top and another for the bottom.
-      -  **units** :index:`: <pair: output - position - options; units>` [:ref:`string <string>`] Units used for the positions. Affected by global options.
-      -  ``bottom_negative_x`` :index:`: <pair: output - position - options; bottom_negative_x>` [:ref:`boolean <boolean>`] Use negative X coordinates for footprints on bottom layer.
+      -  **separate_files_for_front_and_back** :index:`: <pair: output - position - options; separate_files_for_front_and_back>` [:ref:`boolean <boolean>`] (default: ``true``) Generate two separated files, one for the top and another for the bottom.
+      -  **units** :index:`: <pair: output - position - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the positions. Affected by global options.
+      -  ``bottom_negative_x`` :index:`: <pair: output - position - options; bottom_negative_x>` [:ref:`boolean <boolean>`] (default: ``false``) Use negative X coordinates for footprints on bottom layer.
       -  ``columns`` :index:`: <pair: output - position - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] Which columns are included in the output.
 
          -  Valid keys:
 
-            -  **id** :index:`: <pair: output - position - options - columns; id>` [:ref:`string <string>`] Internal name.
-            -  ``name`` :index:`: <pair: output - position - options - columns; name>` [:ref:`string <string>`] Name to use in the output file. The id is used when empty.
+            -  **id** :index:`: <pair: output - position - options - columns; id>` [:ref:`string <string>`] (default: ``''``) Internal name.
+            -  ``name`` :index:`: <pair: output - position - options - columns; name>` [:ref:`string <string>`] (default: ``''``) Name to use in the output file. The id is used when empty.
 
-      -  ``dnf_filter`` :index:`: <pair: output - position - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - position - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``gerber_board_edge`` :index:`: <pair: output - position - options; gerber_board_edge>` [:ref:`boolean <boolean>`] Include the board edge in the gerber output.
-      -  ``include_virtual`` :index:`: <pair: output - position - options; include_virtual>` [:ref:`boolean <boolean>`] Include virtual components. For special purposes, not pick & place.
+      -  ``gerber_board_edge`` :index:`: <pair: output - position - options; gerber_board_edge>` [:ref:`boolean <boolean>`] (default: ``false``) Include the board edge in the gerber output.
+      -  ``include_virtual`` :index:`: <pair: output - position - options; include_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Include virtual components. For special purposes, not pick & place.
          Note that virtual components is a KiCad 5 concept.
          For KiCad 6+ we replace this concept by the option to exclude from position file.
-      -  ``pre_transform`` :index:`: <pair: output - position - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - position - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``quote_all`` :index:`: <pair: output - position - options; quote_all>` [:ref:`boolean <boolean>`] When generating the CSV quote all values, even numbers.
-      -  ``right_digits`` :index:`: <pair: output - position - options; right_digits>` [:ref:`number <number>`] number of digits for mantissa part of coordinates (0 is auto).
-      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - position - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] Use the auxiliary axis as origin for coordinates (KiCad default).
+      -  ``quote_all`` :index:`: <pair: output - position - options; quote_all>` [:ref:`boolean <boolean>`] (default: ``false``) When generating the CSV quote all values, even numbers.
+      -  ``right_digits`` :index:`: <pair: output - position - options; right_digits>` [:ref:`number <number>`] (default: ``4``) number of digits for mantissa part of coordinates (0 is auto).
+      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - position - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``true``) Use the auxiliary axis as origin for coordinates (KiCad default).
          Supported by the gerber format.
-      -  ``variant`` :index:`: <pair: output - position - options; variant>` [:ref:`string <string>`] Board variant to apply.
+      -  ``variant`` :index:`: <pair: output - position - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - position; type>` 'position'
--  ``category`` :index:`: <pair: output - position; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - position; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - position; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - position; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - position; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - position; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - position; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - position; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - position; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - position; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - position; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - position; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - position; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

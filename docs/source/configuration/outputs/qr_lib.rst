@@ -20,50 +20,50 @@ Type: ``qr_lib``
 
 Parameters:
 
--  **comment** :index:`: <pair: output - qr_lib; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - qr_lib; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - qr_lib; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - qr_lib; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - qr_lib; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - qr_lib; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - qr_lib; options>` [:ref:`dict <dict>`] Options for the `boardview` output.
 
    -  Valid keys:
 
-      -  **lib** :index:`: <pair: output - qr_lib - options; lib>` [:ref:`string <string>`] Short name for the library.
-      -  **output** :index:`: <pair: output - qr_lib - options; output>` [:ref:`string <string>`] Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
+      -  **lib** :index:`: <pair: output - qr_lib - options; lib>` [:ref:`string <string>`] (default: ``'QR'``) Short name for the library.
+      -  **output** :index:`: <pair: output - qr_lib - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
          You must use %x in the name to get a symbols lib and a footprints lib. Affected by global options.
       -  **qrs** :index:`: <pair: output - qr_lib - options; qrs>` [:ref:`list(dict) <list(dict)>`] QR codes to include in the library.
 
          -  Valid keys:
 
-            -  **layer** :index:`: <pair: output - qr_lib - options - qrs; layer>` [:ref:`string <string>`] Layer for the footprint.
-            -  **name** :index:`: <pair: output - qr_lib - options - qrs; name>` [:ref:`string <string>`] Name for the symbol/footprint.
-            -  **size_pcb** :index:`: <pair: output - qr_lib - options - qrs; size_pcb>` [:ref:`number <number>`] Size of the QR footprint.
-            -  **size_sch** :index:`: <pair: output - qr_lib - options - qrs; size_sch>` [:ref:`number <number>`] Size of the QR symbol.
-            -  **text** :index:`: <pair: output - qr_lib - options - qrs; text>` [:ref:`string <string>`] Text to encode as QR.
-            -  ``correction_level`` :index:`: <pair: output - qr_lib - options - qrs; correction_level>` [:ref:`string <string>`] Error correction level.
-            -  ``pcb_negative`` :index:`: <pair: output - qr_lib - options - qrs; pcb_negative>` [:ref:`boolean <boolean>`] Generate a negative image for the PCB.
-            -  ``size_units`` :index:`: <pair: output - qr_lib - options - qrs; size_units>` [:ref:`string <string>`] Units used for the size.
+            -  **layer** :index:`: <pair: output - qr_lib - options - qrs; layer>` [:ref:`string <string>`] (default: ``'silk'``) Layer for the footprint.
+            -  **name** :index:`: <pair: output - qr_lib - options - qrs; name>` [:ref:`string <string>`] (default: ``'QR'``) Name for the symbol/footprint.
+            -  **size_pcb** :index:`: <pair: output - qr_lib - options - qrs; size_pcb>` [:ref:`number <number>`] (default: ``15``) Size of the QR footprint.
+            -  **size_sch** :index:`: <pair: output - qr_lib - options - qrs; size_sch>` [:ref:`number <number>`] (default: ``15``) Size of the QR symbol.
+            -  **text** :index:`: <pair: output - qr_lib - options - qrs; text>` [:ref:`string <string>`] (default: ``'%p %r'``) Text to encode as QR.
+            -  ``correction_level`` :index:`: <pair: output - qr_lib - options - qrs; correction_level>` [:ref:`string <string>`] (default: ``'low'``) Error correction level.
+            -  ``pcb_negative`` :index:`: <pair: output - qr_lib - options - qrs; pcb_negative>` [:ref:`boolean <boolean>`] (default: ``false``) Generate a negative image for the PCB.
+            -  ``size_units`` :index:`: <pair: output - qr_lib - options - qrs; size_units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the size.
 
-      -  ``reference`` :index:`: <pair: output - qr_lib - options; reference>` [:ref:`string <string>`] The reference prefix.
-      -  ``use_sch_dir`` :index:`: <pair: output - qr_lib - options; use_sch_dir>` [:ref:`boolean <boolean>`] Generate the libs relative to the schematic/PCB dir.
+      -  ``reference`` :index:`: <pair: output - qr_lib - options; reference>` [:ref:`string <string>`] (default: ``'QR'``) The reference prefix.
+      -  ``use_sch_dir`` :index:`: <pair: output - qr_lib - options; use_sch_dir>` [:ref:`boolean <boolean>`] (default: ``true``) Generate the libs relative to the schematic/PCB dir.
 
 -  **type** :index:`: <pair: output - qr_lib; type>` 'qr_lib'
--  ``category`` :index:`: <pair: output - qr_lib; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - qr_lib; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - qr_lib; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - qr_lib; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - qr_lib; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - qr_lib; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - qr_lib; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - qr_lib; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - qr_lib; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - qr_lib; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - qr_lib; priority>` [:ref:`number <number>`] (default: ``90``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - qr_lib; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - qr_lib; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

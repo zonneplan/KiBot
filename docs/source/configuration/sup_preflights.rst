@@ -10,21 +10,21 @@ Supported preflights
 
    -  Valid keys:
 
-      -  ``bottom_main_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_main_ascending>` [:ref:`boolean <boolean>`] Sort the main axis in ascending order for the bottom layer.
+      -  ``bottom_main_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_main_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the main axis in ascending order for the bottom layer.
          For X this is left to right and for Y top to bottom.
-      -  ``bottom_main_axis`` :index:`: <pair: preflight - annotate_pcb; bottom_main_axis>` [:ref:`string <string>`] Use this axis as main sorting criteria for the bottom layer.
-      -  ``bottom_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_secondary_ascending>` [:ref:`boolean <boolean>`] Sort the secondary axis in ascending order for the bottom layer.
+      -  ``bottom_main_axis`` :index:`: <pair: preflight - annotate_pcb; bottom_main_axis>` [:ref:`string <string>`] (default: ``'y'``) Use this axis as main sorting criteria for the bottom layer.
+      -  ``bottom_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_secondary_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the secondary axis in ascending order for the bottom layer.
          For X this is left to right and for Y top to bottom.
-      -  ``bottom_start`` :index:`: <pair: preflight - annotate_pcb; bottom_start>` [:ref:`number <number>`] First number for references at the bottom layer.
+      -  ``bottom_start`` :index:`: <pair: preflight - annotate_pcb; bottom_start>` [:ref:`number <number>`] (default: ``101``) First number for references at the bottom layer.
          Use -1 to continue from the last top reference.
-      -  ``grid`` :index:`: <pair: preflight - annotate_pcb; grid>` [:ref:`number <number>`] Grid size in millimeters.
-      -  ``top_main_ascending`` :index:`: <pair: preflight - annotate_pcb; top_main_ascending>` [:ref:`boolean <boolean>`] Sort the main axis in ascending order for the top layer.
+      -  ``grid`` :index:`: <pair: preflight - annotate_pcb; grid>` [:ref:`number <number>`] (default: ``1.0``) Grid size in millimeters.
+      -  ``top_main_ascending`` :index:`: <pair: preflight - annotate_pcb; top_main_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the main axis in ascending order for the top layer.
          For X this is left to right and for Y top to bottom.
-      -  ``top_main_axis`` :index:`: <pair: preflight - annotate_pcb; top_main_axis>` [:ref:`string <string>`] Use this axis as main sorting criteria for the top layer.
-      -  ``top_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; top_secondary_ascending>` [:ref:`boolean <boolean>`] Sort the secondary axis in ascending order for the top layer.
+      -  ``top_main_axis`` :index:`: <pair: preflight - annotate_pcb; top_main_axis>` [:ref:`string <string>`] (default: ``'y'``) Use this axis as main sorting criteria for the top layer.
+      -  ``top_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; top_secondary_ascending>` [:ref:`boolean <boolean>`] (default: ``true``) Sort the secondary axis in ascending order for the top layer.
          For X this is left to right and for Y top to bottom.
-      -  ``top_start`` :index:`: <pair: preflight - annotate_pcb; top_start>` [:ref:`number <number>`] First number for references at the top layer.
-      -  ``use_position_of`` :index:`: <pair: preflight - annotate_pcb; use_position_of>` [:ref:`string <string>`] Which coordinate is used.
+      -  ``top_start`` :index:`: <pair: preflight - annotate_pcb; top_start>` [:ref:`number <number>`] (default: ``1``) First number for references at the top layer.
+      -  ``use_position_of`` :index:`: <pair: preflight - annotate_pcb; use_position_of>` [:ref:`string <string>`] (default: ``'footprint'``) Which coordinate is used.
 
 -  **annotate_power**: :index:`: <pair: preflights; annotate_power>` [boolean=false] Annotates all power components.
    This preflight modifies the schematic, use it only in revision control environments. |br|
@@ -47,32 +47,32 @@ Supported preflights
 
    -  Valid keys:
 
-      -  **output** :index:`: <pair: preflight - drc; output>` [:ref:`string <string>`] Name for the generated archive (%i=drc %x=according to format). Affected by global options.
-      -  ``all_track_errors`` :index:`: <pair: preflight - drc; all_track_errors>` [:ref:`boolean <boolean>`] Report all the errors for all the tracks, not just the first.
-      -  ``dir`` :index:`: <pair: preflight - drc; dir>` [:ref:`string <string>`] Sub-directory for the report.
-      -  ``dont_stop`` :index:`: <pair: preflight - drc; dont_stop>` [:ref:`boolean <boolean>`] Continue even if we detect errors.
-      -  ``enabled`` :index:`: <pair: preflight - drc; enabled>` [:ref:`boolean <boolean>`] Enable the check. This is the replacement for the boolean value.
+      -  **output** :index:`: <pair: preflight - drc; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated archive (%i=drc %x=according to format). Affected by global options.
+      -  ``all_track_errors`` :index:`: <pair: preflight - drc; all_track_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Report all the errors for all the tracks, not just the first.
+      -  ``dir`` :index:`: <pair: preflight - drc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
+      -  ``dont_stop`` :index:`: <pair: preflight - drc; dont_stop>` [:ref:`boolean <boolean>`] (default: ``false``) Continue even if we detect errors.
+      -  ``enabled`` :index:`: <pair: preflight - drc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the check. This is the replacement for the boolean value.
       -  ``filters`` :index:`: <pair: preflight - drc; filters>` [:ref:`list(dict) <list(dict)>`] Used to manipulate the violations. Avoid using the *filters* preflight.
 
          -  Valid keys:
 
-            -  ``change_to`` :index:`: <pair: preflight - drc - filters; change_to>` [:ref:`string <string>`] The action of the filter.
+            -  ``change_to`` :index:`: <pair: preflight - drc - filters; change_to>` [:ref:`string <string>`] (default: ``'ignore'``) The action of the filter.
                Changing to *ignore* is the default and is used to suppress a violation, but you can also change
                it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
                so you can revert a GUI exclusion.
-            -  ``error`` :index:`: <pair: preflight - drc - filters; error>` [:ref:`string <string>`] Error id we want to exclude.
-            -  ``filter`` :index:`: <pair: preflight - drc - filters; filter>` [:ref:`string <string>`] Name for the filter, for documentation purposes.
+            -  ``error`` :index:`: <pair: preflight - drc - filters; error>` [:ref:`string <string>`] (default: ``''``) Error id we want to exclude.
+            -  ``filter`` :index:`: <pair: preflight - drc - filters; filter>` [:ref:`string <string>`] (default: ``''``) Name for the filter, for documentation purposes.
             -  *filter_msg* :index:`: <pair: preflight - drc - filters; filter_msg>` Alias for filter.
-            -  ``regex`` :index:`: <pair: preflight - drc - filters; regex>` [:ref:`string <string>`] Regular expression to match the text for the error we want to exclude.
+            -  ``regex`` :index:`: <pair: preflight - drc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
             -  *regexp* :index:`: <pair: preflight - drc - filters; regexp>` Alias for regex.
 
-      -  ``format`` :index:`: <pair: preflight - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Format/s used for the report.
+      -  ``format`` :index:`: <pair: preflight - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) Format/s used for the report.
          You can specify multiple formats.
 
-      -  ``ignore_unconnected`` :index:`: <pair: preflight - drc; ignore_unconnected>` [:ref:`boolean <boolean>`] Ignores the unconnected nets. Useful if you didn't finish the routing.
-      -  ``schematic_parity`` :index:`: <pair: preflight - drc; schematic_parity>` [:ref:`boolean <boolean>`] Check if the PCB and the schematic are coincident.
-      -  ``units`` :index:`: <pair: preflight - drc; units>` [:ref:`string <string>`] Units used for the positions. Affected by global options.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [:ref:`boolean <boolean>`] Warnings are considered errors, they still reported as errors, but consider it an error.
+      -  ``ignore_unconnected`` :index:`: <pair: preflight - drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
+      -  ``schematic_parity`` :index:`: <pair: preflight - drc; schematic_parity>` [:ref:`boolean <boolean>`] (default: ``true``) Check if the PCB and the schematic are coincident.
+      -  ``units`` :index:`: <pair: preflight - drc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the positions. Affected by global options.
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc**: :index:`: <pair: preflights; erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
    You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template. |br|
@@ -80,29 +80,29 @@ Supported preflights
 
    -  Valid keys:
 
-      -  **output** :index:`: <pair: preflight - erc; output>` [:ref:`string <string>`] Name for the generated archive (%i=erc %x=according to format). Affected by global options.
-      -  ``dir`` :index:`: <pair: preflight - erc; dir>` [:ref:`string <string>`] Sub-directory for the report.
-      -  ``dont_stop`` :index:`: <pair: preflight - erc; dont_stop>` [:ref:`boolean <boolean>`] Continue even if we detect errors.
-      -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [:ref:`boolean <boolean>`] Enable the check. This is the replacement for the boolean value.
+      -  **output** :index:`: <pair: preflight - erc; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated archive (%i=erc %x=according to format). Affected by global options.
+      -  ``dir`` :index:`: <pair: preflight - erc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
+      -  ``dont_stop`` :index:`: <pair: preflight - erc; dont_stop>` [:ref:`boolean <boolean>`] (default: ``false``) Continue even if we detect errors.
+      -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the check. This is the replacement for the boolean value.
       -  ``filters`` :index:`: <pair: preflight - erc; filters>` [:ref:`list(dict) <list(dict)>`] Used to manipulate the violations. Avoid using the *filters* preflight.
 
          -  Valid keys:
 
-            -  ``change_to`` :index:`: <pair: preflight - erc - filters; change_to>` [:ref:`string <string>`] The action of the filter.
+            -  ``change_to`` :index:`: <pair: preflight - erc - filters; change_to>` [:ref:`string <string>`] (default: ``'ignore'``) The action of the filter.
                Changing to *ignore* is the default and is used to suppress a violation, but you can also change
                it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
                so you can revert a GUI exclusion.
-            -  ``error`` :index:`: <pair: preflight - erc - filters; error>` [:ref:`string <string>`] Error id we want to exclude.
-            -  ``filter`` :index:`: <pair: preflight - erc - filters; filter>` [:ref:`string <string>`] Name for the filter, for documentation purposes.
+            -  ``error`` :index:`: <pair: preflight - erc - filters; error>` [:ref:`string <string>`] (default: ``''``) Error id we want to exclude.
+            -  ``filter`` :index:`: <pair: preflight - erc - filters; filter>` [:ref:`string <string>`] (default: ``''``) Name for the filter, for documentation purposes.
             -  *filter_msg* :index:`: <pair: preflight - erc - filters; filter_msg>` Alias for filter.
-            -  ``regex`` :index:`: <pair: preflight - erc - filters; regex>` [:ref:`string <string>`] Regular expression to match the text for the error we want to exclude.
+            -  ``regex`` :index:`: <pair: preflight - erc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
             -  *regexp* :index:`: <pair: preflight - erc - filters; regexp>` Alias for regex.
 
-      -  ``format`` :index:`: <pair: preflight - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Format/s used for the report.
+      -  ``format`` :index:`: <pair: preflight - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) Format/s used for the report.
          You can specify multiple formats.
 
-      -  ``units`` :index:`: <pair: preflight - erc; units>` [:ref:`string <string>`] Units used for the positions. Affected by global options.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [:ref:`boolean <boolean>`] Warnings are considered errors, they still reported as errors, but consider it an error.
+      -  ``units`` :index:`: <pair: preflight - erc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) Units used for the positions. Affected by global options.
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as errors, but consider it an error.
 
 -  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.
    Option for `run_erc`. ERC warnings are considered errors.
@@ -114,14 +114,14 @@ Supported preflights
 
    -  Valid keys:
 
-      -  ``error`` :index:`: <pair: preflight - filters; error>` [:ref:`string <string>`] Error id we want to exclude.
+      -  ``error`` :index:`: <pair: preflight - filters; error>` [:ref:`string <string>`] (default: ``''``) Error id we want to exclude.
          A name for KiCad 6 or a number for KiCad 5, but always a string.
       -  *error_number* :index:`: <pair: preflight - filters; error_number>` Alias for number.
-      -  ``filter`` :index:`: <pair: preflight - filters; filter>` [:ref:`string <string>`] Name for the filter, for documentation purposes.
+      -  ``filter`` :index:`: <pair: preflight - filters; filter>` [:ref:`string <string>`] (default: ``''``) Name for the filter, for documentation purposes.
       -  *filter_msg* :index:`: <pair: preflight - filters; filter_msg>` Alias for filter.
-      -  ``number`` :index:`: <pair: preflight - filters; number>` [:ref:`number <number>`] Error number we want to exclude.
+      -  ``number`` :index:`: <pair: preflight - filters; number>` [:ref:`number <number>`] (default: ``0``) Error number we want to exclude.
          KiCad 5 only.
-      -  ``regex`` :index:`: <pair: preflight - filters; regex>` [:ref:`string <string>`] Regular expression to match the text for the error we want to exclude.
+      -  ``regex`` :index:`: <pair: preflight - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
       -  *regexp* :index:`: <pair: preflight - filters; regexp>` Alias for regex.
 
 -  **ignore_unconnected**: :index:`: <pair: preflights; ignore_unconnected>` [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`/`drc`.
@@ -133,7 +133,7 @@ Supported preflights
 
    -  Valid keys:
 
-      -  ``date_command`` :index:`: <pair: preflight - pcb_replace; date_command>` [:ref:`string <string>`] Command to get the date to use in the PCB.\\
+      -  ``date_command`` :index:`: <pair: preflight - pcb_replace; date_command>` [:ref:`string <string>`] (default: ``''``) Command to get the date to use in the PCB.\\
          ```git log -1 --format='%as' -- "$KIBOT_PCB_NAME"```\\
          Will return the date in YYYY-MM-DD format.\\
          ```date -d @`git log -1 --format='%at' -- "$KIBOT_PCB_NAME"` +%Y-%m-%d_%H-%M-%S```\\
@@ -144,14 +144,14 @@ Supported preflights
 
          -  Valid keys:
 
-            -  ``after`` :index:`: <pair: preflight - pcb_replace - replace_tags; after>` [:ref:`string <string>`] Text to add after the output of `command`.
-            -  ``before`` :index:`: <pair: preflight - pcb_replace - replace_tags; before>` [:ref:`string <string>`] Text to add before the output of `command`.
-            -  ``command`` :index:`: <pair: preflight - pcb_replace - replace_tags; command>` [:ref:`string <string>`] Command to execute to get the text, will be used only if `text` is empty.
+            -  ``after`` :index:`: <pair: preflight - pcb_replace - replace_tags; after>` [:ref:`string <string>`] (default: ``''``) Text to add after the output of `command`.
+            -  ``before`` :index:`: <pair: preflight - pcb_replace - replace_tags; before>` [:ref:`string <string>`] (default: ``''``) Text to add before the output of `command`.
+            -  ``command`` :index:`: <pair: preflight - pcb_replace - replace_tags; command>` [:ref:`string <string>`] (default: ``''``) Command to execute to get the text, will be used only if `text` is empty.
                KIBOT_PCB_NAME variable is the name of the current PCB.
-            -  ``tag`` :index:`: <pair: preflight - pcb_replace - replace_tags; tag>` [:ref:`string <string>`] Name of the tag to replace. Use `version` for a tag named `@version@`.
-            -  ``tag_delimiter`` :index:`: <pair: preflight - pcb_replace - replace_tags; tag_delimiter>` [:ref:`string <string>`] Character used to indicate the beginning and the end of a tag.
+            -  ``tag`` :index:`: <pair: preflight - pcb_replace - replace_tags; tag>` [:ref:`string <string>`] (default: ``''``) Name of the tag to replace. Use `version` for a tag named `@version@`.
+            -  ``tag_delimiter`` :index:`: <pair: preflight - pcb_replace - replace_tags; tag_delimiter>` [:ref:`string <string>`] (default: ``'@'``) Character used to indicate the beginning and the end of a tag.
                Don't change it unless you really know about KiCad's file formats.
-            -  ``text`` :index:`: <pair: preflight - pcb_replace - replace_tags; text>` [:ref:`string <string>`] Text to insert instead of the tag.
+            -  ``text`` :index:`: <pair: preflight - pcb_replace - replace_tags; text>` [:ref:`string <string>`] (default: ``''``) Text to insert instead of the tag.
 
 
 -  **run_drc**: :index:`: <pair: preflights; run_drc>` [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
@@ -164,9 +164,9 @@ Supported preflights
 
    -  Valid keys:
 
-      -  ``dir`` :index:`: <pair: preflight - run_drc; dir>` [:ref:`string <string>`] Sub-directory for the report.
-      -  ``enabled`` :index:`: <pair: preflight - run_drc; enabled>` [:ref:`boolean <boolean>`] Enable the DRC. This is the replacement for the boolean value.
-      -  ``ignore_unconnected`` :index:`: <pair: preflight - run_drc; ignore_unconnected>` [:ref:`boolean <boolean>`] Ignores the unconnected nets. Useful if you didn't finish the routing.
+      -  ``dir`` :index:`: <pair: preflight - run_drc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
+      -  ``enabled`` :index:`: <pair: preflight - run_drc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the DRC. This is the replacement for the boolean value.
+      -  ``ignore_unconnected`` :index:`: <pair: preflight - run_drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
          It will also ignore KiCad 6 warnings.
 
 -  **run_erc**: :index:`: <pair: preflights; run_erc>` [boolean=false|dict] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
@@ -175,9 +175,9 @@ Supported preflights
 
    -  Valid keys:
 
-      -  ``dir`` :index:`: <pair: preflight - run_erc; dir>` [:ref:`string <string>`] Sub-directory for the report.
-      -  ``enabled`` :index:`: <pair: preflight - run_erc; enabled>` [:ref:`boolean <boolean>`] Enable the ERC. This is the replacement for the boolean value.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - run_erc; warnings_as_errors>` [:ref:`boolean <boolean>`] ERC warnings are considered errors.
+      -  ``dir`` :index:`: <pair: preflight - run_erc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
+      -  ``enabled`` :index:`: <pair: preflight - run_erc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the ERC. This is the replacement for the boolean value.
+      -  ``warnings_as_errors`` :index:`: <pair: preflight - run_erc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) ERC warnings are considered errors.
 
 -  **sch_replace**: :index:`: <pair: preflights; sch_replace>` [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
    This is useful for KiCad 5, use `set_text_variables` when using KiCad 6. |br|
@@ -185,7 +185,7 @@ Supported preflights
 
    -  Valid keys:
 
-      -  ``date_command`` :index:`: <pair: preflight - sch_replace; date_command>` [:ref:`string <string>`] Command to get the date to use in the SCH.\\
+      -  ``date_command`` :index:`: <pair: preflight - sch_replace; date_command>` [:ref:`string <string>`] (default: ``''``) Command to get the date to use in the SCH.\\
          ```git log -1 --format='%as' -- "$KIBOT_SCH_NAME"```\\
          Will return the date in YYYY-MM-DD format.\\
          ```date -d @`git log -1 --format='%at' -- "$KIBOT_SCH_NAME"` +%Y-%m-%d_%H-%M-%S```\\
@@ -196,15 +196,15 @@ Supported preflights
 
          -  Valid keys:
 
-            -  ``after`` :index:`: <pair: preflight - sch_replace - replace_tags; after>` [:ref:`string <string>`] Text to add after the output of `command`.
-            -  ``before`` :index:`: <pair: preflight - sch_replace - replace_tags; before>` [:ref:`string <string>`] Text to add before the output of `command`.
-            -  ``command`` :index:`: <pair: preflight - sch_replace - replace_tags; command>` [:ref:`string <string>`] Command to execute to get the text, will be used only if `text` is empty.
+            -  ``after`` :index:`: <pair: preflight - sch_replace - replace_tags; after>` [:ref:`string <string>`] (default: ``''``) Text to add after the output of `command`.
+            -  ``before`` :index:`: <pair: preflight - sch_replace - replace_tags; before>` [:ref:`string <string>`] (default: ``''``) Text to add before the output of `command`.
+            -  ``command`` :index:`: <pair: preflight - sch_replace - replace_tags; command>` [:ref:`string <string>`] (default: ``''``) Command to execute to get the text, will be used only if `text` is empty.
                KIBOT_SCH_NAME variable is the name of the current sheet.
                KIBOT_TOP_SCH_NAME variable is the name of the top sheet.
-            -  ``tag`` :index:`: <pair: preflight - sch_replace - replace_tags; tag>` [:ref:`string <string>`] Name of the tag to replace. Use `version` for a tag named `@version@`.
-            -  ``tag_delimiter`` :index:`: <pair: preflight - sch_replace - replace_tags; tag_delimiter>` [:ref:`string <string>`] Character used to indicate the beginning and the end of a tag.
+            -  ``tag`` :index:`: <pair: preflight - sch_replace - replace_tags; tag>` [:ref:`string <string>`] (default: ``''``) Name of the tag to replace. Use `version` for a tag named `@version@`.
+            -  ``tag_delimiter`` :index:`: <pair: preflight - sch_replace - replace_tags; tag_delimiter>` [:ref:`string <string>`] (default: ``'@'``) Character used to indicate the beginning and the end of a tag.
                Don't change it unless you really know about KiCad's file formats.
-            -  ``text`` :index:`: <pair: preflight - sch_replace - replace_tags; text>` [:ref:`string <string>`] Text to insert instead of the tag.
+            -  ``text`` :index:`: <pair: preflight - sch_replace - replace_tags; text>` [:ref:`string <string>`] (default: ``''``) Text to insert instead of the tag.
 
 
 -  **set_text_variables**: :index:`: <pair: preflights; set_text_variables>` [dict|list(dict)] Defines KiCad 6+ variables.
@@ -218,16 +218,16 @@ Supported preflights
 
    -  Valid keys:
 
-      -  ``after`` :index:`: <pair: preflight - set_text_variables; after>` [:ref:`string <string>`] Text to add after the output of `command`.
-      -  ``before`` :index:`: <pair: preflight - set_text_variables; before>` [:ref:`string <string>`] Text to add before the output of `command`.
-      -  ``command`` :index:`: <pair: preflight - set_text_variables; command>` [:ref:`string <string>`] Command to execute to get the text, will be used only if `text` is empty.
+      -  ``after`` :index:`: <pair: preflight - set_text_variables; after>` [:ref:`string <string>`] (default: ``''``) Text to add after the output of `command`.
+      -  ``before`` :index:`: <pair: preflight - set_text_variables; before>` [:ref:`string <string>`] (default: ``''``) Text to add before the output of `command`.
+      -  ``command`` :index:`: <pair: preflight - set_text_variables; command>` [:ref:`string <string>`] (default: ``''``) Command to execute to get the text, will be used only if `text` is empty.
          This command will be executed using the Bash shell.
          Be careful about spaces in file names (i.e. use "$KIBOT_PCB_NAME").
          The `KIBOT_PCB_NAME` environment variable is the PCB file and the
          `KIBOT_SCH_NAME` environment variable is the schematic file.
-      -  ``expand_kibot_patterns`` :index:`: <pair: preflight - set_text_variables; expand_kibot_patterns>` [:ref:`boolean <boolean>`] Expand %X patterns. The context is `schematic`.
-      -  ``name`` :index:`: <pair: preflight - set_text_variables; name>` [:ref:`string <string>`] Name of the variable. The `version` variable will be expanded using `${version}`.
-      -  ``text`` :index:`: <pair: preflight - set_text_variables; text>` [:ref:`string <string>`] Text to insert instead of the variable.
+      -  ``expand_kibot_patterns`` :index:`: <pair: preflight - set_text_variables; expand_kibot_patterns>` [:ref:`boolean <boolean>`] (default: ``true``) Expand %X patterns. The context is `schematic`.
+      -  ``name`` :index:`: <pair: preflight - set_text_variables; name>` [:ref:`string <string>`] (default: ``''``) Name of the variable. The `version` variable will be expanded using `${version}`.
+      -  ``text`` :index:`: <pair: preflight - set_text_variables; text>` [:ref:`string <string>`] (default: ``''``) Text to insert instead of the variable.
       -  *variable* :index:`: <pair: preflight - set_text_variables; variable>` Alias for name.
 
 -  **update_footprint**: :index:`: <pair: preflights; update_footprint>` [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
@@ -252,10 +252,10 @@ Supported preflights
 
    -  Valid keys:
 
-      -  **check_pcb_parity** :index:`: <pair: preflight - update_xml; check_pcb_parity>` [:ref:`boolean <boolean>`] Check if the PCB and Schematic are synchronized.
+      -  **check_pcb_parity** :index:`: <pair: preflight - update_xml; check_pcb_parity>` [:ref:`boolean <boolean>`] (default: ``false``) Check if the PCB and Schematic are synchronized.
          This is equivalent to the *Test for parity between PCB and schematic* of the DRC dialog.
          Not available for KiCad 5. **Important**: when using KiCad 6 and the *Exclude from BoM* attribute
          these components won't be included in the generated XML, so we can't check its parity.
-      -  ``as_warnings`` :index:`: <pair: preflight - update_xml; as_warnings>` [:ref:`boolean <boolean>`] Inform the problems as warnings and don't stop.
-      -  ``enabled`` :index:`: <pair: preflight - update_xml; enabled>` [:ref:`boolean <boolean>`] Enable the update. This is the replacement for the boolean value.
+      -  ``as_warnings`` :index:`: <pair: preflight - update_xml; as_warnings>` [:ref:`boolean <boolean>`] (default: ``false``) Inform the problems as warnings and don't stop.
+      -  ``enabled`` :index:`: <pair: preflight - update_xml; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the update. This is the replacement for the boolean value.
 

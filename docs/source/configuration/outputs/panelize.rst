@@ -23,10 +23,10 @@ Category: **PCB/fabrication**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - panelize; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - panelize; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - panelize; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - panelize; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - panelize; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - panelize; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - panelize; options>` [:ref:`dict <dict>`] Options for the `Panelize` output.
 
@@ -45,16 +45,16 @@ Parameters:
 
                   -  **type** :index:`: <pair: output - panelize - options - configs - cuts; type>` [string='none'] [none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
                      into a layer with this option to understand what's going on. Shouldn't be used for the final design.
-                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - cuts; arg>` [:ref:`string <string>`] Argument to pass to the plugin. Used for *plugin*.
+                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - cuts; arg>` [:ref:`string <string>`] (default: ``''``) Argument to pass to the plugin. Used for *plugin*.
                   -  ``clearance`` :index:`: <pair: output - panelize - options - configs - cuts; clearance>` [:ref:`number <number>` | :ref:`string <string>`] Specify clearance for copper around V-cuts.
-                  -  ``code`` :index:`: <pair: output - panelize - options - configs - cuts; code>` [:ref:`string <string>`] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                  -  ``code`` :index:`: <pair: output - panelize - options - configs - cuts; code>` [:ref:`string <string>`] (default: ``''``) Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                   -  *cut_curves* :index:`: <pair: output - panelize - options - configs - cuts; cut_curves>` Alias for cutcurves.
-                  -  ``cutcurves`` :index:`: <pair: output - panelize - options - configs - cuts; cutcurves>` [:ref:`boolean <boolean>`] Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
+                  -  ``cutcurves`` :index:`: <pair: output - panelize - options - configs - cuts; cutcurves>` [:ref:`boolean <boolean>`] (default: ``false``) Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
                      Used for *vcuts*.
                   -  ``drill`` :index:`: <pair: output - panelize - options - configs - cuts; drill>` [:ref:`number <number>` | :ref:`string <string>`] Drill size used for the *mousebites*.
                   -  *end_prolongation* :index:`: <pair: output - panelize - options - configs - cuts; end_prolongation>` Alias for endprolongation.
                   -  ``endprolongation`` :index:`: <pair: output - panelize - options - configs - cuts; endprolongation>` [:ref:`number <number>` | :ref:`string <string>`] Prolongation on the end of V-CUT without text.
-                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - cuts; layer>` [:ref:`string <string>`] Specify the layer to render V-cuts on. Also used for the *layer* type.
+                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - cuts; layer>` [:ref:`string <string>`] (default: ``'Cmts.User'``) Specify the layer to render V-cuts on. Also used for the *layer* type.
                   -  *line_width* :index:`: <pair: output - panelize - options - configs - cuts; line_width>` Alias for linewidth.
                   -  ``linewidth`` :index:`: <pair: output - panelize - options - configs - cuts; linewidth>` [:ref:`number <number>` | :ref:`string <string>`] Line width to plot cuts with.
                   -  ``offset`` :index:`: <pair: output - panelize - options - configs - cuts; offset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
@@ -62,7 +62,7 @@ Parameters:
                   -  ``prolong`` :index:`: <pair: output - panelize - options - configs - cuts; prolong>` [:ref:`number <number>` | :ref:`string <string>`] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
                      caused by milling). Used for *mousebites* and *layer*.
                   -  ``spacing`` :index:`: <pair: output - panelize - options - configs - cuts; spacing>` [:ref:`number <number>` | :ref:`string <string>`] The spacing of the holes used for the *mousebites*.
-                  -  ``template`` :index:`: <pair: output - panelize - options - configs - cuts; template>` [:ref:`string <string>`] Text template for the V-CUT.
+                  -  ``template`` :index:`: <pair: output - panelize - options - configs - cuts; template>` [:ref:`string <string>`] (default: ``'V-CUT'``) Text template for the V-CUT.
                   -  *text_offset* :index:`: <pair: output - panelize - options - configs - cuts; text_offset>` Alias for textoffset.
                   -  *text_prolongation* :index:`: <pair: output - panelize - options - configs - cuts; text_prolongation>` Alias for textprolongation.
                   -  *text_size* :index:`: <pair: output - panelize - options - configs - cuts; text_size>` Alias for textsize.
@@ -81,7 +81,7 @@ Parameters:
                   -  ``coppersize`` :index:`: <pair: output - panelize - options - configs - fiducials; coppersize>` [:ref:`number <number>` | :ref:`string <string>`] Diameter of the copper spot.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - fiducials; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Horizontal offset from panel edges.
                   -  ``opening`` :index:`: <pair: output - panelize - options - configs - fiducials; opening>` [:ref:`number <number>` | :ref:`string <string>`] Diameter of the solder mask opening.
-                  -  ``paste`` :index:`: <pair: output - panelize - options - configs - fiducials; paste>` [:ref:`boolean <boolean>`] Include the fiducials in the paste layer (therefore they appear on the stencil).
+                  -  ``paste`` :index:`: <pair: output - panelize - options - configs - fiducials; paste>` [:ref:`boolean <boolean>`] (default: ``false``) Include the fiducials in the paste layer (therefore they appear on the stencil).
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - fiducials; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Vertical offset from panel edges.
 
             -  **framing** :index:`: <pair: output - panelize - options - configs; framing>` [:ref:`dict <dict>`] Specify the frame around the boards.
@@ -94,15 +94,15 @@ Parameters:
                      Tighframe: Add a frame around the board which fills the whole area of the panel -
                      the boards have just a milled slot around their perimeter.
                      Plugin: Uses an external python function, only `code` and `arg` are relevant.
-                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - framing; arg>` [:ref:`string <string>`] Argument to pass to the plugin. Used for *plugin*.
+                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - framing; arg>` [:ref:`string <string>`] (default: ``''``) Argument to pass to the plugin. Used for *plugin*.
                   -  ``chamfer`` :index:`: <pair: output - panelize - options - configs - framing; chamfer>` [:ref:`number <number>` | :ref:`string <string>`] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
                      and `chamferheight` to create a non 45 degrees chamfer.
                   -  *chamfer_height* :index:`: <pair: output - panelize - options - configs - framing; chamfer_height>` Alias for chamferheight.
                   -  *chamfer_width* :index:`: <pair: output - panelize - options - configs - framing; chamfer_width>` Alias for chamferwidth.
                   -  ``chamferheight`` :index:`: <pair: output - panelize - options - configs - framing; chamferheight>` [:ref:`number <number>` | :ref:`string <string>`] Height of the chamfer frame corners, used for non 45 degrees chamfer.
                   -  ``chamferwidth`` :index:`: <pair: output - panelize - options - configs - framing; chamferwidth>` [:ref:`number <number>` | :ref:`string <string>`] Width of the chamfer frame corners, used for non 45 degrees chamfer.
-                  -  ``code`` :index:`: <pair: output - panelize - options - configs - framing; code>` [:ref:`string <string>`] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
-                  -  ``cuts`` :index:`: <pair: output - panelize - options - configs - framing; cuts>` [:ref:`string <string>`] Specify whether to add cuts to the corners of the frame for easy removal.
+                  -  ``code`` :index:`: <pair: output - panelize - options - configs - framing; code>` [:ref:`string <string>`] (default: ``''``) Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                  -  ``cuts`` :index:`: <pair: output - panelize - options - configs - framing; cuts>` [:ref:`string <string>`] (default: ``'both'``) Specify whether to add cuts to the corners of the frame for easy removal.
                      Used for *frame*.
                   -  ``fillet`` :index:`: <pair: output - panelize - options - configs - framing; fillet>` [:ref:`number <number>` | :ref:`string <string>`] Specify radius of fillet frame corners.
                   -  ``hspace`` :index:`: <pair: output - panelize - options - configs - framing; hspace>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal space between PCB and the frame/rail.
@@ -126,32 +126,32 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **cols** :index:`: <pair: output - panelize - options - configs - layout; cols>` [:ref:`number <number>`] Specify the number of columns of boards in the grid pattern.
-                  -  **rows** :index:`: <pair: output - panelize - options - configs - layout; rows>` [:ref:`number <number>`] Specify the number of rows of boards in the grid pattern.
-                  -  ``alternation`` :index:`: <pair: output - panelize - options - configs - layout; alternation>` [:ref:`string <string>`] Specify alternations of board rotation.
+                  -  **cols** :index:`: <pair: output - panelize - options - configs - layout; cols>` [:ref:`number <number>`] (default: ``1``) Specify the number of columns of boards in the grid pattern.
+                  -  **rows** :index:`: <pair: output - panelize - options - configs - layout; rows>` [:ref:`number <number>`] (default: ``1``) Specify the number of rows of boards in the grid pattern.
+                  -  ``alternation`` :index:`: <pair: output - panelize - options - configs - layout; alternation>` [:ref:`string <string>`] (default: ``'none'``) Specify alternations of board rotation.
                      none: Do not alternate.
                      rows: Rotate boards by 180° on every next row.
                      cols: Rotate boards by 180° on every next column.
                      rowsCols: Rotate boards by 180° based on a chessboard pattern.
-                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - layout; arg>` [:ref:`string <string>`] Argument to pass to the plugin. Used for *plugin*.
+                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - layout; arg>` [:ref:`string <string>`] (default: ``''``) Argument to pass to the plugin. Used for *plugin*.
                   -  *bake_text* :index:`: <pair: output - panelize - options - configs - layout; bake_text>` Alias for baketext.
-                  -  ``baketext`` :index:`: <pair: output - panelize - options - configs - layout; baketext>` [:ref:`boolean <boolean>`] A flag that indicates if text variables should be substituted or not.
-                  -  ``code`` :index:`: <pair: output - panelize - options - configs - layout; code>` [:ref:`string <string>`] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                  -  ``baketext`` :index:`: <pair: output - panelize - options - configs - layout; baketext>` [:ref:`boolean <boolean>`] (default: ``true``) A flag that indicates if text variables should be substituted or not.
+                  -  ``code`` :index:`: <pair: output - panelize - options - configs - layout; code>` [:ref:`string <string>`] (default: ``''``) Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                   -  *h_back_bone* :index:`: <pair: output - panelize - options - configs - layout; h_back_bone>` Alias for hbackbone.
                   -  *h_bone_cut* :index:`: <pair: output - panelize - options - configs - layout; h_bone_cut>` Alias for hbonecut.
                   -  *h_bone_first* :index:`: <pair: output - panelize - options - configs - layout; h_bone_first>` Alias for hbonefirst.
                   -  *h_bone_skip* :index:`: <pair: output - panelize - options - configs - layout; h_bone_skip>` Alias for hboneskip.
                   -  ``hbackbone`` :index:`: <pair: output - panelize - options - configs - layout; hbackbone>` [:ref:`number <number>` | :ref:`string <string>`] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
                      spacing of the boards.
-                  -  ``hbonecut`` :index:`: <pair: output - panelize - options - configs - layout; hbonecut>` [:ref:`boolean <boolean>`] If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
+                  -  ``hbonecut`` :index:`: <pair: output - panelize - options - configs - layout; hbonecut>` [:ref:`boolean <boolean>`] (default: ``true``) If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
                      cross.
-                  -  ``hbonefirst`` :index:`: <pair: output - panelize - options - configs - layout; hbonefirst>` [:ref:`number <number>`] Specify first horizontal backbone to render.
-                  -  ``hboneskip`` :index:`: <pair: output - panelize - options - configs - layout; hboneskip>` [:ref:`number <number>`] Skip every n horizontal backbones. I.e., 1 means place only every other backbone.
+                  -  ``hbonefirst`` :index:`: <pair: output - panelize - options - configs - layout; hbonefirst>` [:ref:`number <number>`] (default: ``0``) Specify first horizontal backbone to render.
+                  -  ``hboneskip`` :index:`: <pair: output - panelize - options - configs - layout; hboneskip>` [:ref:`number <number>`] (default: ``0``) Skip every n horizontal backbones. I.e., 1 means place only every other backbone.
                   -  ``hspace`` :index:`: <pair: output - panelize - options - configs - layout; hspace>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal gap between the boards.
                   -  *rename_net* :index:`: <pair: output - panelize - options - configs - layout; rename_net>` Alias for renamenet.
                   -  *rename_ref* :index:`: <pair: output - panelize - options - configs - layout; rename_ref>` Alias for renameref.
-                  -  ``renamenet`` :index:`: <pair: output - panelize - options - configs - layout; renamenet>` [:ref:`string <string>`] A pattern by which to rename the nets. You can use {n} and {orig} to get the board number and original name.
-                  -  ``renameref`` :index:`: <pair: output - panelize - options - configs - layout; renameref>` [:ref:`string <string>`] A pattern by which to rename the references. You can use {n} and {orig} to get the board number and original
+                  -  ``renamenet`` :index:`: <pair: output - panelize - options - configs - layout; renamenet>` [:ref:`string <string>`] (default: ``'Board_{n}-{orig}'``) A pattern by which to rename the nets. You can use {n} and {orig} to get the board number and original name.
+                  -  ``renameref`` :index:`: <pair: output - panelize - options - configs - layout; renameref>` [:ref:`string <string>`] (default: ``'{orig}'``) A pattern by which to rename the references. You can use {n} and {orig} to get the board number and original
                      name.
                   -  ``rotation`` :index:`: <pair: output - panelize - options - configs - layout; rotation>` [:ref:`number <number>` | :ref:`string <string>`] Rotate the boards before placing them in the panel.
                   -  ``space`` :index:`: <pair: output - panelize - options - configs - layout; space>` [:ref:`number <number>` | :ref:`string <string>`] Specify the gap between the boards, overwrites `hspace` and `vspace`.
@@ -162,10 +162,10 @@ Parameters:
                   -  *v_bone_skip* :index:`: <pair: output - panelize - options - configs - layout; v_bone_skip>` Alias for vboneskip.
                   -  ``vbackbone`` :index:`: <pair: output - panelize - options - configs - layout; vbackbone>` [:ref:`number <number>` | :ref:`string <string>`] The width of vertical backbone (0 means no backbone). The backbone does not increase the
                      spacing of the boards.
-                  -  ``vbonecut`` :index:`: <pair: output - panelize - options - configs - layout; vbonecut>` [:ref:`boolean <boolean>`] If there are both backbones specified, specifies if there should be a vertical cut where the backbones
+                  -  ``vbonecut`` :index:`: <pair: output - panelize - options - configs - layout; vbonecut>` [:ref:`boolean <boolean>`] (default: ``true``) If there are both backbones specified, specifies if there should be a vertical cut where the backbones
                      cross.
-                  -  ``vbonefirst`` :index:`: <pair: output - panelize - options - configs - layout; vbonefirst>` [:ref:`number <number>`] Specify first vertical backbone to render.
-                  -  ``vboneskip`` :index:`: <pair: output - panelize - options - configs - layout; vboneskip>` [:ref:`number <number>`] Skip every n vertical backbones. I.e., 1 means place only every other backbone.
+                  -  ``vbonefirst`` :index:`: <pair: output - panelize - options - configs - layout; vbonefirst>` [:ref:`number <number>`] (default: ``0``) Specify first vertical backbone to render.
+                  -  ``vboneskip`` :index:`: <pair: output - panelize - options - configs - layout; vboneskip>` [:ref:`number <number>`] (default: ``0``) Skip every n vertical backbones. I.e., 1 means place only every other backbone.
                   -  ``vspace`` :index:`: <pair: output - panelize - options - configs - layout; vspace>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical gap between the boards.
 
             -  **page** :index:`: <pair: output - panelize - options - configs; page>` [:ref:`dict <dict>`] Sets page size on the resulting panel and position the panel in the page.
@@ -178,7 +178,7 @@ Parameters:
                      A3-portrait,A4-portrait,A5-portrait,A-portrait,B-portrait,C-portrait,D-portrait,E-portrait,
                      USLetter-portrait,USLegal-portrait,USLedger-portrait] Paper size. The default `inherit` option inherits
                      paper size from the source board. This feature is not supported on KiCAD 5.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - page; anchor>` [:ref:`string <string>`] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - page; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
                      (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - page; height>` [:ref:`number <number>` | :ref:`string <string>`] Height for the `custom` paper size.
                   -  *pos_x* :index:`: <pair: output - panelize - options - configs - page; pos_x>` Alias for posx.
@@ -197,23 +197,23 @@ Parameters:
                      Corner: Create tabs in the corners of the PCB.
                      Annotation: Add tabs based on PCB annotations.
                      Plugin: Uses an external python function, only `code` and `arg` are relevant.
-                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - tabs; arg>` [:ref:`string <string>`] Argument to pass to the plugin. Used for *plugin*.
-                  -  ``code`` :index:`: <pair: output - panelize - options - configs - tabs; code>` [:ref:`string <string>`] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - tabs; arg>` [:ref:`string <string>`] (default: ``''``) Argument to pass to the plugin. Used for *plugin*.
+                  -  ``code`` :index:`: <pair: output - panelize - options - configs - tabs; code>` [:ref:`string <string>`] (default: ``''``) Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                   -  ``cutout`` :index:`: <pair: output - panelize - options - configs - tabs; cutout>` [:ref:`number <number>` | :ref:`string <string>`] When your design features open pockets on the side, this parameter specifies extra cutout
                      depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full*.
-                  -  ``hcount`` :index:`: <pair: output - panelize - options - configs - tabs; hcount>` [:ref:`number <number>`] Number of tabs in the horizontal direction. Used for *fixed*.
+                  -  ``hcount`` :index:`: <pair: output - panelize - options - configs - tabs; hcount>` [:ref:`number <number>`] (default: ``1``) Number of tabs in the horizontal direction. Used for *fixed*.
                   -  ``hwidth`` :index:`: <pair: output - panelize - options - configs - tabs; hwidth>` [:ref:`number <number>` | :ref:`string <string>`] The width of tabs in the horizontal direction. Used for *fixed* and *spacing*.
                   -  *min_distance* :index:`: <pair: output - panelize - options - configs - tabs; min_distance>` Alias for mindistance.
                   -  ``mindistance`` :index:`: <pair: output - panelize - options - configs - tabs; mindistance>` [:ref:`number <number>` | :ref:`string <string>`] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
                      Used for *fixed*.
                   -  *patch_corners* :index:`: <pair: output - panelize - options - configs - tabs; patch_corners>` Alias for patchcorners.
-                  -  ``patchcorners`` :index:`: <pair: output - panelize - options - configs - tabs; patchcorners>` [:ref:`boolean <boolean>`] The full tabs are appended to the nearest flat face of the PCB. If the PCB has sharp corners, you want to
+                  -  ``patchcorners`` :index:`: <pair: output - panelize - options - configs - tabs; patchcorners>` [:ref:`boolean <boolean>`] (default: ``true``) The full tabs are appended to the nearest flat face of the PCB. If the PCB has sharp corners, you want to
                      add patches of substrate to these corners. However, if the PCB has fillet or miter, you don't want to
                      apply the patches.
                   -  ``spacing`` :index:`: <pair: output - panelize - options - configs - tabs; spacing>` [:ref:`number <number>` | :ref:`string <string>`] The maximum spacing of the tabs. Used for *spacing*.
                   -  *tab_footprints* :index:`: <pair: output - panelize - options - configs - tabs; tab_footprints>` Alias for tabfootprints.
-                  -  ``tabfootprints`` :index:`: <pair: output - panelize - options - configs - tabs; tabfootprints>` [:ref:`string <string>`] The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma.
-                  -  ``vcount`` :index:`: <pair: output - panelize - options - configs - tabs; vcount>` [:ref:`number <number>`] Number of tabs in the vertical direction. Used for *fixed*.
+                  -  ``tabfootprints`` :index:`: <pair: output - panelize - options - configs - tabs; tabfootprints>` [:ref:`string <string>`] (default: ``'kikit:Tab'``) The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma.
+                  -  ``vcount`` :index:`: <pair: output - panelize - options - configs - tabs; vcount>` [:ref:`number <number>`] (default: ``1``) Number of tabs in the vertical direction. Used for *fixed*.
                   -  ``vwidth`` :index:`: <pair: output - panelize - options - configs - tabs; vwidth>` [:ref:`number <number>` | :ref:`string <string>`] The width of tabs in the vertical direction. Used for *fixed* and *spacing*.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - tabs; width>` [:ref:`number <number>` | :ref:`string <string>`] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
                      Used for *fixed*, *spacing*, *corner* and *annotation*.
@@ -223,10 +223,10 @@ Parameters:
                -  Valid keys:
 
                   -  **type** :index:`: <pair: output - panelize - options - configs - tooling; type>` [string='none'] [none,3hole,4hole,plugin] Add none, 3 or 4 holes to the (rail/frame of) the panel.
-                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - tooling; arg>` [:ref:`string <string>`] Argument to pass to the plugin. Used for *plugin*.
-                  -  ``code`` :index:`: <pair: output - panelize - options - configs - tooling; code>` [:ref:`string <string>`] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
+                  -  ``arg`` :index:`: <pair: output - panelize - options - configs - tooling; arg>` [:ref:`string <string>`] (default: ``''``) Argument to pass to the plugin. Used for *plugin*.
+                  -  ``code`` :index:`: <pair: output - panelize - options - configs - tooling; code>` [:ref:`string <string>`] (default: ``''``) Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - tooling; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Horizontal offset from panel edges.
-                  -  ``paste`` :index:`: <pair: output - panelize - options - configs - tooling; paste>` [:ref:`boolean <boolean>`] If True, the holes are included in the paste layer (therefore they appear on the stencil).
+                  -  ``paste`` :index:`: <pair: output - panelize - options - configs - tooling; paste>` [:ref:`boolean <boolean>`] (default: ``false``) If True, the holes are included in the paste layer (therefore they appear on the stencil).
                   -  ``size`` :index:`: <pair: output - panelize - options - configs - tooling; size>` [:ref:`number <number>` | :ref:`string <string>`] Diameter of the holes.
                   -  *solder_mask_margin* :index:`: <pair: output - panelize - options - configs - tooling; solder_mask_margin>` Alias for soldermaskmargin.
                   -  ``soldermaskmargin`` :index:`: <pair: output - panelize - options - configs - tooling; soldermaskmargin>` [:ref:`number <number>` | :ref:`string <string>`] Solder mask expansion/margin. Use 1.3mm for JLCPCB.
@@ -246,30 +246,30 @@ Parameters:
                      Using *all* means all external copper layers.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - copperfill; orientation>` [:ref:`number <number>` | :ref:`string <string>`] The orientation of the hatched strokes.
                   -  ``spacing`` :index:`: <pair: output - panelize - options - configs - copperfill; spacing>` [:ref:`number <number>` | :ref:`string <string>`] The space between the hatched strokes or hexagons.
-                  -  ``threshold`` :index:`: <pair: output - panelize - options - configs - copperfill; threshold>` [:ref:`number <number>`] Remove fragments smaller than threshold. Expressed as a percentage.
+                  -  ``threshold`` :index:`: <pair: output - panelize - options - configs - copperfill; threshold>` [:ref:`number <number>`] (default: ``15``) Remove fragments smaller than threshold. Expressed as a percentage.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - copperfill; width>` [:ref:`number <number>` | :ref:`string <string>`] The width of the hatched strokes.
 
             -  ``debug`` :index:`: <pair: output - panelize - options - configs; debug>` [:ref:`dict <dict>`] Debug options.
 
                -  Valid keys:
 
-                  -  ``deterministic`` :index:`: <pair: output - panelize - options - configs - debug; deterministic>` [:ref:`boolean <boolean>`] Deterministic.
-                  -  ``drawBackboneLines`` :index:`: <pair: output - panelize - options - configs - debug; drawBackboneLines>` [:ref:`boolean <boolean>`] Draw backbone lines.
-                  -  ``drawPartitionLines`` :index:`: <pair: output - panelize - options - configs - debug; drawPartitionLines>` [:ref:`boolean <boolean>`] Draw partition lines.
-                  -  ``drawboxes`` :index:`: <pair: output - panelize - options - configs - debug; drawboxes>` [:ref:`boolean <boolean>`] Draw boxes.
-                  -  ``drawtabfail`` :index:`: <pair: output - panelize - options - configs - debug; drawtabfail>` [:ref:`boolean <boolean>`] Draw tab fail.
-                  -  ``trace`` :index:`: <pair: output - panelize - options - configs - debug; trace>` [:ref:`boolean <boolean>`] Trace.
+                  -  ``deterministic`` :index:`: <pair: output - panelize - options - configs - debug; deterministic>` [:ref:`boolean <boolean>`] (default: ``false``) Deterministic.
+                  -  ``drawBackboneLines`` :index:`: <pair: output - panelize - options - configs - debug; drawBackboneLines>` [:ref:`boolean <boolean>`] (default: ``false``) Draw backbone lines.
+                  -  ``drawPartitionLines`` :index:`: <pair: output - panelize - options - configs - debug; drawPartitionLines>` [:ref:`boolean <boolean>`] (default: ``false``) Draw partition lines.
+                  -  ``drawboxes`` :index:`: <pair: output - panelize - options - configs - debug; drawboxes>` [:ref:`boolean <boolean>`] (default: ``false``) Draw boxes.
+                  -  ``drawtabfail`` :index:`: <pair: output - panelize - options - configs - debug; drawtabfail>` [:ref:`boolean <boolean>`] (default: ``false``) Draw tab fail.
+                  -  ``trace`` :index:`: <pair: output - panelize - options - configs - debug; trace>` [:ref:`boolean <boolean>`] (default: ``false``) Trace.
 
-            -  ``expand_text`` :index:`: <pair: output - panelize - options - configs; expand_text>` [:ref:`boolean <boolean>`] Expand text variables and KiBot %X markers in text objects.
-            -  ``extends`` :index:`: <pair: output - panelize - options - configs; extends>` [:ref:`string <string>`]`.
-            -  ``name`` :index:`: <pair: output - panelize - options - configs; name>` [:ref:`string <string>`] A name to identify this configuration. If empty will be the order in the list, starting with 1.
+            -  ``expand_text`` :index:`: <pair: output - panelize - options - configs; expand_text>` [:ref:`boolean <boolean>`] (default: ``true``) Expand text variables and KiBot %X markers in text objects.
+            -  ``extends`` :index:`: <pair: output - panelize - options - configs; extends>` [:ref:`string <string>`] (default: ``''``)`.
+            -  ``name`` :index:`: <pair: output - panelize - options - configs; name>` [:ref:`string <string>`] (default: ``''``) A name to identify this configuration. If empty will be the order in the list, starting with 1.
                Don't use just a number or it will be confused as an index.
             -  ``post`` :index:`: <pair: output - panelize - options - configs; post>` [:ref:`dict <dict>`] Finishing touches to the panel.
 
                -  Valid keys:
 
-                  -  ``copperfill`` :index:`: <pair: output - panelize - options - configs - post; copperfill>` [:ref:`boolean <boolean>`] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels).
-                  -  ``dimensions`` :index:`: <pair: output - panelize - options - configs - post; dimensions>` [:ref:`boolean <boolean>`] Draw dimensions with the panel size..
+                  -  ``copperfill`` :index:`: <pair: output - panelize - options - configs - post; copperfill>` [:ref:`boolean <boolean>`] (default: ``false``) Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels).
+                  -  ``dimensions`` :index:`: <pair: output - panelize - options - configs - post; dimensions>` [:ref:`boolean <boolean>`] (default: ``false``) Draw dimensions with the panel size..
                   -  *edge_width* :index:`: <pair: output - panelize - options - configs - post; edge_width>` Alias for edgewidth.
                   -  ``edgewidth`` :index:`: <pair: output - panelize - options - configs - post; edgewidth>` [:ref:`number <number>` | :ref:`string <string>`] Specify line width for the Edge.Cuts of the panel.
                   -  *mill_radius* :index:`: <pair: output - panelize - options - configs - post; mill_radius>` Alias for millradius.
@@ -278,23 +278,23 @@ Parameters:
                      Specify mill radius (usually 1 mm). 0 radius disables the functionality.
                   -  ``millradiusouter`` :index:`: <pair: output - panelize - options - configs - post; millradiusouter>` [:ref:`number <number>` | :ref:`string <string>`] Like `millradius`, but modifies only board outer counter.
                      No internal features of the board are affected.
-                  -  ``origin`` :index:`: <pair: output - panelize - options - configs - post; origin>` [:ref:`string <string>`] Specify if the auxiliary origin an grid origin should be placed.
+                  -  ``origin`` :index:`: <pair: output - panelize - options - configs - post; origin>` [:ref:`string <string>`] (default: ``'tl'``) Specify if the auxiliary origin an grid origin should be placed.
                      Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr (middle of sides), c (center).
                      Empty string does not changes the origin.
                   -  *reconstruct_arcs* :index:`: <pair: output - panelize - options - configs - post; reconstruct_arcs>` Alias for reconstructarcs.
-                  -  ``reconstructarcs`` :index:`: <pair: output - panelize - options - configs - post; reconstructarcs>` [:ref:`boolean <boolean>`] The panelization process works on top of a polygonal representation of the board.
+                  -  ``reconstructarcs`` :index:`: <pair: output - panelize - options - configs - post; reconstructarcs>` [:ref:`boolean <boolean>`] (default: ``false``) The panelization process works on top of a polygonal representation of the board.
                      This options allows to reconstruct the arcs in the design before saving the panel.
                   -  *refill_zones* :index:`: <pair: output - panelize - options - configs - post; refill_zones>` Alias for refillzones.
-                  -  ``refillzones`` :index:`: <pair: output - panelize - options - configs - post; refillzones>` [:ref:`boolean <boolean>`] Refill the user zones after the panel is build.
+                  -  ``refillzones`` :index:`: <pair: output - panelize - options - configs - post; refillzones>` [:ref:`boolean <boolean>`] (default: ``false``) Refill the user zones after the panel is build.
                      This is only necessary when you want your zones to avoid cuts in panel.
-                  -  ``script`` :index:`: <pair: output - panelize - options - configs - post; script>` [:ref:`string <string>`] A path to custom Python file. The file should contain a function kikitPostprocess(panel, args) that
+                  -  ``script`` :index:`: <pair: output - panelize - options - configs - post; script>` [:ref:`string <string>`] (default: ``''``) A path to custom Python file. The file should contain a function kikitPostprocess(panel, args) that
                      receives the prepared panel as the kikit.panelize.Panel object and the user-supplied arguments as a
                      string - see `scriptarg`. The function can make arbitrary changes to the panel - you can append text,
                      footprints, alter labels, etc. The function is invoked after the whole panel is constructed
                      (including all other postprocessing). If you try to add a functionality for a common fabrication
                      houses via scripting, consider submitting PR for KiKit.
                   -  *script_arg* :index:`: <pair: output - panelize - options - configs - post; script_arg>` Alias for scriptarg.
-                  -  ``scriptarg`` :index:`: <pair: output - panelize - options - configs - post; scriptarg>` [:ref:`string <string>`] An arbitrary string passed to the user post-processing script specified in script.
+                  -  ``scriptarg`` :index:`: <pair: output - panelize - options - configs - post; scriptarg>` [:ref:`string <string>`] (default: ``''``) An arbitrary string passed to the user post-processing script specified in script.
                   -  ``type`` :index:`: <pair: output - panelize - options - configs - post; type>` [string='auto'] [auto] Currently fixed.
 
             -  ``source`` :index:`: <pair: output - panelize - options - configs; source>` [:ref:`dict <dict>`] Used to adjust details of which part of the PCB is panelized.
@@ -306,8 +306,8 @@ Parameters:
                      *annotation* selects a contour marked by a kikit:Board footprint.
                   -  ``brx`` :index:`: <pair: output - panelize - options - configs - source; brx>` [:ref:`number <number>` | :ref:`string <string>`] Bottom right X coordinate of the rectangle used. Used for *rectangle*.
                   -  ``bry`` :index:`: <pair: output - panelize - options - configs - source; bry>` [:ref:`number <number>` | :ref:`string <string>`] Bottom right Y coordinate of the rectangle used. Used for *rectangle*.
-                  -  ``ref`` :index:`: <pair: output - panelize - options - configs - source; ref>` [:ref:`string <string>`] Reference for the kikit:Board footprint used to select the contour. Used for *annotation*.
-                  -  ``stack`` :index:`: <pair: output - panelize - options - configs - source; stack>` [:ref:`string <string>`] Used to reduce the number of layers used for the panel.
+                  -  ``ref`` :index:`: <pair: output - panelize - options - configs - source; ref>` [:ref:`string <string>`] (default: ``''``) Reference for the kikit:Board footprint used to select the contour. Used for *annotation*.
+                  -  ``stack`` :index:`: <pair: output - panelize - options - configs - source; stack>` [:ref:`string <string>`] (default: ``'inherit'``) Used to reduce the number of layers used for the panel.
                   -  ``tlx`` :index:`: <pair: output - panelize - options - configs - source; tlx>` [:ref:`number <number>` | :ref:`string <string>`] Top left X coordinate of the rectangle used. Used for *rectangle*.
                   -  ``tly`` :index:`: <pair: output - panelize - options - configs - source; tly>` [:ref:`number <number>` | :ref:`string <string>`] Top left Y coordinate of the rectangle used. Used for *rectangle*.
                   -  ``tolerance`` :index:`: <pair: output - panelize - options - configs - source; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*.
@@ -316,7 +316,7 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **text** :index:`: <pair: output - panelize - options - configs - text; text>` [:ref:`string <string>`] The text to be displayed. Note that you can escape ; via \\.
+                  -  **text** :index:`: <pair: output - panelize - options - configs - text; text>` [:ref:`string <string>`] (default: ``''``) The text to be displayed. Note that you can escape ; via \\.
                      Available variables in text: *date* formats current date as <year>-<month>-<day>,
                      *time24* formats current time in 24-hour format,
                      *boardTitle* the title from the source board,
@@ -325,16 +325,16 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text; anchor>` [:ref:`string <string>`] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text; hjustify>` [:ref:`string <string>`] Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
-                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text; layer>` [:ref:`string <string>`] Specify text layer.
+                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
-                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text; plugin>` [:ref:`string <string>`] Specify the plugin that provides extra variables for the text.
+                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text; vjustify>` [:ref:`string <string>`] Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
@@ -342,7 +342,7 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **text** :index:`: <pair: output - panelize - options - configs - text2; text>` [:ref:`string <string>`] The text to be displayed. Note that you can escape ; via \\.
+                  -  **text** :index:`: <pair: output - panelize - options - configs - text2; text>` [:ref:`string <string>`] (default: ``''``) The text to be displayed. Note that you can escape ; via \\.
                      Available variables in text: *date* formats current date as <year>-<month>-<day>,
                      *time24* formats current time in 24-hour format,
                      *boardTitle* the title from the source board,
@@ -351,16 +351,16 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text2; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text2; anchor>` [:ref:`string <string>`] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text2; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text2; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text2; hjustify>` [:ref:`string <string>`] Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text2; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text2; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
-                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text2; layer>` [:ref:`string <string>`] Specify text layer.
+                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text2; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text2; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
-                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text2; plugin>` [:ref:`string <string>`] Specify the plugin that provides extra variables for the text.
+                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text2; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text2; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text2; vjustify>` [:ref:`string <string>`] Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text2; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text2; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text2; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
@@ -368,7 +368,7 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **text** :index:`: <pair: output - panelize - options - configs - text3; text>` [:ref:`string <string>`] The text to be displayed. Note that you can escape ; via \\.
+                  -  **text** :index:`: <pair: output - panelize - options - configs - text3; text>` [:ref:`string <string>`] (default: ``''``) The text to be displayed. Note that you can escape ; via \\.
                      Available variables in text: *date* formats current date as <year>-<month>-<day>,
                      *time24* formats current time in 24-hour format,
                      *boardTitle* the title from the source board,
@@ -377,16 +377,16 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text3; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text3; anchor>` [:ref:`string <string>`] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text3; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text3; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text3; hjustify>` [:ref:`string <string>`] Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text3; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text3; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
-                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text3; layer>` [:ref:`string <string>`] Specify text layer.
+                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text3; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text3; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
-                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text3; plugin>` [:ref:`string <string>`] Specify the plugin that provides extra variables for the text.
+                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text3; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text3; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text3; vjustify>` [:ref:`string <string>`] Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text3; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text3; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text3; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
@@ -394,7 +394,7 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **text** :index:`: <pair: output - panelize - options - configs - text4; text>` [:ref:`string <string>`] The text to be displayed. Note that you can escape ; via \\.
+                  -  **text** :index:`: <pair: output - panelize - options - configs - text4; text>` [:ref:`string <string>`] (default: ``''``) The text to be displayed. Note that you can escape ; via \\.
                      Available variables in text: *date* formats current date as <year>-<month>-<day>,
                      *time24* formats current time in 24-hour format,
                      *boardTitle* the title from the source board,
@@ -403,50 +403,50 @@ Parameters:
                      *boardCompany* the company from the source board,
                      *boardComment1*-*boardComment9* comments from the source board.
                   -  **type** :index:`: <pair: output - panelize - options - configs - text4; type>` [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works.
-                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text4; anchor>` [:ref:`string <string>`] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
+                  -  ``anchor`` :index:`: <pair: output - panelize - options - configs - text4; anchor>` [:ref:`string <string>`] (default: ``'mt'``) Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                      (middle of sides), c (center). The anchors refer to the panel outline.
                   -  ``height`` :index:`: <pair: output - panelize - options - configs - text4; height>` [:ref:`number <number>` | :ref:`string <string>`] Height of the characters (the same parameters as KiCAD uses).
-                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text4; hjustify>` [:ref:`string <string>`] Horizontal justification of the text.
+                  -  ``hjustify`` :index:`: <pair: output - panelize - options - configs - text4; hjustify>` [:ref:`string <string>`] (default: ``'center'``) Horizontal justification of the text.
                   -  ``hoffset`` :index:`: <pair: output - panelize - options - configs - text4; hoffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the horizontal offset from anchor. Respects KiCAD coordinate system.
-                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text4; layer>` [:ref:`string <string>`] Specify text layer.
+                  -  ``layer`` :index:`: <pair: output - panelize - options - configs - text4; layer>` [:ref:`string <string>`] (default: ``'F.SilkS'``) Specify text layer.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - text4; orientation>` [:ref:`number <number>` | :ref:`string <string>`] Specify the orientation (angle).
-                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text4; plugin>` [:ref:`string <string>`] Specify the plugin that provides extra variables for the text.
+                  -  ``plugin`` :index:`: <pair: output - panelize - options - configs - text4; plugin>` [:ref:`string <string>`] (default: ``''``) Specify the plugin that provides extra variables for the text.
                   -  ``thickness`` :index:`: <pair: output - panelize - options - configs - text4; thickness>` [:ref:`number <number>` | :ref:`string <string>`] Stroke thickness.
-                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text4; vjustify>` [:ref:`string <string>`] Vertical justification of the text.
+                  -  ``vjustify`` :index:`: <pair: output - panelize - options - configs - text4; vjustify>` [:ref:`string <string>`] (default: ``'center'``) Vertical justification of the text.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text4; voffset>` [:ref:`number <number>` | :ref:`string <string>`] Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text4; width>` [:ref:`number <number>` | :ref:`string <string>`] Width of the characters (the same parameters as KiCAD uses).
 
 
-      -  **output** :index:`: <pair: output - panelize - options; output>` [:ref:`string <string>`] Filename for the output (%i=panel, %x=kicad_pcb). Affected by global options.
-      -  ``create_preview`` :index:`: <pair: output - panelize - options; create_preview>` [:ref:`boolean <boolean>`] Use PcbDraw to create a preview of the panel.
-      -  ``default_angles`` :index:`: <pair: output - panelize - options; default_angles>` [:ref:`string <string>`] Angles used when omitted.
-      -  ``dnf_filter`` :index:`: <pair: output - panelize - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
+      -  **output** :index:`: <pair: output - panelize - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=panel, %x=kicad_pcb). Affected by global options.
+      -  ``create_preview`` :index:`: <pair: output - panelize - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``false``) Use PcbDraw to create a preview of the panel.
+      -  ``default_angles`` :index:`: <pair: output - panelize - options; default_angles>` [:ref:`string <string>`] (default: ``'deg'``) Angles used when omitted.
+      -  ``dnf_filter`` :index:`: <pair: output - panelize - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``pre_transform`` :index:`: <pair: output - panelize - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - panelize - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``title`` :index:`: <pair: output - panelize - options; title>` [:ref:`string <string>`] Text used to replace the sheet title. %VALUE expansions are allowed.
+      -  ``title`` :index:`: <pair: output - panelize - options; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.
          If it starts with `+` the text is concatenated.
-      -  ``units`` :index:`: <pair: output - panelize - options; units>` [:ref:`string <string>`] Units used when omitted.
-      -  ``variant`` :index:`: <pair: output - panelize - options; variant>` [:ref:`string <string>`] Board variant to apply.
+      -  ``units`` :index:`: <pair: output - panelize - options; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
+      -  ``variant`` :index:`: <pair: output - panelize - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - panelize; type>` 'panelize'
--  ``category`` :index:`: <pair: output - panelize; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - panelize; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - panelize; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - panelize; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - panelize; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - panelize; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - panelize; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - panelize; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - panelize; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - panelize; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - panelize; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - panelize; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - panelize; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

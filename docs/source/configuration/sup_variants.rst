@@ -11,20 +11,20 @@ Supported variants
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: variant - ibom; comment>` [:ref:`string <string>`] A comment for documentation purposes.
-      -  ``dnc_filter`` :index:`: <pair: variant - ibom; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Change'.
+      -  ``comment`` :index:`: <pair: variant - ibom; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+      -  ``dnc_filter`` :index:`: <pair: variant - ibom; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to mark components as 'Do Not Change'.
          Use '_kibom_dnc' for the default KiBoM behavior.
 
-      -  ``dnf_filter`` :index:`: <pair: variant - ibom; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Fit'.
+      -  ``dnf_filter`` :index:`: <pair: variant - ibom; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to mark components as 'Do Not Fit'.
          Use '_kibom_dnf' for the default KiBoM behavior.
          Use '_kicost_dnp'' for the default KiCost behavior.
 
-      -  ``exclude_filter`` :index:`: <pair: variant - ibom; exclude_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to exclude components from BoM processing.
+      -  ``exclude_filter`` :index:`: <pair: variant - ibom; exclude_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to exclude components from BoM processing.
          Use '_mechanical' for the default KiBoM behavior.
 
-      -  ``file_id`` :index:`: <pair: variant - ibom; file_id>` [:ref:`string <string>`] Text to use as the replacement for %v expansion.
-      -  ``name`` :index:`: <pair: variant - ibom; name>` [:ref:`string <string>`] Used to identify this particular variant definition.
-      -  ``pre_transform`` :index:`: <pair: variant - ibom; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``file_id`` :index:`: <pair: variant - ibom; file_id>` [:ref:`string <string>`] (default: ``''``) Text to use as the replacement for %v expansion.
+      -  ``name`` :index:`: <pair: variant - ibom; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular variant definition.
+      -  ``pre_transform`` :index:`: <pair: variant - ibom; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to transform fields before applying other filters.
          Use '_var_rename' to transform VARIANT:FIELD fields.
          Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
          Use '_kicost_rename' to apply KiCost field rename rules.
@@ -37,9 +37,9 @@ Supported variants
 
          -  Valid keys:
 
-            -  **name** :index:`: <pair: variant - ibom - sub_pcbs; name>` [:ref:`string <string>`] Name for this sub-pcb.
+            -  **name** :index:`: <pair: variant - ibom - sub_pcbs; name>` [:ref:`string <string>`] (default: ``''``) Name for this sub-pcb.
             -  *ref* :index:`: <pair: variant - ibom - sub_pcbs; ref>` Alias for reference.
-            -  **reference** :index:`: <pair: variant - ibom - sub_pcbs; reference>` [:ref:`string <string>`] Use it for the annotations method.
+            -  **reference** :index:`: <pair: variant - ibom - sub_pcbs; reference>` [:ref:`string <string>`] (default: ``''``) Use it for the annotations method.
                This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
                Note that you can use any footprint as long as its position is inside the PCB outline.
                When empty the sub-PCB is specified using a rectangle.
@@ -47,26 +47,26 @@ Supported variants
             -  *bottom_right_y* :index:`: <pair: variant - ibom - sub_pcbs; bottom_right_y>` Alias for bry.
             -  ``brx`` :index:`: <pair: variant - ibom - sub_pcbs; brx>` [:ref:`number <number>` | :ref:`string <string>`] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
             -  ``bry`` :index:`: <pair: variant - ibom - sub_pcbs; bry>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
-            -  ``center_result`` :index:`: <pair: variant - ibom - sub_pcbs; center_result>` [:ref:`boolean <boolean>`] Move the resulting PCB to the center of the page.
+            -  ``center_result`` :index:`: <pair: variant - ibom - sub_pcbs; center_result>` [:ref:`boolean <boolean>`] (default: ``true``) Move the resulting PCB to the center of the page.
                You can disable it only for the internal tool, KiKit should always do it.
-            -  ``file_id`` :index:`: <pair: variant - ibom - sub_pcbs; file_id>` [:ref:`string <string>`] Text to use as the replacement for %v expansion.
+            -  ``file_id`` :index:`: <pair: variant - ibom - sub_pcbs; file_id>` [:ref:`string <string>`] (default: ``''``) Text to use as the replacement for %v expansion.
                When empty we use the parent `file_id` plus the `name` of the sub-PCB.
-            -  ``strip_annotation`` :index:`: <pair: variant - ibom - sub_pcbs; strip_annotation>` [:ref:`boolean <boolean>`] Remove the annotation footprint. Note that KiKit will remove all annotations,
+            -  ``strip_annotation`` :index:`: <pair: variant - ibom - sub_pcbs; strip_annotation>` [:ref:`boolean <boolean>`] (default: ``false``) Remove the annotation footprint. Note that KiKit will remove all annotations,
                but the internal implementation just the one indicated by `ref`.
                If you need to remove other annotations use an exclude filter.
             -  ``tlx`` :index:`: <pair: variant - ibom - sub_pcbs; tlx>` [:ref:`number <number>` | :ref:`string <string>`] The X position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tly`` :index:`: <pair: variant - ibom - sub_pcbs; tly>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tolerance`` :index:`: <pair: variant - ibom - sub_pcbs; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Used to enlarge the selected rectangle to include elements outside the board.
                KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
-            -  ``tool`` :index:`: <pair: variant - ibom - sub_pcbs; tool>` [:ref:`string <string>`] Tool used to extract the sub-PCB..
+            -  ``tool`` :index:`: <pair: variant - ibom - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) Tool used to extract the sub-PCB..
             -  *top_left_x* :index:`: <pair: variant - ibom - sub_pcbs; top_left_x>` Alias for tlx.
             -  *top_left_y* :index:`: <pair: variant - ibom - sub_pcbs; top_left_y>` Alias for tly.
-            -  ``units`` :index:`: <pair: variant - ibom - sub_pcbs; units>` [:ref:`string <string>`] Units used when omitted.
+            -  ``units`` :index:`: <pair: variant - ibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
 
-      -  ``variant_field`` :index:`: <pair: variant - ibom; variant_field>` [:ref:`string <string>`] Name of the field that stores board variant for component.
-      -  ``variants_blacklist`` :index:`: <pair: variant - ibom; variants_blacklist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of board variants to exclude from the BOM.
+      -  ``variant_field`` :index:`: <pair: variant - ibom; variant_field>` [:ref:`string <string>`] (default: ``'Config'``) Name of the field that stores board variant for component.
+      -  ``variants_blacklist`` :index:`: <pair: variant - ibom; variants_blacklist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of board variants to exclude from the BOM.
 
-      -  ``variants_whitelist`` :index:`: <pair: variant - ibom; variants_whitelist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of board variants to include in the BOM.
+      -  ``variants_whitelist`` :index:`: <pair: variant - ibom; variants_whitelist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of board variants to include in the BOM.
 
 
 -  **kibom**: (**KiBoM variant style**) :index:`. <pair: variant; kibom>`
@@ -77,21 +77,21 @@ Supported variants
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: variant - kibom; comment>` [:ref:`string <string>`] A comment for documentation purposes.
-      -  ``config_field`` :index:`: <pair: variant - kibom; config_field>` [:ref:`string <string>`] Name of the field used to classify components.
-      -  ``dnc_filter`` :index:`: <pair: variant - kibom; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Change'.
+      -  ``comment`` :index:`: <pair: variant - kibom; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+      -  ``config_field`` :index:`: <pair: variant - kibom; config_field>` [:ref:`string <string>`] (default: ``'Config'``) Name of the field used to classify components.
+      -  ``dnc_filter`` :index:`: <pair: variant - kibom; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnc_CONFIG_FIELD'``) Name of the filter to mark components as 'Do Not Change'.
          Use '_kibom_dnc' for the default KiBoM behavior.
 
-      -  ``dnf_filter`` :index:`: <pair: variant - kibom; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Fit'.
+      -  ``dnf_filter`` :index:`: <pair: variant - kibom; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnf_CONFIG_FIELD'``) Name of the filter to mark components as 'Do Not Fit'.
          Use '_kibom_dnf' for the default KiBoM behavior.
          Use '_kicost_dnp'_kibom_dnf_CONFIG_FIELD' for the default KiCost behavior.
 
-      -  ``exclude_filter`` :index:`: <pair: variant - kibom; exclude_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to exclude components from BoM processing.
+      -  ``exclude_filter`` :index:`: <pair: variant - kibom; exclude_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_mechanical'``) Name of the filter to exclude components from BoM processing.
          Use '_mechanical' for the default KiBoM behavior.
 
-      -  ``file_id`` :index:`: <pair: variant - kibom; file_id>` [:ref:`string <string>`] Text to use as the replacement for %v expansion.
-      -  ``name`` :index:`: <pair: variant - kibom; name>` [:ref:`string <string>`] Used to identify this particular variant definition.
-      -  ``pre_transform`` :index:`: <pair: variant - kibom; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``file_id`` :index:`: <pair: variant - kibom; file_id>` [:ref:`string <string>`] (default: ``''``) Text to use as the replacement for %v expansion.
+      -  ``name`` :index:`: <pair: variant - kibom; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular variant definition.
+      -  ``pre_transform`` :index:`: <pair: variant - kibom; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to transform fields before applying other filters.
          Use '_var_rename' to transform VARIANT:FIELD fields.
          Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
          Use '_kicost_rename' to apply KiCost field rename rules.
@@ -104,9 +104,9 @@ Supported variants
 
          -  Valid keys:
 
-            -  **name** :index:`: <pair: variant - kibom - sub_pcbs; name>` [:ref:`string <string>`] Name for this sub-pcb.
+            -  **name** :index:`: <pair: variant - kibom - sub_pcbs; name>` [:ref:`string <string>`] (default: ``''``) Name for this sub-pcb.
             -  *ref* :index:`: <pair: variant - kibom - sub_pcbs; ref>` Alias for reference.
-            -  **reference** :index:`: <pair: variant - kibom - sub_pcbs; reference>` [:ref:`string <string>`] Use it for the annotations method.
+            -  **reference** :index:`: <pair: variant - kibom - sub_pcbs; reference>` [:ref:`string <string>`] (default: ``''``) Use it for the annotations method.
                This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
                Note that you can use any footprint as long as its position is inside the PCB outline.
                When empty the sub-PCB is specified using a rectangle.
@@ -114,23 +114,23 @@ Supported variants
             -  *bottom_right_y* :index:`: <pair: variant - kibom - sub_pcbs; bottom_right_y>` Alias for bry.
             -  ``brx`` :index:`: <pair: variant - kibom - sub_pcbs; brx>` [:ref:`number <number>` | :ref:`string <string>`] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
             -  ``bry`` :index:`: <pair: variant - kibom - sub_pcbs; bry>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
-            -  ``center_result`` :index:`: <pair: variant - kibom - sub_pcbs; center_result>` [:ref:`boolean <boolean>`] Move the resulting PCB to the center of the page.
+            -  ``center_result`` :index:`: <pair: variant - kibom - sub_pcbs; center_result>` [:ref:`boolean <boolean>`] (default: ``true``) Move the resulting PCB to the center of the page.
                You can disable it only for the internal tool, KiKit should always do it.
-            -  ``file_id`` :index:`: <pair: variant - kibom - sub_pcbs; file_id>` [:ref:`string <string>`] Text to use as the replacement for %v expansion.
+            -  ``file_id`` :index:`: <pair: variant - kibom - sub_pcbs; file_id>` [:ref:`string <string>`] (default: ``''``) Text to use as the replacement for %v expansion.
                When empty we use the parent `file_id` plus the `name` of the sub-PCB.
-            -  ``strip_annotation`` :index:`: <pair: variant - kibom - sub_pcbs; strip_annotation>` [:ref:`boolean <boolean>`] Remove the annotation footprint. Note that KiKit will remove all annotations,
+            -  ``strip_annotation`` :index:`: <pair: variant - kibom - sub_pcbs; strip_annotation>` [:ref:`boolean <boolean>`] (default: ``false``) Remove the annotation footprint. Note that KiKit will remove all annotations,
                but the internal implementation just the one indicated by `ref`.
                If you need to remove other annotations use an exclude filter.
             -  ``tlx`` :index:`: <pair: variant - kibom - sub_pcbs; tlx>` [:ref:`number <number>` | :ref:`string <string>`] The X position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tly`` :index:`: <pair: variant - kibom - sub_pcbs; tly>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tolerance`` :index:`: <pair: variant - kibom - sub_pcbs; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Used to enlarge the selected rectangle to include elements outside the board.
                KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
-            -  ``tool`` :index:`: <pair: variant - kibom - sub_pcbs; tool>` [:ref:`string <string>`] Tool used to extract the sub-PCB..
+            -  ``tool`` :index:`: <pair: variant - kibom - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) Tool used to extract the sub-PCB..
             -  *top_left_x* :index:`: <pair: variant - kibom - sub_pcbs; top_left_x>` Alias for tlx.
             -  *top_left_y* :index:`: <pair: variant - kibom - sub_pcbs; top_left_y>` Alias for tly.
-            -  ``units`` :index:`: <pair: variant - kibom - sub_pcbs; units>` [:ref:`string <string>`] Units used when omitted.
+            -  ``units`` :index:`: <pair: variant - kibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
 
-      -  ``variant`` :index:`: <pair: variant - kibom; variant>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Board variant(s).
+      -  ``variant`` :index:`: <pair: variant - kibom; variant>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Board variant(s).
 
 
 -  **kicost**: (**KiCost variant style**) :index:`. <pair: variant; kicost>`
@@ -143,25 +143,25 @@ Supported variants
 
    -  Valid keys:
 
-      -  ``comment`` :index:`: <pair: variant - kicost; comment>` [:ref:`string <string>`] A comment for documentation purposes.
-      -  ``dnc_filter`` :index:`: <pair: variant - kicost; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Change'.
+      -  ``comment`` :index:`: <pair: variant - kicost; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+      -  ``dnc_filter`` :index:`: <pair: variant - kicost; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to mark components as 'Do Not Change'.
          Use '_kibom_dnc' for the default KiBoM behavior.
 
-      -  ``dnf_filter`` :index:`: <pair: variant - kicost; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as 'Do Not Fit'.
+      -  ``dnf_filter`` :index:`: <pair: variant - kicost; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to mark components as 'Do Not Fit'.
          Use '_kibom_dnf' for the default KiBoM behavior.
          Use '_kicost_dnp'' for the default KiCost behavior.
 
-      -  ``exclude_filter`` :index:`: <pair: variant - kicost; exclude_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to exclude components from BoM processing.
+      -  ``exclude_filter`` :index:`: <pair: variant - kicost; exclude_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to exclude components from BoM processing.
          Use '_mechanical' for the default KiBoM behavior.
 
-      -  ``file_id`` :index:`: <pair: variant - kicost; file_id>` [:ref:`string <string>`] Text to use as the replacement for %v expansion.
-      -  ``name`` :index:`: <pair: variant - kicost; name>` [:ref:`string <string>`] Used to identify this particular variant definition.
-      -  ``pre_transform`` :index:`: <pair: variant - kicost; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``file_id`` :index:`: <pair: variant - kicost; file_id>` [:ref:`string <string>`] (default: ``''``) Text to use as the replacement for %v expansion.
+      -  ``name`` :index:`: <pair: variant - kicost; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular variant definition.
+      -  ``pre_transform`` :index:`: <pair: variant - kicost; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to transform fields before applying other filters.
          Use '_var_rename' to transform VARIANT:FIELD fields.
          Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
          Use '_kicost_rename' to apply KiCost field rename rules.
 
-      -  ``separators`` :index:`: <pair: variant - kicost; separators>` [:ref:`string <string>`] Valid separators for variants in the variant field.
+      -  ``separators`` :index:`: <pair: variant - kicost; separators>` [:ref:`string <string>`] (default: ``',;/ '``) Valid separators for variants in the variant field.
          Each character is a valid separator.
          Only supported internally, don't use it if you plan to use KiCost.
       -  ``sub_pcbs`` :index:`: <pair: variant - kicost; sub_pcbs>` [:ref:`list(dict) <list(dict)>`] Used for multi-board workflows as defined by KiKit.
@@ -172,9 +172,9 @@ Supported variants
 
          -  Valid keys:
 
-            -  **name** :index:`: <pair: variant - kicost - sub_pcbs; name>` [:ref:`string <string>`] Name for this sub-pcb.
+            -  **name** :index:`: <pair: variant - kicost - sub_pcbs; name>` [:ref:`string <string>`] (default: ``''``) Name for this sub-pcb.
             -  *ref* :index:`: <pair: variant - kicost - sub_pcbs; ref>` Alias for reference.
-            -  **reference** :index:`: <pair: variant - kicost - sub_pcbs; reference>` [:ref:`string <string>`] Use it for the annotations method.
+            -  **reference** :index:`: <pair: variant - kicost - sub_pcbs; reference>` [:ref:`string <string>`] (default: ``''``) Use it for the annotations method.
                This is the reference for the `kikit:Board` footprint used to identify the sub-PCB.
                Note that you can use any footprint as long as its position is inside the PCB outline.
                When empty the sub-PCB is specified using a rectangle.
@@ -182,23 +182,23 @@ Supported variants
             -  *bottom_right_y* :index:`: <pair: variant - kicost - sub_pcbs; bottom_right_y>` Alias for bry.
             -  ``brx`` :index:`: <pair: variant - kicost - sub_pcbs; brx>` [:ref:`number <number>` | :ref:`string <string>`] The X position of the bottom right corner for the rectangle that contains the sub-PCB.
             -  ``bry`` :index:`: <pair: variant - kicost - sub_pcbs; bry>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the bottom right corner for the rectangle that contains the sub-PCB.
-            -  ``center_result`` :index:`: <pair: variant - kicost - sub_pcbs; center_result>` [:ref:`boolean <boolean>`] Move the resulting PCB to the center of the page.
+            -  ``center_result`` :index:`: <pair: variant - kicost - sub_pcbs; center_result>` [:ref:`boolean <boolean>`] (default: ``true``) Move the resulting PCB to the center of the page.
                You can disable it only for the internal tool, KiKit should always do it.
-            -  ``file_id`` :index:`: <pair: variant - kicost - sub_pcbs; file_id>` [:ref:`string <string>`] Text to use as the replacement for %v expansion.
+            -  ``file_id`` :index:`: <pair: variant - kicost - sub_pcbs; file_id>` [:ref:`string <string>`] (default: ``''``) Text to use as the replacement for %v expansion.
                When empty we use the parent `file_id` plus the `name` of the sub-PCB.
-            -  ``strip_annotation`` :index:`: <pair: variant - kicost - sub_pcbs; strip_annotation>` [:ref:`boolean <boolean>`] Remove the annotation footprint. Note that KiKit will remove all annotations,
+            -  ``strip_annotation`` :index:`: <pair: variant - kicost - sub_pcbs; strip_annotation>` [:ref:`boolean <boolean>`] (default: ``false``) Remove the annotation footprint. Note that KiKit will remove all annotations,
                but the internal implementation just the one indicated by `ref`.
                If you need to remove other annotations use an exclude filter.
             -  ``tlx`` :index:`: <pair: variant - kicost - sub_pcbs; tlx>` [:ref:`number <number>` | :ref:`string <string>`] The X position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tly`` :index:`: <pair: variant - kicost - sub_pcbs; tly>` [:ref:`number <number>` | :ref:`string <string>`] The Y position of the top left corner for the rectangle that contains the sub-PCB.
             -  ``tolerance`` :index:`: <pair: variant - kicost - sub_pcbs; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] Used to enlarge the selected rectangle to include elements outside the board.
                KiCad 5: To avoid rounding issues this value is set to 0.000002 mm when 0 is specified.
-            -  ``tool`` :index:`: <pair: variant - kicost - sub_pcbs; tool>` [:ref:`string <string>`] Tool used to extract the sub-PCB..
+            -  ``tool`` :index:`: <pair: variant - kicost - sub_pcbs; tool>` [:ref:`string <string>`] (default: ``'internal'``) Tool used to extract the sub-PCB..
             -  *top_left_x* :index:`: <pair: variant - kicost - sub_pcbs; top_left_x>` Alias for tlx.
             -  *top_left_y* :index:`: <pair: variant - kicost - sub_pcbs; top_left_y>` Alias for tly.
-            -  ``units`` :index:`: <pair: variant - kicost - sub_pcbs; units>` [:ref:`string <string>`] Units used when omitted.
+            -  ``units`` :index:`: <pair: variant - kicost - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) Units used when omitted.
 
-      -  ``variant`` :index:`: <pair: variant - kicost; variant>` [:ref:`string <string>`] Variants to match (regex).
-      -  ``variant_field`` :index:`: <pair: variant - kicost; variant_field>` [:ref:`string <string>`] Name of the field that stores board variant/s for component.
+      -  ``variant`` :index:`: <pair: variant - kicost; variant>` [:ref:`string <string>`] (default: ``''``) Variants to match (regex).
+      -  ``variant_field`` :index:`: <pair: variant - kicost; variant_field>` [:ref:`string <string>`] (default: ``'variant'``) Name of the field that stores board variant/s for component.
          Only supported internally, don't use it if you plan to use KiCost.
 

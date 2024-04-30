@@ -17,50 +17,50 @@ Category: **PCB/docs**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - report; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - report; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - report; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - report; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - report; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - report; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - report; options>` [:ref:`dict <dict>`] Options for the `report` output.
 
    -  Valid keys:
 
-      -  **convert_to** :index:`: <pair: output - report - options; convert_to>` [:ref:`string <string>`] Target format for the report conversion. See `do_convert`.
-      -  **do_convert** :index:`: <pair: output - report - options; do_convert>` [:ref:`boolean <boolean>`] Run `Pandoc` to convert the report. Note that Pandoc must be installed.
+      -  **convert_to** :index:`: <pair: output - report - options; convert_to>` [:ref:`string <string>`] (default: ``'pdf'``) Target format for the report conversion. See `do_convert`.
+      -  **do_convert** :index:`: <pair: output - report - options; do_convert>` [:ref:`boolean <boolean>`] (default: ``false``) Run `Pandoc` to convert the report. Note that Pandoc must be installed.
          The conversion is done assuming the report is in `convert_from` format.
          The output file will be in `convert_to` format.
          The available formats depends on the `Pandoc` installation.
          In CI/CD environments: the `kicad_auto_test` docker image contains it.
          In Debian/Ubuntu environments: install `pandoc`, `texlive`, `texlive-latex-base` and `texlive-latex-recommended`.
-      -  **output** :index:`: <pair: output - report - options; output>` [:ref:`string <string>`] Output file name (%i='report', %x='txt'). Affected by global options.
-      -  **template** :index:`: <pair: output - report - options; template>` [:ref:`string <string>`] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+      -  **output** :index:`: <pair: output - report - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Output file name (%i='report', %x='txt'). Affected by global options.
+      -  **template** :index:`: <pair: output - report - options; template>` [:ref:`string <string>`] (default: ``'full'``) Name for one of the internal templates (full, full_svg, simple) or a custom template file.
          Environment variables and ~ are allowed.
          Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
-      -  ``convert_from`` :index:`: <pair: output - report - options; convert_from>` [:ref:`string <string>`] Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
-      -  ``converted_output`` :index:`: <pair: output - report - options; converted_output>` [:ref:`string <string>`] Converted output file name (%i='report', %x=`convert_to`).
+      -  ``convert_from`` :index:`: <pair: output - report - options; convert_from>` [:ref:`string <string>`] (default: ``'markdown'``) Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
+      -  ``converted_output`` :index:`: <pair: output - report - options; converted_output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Converted output file name (%i='report', %x=`convert_to`).
          Note that the extension should match the `convert_to` value. Affected by global options.
-      -  ``eurocircuits_class_target`` :index:`: <pair: output - report - options; eurocircuits_class_target>` [:ref:`string <string>`] Which Eurocircuits class are we aiming at.
-      -  ``eurocircuits_reduce_holes`` :index:`: <pair: output - report - options; eurocircuits_reduce_holes>` [:ref:`number <number>`] When computing the Eurocircuits category: Final holes sizes smaller or equal to this given
+      -  ``eurocircuits_class_target`` :index:`: <pair: output - report - options; eurocircuits_class_target>` [:ref:`string <string>`] (default: ``'10F'``) Which Eurocircuits class are we aiming at.
+      -  ``eurocircuits_reduce_holes`` :index:`: <pair: output - report - options; eurocircuits_reduce_holes>` [:ref:`number <number>`] (default: ``0.45``) When computing the Eurocircuits category: Final holes sizes smaller or equal to this given
          diameter can be reduced to accommodate the correct annular ring values.
          Use 0 to disable it.
 
 -  **type** :index:`: <pair: output - report; type>` 'report'
--  ``category`` :index:`: <pair: output - report; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - report; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - report; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - report; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - report; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - report; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - report; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - report; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - report; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - report; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - report; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - report; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - report; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

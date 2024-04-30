@@ -835,9 +835,12 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         assert help is not None, f'Undocumented option: `{k}`'
         if not is_alias and k != 'type':
             assert help[0] == '[', f'Missing option data type: `{k}`: {help}'
-            valid, _ = obj.get_valid_types(help)
+            valid, _, def_val = obj.get_valid_types(help)
             new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
-            help = re.sub(r'^\[(.*)\]', new_data_type, help)
+            if def_val:
+                new_data_type += f' (default: ``{def_val}``)'
+            m = re.search(r'^\[(.*)\]', help)
+            help = new_data_type+help[m.end(0):]
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         if rst_mode and context:
