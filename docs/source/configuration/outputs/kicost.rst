@@ -16,35 +16,35 @@ Type: ``kicost``
 
 Parameters:
 
--  **comment** :index:`: <pair: output - kicost; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - kicost; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - kicost; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - kicost; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - kicost; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - kicost; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - kicost; options>` [:ref:`dict <dict>`] Options for the `kicost` output.
 
    -  Valid keys:
 
       -  *board_qty* :index:`: <pair: output - kicost - options; board_qty>` Alias for number.
-      -  **currency** :index:`: <pair: output - kicost - options; currency>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Currency priority. Use ISO4217 codes (i.e. USD, EUR).
+      -  **currency** :index:`: <pair: output - kicost - options; currency>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``USD``) Currency priority. Use ISO4217 codes (i.e. USD, EUR).
 
       -  **distributors** :index:`: <pair: output - kicost - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Include this distributors list. Default is all the available.
 
       -  **no_distributors** :index:`: <pair: output - kicost - options; no_distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Exclude this distributors list. They are removed after computing `distributors`.
 
-      -  **no_price** :index:`: <pair: output - kicost - options; no_price>` [:ref:`boolean <boolean>`] Do not look for components price. For testing purposes.
-      -  **number** :index:`: <pair: output - kicost - options; number>` [:ref:`number <number>`] Number of boards to build (components multiplier).
-      -  **output** :index:`: <pair: output - kicost - options; output>` [:ref:`string <string>`] Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
+      -  **no_price** :index:`: <pair: output - kicost - options; no_price>` [:ref:`boolean <boolean>`] (default: ``false``) Do not look for components price. For testing purposes.
+      -  **number** :index:`: <pair: output - kicost - options; number>` [:ref:`number <number>`] (default: ``100``) Number of boards to build (components multiplier).
+      -  **output** :index:`: <pair: output - kicost - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=kicost, %x=xlsx). Affected by global options.
       -  ``aggregate`` :index:`: <pair: output - kicost - options; aggregate>` [:ref:`list(dict) <list(dict)>`] Add components from other projects.
 
          -  Valid keys:
 
             -  *board_qty* :index:`: <pair: output - kicost - options - aggregate; board_qty>` Alias for number.
-            -  **file** :index:`: <pair: output - kicost - options - aggregate; file>` [:ref:`string <string>`] Name of the XML to aggregate.
-            -  **number** :index:`: <pair: output - kicost - options - aggregate; number>` [:ref:`number <number>`] Number of boards to build (components multiplier).
-            -  ``variant`` :index:`: <pair: output - kicost - options - aggregate; variant>` [:ref:`string <string>`] Variant for this project.
+            -  **file** :index:`: <pair: output - kicost - options - aggregate; file>` [:ref:`string <string>`] (default: ``''``) Name of the XML to aggregate.
+            -  **number** :index:`: <pair: output - kicost - options - aggregate; number>` [:ref:`number <number>`] (default: ``100``) Number of boards to build (components multiplier).
+            -  ``variant`` :index:`: <pair: output - kicost - options - aggregate; variant>` [:ref:`string <string>`] (default: ``' '``) Variant for this project.
 
-      -  ``dnf_filter`` :index:`: <pair: output - kicost - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - kicost - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
          Don't use the `kicost_variant` when using internal variants/filters.
 
@@ -55,40 +55,40 @@ Parameters:
 
       -  ``ignore_fields`` :index:`: <pair: output - kicost - options; ignore_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of fields to be ignored.
 
-      -  ``kicost_variant`` :index:`: <pair: output - kicost - options; kicost_variant>` [:ref:`string <string>`] Regular expression to match the variant field (KiCost option, not internal variants).
-      -  ``no_collapse`` :index:`: <pair: output - kicost - options; no_collapse>` [:ref:`boolean <boolean>`] Do not collapse the part references (collapse=R1-R4).
-      -  ``pre_transform`` :index:`: <pair: output - kicost - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``kicost_variant`` :index:`: <pair: output - kicost - options; kicost_variant>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the variant field (KiCost option, not internal variants).
+      -  ``no_collapse`` :index:`: <pair: output - kicost - options; no_collapse>` [:ref:`boolean <boolean>`] (default: ``false``) Do not collapse the part references (collapse=R1-R4).
+      -  ``pre_transform`` :index:`: <pair: output - kicost - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``show_cat_url`` :index:`: <pair: output - kicost - options; show_cat_url>` [:ref:`boolean <boolean>`] Include the catalogue links in the catalogue code.
+      -  ``show_cat_url`` :index:`: <pair: output - kicost - options; show_cat_url>` [:ref:`boolean <boolean>`] (default: ``false``) Include the catalogue links in the catalogue code.
       -  ``split_extra_fields`` :index:`: <pair: output - kicost - options; split_extra_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Declare part fields to include in multipart split process.
 
       -  ``translate_fields`` :index:`: <pair: output - kicost - options; translate_fields>` [:ref:`list(dict) <list(dict)>`] Fields to rename (KiCost option, not internal filters).
 
          -  Valid keys:
 
-            -  ``field`` :index:`: <pair: output - kicost - options - translate_fields; field>` [:ref:`string <string>`] Name of the field to rename.
-            -  ``name`` :index:`: <pair: output - kicost - options - translate_fields; name>` [:ref:`string <string>`] New name.
+            -  ``field`` :index:`: <pair: output - kicost - options - translate_fields; field>` [:ref:`string <string>`] (default: ``''``) Name of the field to rename.
+            -  ``name`` :index:`: <pair: output - kicost - options - translate_fields; name>` [:ref:`string <string>`] (default: ``''``) New name.
 
-      -  ``variant`` :index:`: <pair: output - kicost - options; variant>` [:ref:`string <string>`] Board variant to apply.
+      -  ``variant`` :index:`: <pair: output - kicost - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
          Don't use the `kicost_variant` when using internal variants/filters.
 
 -  **type** :index:`: <pair: output - kicost; type>` 'kicost'
--  ``category`` :index:`: <pair: output - kicost; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - kicost; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - kicost; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - kicost; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - kicost; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - kicost; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - kicost; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - kicost; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - kicost; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - kicost; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - kicost; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - kicost; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - kicost; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

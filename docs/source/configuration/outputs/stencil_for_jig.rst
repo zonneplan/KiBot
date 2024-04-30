@@ -18,10 +18,10 @@ Category: **PCB/fabrication/assembly**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - stencil_for_jig; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - stencil_for_jig; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - stencil_for_jig; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - stencil_for_jig; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - stencil_for_jig; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - stencil_for_jig; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - stencil_for_jig; options>` [:ref:`dict <dict>`] Options for the `stencil_for_jig` output.
 
@@ -30,49 +30,49 @@ Parameters:
       -  *jig_height* :index:`: <pair: output - stencil_for_jig - options; jig_height>` Alias for jigheight.
       -  *jig_thickness* :index:`: <pair: output - stencil_for_jig - options; jig_thickness>` Alias for jigthickness.
       -  *jig_width* :index:`: <pair: output - stencil_for_jig - options; jig_width>` Alias for jigwidth.
-      -  **jigheight** :index:`: <pair: output - stencil_for_jig - options; jigheight>` [:ref:`number <number>`].
-      -  **jigthickness** :index:`: <pair: output - stencil_for_jig - options; jigthickness>` [:ref:`number <number>`].
-      -  **jigwidth** :index:`: <pair: output - stencil_for_jig - options; jigwidth>` [:ref:`number <number>`].
-      -  **output** :index:`: <pair: output - stencil_for_jig - options; output>` [:ref:`string <string>`] Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
+      -  **jigheight** :index:`: <pair: output - stencil_for_jig - options; jigheight>` [:ref:`number <number>`] (default: ``100``).
+      -  **jigthickness** :index:`: <pair: output - stencil_for_jig - options; jigthickness>` [:ref:`number <number>`] (default: ``3``).
+      -  **jigwidth** :index:`: <pair: output - stencil_for_jig - options; jigwidth>` [:ref:`number <number>`] (default: ``100``).
+      -  **output** :index:`: <pair: output - stencil_for_jig - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
          %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'|'png'). Affected by global options.
-      -  ``create_preview`` :index:`: <pair: output - stencil_for_jig - options; create_preview>` [:ref:`boolean <boolean>`] Creates a PNG showing the generated 3D model.
+      -  ``create_preview`` :index:`: <pair: output - stencil_for_jig - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``true``) Creates a PNG showing the generated 3D model.
       -  ``cutout`` :index:`: <pair: output - stencil_for_jig - options; cutout>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of components to add a cutout based on the component courtyard.
          This is useful when you have already pre-populated board and you want to populate more
          components.
-      -  ``dnf_filter`` :index:`: <pair: output - stencil_for_jig - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - stencil_for_jig - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``include_scad`` :index:`: <pair: output - stencil_for_jig - options; include_scad>` [:ref:`boolean <boolean>`] Include the generated OpenSCAD files.
+      -  ``include_scad`` :index:`: <pair: output - stencil_for_jig - options; include_scad>` [:ref:`boolean <boolean>`] (default: ``true``) Include the generated OpenSCAD files.
       -  *pcb_thickness* :index:`: <pair: output - stencil_for_jig - options; pcb_thickness>` Alias for pcbthickness.
-      -  ``pcbthickness`` :index:`: <pair: output - stencil_for_jig - options; pcbthickness>` [:ref:`number <number>`]. If 0 we will ask KiCad.
-      -  ``pre_transform`` :index:`: <pair: output - stencil_for_jig - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``pcbthickness`` :index:`: <pair: output - stencil_for_jig - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``). If 0 we will ask KiCad.
+      -  ``pre_transform`` :index:`: <pair: output - stencil_for_jig - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  *register_border_inner* :index:`: <pair: output - stencil_for_jig - options; register_border_inner>` Alias for registerborderinner.
       -  *register_border_outer* :index:`: <pair: output - stencil_for_jig - options; register_border_outer>` Alias for registerborderouter.
-      -  ``registerborderinner`` :index:`: <pair: output - stencil_for_jig - options; registerborderinner>` [:ref:`number <number>`].
-      -  ``registerborderouter`` :index:`: <pair: output - stencil_for_jig - options; registerborderouter>` [:ref:`number <number>`].
-      -  ``side`` :index:`: <pair: output - stencil_for_jig - options; side>` [:ref:`string <string>`] Which side of the PCB we want. Using `auto` will detect which
+      -  ``registerborderinner`` :index:`: <pair: output - stencil_for_jig - options; registerborderinner>` [:ref:`number <number>`] (default: ``1``).
+      -  ``registerborderouter`` :index:`: <pair: output - stencil_for_jig - options; registerborderouter>` [:ref:`number <number>`] (default: ``3``).
+      -  ``side`` :index:`: <pair: output - stencil_for_jig - options; side>` [:ref:`string <string>`] (default: ``'auto'``) Which side of the PCB we want. Using `auto` will detect which
          side contains solder paste.
-      -  ``tolerance`` :index:`: <pair: output - stencil_for_jig - options; tolerance>` [:ref:`number <number>`].
-      -  ``variant`` :index:`: <pair: output - stencil_for_jig - options; variant>` [:ref:`string <string>`] Board variant to apply.
+      -  ``tolerance`` :index:`: <pair: output - stencil_for_jig - options; tolerance>` [:ref:`number <number>`] (default: ``0.05``).
+      -  ``variant`` :index:`: <pair: output - stencil_for_jig - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - stencil_for_jig; type>` 'stencil_for_jig'
--  ``category`` :index:`: <pair: output - stencil_for_jig; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - stencil_for_jig; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - stencil_for_jig; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - stencil_for_jig; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - stencil_for_jig; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - stencil_for_jig; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - stencil_for_jig; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - stencil_for_jig; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - stencil_for_jig; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - stencil_for_jig; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - stencil_for_jig; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - stencil_for_jig; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - stencil_for_jig; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

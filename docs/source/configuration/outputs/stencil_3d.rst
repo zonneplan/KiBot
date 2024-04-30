@@ -20,58 +20,58 @@ Category: **PCB/fabrication/assembly**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - stencil_3d; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - stencil_3d; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - stencil_3d; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - stencil_3d; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - stencil_3d; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - stencil_3d; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - stencil_3d; options>` [:ref:`dict <dict>`] Options for the `stencil_3d` output.
 
    -  Valid keys:
 
-      -  **output** :index:`: <pair: output - stencil_3d - options; output>` [:ref:`string <string>`] Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
+      -  **output** :index:`: <pair: output - stencil_3d - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i='stencil_3d_top'|'stencil_3d_bottom'|'stencil_3d_edge',
          %x='stl'|'scad'|'dxf'|'png'). Affected by global options.
-      -  **thickness** :index:`: <pair: output - stencil_3d - options; thickness>` [:ref:`number <number>`]. Defines amount of paste dispensed.
-      -  ``create_preview`` :index:`: <pair: output - stencil_3d - options; create_preview>` [:ref:`boolean <boolean>`] Creates a PNG showing the generated 3D model.
+      -  **thickness** :index:`: <pair: output - stencil_3d - options; thickness>` [:ref:`number <number>`] (default: ``0.15``). Defines amount of paste dispensed.
+      -  ``create_preview`` :index:`: <pair: output - stencil_3d - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``true``) Creates a PNG showing the generated 3D model.
       -  ``cutout`` :index:`: <pair: output - stencil_3d - options; cutout>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of components to add a cutout based on the component courtyard.
          This is useful when you have already pre-populated board and you want to populate more
          components.
-      -  ``dnf_filter`` :index:`: <pair: output - stencil_3d - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - stencil_3d - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  *enlarge_holes* :index:`: <pair: output - stencil_3d - options; enlarge_holes>` Alias for enlarge_holes.
-      -  ``enlargeholes`` :index:`: <pair: output - stencil_3d - options; enlargeholes>` [:ref:`number <number>`] Enlarge pad holes by x mm.
+      -  ``enlargeholes`` :index:`: <pair: output - stencil_3d - options; enlargeholes>` [:ref:`number <number>`] (default: ``0``) Enlarge pad holes by x mm.
       -  *frame_clearance* :index:`: <pair: output - stencil_3d - options; frame_clearance>` Alias for frameclearance.
       -  *frame_width* :index:`: <pair: output - stencil_3d - options; frame_width>` Alias for framewidth.
-      -  ``frameclearance`` :index:`: <pair: output - stencil_3d - options; frameclearance>` [:ref:`number <number>`].
-      -  ``framewidth`` :index:`: <pair: output - stencil_3d - options; framewidth>` [:ref:`number <number>`] Register frame width.
-      -  ``include_scad`` :index:`: <pair: output - stencil_3d - options; include_scad>` [:ref:`boolean <boolean>`] Include the generated OpenSCAD files.
+      -  ``frameclearance`` :index:`: <pair: output - stencil_3d - options; frameclearance>` [:ref:`number <number>`] (default: ``0``).
+      -  ``framewidth`` :index:`: <pair: output - stencil_3d - options; framewidth>` [:ref:`number <number>`] (default: ``1``) Register frame width.
+      -  ``include_scad`` :index:`: <pair: output - stencil_3d - options; include_scad>` [:ref:`boolean <boolean>`] (default: ``true``) Include the generated OpenSCAD files.
          Note that this also includes the DXF files.
       -  *pcb_thickness* :index:`: <pair: output - stencil_3d - options; pcb_thickness>` Alias for pcbthickness.
-      -  ``pcbthickness`` :index:`: <pair: output - stencil_3d - options; pcbthickness>` [:ref:`number <number>`]. If 0 we will ask KiCad.
-      -  ``pre_transform`` :index:`: <pair: output - stencil_3d - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``pcbthickness`` :index:`: <pair: output - stencil_3d - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``). If 0 we will ask KiCad.
+      -  ``pre_transform`` :index:`: <pair: output - stencil_3d - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``side`` :index:`: <pair: output - stencil_3d - options; side>` [:ref:`string <string>`] Which side of the PCB we want. Using `auto` will detect which
+      -  ``side`` :index:`: <pair: output - stencil_3d - options; side>` [:ref:`string <string>`] (default: ``'auto'``) Which side of the PCB we want. Using `auto` will detect which
          side contains solder paste.
-      -  ``variant`` :index:`: <pair: output - stencil_3d - options; variant>` [:ref:`string <string>`] Board variant to apply.
+      -  ``variant`` :index:`: <pair: output - stencil_3d - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - stencil_3d; type>` 'stencil_3d'
--  ``category`` :index:`: <pair: output - stencil_3d; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - stencil_3d; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - stencil_3d; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - stencil_3d; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - stencil_3d; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - stencil_3d; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - stencil_3d; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - stencil_3d; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - stencil_3d; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - stencil_3d; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - stencil_3d; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - stencil_3d; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - stencil_3d; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

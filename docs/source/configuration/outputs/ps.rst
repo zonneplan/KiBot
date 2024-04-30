@@ -17,92 +17,92 @@ Category: **PCB/docs**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - ps; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - ps; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - ps; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - ps; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
 -  **layers** :index:`: <pair: output - ps; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`]
    List of PCB layers to plot.
 
    -  Valid keys:
 
-      -  ``description`` :index:`: <pair: output - ps - layers; description>` [:ref:`string <string>`] A description for the layer, for documentation purposes.
+      -  ``description`` :index:`: <pair: output - ps - layers; description>` [:ref:`string <string>`] (default: ``''``) A description for the layer, for documentation purposes.
          A default can be specified using the `layer_defaults` global option.
-      -  ``layer`` :index:`: <pair: output - ps - layers; layer>` [:ref:`string <string>`] Name of the layer. As you see it in KiCad.
-      -  ``suffix`` :index:`: <pair: output - ps - layers; suffix>` [:ref:`string <string>`] Suffix used in file names related to this layer. Derived from the name if not specified.
+      -  ``layer`` :index:`: <pair: output - ps - layers; layer>` [:ref:`string <string>`] (default: ``''``) Name of the layer. As you see it in KiCad.
+      -  ``suffix`` :index:`: <pair: output - ps - layers; suffix>` [:ref:`string <string>`] (default: ``''``) Suffix used in file names related to this layer. Derived from the name if not specified.
          A default can be specified using the `layer_defaults` global option.
 
--  **name** :index:`: <pair: output - ps; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - ps; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - ps; options>` [:ref:`dict <dict>`] Options for the `ps` output.
 
    -  Valid keys:
 
-      -  **output** :index:`: <pair: output - ps - options; output>` [:ref:`string <string>`] Output file name, the default KiCad name if empty.
+      -  **output** :index:`: <pair: output - ps - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Output file name, the default KiCad name if empty.
          IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
          For this reason you must avoid generating two variants at the same directory when one of
          them uses the default KiCad name. Affected by global options.
-      -  **plot_sheet_reference** :index:`: <pair: output - ps - options; plot_sheet_reference>` [:ref:`boolean <boolean>`] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
+      -  **plot_sheet_reference** :index:`: <pair: output - ps - options; plot_sheet_reference>` [:ref:`boolean <boolean>`] (default: ``false``) Include the frame and title block. Only available for KiCad 6+ and you get a poor result
          (i.e. always the default worksheet style, also problems expanding text variables).
          The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
-      -  **scaling** :index:`: <pair: output - ps - options; scaling>` [:ref:`number <number>`] Scale factor (0 means autoscaling).
-      -  ``a4_output`` :index:`: <pair: output - ps - options; a4_output>` [:ref:`boolean <boolean>`] Force A4 paper size.
+      -  **scaling** :index:`: <pair: output - ps - options; scaling>` [:ref:`number <number>`] (default: ``1``) Scale factor (0 means autoscaling).
+      -  ``a4_output`` :index:`: <pair: output - ps - options; a4_output>` [:ref:`boolean <boolean>`] (default: ``true``) Force A4 paper size.
       -  ``custom_reports`` :index:`: <pair: output - ps - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] A list of customized reports for the manufacturer.
 
          -  Valid keys:
 
-            -  ``content`` :index:`: <pair: output - ps - options - custom_reports; content>` [:ref:`string <string>`] Content for the report. Use ``${basename}`` for the project name without extension.
+            -  ``content`` :index:`: <pair: output - ps - options - custom_reports; content>` [:ref:`string <string>`] (default: ``''``) Content for the report. Use ``${basename}`` for the project name without extension.
                Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
-            -  ``output`` :index:`: <pair: output - ps - options - custom_reports; output>` [:ref:`string <string>`] File name for the custom report.
+            -  ``output`` :index:`: <pair: output - ps - options - custom_reports; output>` [:ref:`string <string>`] (default: ``'Custom_report.txt'``) File name for the custom report.
 
-      -  ``dnf_filter`` :index:`: <pair: output - ps - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - ps - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``drill_marks`` :index:`: <pair: output - ps - options; drill_marks>` [:ref:`string <string>`] What to use to indicate the drill places, can be none, small or full (for real scale).
-      -  ``edge_cut_extension`` :index:`: <pair: output - ps - options; edge_cut_extension>` [:ref:`string <string>`] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
-      -  ``exclude_edge_layer`` :index:`: <pair: output - ps - options; exclude_edge_layer>` [:ref:`boolean <boolean>`] Do not include the PCB edge layer.
-      -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - ps - options; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] Do not plot the component pads in the silk screen (KiCad 5.x only).
-      -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - ps - options; force_plot_invisible_refs_vals>` [:ref:`boolean <boolean>`] Include references and values even when they are marked as invisible.
-      -  ``individual_page_scaling`` :index:`: <pair: output - ps - options; individual_page_scaling>` [:ref:`boolean <boolean>`] Tell KiCad to apply the scaling for each layer as a separated entity.
+      -  ``drill_marks`` :index:`: <pair: output - ps - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) What to use to indicate the drill places, can be none, small or full (for real scale).
+      -  ``edge_cut_extension`` :index:`: <pair: output - ps - options; edge_cut_extension>` [:ref:`string <string>`] (default: ``''``) Used to configure the edge cuts layer extension for Protel mode. Include the dot.
+      -  ``exclude_edge_layer`` :index:`: <pair: output - ps - options; exclude_edge_layer>` [:ref:`boolean <boolean>`] (default: ``true``) Do not include the PCB edge layer.
+      -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - ps - options; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Do not plot the component pads in the silk screen (KiCad 5.x only).
+      -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - ps - options; force_plot_invisible_refs_vals>` [:ref:`boolean <boolean>`] (default: ``false``) Include references and values even when they are marked as invisible.
+      -  ``individual_page_scaling`` :index:`: <pair: output - ps - options; individual_page_scaling>` [:ref:`boolean <boolean>`] (default: ``true``) Tell KiCad to apply the scaling for each layer as a separated entity.
          Disabling it the pages are coherent and can be superposed.
-      -  ``inner_extension_pattern`` :index:`: <pair: output - ps - options; inner_extension_pattern>` [:ref:`string <string>`] Used to change the Protel style extensions for inner layers.
+      -  ``inner_extension_pattern`` :index:`: <pair: output - ps - options; inner_extension_pattern>` [:ref:`string <string>`] (default: ``''``) Used to change the Protel style extensions for inner layers.
          The replacement pattern can contain %n for the inner layer number and %N for the layer number.
          Example '.g%n'.
-      -  ``line_width`` :index:`: <pair: output - ps - options; line_width>` [:ref:`number <number>`] (KiCad 5).
-      -  ``mirror_plot`` :index:`: <pair: output - ps - options; mirror_plot>` [:ref:`boolean <boolean>`] Plot mirrored.
-      -  ``negative_plot`` :index:`: <pair: output - ps - options; negative_plot>` [:ref:`boolean <boolean>`] Invert black and white.
-      -  ``plot_footprint_refs`` :index:`: <pair: output - ps - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] Include the footprint references.
-      -  ``plot_footprint_values`` :index:`: <pair: output - ps - options; plot_footprint_values>` [:ref:`boolean <boolean>`] Include the footprint values.
-      -  ``pre_transform`` :index:`: <pair: output - ps - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``line_width`` :index:`: <pair: output - ps - options; line_width>` [:ref:`number <number>`] (default: ``0.15``) (KiCad 5).
+      -  ``mirror_plot`` :index:`: <pair: output - ps - options; mirror_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Plot mirrored.
+      -  ``negative_plot`` :index:`: <pair: output - ps - options; negative_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Invert black and white.
+      -  ``plot_footprint_refs`` :index:`: <pair: output - ps - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
+      -  ``plot_footprint_values`` :index:`: <pair: output - ps - options; plot_footprint_values>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint values.
+      -  ``pre_transform`` :index:`: <pair: output - ps - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``scale_adjust_x`` :index:`: <pair: output - ps - options; scale_adjust_x>` [:ref:`number <number>`] Fine grain adjust for the X scale (floating point multiplier).
-      -  ``scale_adjust_y`` :index:`: <pair: output - ps - options; scale_adjust_y>` [:ref:`number <number>`] Fine grain adjust for the Y scale (floating point multiplier).
-      -  ``sketch_pad_line_width`` :index:`: <pair: output - ps - options; sketch_pad_line_width>` [:ref:`number <number>`], see `sketch_pads_on_fab_layers` (KiCad 6+)
+      -  ``scale_adjust_x`` :index:`: <pair: output - ps - options; scale_adjust_x>` [:ref:`number <number>`] (default: ``1.0``) Fine grain adjust for the X scale (floating point multiplier).
+      -  ``scale_adjust_y`` :index:`: <pair: output - ps - options; scale_adjust_y>` [:ref:`number <number>`] (default: ``1.0``) Fine grain adjust for the Y scale (floating point multiplier).
+      -  ``sketch_pad_line_width`` :index:`: <pair: output - ps - options; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``), see `sketch_pads_on_fab_layers` (KiCad 6+)
          Note that this value is currently ignored by KiCad (6.0.9).
-      -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - ps - options; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
-      -  ``sketch_plot`` :index:`: <pair: output - ps - options; sketch_plot>` [:ref:`boolean <boolean>`] Don't fill objects, just draw the outline.
-      -  ``tent_vias`` :index:`: <pair: output - ps - options; tent_vias>` [:ref:`boolean <boolean>`] Cover the vias.
-      -  ``uppercase_extensions`` :index:`: <pair: output - ps - options; uppercase_extensions>` [:ref:`boolean <boolean>`] Use uppercase names for the extensions.
-      -  ``variant`` :index:`: <pair: output - ps - options; variant>` [:ref:`string <string>`] Board variant to apply.
-      -  ``width_adjust`` :index:`: <pair: output - ps - options; width_adjust>` [:ref:`number <number>`] This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
+      -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - ps - options; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
+      -  ``sketch_plot`` :index:`: <pair: output - ps - options; sketch_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Don't fill objects, just draw the outline.
+      -  ``tent_vias`` :index:`: <pair: output - ps - options; tent_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Cover the vias.
+      -  ``uppercase_extensions`` :index:`: <pair: output - ps - options; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
+      -  ``variant`` :index:`: <pair: output - ps - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
+      -  ``width_adjust`` :index:`: <pair: output - ps - options; width_adjust>` [:ref:`number <number>`] (default: ``0``) This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
          Only used to plot pads and tracks.
 
 -  **type** :index:`: <pair: output - ps; type>` 'ps'
--  ``category`` :index:`: <pair: output - ps; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - ps; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - ps; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - ps; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - ps; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - ps; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - ps; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - ps; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - ps; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - ps; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - ps; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - ps; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - ps; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 

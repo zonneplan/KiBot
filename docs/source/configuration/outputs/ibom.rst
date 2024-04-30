@@ -16,51 +16,51 @@ Categories: **Schematic/BoM**, **PCB/fabrication/assembly**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - ibom; comment>` [:ref:`string <string>`] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - ibom; dir>` [:ref:`string <string>`] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - ibom; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - ibom; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - ibom; name>` [:ref:`string <string>`] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - ibom; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
 -  **options** :index:`: <pair: output - ibom; options>` [:ref:`dict <dict>`] Options for the `ibom` output.
 
    -  Valid keys:
 
-      -  **board_rotation** :index:`: <pair: output - ibom - options; board_rotation>` [:ref:`number <number>`] Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
-      -  **bom_view** :index:`: <pair: output - ibom - options; bom_view>` [:ref:`string <string>`] Default BOM view.
-      -  **extra_fields** :index:`: <pair: output - ibom - options; extra_fields>` [:ref:`string <string>`] Comma separated list of extra fields to pull from netlist or xml file.
+      -  **board_rotation** :index:`: <pair: output - ibom - options; board_rotation>` [:ref:`number <number>`] (default: ``0``) Board rotation in degrees (-180 to 180). Will be rounded to multiple of 5.
+      -  **bom_view** :index:`: <pair: output - ibom - options; bom_view>` [:ref:`string <string>`] (default: ``'left-right'``) Default BOM view.
+      -  **extra_fields** :index:`: <pair: output - ibom - options; extra_fields>` [:ref:`string <string>`] (default: ``''``) Comma separated list of extra fields to pull from netlist or xml file.
          Using 'X,Y' is a shortcut for `show_fields` and `group_fields` with values 'Value,Footprint,X,Y'.
-      -  **include_tracks** :index:`: <pair: output - ibom - options; include_tracks>` [:ref:`boolean <boolean>`] Include track/zone information in output. F.Cu and B.Cu layers only.
-      -  **layer_view** :index:`: <pair: output - ibom - options; layer_view>` [:ref:`string <string>`] Default layer view.
-      -  **normalize_field_case** :index:`: <pair: output - ibom - options; normalize_field_case>` [:ref:`boolean <boolean>`] Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
-      -  **output** :index:`: <pair: output - ibom - options; output>` [:ref:`string <string>`] Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
-      -  **show_fields** :index:`: <pair: output - ibom - options; show_fields>` [:ref:`string <string>`] Comma separated list of fields to show in the BOM.
+      -  **include_tracks** :index:`: <pair: output - ibom - options; include_tracks>` [:ref:`boolean <boolean>`] (default: ``false``) Include track/zone information in output. F.Cu and B.Cu layers only.
+      -  **layer_view** :index:`: <pair: output - ibom - options; layer_view>` [:ref:`string <string>`] (default: ``'FB'``) Default layer view.
+      -  **normalize_field_case** :index:`: <pair: output - ibom - options; normalize_field_case>` [:ref:`boolean <boolean>`] (default: ``false``) Normalize extra field name case. E.g. 'MPN' and 'mpn' will be considered the same field.
+      -  **output** :index:`: <pair: output - ibom - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output, use '' to use the IBoM filename (%i=ibom, %x=html). Affected by global options.
+      -  **show_fields** :index:`: <pair: output - ibom - options; show_fields>` [:ref:`string <string>`] (default: ``''``) Comma separated list of fields to show in the BOM.
          Value and Footprint are displayed when nothing is specified.
-      -  ``blacklist`` :index:`: <pair: output - ibom - options; blacklist>` [:ref:`string <string>`] List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
+      -  ``blacklist`` :index:`: <pair: output - ibom - options; blacklist>` [:ref:`string <string>`] (default: ``''``) List of comma separated blacklisted components or prefixes with *. E.g. 'X1,MH*'.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
-      -  ``blacklist_empty_val`` :index:`: <pair: output - ibom - options; blacklist_empty_val>` [:ref:`boolean <boolean>`] Blacklist components with empty value.
+      -  ``blacklist_empty_val`` :index:`: <pair: output - ibom - options; blacklist_empty_val>` [:ref:`boolean <boolean>`] (default: ``false``) Blacklist components with empty value.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
-      -  ``checkboxes`` :index:`: <pair: output - ibom - options; checkboxes>` [:ref:`string <string>`] Comma separated list of checkbox columns.
-      -  ``dark_mode`` :index:`: <pair: output - ibom - options; dark_mode>` [:ref:`boolean <boolean>`] Default to dark mode.
-      -  ``dnf_filter`` :index:`: <pair: output - ibom - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to mark components as not fitted.
+      -  ``checkboxes`` :index:`: <pair: output - ibom - options; checkboxes>` [:ref:`string <string>`] (default: ``'Sourced,Placed'``) Comma separated list of checkbox columns.
+      -  ``dark_mode`` :index:`: <pair: output - ibom - options; dark_mode>` [:ref:`boolean <boolean>`] (default: ``false``) Default to dark mode.
+      -  ``dnf_filter`` :index:`: <pair: output - ibom - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
          Avoid using it in conjunction with IBoM native filtering options.
 
-      -  ``dnp_field`` :index:`: <pair: output - ibom - options; dnp_field>` [:ref:`string <string>`] Name of the extra field that indicates do not populate status.
+      -  ``dnp_field`` :index:`: <pair: output - ibom - options; dnp_field>` [:ref:`string <string>`] (default: ``''``) Name of the extra field that indicates do not populate status.
          Components with this field not empty will be blacklisted.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
-      -  ``extra_data_file`` :index:`: <pair: output - ibom - options; extra_data_file>` [:ref:`string <string>`] Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
+      -  ``extra_data_file`` :index:`: <pair: output - ibom - options; extra_data_file>` [:ref:`string <string>`] (default: ``''``) Path to netlist or xml file. You can use '%F.xml' to avoid specifying the project name.
          Leave it blank for most uses, data will be extracted from the PCB.
-      -  ``forced_name`` :index:`: <pair: output - ibom - options; forced_name>` [:ref:`string <string>`] Name to be used for the PCB/project (no file extension).
+      -  ``forced_name`` :index:`: <pair: output - ibom - options; forced_name>` [:ref:`string <string>`] (default: ``''``) Name to be used for the PCB/project (no file extension).
          This will affect the name iBoM displays in the generated HTML.
-      -  ``group_fields`` :index:`: <pair: output - ibom - options; group_fields>` [:ref:`string <string>`] Comma separated list of fields that components will be grouped by.
+      -  ``group_fields`` :index:`: <pair: output - ibom - options; group_fields>` [:ref:`string <string>`] (default: ``''``) Comma separated list of fields that components will be grouped by.
          Value and Footprint are used when nothing is specified.
-      -  ``hide_excluded`` :index:`: <pair: output - ibom - options; hide_excluded>` [:ref:`boolean <boolean>`] Hide components in the Fab layer that are marked as excluded by a variant.
+      -  ``hide_excluded`` :index:`: <pair: output - ibom - options; hide_excluded>` [:ref:`boolean <boolean>`] (default: ``false``) Hide components in the Fab layer that are marked as excluded by a variant.
          Affected by global options.
-      -  ``hide_pads`` :index:`: <pair: output - ibom - options; hide_pads>` [:ref:`boolean <boolean>`] Hide footprint pads by default.
-      -  ``hide_silkscreen`` :index:`: <pair: output - ibom - options; hide_silkscreen>` [:ref:`boolean <boolean>`] Hide silkscreen by default.
-      -  ``highlight_pin1`` :index:`: <pair: output - ibom - options; highlight_pin1>` [:ref:`boolean <boolean>` | :ref:`string <string>`] Highlight pin1 by default.
-      -  ``include_nets`` :index:`: <pair: output - ibom - options; include_nets>` [:ref:`boolean <boolean>`] Include netlist information in output..
-      -  ``name_format`` :index:`: <pair: output - ibom - options; name_format>` [:ref:`string <string>`] Output file name format supports substitutions:
+      -  ``hide_pads`` :index:`: <pair: output - ibom - options; hide_pads>` [:ref:`boolean <boolean>`] (default: ``false``) Hide footprint pads by default.
+      -  ``hide_silkscreen`` :index:`: <pair: output - ibom - options; hide_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Hide silkscreen by default.
+      -  ``highlight_pin1`` :index:`: <pair: output - ibom - options; highlight_pin1>` [:ref:`boolean <boolean>` | :ref:`string <string>`] (default: ``false``) Highlight pin1 by default.
+      -  ``include_nets`` :index:`: <pair: output - ibom - options; include_nets>` [:ref:`boolean <boolean>`] (default: ``false``) Include netlist information in output..
+      -  ``name_format`` :index:`: <pair: output - ibom - options; name_format>` [:ref:`string <string>`] (default: ``'ibom'``) Output file name format supports substitutions:
          %f : original pcb file name without extension.
          %p : pcb/project title from pcb metadata.
          %c : company from pcb metadata.
@@ -71,41 +71,41 @@ Parameters:
          Extension .html will be added automatically.
          Note that this name is used only when output is ''.
       -  *netlist_file* :index:`: <pair: output - ibom - options; netlist_file>` Alias for extra_data_file.
-      -  ``no_blacklist_virtual`` :index:`: <pair: output - ibom - options; no_blacklist_virtual>` [:ref:`boolean <boolean>`] Do not blacklist virtual components.
+      -  ``no_blacklist_virtual`` :index:`: <pair: output - ibom - options; no_blacklist_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Do not blacklist virtual components.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
-      -  ``no_compression`` :index:`: <pair: output - ibom - options; no_compression>` [:ref:`boolean <boolean>`] Disable compression of pcb data.
-      -  ``no_redraw_on_drag`` :index:`: <pair: output - ibom - options; no_redraw_on_drag>` [:ref:`boolean <boolean>`] Do not redraw pcb on drag by default.
-      -  ``offset_back_rotation`` :index:`: <pair: output - ibom - options; offset_back_rotation>` [:ref:`boolean <boolean>`] Offset the back of the pcb by 180 degrees.
-      -  ``pre_transform`` :index:`: <pair: output - ibom - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name of the filter to transform fields before applying other filters.
+      -  ``no_compression`` :index:`: <pair: output - ibom - options; no_compression>` [:ref:`boolean <boolean>`] (default: ``false``) Disable compression of pcb data.
+      -  ``no_redraw_on_drag`` :index:`: <pair: output - ibom - options; no_redraw_on_drag>` [:ref:`boolean <boolean>`] (default: ``false``) Do not redraw pcb on drag by default.
+      -  ``offset_back_rotation`` :index:`: <pair: output - ibom - options; offset_back_rotation>` [:ref:`boolean <boolean>`] (default: ``false``) Offset the back of the pcb by 180 degrees.
+      -  ``pre_transform`` :index:`: <pair: output - ibom - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``show_fabrication`` :index:`: <pair: output - ibom - options; show_fabrication>` [:ref:`boolean <boolean>`] Show fabrication layer by default.
-      -  ``sort_order`` :index:`: <pair: output - ibom - options; sort_order>` [:ref:`string <string>`] Default sort order for components. Must contain '~' once.
-      -  ``variant`` :index:`: <pair: output - ibom - options; variant>` [:ref:`string <string>`] Board variant to apply.
+      -  ``show_fabrication`` :index:`: <pair: output - ibom - options; show_fabrication>` [:ref:`boolean <boolean>`] (default: ``false``) Show fabrication layer by default.
+      -  ``sort_order`` :index:`: <pair: output - ibom - options; sort_order>` [:ref:`string <string>`] (default: ``'C,R,L,D,U,Y,X,F,SW,A,~,HS,CNN,J,P,NT,MH'``) Default sort order for components. Must contain '~' once.
+      -  ``variant`` :index:`: <pair: output - ibom - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
          Avoid using it in conjunction with IBoM native filtering options.
-      -  ``variant_field`` :index:`: <pair: output - ibom - options; variant_field>` [:ref:`string <string>`] Name of the extra field that stores board variant for component.
+      -  ``variant_field`` :index:`: <pair: output - ibom - options; variant_field>` [:ref:`string <string>`] (default: ``''``) Name of the extra field that stores board variant for component.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
-      -  ``variants_blacklist`` :index:`: <pair: output - ibom - options; variants_blacklist>` [:ref:`string <string>`] List of board variants to exclude from the BOM.
+      -  ``variants_blacklist`` :index:`: <pair: output - ibom - options; variants_blacklist>` [:ref:`string <string>`] (default: ``''``) List of board variants to exclude from the BOM.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
-      -  ``variants_whitelist`` :index:`: <pair: output - ibom - options; variants_whitelist>` [:ref:`string <string>`] List of board variants to include in the BOM.
+      -  ``variants_whitelist`` :index:`: <pair: output - ibom - options; variants_whitelist>` [:ref:`string <string>`] (default: ``''``) List of board variants to include in the BOM.
          IBoM option, avoid using in conjunction with KiBot variants/filters.
 
 -  **type** :index:`: <pair: output - ibom; type>` 'ibom'
--  ``category`` :index:`: <pair: output - ibom; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - ibom; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
 -  ``disable_run_by_default`` :index:`: <pair: output - ibom; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - ibom; extends>` [:ref:`string <string>`] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - ibom; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - ibom; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - ibom; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - ibom; output_id>` [:ref:`string <string>`] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - ibom; priority>` [:ref:`number <number>`] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - ibom; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - ibom; priority>` [:ref:`number <number>`] (default: ``50``) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - ibom; run_by_default>` [:ref:`boolean <boolean>`] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - ibom; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
