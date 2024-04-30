@@ -104,7 +104,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             self.sub_boards_stacked_prefix = 'stacked_'
             """ Prefix used for the stack files """
             self.show_components = Optionable
-            """ *[list(string)|string=all] [none,all] List of components to include in the pads list,
+            """ *[list(string)|string=all] [none,all,*] List of components to include in the pads list,
                 can be also a string for `none` or `all`. The default is `all`.
                 Ranges like *R5-R10* are supported """
         super().__init__()
@@ -119,7 +119,10 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         if isinstance(self.show_components, str):
             if self.show_components == 'all':
                 self._show_all_components = True
-            self.show_components = []
+            elif self.show_components == 'none':
+                self.show_components = []
+            else:
+                self.show_components = self.solve_kf_filters([self.show_components])
         elif isinstance(self.show_components, type):
             # Default is all
             self._show_all_components = True
