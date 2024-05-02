@@ -17,11 +17,11 @@ RUN     dpkg --remove kicost kibot && \
 	dpkg --remove kidiff kiauto && \
 	curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
-	pip3 install --break-system-packages KiAuto-master/ && \
+	pip3 install KiAuto-master/ && \
 	rm -rf KiAuto-master/ pp.zip && \
 	curl https://codeload.github.com/INTI-CMNB/KiDiff/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
-	pip3 install --break-system-packages KiDiff-master/ && \
+	pip3 install KiDiff-master/ && \
 	rm -rf KiDiff-master/ pp.zip && \
 	rm -rf /var/lib/apt/lists/*
 
