@@ -13,6 +13,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - iBoM: *highlight_pin1* option didn't allow the use of the new choices.
 - PCB2Blender_Tools: transform filters might make it fail. (#618)
 
+### Changed:
+- KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it is
+  computed even for operations where it isn't really visible, like plotting
+  a layer where we don't have the hidden text. So currently KiBot is
+  experimentally disabling the "hidden text layer".
+
 
 ## [1.7.0] - 2024-04-23
 ### Added

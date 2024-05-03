@@ -226,6 +226,10 @@ def load_board(pcb_file=None, forced=False):
                 if dr.GetClass().startswith('PCB_DIM_') and dr.GetUnitsMode() == pcbnew.DIM_UNITS_MODE_AUTOMATIC:
                     dr.SetUnitsMode(forced_units)
                     dr.Update()
+        if GS.ki8:
+            # KiCad 8.0.2 crazyness: hidden text affects scaling, even when not plotted
+            # So a PRL can affect the plot mechanism
+            board.SetElementVisibility(pcbnew.LAYER_HIDDEN_TEXT, False)
         GS.board = board
     except OSError as e:
         GS.exit_with_error(['Error loading PCB file. Corrupted?', str(e)], CORRUPTED_PCB)
