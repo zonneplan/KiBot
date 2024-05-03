@@ -691,6 +691,8 @@ class CfgYamlReader(object):
         """
         collected_definitions = [{}]
         data = self.load_yaml(fstream, collected_definitions)
+        if not isinstance(data, dict):
+            raise KiPlotConfigurationError(f"Wrong configuration, must be a dict, not {type(data)}")
         # Analyze the version
         # Currently just checks for v1
         v1 = data.get('kiplot', None)
