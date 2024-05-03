@@ -108,6 +108,22 @@ Drill tools (including vias and computing adjusts and rounding):
 
 #drill_tools:- ${drill_mm} mm (${drill_mils} mils) (${count})
 
+Solder paste stats:
+
+Using a paste with ${solder_paste_metal_amount} % alloy, that has an specific gravity for the alloy of ${alloy_specific_gravity} g/cm³
+and ${flux_specific_gravity} g/cm³ for the flux. This paste has an specific gravity of ${%5.2f,solder_paste_gravity} g/cm³.
+
+The stencil thickness is ${%5.2f,stencil_thickness} mm.
+
+| Side   | Pads with paste | Area [mm²] | Paste [g] |
+|--------|-----------------|------------|-----------|
+#?paste_pads_front and paste_pads_bottom
+| Top    | ${%15s,paste_pads_front} | ${%10.2f,paste_pads_front_area} | ${%9.2f,solder_paste_front} |
+#?paste_pads_front and paste_pads_bottom
+| Bottom | ${%15s,paste_pads_bottom} | ${%10.2f,paste_pads_bottom_area} | ${%9.2f,solder_paste_bottom} |
+| Total  | ${%15s,paste_pads} | ${%10.2f,paste_pads_area} | ${%9.2f,solder_paste} |
+
+Note: this is just an approximation to the theoretical value. Margins of the solder mask and waste aren't computed.
 
 #?schematic_svgs
 # Schematic

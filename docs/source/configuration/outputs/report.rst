@@ -37,6 +37,7 @@ Parameters:
       -  **template** :index:`: <pair: output - report - options; template>` [:ref:`string <string>`] (default: ``'full'``) Name for one of the internal templates (full, full_svg, simple) or a custom template file.
          Environment variables and ~ are allowed.
          Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
+      -  ``alloy_specific_gravity`` :index:`: <pair: output - report - options; alloy_specific_gravity>` [:ref:`number <number>`] (default: ``7.4``) Specific gravity of the alloy used for the solder paste, in g/cm3. Used to compute solder paste usage.
       -  ``convert_from`` :index:`: <pair: output - report - options; convert_from>` [:ref:`string <string>`] (default: ``'markdown'``) Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
       -  ``converted_output`` :index:`: <pair: output - report - options; converted_output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Converted output file name (%i='report', %x=`convert_to`).
          Note that the extension should match the `convert_to` value. Affected by global options.
@@ -44,6 +45,9 @@ Parameters:
       -  ``eurocircuits_reduce_holes`` :index:`: <pair: output - report - options; eurocircuits_reduce_holes>` [:ref:`number <number>`] (default: ``0.45``) When computing the Eurocircuits category: Final holes sizes smaller or equal to this given
          diameter can be reduced to accommodate the correct annular ring values.
          Use 0 to disable it.
+      -  ``flux_specific_gravity`` :index:`: <pair: output - report - options; flux_specific_gravity>` [:ref:`number <number>`] (default: ``1.0``) Specific gravity of the flux used for the solder paste, in g/cm3. Used to compute solder paste usage.
+      -  ``solder_paste_metal_amount`` :index:`: <pair: output - report - options; solder_paste_metal_amount>` [:ref:`number <number>`] (default: ``87.75``) (range: 0 to 100) Amount of metal in the solder paste (percentage). Used to compute solder paste usage.
+      -  ``stencil_thickness`` :index:`: <pair: output - report - options; stencil_thickness>` [:ref:`number <number>`] (default: ``0.12``) Stencil thickness in mm. Used to compute solder paste usage.
 
 -  **type** :index:`: <pair: output - report; type>` 'report'
 -  ``category`` :index:`: <pair: output - report; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.

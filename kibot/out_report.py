@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -15,12 +15,13 @@ Dependencies:
     extra_arch: ['texlive-core']
     comments: 'In CI/CD environments: the `kicad_auto_test` docker image contains it.'
 """
+import math
 import os
 import re
 import pcbnew
 
 from .gs import GS
-from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT,
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT, W_UNKPADSH,
                    W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
 from .out_base import BaseOptions
@@ -202,6 +203,14 @@ class ReportOptions(BaseOptions):
             """ When computing the Eurocircuits category: Final holes sizes smaller or equal to this given
                 diameter can be reduced to accommodate the correct annular ring values.
                 Use 0 to disable it """
+            self.alloy_specific_gravity = 7.4
+            """ Specific gravity of the alloy used for the solder paste, in g/cm3. Used to compute solder paste usage """
+            self.flux_specific_gravity = 1.0
+            """ Specific gravity of the flux used for the solder paste, in g/cm3. Used to compute solder paste usage """
+            self.solder_paste_metal_amount = 87.75
+            """ [0,100] Amount of metal in the solder paste (percentage). Used to compute solder paste usage """
+            self.stencil_thickness = 0.12
+            """ Stencil thickness in mm. Used to compute solder paste usage """
         super().__init__()
         self._expand_id = 'report'
         self._expand_ext = 'txt'
@@ -727,6 +736,91 @@ class ReportOptions(BaseOptions):
         ###########################################################
         self._track_sizes = board.GetTrackWidthList()
         self._tracks_defined = set(self._track_sizes)
+        ###########################################################
+        # Solder paste stats
+        # https://www.indium.com/blog/calculating-solder-paste-usage.php#ixzz246lOB9HY
+        # https://github.com/mfussi/kicad-solderpaste-usage
+        ###########################################################
+        self.paste_pads_front = self.paste_pads_bottom = 0
+        self.paste_pads_front_area = self.paste_pads_bottom_area = 0
+        for m in modules:
+            for pad in m.Pads():
+                on_top = pad.IsOnLayer(pcbnew.F_Paste)
+                on_bottom = pad.IsOnLayer(pcbnew.B_Paste)
+                if not on_top and not on_bottom:
+                    continue
+                shape = pad.GetShape()
+                size = pad.GetSize()
+                if GS.ki6:
+                    area = GS.to_mm(GS.to_mm(pad.GetEffectivePolygon().Area()))
+                elif shape == pcbnew.PAD_SHAPE_CIRCLE:
+                    radius = GS.to_mm(size.x/2)
+                    area = math.pi*radius*radius
+                elif shape == pcbnew.PAD_SHAPE_RECT:
+                    area = GS.to_mm(size.x)*GS.to_mm(size.y)
+                elif shape == pcbnew.PAD_SHAPE_OVAL:
+                    if size.x > size.y:
+                        dia_major = GS.to_mm(size.x)
+                        dia_minor = GS.to_mm(size.y)
+                    else:
+                        dia_major = GS.to_mm(size.y)
+                        dia_minor = GS.to_mm(size.x)
+                    area = dia_major*dia_minor
+                    # Adjust the area, here the dia_minor is the diameter for a circle
+                    area -= (1-math.pi/4)*dia_minor*dia_minor
+                elif shape == pcbnew.PAD_SHAPE_TRAPEZOID:
+                    delta = pad.GetDelta()
+                    if delta.x:
+                        a = GS.to_mm(size.y-delta.y)
+                        b = GS.to_mm(size.y+delta.y)
+                        h = GS.to_mm(size.x)
+                    else:
+                        a = GS.to_mm(size.x-delta.x)
+                        b = GS.to_mm(size.x+delta.x)
+                        h = GS.to_mm(size.y)
+                    area = a*b/2*h
+                elif shape == pcbnew.PAD_SHAPE_ROUNDRECT:
+                    area = GS.to_mm(size.x)*GS.to_mm(size.y)
+                    # Adjust the corners area
+                    radius = GS.to_mm(pad.GetRoundRectCornerRadius())
+                    # Taking the 4 corners:
+                    # - We computed a square: 2*radius*2*radius = 4*radius
+                    # - But we should compute a circle: PI*radius*radius
+                    area -= (4-math.pi)*radius*radius
+                # Introduced in KiCad 6, so we can use GetEffectivePolygon
+                # elif shape == pcbnew.PAD_SHAPE_CHAMFERED_RECT:
+                #     area = GS.to_mm(size.x)*GS.to_mm(size.y)
+                #     sz = pad.GetChamferRectRatio()*GS.to_mm(min(size.x, size.y))
+                #     corners = pad.GetChamferPositions()
+                #     n_corners = 1 if corners & 1 else 0
+                #     n_corners += 1 if corners & 2 else 0
+                #     n_corners += 1 if corners & 4 else 0
+                #     n_corners += 1 if corners & 8 else 0
+                #     area -= n_corners*sz*sz/2
+                elif shape == pcbnew.PAD_SHAPE_CUSTOM:
+                    poly = pad.GetCustomShapeAsPolygon()
+                    area = GS.to_mm(GS.to_mm(poly.Area()))
+                else:
+                    logger.warning(f"{W_UNKPADSH}Unknown shape for pad `{pad.GetNumber()}` of `{m.GetReference()}` " +
+                                   get_pad_info(pad))
+                if on_top:
+                    self.paste_pads_front += 1
+                    self.paste_pads_front_area += area
+                else:
+                    self.paste_pads_bottom += 1
+                    self.paste_pads_bottom_area += area
+        self._paste_pads_front_vol = self.paste_pads_front_area * self.stencil_thickness
+        self._paste_pads_bottom_vol = self.paste_pads_bottom_area * self.stencil_thickness
+        amount_of_metal = self.solder_paste_metal_amount/100.0
+        # Greely Formula
+        self.solder_paste_gravity = ((self.alloy_specific_gravity * self.flux_specific_gravity) /
+                                     (((1.0 - amount_of_metal) * self.alloy_specific_gravity) +
+                                     (amount_of_metal * self.flux_specific_gravity)))
+        self.solder_paste_front = (self._paste_pads_front_vol / 100.0) * self.solder_paste_gravity
+        self.solder_paste_bottom = (self._paste_pads_bottom_vol / 100.0) * self.solder_paste_gravity
+        self.paste_pads = self.paste_pads_front + self.paste_pads_bottom
+        self.paste_pads_area = self.paste_pads_front_area + self.paste_pads_bottom_area
+        self.solder_paste = self.solder_paste_front + self.solder_paste_bottom
 
     def eval_conditional(self, line):
         context = {k: getattr(self, k) for k in dir(self) if k[0] != '_' and not callable(getattr(self, k))}
