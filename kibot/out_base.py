@@ -1049,7 +1049,7 @@ class VariantOptions(BaseOptions):
         if self._files_to_remove:
             self.remove_temporals()
 
-    def run(self, output_dir):
+    def load_list_components(self):
         """ Makes the list of components available """
         self._files_to_remove = []
         if not self.dnf_filter and not self.variant and not self.pre_transform:
@@ -1068,6 +1068,9 @@ class VariantOptions(BaseOptions):
             comps = self.variant.filter(comps)
             self._sub_pcb = self.variant._sub_pcb
         self._comps = comps
+
+    def run(self, output_dir):
+        self.load_list_components()
 
     # The following 5 members are used by 2D and 3D renderers
     def setup_renderer(self, components, active_components):

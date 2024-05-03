@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed:
 - iBoM: *highlight_pin1* option didn't allow the use of the new choices.
+- PCB2Blender_Tools: transform filters might make it fail. (#618)
 
 
 ## [1.7.0] - 2024-04-23

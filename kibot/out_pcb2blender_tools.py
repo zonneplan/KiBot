@@ -332,6 +332,13 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         self.undo_show_components()
 
     def get_targets(self, out_dir):
+        # Here we have an interesting case:
+        # We are listing the pads, but this needs variants applied.
+        # Otherwise a transform filter could invalidate the generated list.
+        # So we need to apply the variants.
+        self.load_list_components()
+        self.apply_show_components()
+        self.filter_pcb_components(do_3D=True)
         files = []
         if self.board_bounds_create:
             files.append(os.path.join(out_dir, self.board_bounds_dir, self.board_bounds_file))
@@ -354,6 +361,8 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                     files.append(os.path.join(subdir, self.sub_boards_stacked_prefix+stacked.name))
             else:
                 files.append(dir_name)
+        self.unfilter_pcb_components(do_3D=True)
+        self.undo_show_components()
         return files
 
 
