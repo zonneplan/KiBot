@@ -2048,3 +2048,12 @@ def test_only_pcb_bad_ref(test_dir):
     ctx.run()
     ctx.search_err('Not including component')
     ctx.clean_up()
+
+
+def test_report_variant_t1(test_dir):
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_var_t1_csv', '')
+    ctx.run()
+    ctx.search_in_file(prj+'-report.txt', [r'|\s+Total\s+|\s+40\s+|\s+52'])
+    ctx.search_in_file(prj+'-report_(V1).txt', [r'|\s+Total\s+|\s+4\s+|\s+5\.'])
+    ctx.clean_up()

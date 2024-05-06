@@ -24,7 +24,7 @@ from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT, W_UNKPADSH,
                    W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
-from .out_base import BaseOptions
+from .out_base import VariantOptions
 from .error import KiPlotConfigurationError
 from .kiplot import config_output, run_command
 from .dep_downloader import get_dep_data
@@ -176,7 +176,7 @@ def list_nice(names):
     return res[2:]
 
 
-class ReportOptions(BaseOptions):
+class ReportOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
@@ -917,6 +917,7 @@ class ReportOptions(BaseOptions):
         run_command(cmd)
 
     def run(self, fname):
+        super().run(fname)
         self.pcb_material = GS.global_pcb_material
         self.solder_mask_color = GS.global_solder_mask_color
         self.solder_mask_color_top = GS.global_solder_mask_color_top
@@ -934,7 +935,10 @@ class ReportOptions(BaseOptions):
         self.impedance_controlled = GS.global_impedance_controlled
         self.stackup = 'yes' if GS.stackup else ''
         self._stackup = GS.stackup if GS.stackup else []
+        filtered = self.filter_pcb_components()
         self.collect_data(GS.board)
+        if filtered:
+            self.unfilter_pcb_components()
         base_dir = os.path.dirname(fname)
         # Collect the PCB layers and schematic prints
         self._layer_pdfs = []

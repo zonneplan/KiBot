@@ -19,7 +19,10 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 Added
 ~~~~~
 
--  Report: Solder paste usage stats (#616)
+-  Report:
+
+   -  Solder paste usage stats (#616)
+   -  Support for variants (See #616)
 
 Fixed:
 ~~~~~~

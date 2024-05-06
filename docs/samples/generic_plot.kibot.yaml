@@ -3433,6 +3433,9 @@ outputs:
       # [string='%f-%i%I%v.%x'] Converted output file name (%i='report', %x=`convert_to`).
       # Note that the extension should match the `convert_to` value. Affected by global options
       converted_output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+      # A short-cut to use for simple cases where a variant is an overkill
+      dnf_filter: '_none'
       # [boolean=false] Run `Pandoc` to convert the report. Note that Pandoc must be installed.
       # The conversion is done assuming the report is in `convert_from` format.
       # The output file will be in `convert_to` format.
@@ -3450,6 +3453,9 @@ outputs:
       flux_specific_gravity: 1.0
       # [string='%f-%i%I%v.%x'] Output file name (%i='report', %x='txt'). Affected by global options
       output: '%f-%i%I%v.%x'
+      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # A short-cut to use for simple cases where a variant is an overkill
+      pre_transform: '_none'
       # [number=87.75] [0,100] Amount of metal in the solder paste (percentage). Used to compute solder paste usage
       solder_paste_metal_amount: 87.75
       # [number=0.12] Stencil thickness in mm. Used to compute solder paste usage
@@ -3458,6 +3464,8 @@ outputs:
       # Environment variables and ~ are allowed.
       # Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`)
       template: 'full'
+      # [string=''] Board variant to apply
+      variant: ''
   # Schematic with variant generator:
   # This copy isn't intended for development.
   # Is just a tweaked version of the original where you can look at the results.

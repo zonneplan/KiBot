@@ -7,7 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.7.1] - UNRELEASED
 ### Added
-- Report: Solder paste usage stats (#616)
+- Report:
+  - Solder paste usage stats (#616)
+  - Support for variants (See #616)
 
 ### Fixed:
 - iBoM: *highlight_pin1* option didn't allow the use of the new choices.
