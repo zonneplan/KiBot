@@ -229,6 +229,8 @@ def load_board(pcb_file=None, forced=False):
         if GS.ki8:
             # KiCad 8.0.2 crazyness: hidden text affects scaling, even when not plotted
             # So a PRL can affect the plot mechanism
+            # https://gitlab.com/kicad/code/kicad/-/issues/17958
+            # https://gitlab.com/kicad/code/kicad/-/commit/8184ed64e732ed0812831a13ebc04bd12e8d1d19
             board.SetElementVisibility(pcbnew.LAYER_HIDDEN_TEXT, False)
         GS.board = board
     except OSError as e:
