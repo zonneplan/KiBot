@@ -16,11 +16,31 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 [1.7.1] - UNRELEASED
 --------------------
 
+Added
+~~~~~
+
+-  Report:
+
+   -  Solder paste usage stats (#616)
+   -  Support for variants (See #616)
+
+-  KiCost: option to specify a configuration file (#615)
+
 Fixed:
 ~~~~~~
 
 -  iBoM: *highlight_pin1* option didn’t allow the use of the new
    choices.
+-  PCB2Blender_Tools: transform filters might make it fail. (#618)
+
+Changed:
+~~~~~~~~
+
+-  KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it
+   is computed even for operations where it isn’t really visible, like
+   plotting a layer where we don’t have the hidden text. So currently
+   KiBot is experimentally disabling the “hidden text layer”. This is a
+   bug in KiCad (https://gitlab.com/kicad/code/kicad/-/issues/17958)
 
 [1.7.0] - 2024-04-23
 --------------------

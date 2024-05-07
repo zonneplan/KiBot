@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -83,6 +83,12 @@ class KiCostOptions(VariantOptions):
             """ *Number of boards to build (components multiplier) """
             self.board_qty = None
             """ {number} """
+            self.kicost_config = ''
+            """ KiCost configuration file. It contains the keys for the different distributors APIs.
+                The regular KiCost config is used when empty.
+                Important for CI/CD environments: avoid exposing your API secrets!
+                To understand how to achieve this, and also how to make use of the cache please visit the
+                [kicost_ci_test](https://github.com/set-soft/kicost_ci_test) repo """
 
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
@@ -211,6 +217,12 @@ class KiCostOptions(VariantOptions):
         if self.translate_fields:
             cmd.append('--translate_fields')
             cmd.extend(self.translate_fields)
+        # Config specified by the user
+        if self.kicost_config:
+            cfg_name = os.path.expanduser(self.kicost_config)
+            if not os.path.isfile(cfg_name):
+                raise KiPlotConfigurationError(f"Missing config file: `{cfg_name}`")
+            cmd.extend(['--config', ])
         # Run the command
         try:
             run_command(cmd, err_msg='Failed to create costs spreadsheet, error {ret}', err_lvl=BOM_ERROR)

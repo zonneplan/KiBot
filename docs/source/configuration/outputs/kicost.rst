@@ -55,6 +55,11 @@ Parameters:
 
       -  ``ignore_fields`` :index:`: <pair: output - kicost - options; ignore_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of fields to be ignored.
 
+      -  ``kicost_config`` :index:`: <pair: output - kicost - options; kicost_config>` [:ref:`string <string>`] (default: ``''``) KiCost configuration file. It contains the keys for the different distributors APIs.
+         The regular KiCost config is used when empty.
+         Important for CI/CD environments: avoid exposing your API secrets!
+         To understand how to achieve this, and also how to make use of the cache please visit the
+         `kicost_ci_test <https://github.com/set-soft/kicost_ci_test>`__ repo.
       -  ``kicost_variant`` :index:`: <pair: output - kicost - options; kicost_variant>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the variant field (KiCost option, not internal variants).
       -  ``no_collapse`` :index:`: <pair: output - kicost - options; no_collapse>` [:ref:`boolean <boolean>`] (default: ``false``) Do not collapse the part references (collapse=R1-R4).
       -  ``pre_transform`` :index:`: <pair: output - kicost - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
