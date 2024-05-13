@@ -639,7 +639,7 @@ class Navigate_ResultsOptions(BaseOptions):
                 # Skip outputs that aren't generated in a regular run
                 continue
             config_output(o)
-            cat = force_list(o.category)
+            cat = o.category
             if cat is None:
                 continue
             for c in cat:

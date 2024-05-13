@@ -174,7 +174,7 @@ class BaseOutput(RegOutput):
             self.options.config(self)
         self.category = self.force_list(self.category)
         if not self.category:
-            self.category = self._category
+            self.category = self.force_list(self._category)
         self.groups = self.force_list(self.groups, comma_sep=False)
 
     def expand_dirname(self, out_dir):
