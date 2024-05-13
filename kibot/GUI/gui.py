@@ -1,23 +1,34 @@
 # https://github.com/wxFormBuilder/wxFormBuilder
 
 import os
-import wx
 from ..gs import GS
 from . import main_dialog_base
 from .. import __version__
 from .. import log
+from ..kiplot import config_output
 from ..registrable import RegOutput
+from .data_types import get_data_type_tree, add_widgets
+logger = log.get_logger()
+
+import wx
+# Do it before any wx thing is called
+app = wx.App()
+if hasattr(app, "GTKSuppressDiagnostics"):
+    app.GTKSuppressDiagnostics()
+if hasattr(wx, "APP_ASSERT_SUPPRESS"):
+    app.SetAssertMode(wx.APP_ASSERT_SUPPRESS)
+if hasattr(wx, "DisableAsserts"):
+    wx.DisableAsserts()
 if hasattr(wx, "GetLibraryVersionInfo"):
     WX_VERSION = wx.GetLibraryVersionInfo()  # type: wx.VersionInfo
     WX_VERSION = (WX_VERSION.Major, WX_VERSION.Minor, WX_VERSION.Micro)
 else:
     # old kicad used this (exact version doesn't matter)
     WX_VERSION = (3, 0, 2)
-logger = log.get_logger()
+
 OK_CHAR = '\U00002714'
 # NOT_OK_CHAR = '\U0000274C'
 NOT_OK_CHAR = '\U00002717'
-app = None
 
 
 def pop_error(msg):
@@ -58,8 +69,8 @@ class MainDialog(main_dialog_base.MainDialogBase):
 
 
 def do_gui(outputs):
-    global app
-    app = wx.App()
+    for o in outputs:
+        config_output(o, dry=True)
     dlg = MainDialog(outputs)
     res = dlg.ShowModal()
     dlg.Destroy()
@@ -129,6 +140,8 @@ def get_selection(lbox):
 def edit_output(parent, o):
     dlg = EditOutput(parent, o)
     res = dlg.ShowModal()
+    if res == wx.ID_OK:
+        dlg.get_values()
     dlg.Destroy()
     return res
 
@@ -140,24 +153,25 @@ class EditOutput(wx.Dialog):
                            parent,
                            id=wx.ID_ANY,
                            title="Output "+str(o),
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
-        self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
+                           style=wx.STAY_ON_TOP | wx.BORDER_DEFAULT | wx.CAPTION)  # wx.RESIZE_BORDER
+        self.parent = parent
         # Main sizer
         b_sizer = wx.BoxSizer(wx.VERTICAL)
         # Output widgets sizer
         middle_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        # Compute the size
-        maxDisplayArea = wx.Display().GetClientArea()
-        self.maxDialogSize = wx.Size(min(500, maxDisplayArea.Width),
-                                     min(800, maxDisplayArea.Height - 200))
         # This is the area for the output widgets
         self.scrollWindow = wx.ScrolledWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.VSCROLL)
-        self.scrollWindow.SetSizeHints(self.maxDialogSize, wx.Size(self.maxDialogSize.width, -1))
         self.scrollWindow.SetScrollRate(5, 5)
-        #
-        # Add widgets
-        #
-        middle_sizer.Add(self.scrollWindow, 0, wx.EXPAND | wx.ALL, 5)
+
+        # Main widgets area, scrollable
+        self.scrl_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.data_type_tree = get_data_type_tree(o)
+        add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer)
+        self.scrollWindow.SetSizer(self.scrl_sizer)
+        self.compute_scroll_hints()
+        self.scrl_sizer.Fit(self.scrollWindow)
+        self.scrollWindow.SetAutoLayout(True)
+        middle_sizer.Add(self.scrollWindow, 1, wx.EXPAND | wx.ALL, 5)
         # Add the outputs are to the main sizer
         b_sizer.Add(middle_sizer, 1, wx.ALL | wx.EXPAND, 5)
 
@@ -168,12 +182,45 @@ class EditOutput(wx.Dialog):
         m_but_sizer.Realize()
         b_sizer.Add(m_but_sizer, 0, wx.ALL | wx.EXPAND, 5)
 
+        # Resize things when the collapsible panes change their state
+        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
+
         # Add the main sizer to the dialog
         self.SetSizer(b_sizer)
-        # Done
+        b_sizer.SetSizeHints(self)
+
+        # Auto doesn't work here, we want to adjust the size hints before
+        # self.SetAutoLayout(True)
+        # b_sizer.Fit(self)
+
         self.Layout()
         self.Centre(wx.BOTH)
-        logger.error(o)
+        self.old_size = self.GetSize()
+
+        self.delta = self.old_size-self.GetClientRect().Size
+
+    def compute_scroll_hints(self):
+        """ Adjust the scroller size hints according to the content and the display """
+        maxDisplayArea = wx.Display().GetClientArea()
+        max_usable_height = maxDisplayArea.Height - 200
+        max_usable_width = maxDisplayArea.Width
+        min_scroller_size = wx.Size(min(self.scrl_sizer.MinSize.width, max_usable_width),
+                                    min(self.scrl_sizer.MinSize.height, max_usable_height))
+        self.scrollWindow.SetSizeHints(min_scroller_size, wx.Size(min_scroller_size.width, -1))
+
+    def OnResize(self, event):
+        self.compute_scroll_hints()
+        sizer = self.GetSizer()
+        sizer.Layout()
+        # Not working ... why?
+        new_size = sizer.MinSize+self.delta
+        self.SetSize(new_size)
+
+    def get_values(self):
+        for entry in self.data_type_tree:
+            if entry.name == 'type':
+                continue
+            print(f'{entry.name} {entry.valids[0].get_value()}')
 
     def __del__(self):
         pass
@@ -195,7 +242,6 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         index, string, obj = get_selection(self.outputsBox)
         if obj is None:
             return
-        logger.error(string)
         edit_output(self, obj)
 
     def OnOutputsOrderUp(self, event):
