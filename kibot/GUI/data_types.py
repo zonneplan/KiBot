@@ -4,6 +4,7 @@
 import math
 import wx
 from .validators import NumberValidator
+from .gui_helpers import get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item
 from .. import log
 logger = log.get_logger()
 TYPE_PRIORITY = {'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60, 'string': 50, 'number': 20,
@@ -139,6 +140,89 @@ class DataTypeDict(DataTypeBase):
         return e_sizer
 
 
+class InputStringDialog(wx.Dialog):
+    def __init__(self, parent, lbl, title, help, initial=''):
+        wx.Dialog.__init__(self, parent, title=title,
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        inp_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        label = wx.StaticText(self, label=lbl, style=wx.ALIGN_RIGHT)
+        label.SetToolTip(help)
+        self.input = wx.TextCtrl(self, value=initial, size=wx.Size(def_text, -1))
+        self.input.SetToolTip(help)
+        inp_sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
+        inp_sizer.Add(self.input, 1, wx.EXPAND | wx.ALL, 5)
+        main_sizer.Add(inp_sizer, 1, wx.ALL | wx.EXPAND, 5)
+        main_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
+        self.SetSizer(main_sizer)
+        main_sizer.SetSizeHints(self)
+        # Make ENTER finish it
+        self.Bind(wx.EVT_CHAR_HOOK, self.OnKey)
+
+    def OnKey(self, event):
+        """ Called by the dialog OnCharHook """
+        if event.GetKeyCode() == wx.WXK_RETURN:
+            self.EndModal(wx.ID_OK)
+        else:
+            # Not our key, continue processing it
+            event.Skip()
+
+
+class DataTypeListString(DataTypeBase):
+    def get_widget(self, obj, parent, entry, level):
+        self.label = entry.name
+        self.help = entry.help
+        self.parent = parent
+
+        main_sizer = wx.StaticBoxSizer(wx.VERTICAL, parent, entry.name)
+        sp = main_sizer.GetStaticBox()
+        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        list_sizer = wx.BoxSizer(wx.VERTICAL)
+        val = getattr(obj, entry.name)
+        if val is None:
+            val = []
+        self.lbox = wx.ListBox(sp, choices=val, style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
+        self.lbox.SetToolTip(self.help)
+        list_sizer.Add(self.lbox, 1, wx.ALL | wx.EXPAND, 5)
+
+        abm_sizer.Add(list_sizer, 1, wx.EXPAND, 5)
+
+        but_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.b_up = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("arrow-up"))
+        self.b_up.SetToolTip("Move the selection up")
+        but_sizer.Add(self.b_up, 0, wx.ALL, 5)
+        self.b_down = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("arrow-down"))
+        self.b_down.SetToolTip("Move the selection down")
+        but_sizer.Add(self.b_down, 0, wx.ALL, 5)
+        self.b_add = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("plus"))
+        self.b_add.SetToolTip("Add one entry")
+        but_sizer.Add(self.b_add, 0, wx.ALL, 5)
+        self.b_remove = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("minus"))
+        self.b_remove.SetToolTip("Remove the entry")
+        but_sizer.Add(self.b_remove, 0, wx.ALL, 5)
+
+        abm_sizer.Add(but_sizer, 0, 0, 5)
+        main_sizer.Add(abm_sizer, 1, wx.EXPAND, 5)
+
+        # self.b_up.Bind(wx.EVT_BUTTON, self.OnUp)
+        self.b_up.Bind(wx.EVT_BUTTON, lambda self, event: move_sel_up(self.lbox))
+        self.b_down.Bind(wx.EVT_BUTTON, lambda self, event: move_sel_down(self.lbox))
+        self.b_add.Bind(wx.EVT_BUTTON, self.OnAdd)
+        self.b_remove.Bind(wx.EVT_BUTTON, lambda self, event: remove_item(self.lbox))
+        return main_sizer
+
+    def OnAdd(self, event):
+        dlg = InputStringDialog(self.parent, self.label, "New "+self.label+" entry", self.help)
+        res = dlg.ShowModal()
+        if res == wx.ID_OK:
+            self.lbox.Append(dlg.input.Value)
+        dlg.Destroy()
+
+    def get_value(self):
+        return [self.lbox.GetString(n) for n in range(self.lbox.GetCount())]
+
+
 # ##################################################################################################
 #  End of DataType* classes
 # ##################################################################################################
@@ -156,6 +240,8 @@ def get_class_for(kind, rest):
         return DataTypeBoolean
     elif kind == 'dict':
         return DataTypeDict
+    elif kind == 'list(string)':
+        return DataTypeListString
     return DataTypeBase
 
 

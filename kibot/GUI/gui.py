@@ -6,7 +6,7 @@ from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import get_data_type_tree, add_widgets
-from .gui_helpers import get_btn_bitmap
+from .gui_helpers import get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error
 logger = log.get_logger()
 
 import wx
@@ -28,14 +28,6 @@ else:
 OK_CHAR = '\U00002714'
 # NOT_OK_CHAR = '\U0000274C'
 NOT_OK_CHAR = '\U00002717'
-
-
-def pop_error(msg):
-    wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
-
-
-def pop_confirm(msg):
-    return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION) == wx.YES
 
 
 def set_best_size(self, ref):
@@ -81,27 +73,6 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
         # self.notebook.AddPage(self.general, "General")
         # self.notebook.AddPage(self.html, "Html defaults")
         # self.notebook.AddPage(self.fields, "Fields")
-
-
-def move_sel_up(box):
-    """ Helper to move the selection up """
-    selection = box.Selection
-    if selection != wx.NOT_FOUND and selection > 0:
-        item = box.GetString(selection)
-        box.Delete(selection)
-        box.Insert(item, selection-1)
-        box.SetSelection(selection-1)
-
-
-def move_sel_down(box):
-    """ Helper to move the selection down """
-    selection = box.Selection
-    size = box.Count
-    if selection != wx.NOT_FOUND and selection < size-1:
-        item = box.GetString(selection)
-        box.Delete(selection)
-        box.Insert(item, selection+1)
-        box.SetSelection(selection+1)
 
 
 def set_items_from_output_objs(lbox, outputs):
@@ -159,11 +130,7 @@ class EditOutput(wx.Dialog):
         b_sizer.Add(middle_sizer, 1, wx.ALL | wx.EXPAND, 5)
 
         # Standard Ok/Cancel button
-        m_but_sizer = wx.StdDialogButtonSizer()
-        m_but_sizer.AddButton(wx.Button(self, wx.ID_OK))
-        m_but_sizer.AddButton(wx.Button(self, wx.ID_CANCEL))
-        m_but_sizer.Realize()
-        b_sizer.Add(m_but_sizer, 0, wx.ALL | wx.EXPAND, 5)
+        b_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
 
         # Resize things when the collapsible panes change their state
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
@@ -232,22 +199,6 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
 
     def OnOutputsOrderDown(self, event):
         move_sel_down(self.outputsBox)
-
-
-def remove_item(lbox, confirm=None):
-    selection = lbox.Selection
-    if selection == wx.NOT_FOUND:
-        return
-    ok = True
-    if confirm is not None:
-        name = lbox.GetString(selection)
-        msg = confirm.format(name)
-        ok = pop_confirm(msg)
-    if not ok:
-        return
-    lbox.Delete(selection)
-    count = lbox.GetCount()
-    lbox.SetSelection(min(selection, count-1))
 
 
 # ##########################################################################
@@ -342,11 +293,7 @@ class ChooseOutput(wx.Dialog):
         self.outputsBox = wx.ListBox(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, available, l_style)
         b_sizer.Add(self.outputsBox, 1, wx.ALL | wx.EXPAND, 5)
         # Standard Ok/Cancel
-        m_but_sizer = wx.StdDialogButtonSizer()
-        m_but_sizer.AddButton(wx.Button(self, wx.ID_OK))
-        m_but_sizer.AddButton(wx.Button(self, wx.ID_CANCEL))
-        m_but_sizer.Realize()
-        b_sizer.Add(m_but_sizer, 0, wx.ALL | wx.EXPAND, 5)
+        b_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
         self.SetSizer(b_sizer)
         # Connect Events
         self.outputsBox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)
