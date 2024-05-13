@@ -1,13 +1,12 @@
 # https://github.com/wxFormBuilder/wxFormBuilder
 
-import os
-from ..gs import GS
 from . import main_dialog_base
 from .. import __version__
 from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import get_data_type_tree, add_widgets
+from .gui_helpers import get_btn_bitmap
 logger = log.get_logger()
 
 import wx
@@ -37,16 +36,6 @@ def pop_error(msg):
 
 def pop_confirm(msg):
     return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION) == wx.YES
-
-
-def get_btn_bitmap(bitmap):
-    path = os.path.join(GS.get_resource_path('images'), 'buttons', bitmap)
-    png = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
-
-    if WX_VERSION >= (3, 1, 6):
-        return wx.BitmapBundle(png)
-    else:
-        return png
 
 
 def set_best_size(self, ref):
@@ -80,12 +69,6 @@ def do_gui(outputs):
 class MainDialogPanel(main_dialog_base.MainDialogPanel):
     def __init__(self, parent, outputs):
         main_dialog_base.MainDialogPanel.__init__(self, parent)
-
-        self.notebook.bmp_arrow_up = get_btn_bitmap("btn-arrow-up.png")
-        self.notebook.bmp_arrow_down = get_btn_bitmap("btn-arrow-down.png")
-        self.notebook.bmp_plus = get_btn_bitmap("btn-plus.png")
-        self.notebook.bmp_plus_plus = get_btn_bitmap("btn-plus-plus.png")
-        self.notebook.bmp_minus = get_btn_bitmap("btn-minus.png")
 
         self.outputs = OutputsPanel(self.notebook, outputs)
         self.groups = GroupsPanel(self.notebook, outputs)
@@ -230,10 +213,10 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
     def __init__(self, parent, outputs):
         main_dialog_base.OutputsPanelBase.__init__(self, parent)
         # Set the bitmaps for the buttons
-        self.m_btnOutUp.SetBitmap(parent.bmp_arrow_up)
-        self.m_btnOutDown.SetBitmap(parent.bmp_arrow_down)
-        self.m_btnOutAdd.SetBitmap(parent.bmp_plus)
-        self.m_btnOutRemove.SetBitmap(parent.bmp_minus)
+        self.m_btnOutUp.SetBitmap(get_btn_bitmap("arrow-up"))
+        self.m_btnOutDown.SetBitmap(get_btn_bitmap("arrow-down"))
+        self.m_btnOutAdd.SetBitmap(get_btn_bitmap("plus"))
+        self.m_btnOutRemove.SetBitmap(get_btn_bitmap("minus"))
         # Populate the listbox
         set_items_from_output_objs(self.outputsBox, outputs)
         self.Layout()
@@ -275,10 +258,10 @@ class GroupsPanel(main_dialog_base.GroupsPanelBase):
     def __init__(self, parent, outputs):
         main_dialog_base.GroupsPanelBase.__init__(self, parent)
 
-        self.m_btnGrUp.SetBitmap(parent.bmp_arrow_up)
-        self.m_btnGrDown.SetBitmap(parent.bmp_arrow_down)
-        self.m_btnGrAdd.SetBitmap(parent.bmp_plus)
-        self.m_btnGrRemove.SetBitmap(parent.bmp_minus)
+        self.m_btnGrUp.SetBitmap(get_btn_bitmap("arrow-up"))
+        self.m_btnGrDown.SetBitmap(get_btn_bitmap("arrow-down"))
+        self.m_btnGrAdd.SetBitmap(get_btn_bitmap("plus"))
+        self.m_btnGrRemove.SetBitmap(get_btn_bitmap("minus"))
 
         self.groupsBox.SetItems(list(RegOutput.get_group_names()))
         for n, g in enumerate(RegOutput.get_groups().values()):
@@ -395,11 +378,11 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         main_dialog_base.AddGroupDialogBase.__init__(self, parent)
         self.initialized = True
 
-        self.m_btnOutUp.SetBitmap(parent.Parent.bmp_arrow_up)
-        self.m_btnOutDown.SetBitmap(parent.Parent.bmp_arrow_down)
-        self.m_btnOutAdd.SetBitmap(parent.Parent.bmp_plus)
-        self.m_btnOutAddG.SetBitmap(parent.Parent.bmp_plus_plus)
-        self.m_btnOutRemove.SetBitmap(parent.Parent.bmp_minus)
+        self.m_btnOutUp.SetBitmap(get_btn_bitmap("arrow-up"))
+        self.m_btnOutDown.SetBitmap(get_btn_bitmap("arrow-down"))
+        self.m_btnOutAdd.SetBitmap(get_btn_bitmap("plus"))
+        self.m_btnOutAddG.SetBitmap(get_btn_bitmap("plus-plus"))
+        self.m_btnOutRemove.SetBitmap(get_btn_bitmap("minus"))
 
         set_items_from_output_objs(self.outputsBox, selected)
         self.used_names = used_names
