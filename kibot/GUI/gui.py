@@ -148,7 +148,7 @@ class EditOutput(wx.Dialog):
 
         # Main widgets area, scrollable
         self.scrl_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.data_type_tree = get_data_type_tree(o)
+        self.data_type_tree = get_data_type_tree(RegOutput.get_class_for(o.name)())
         add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer)
         self.scrollWindow.SetSizer(self.scrl_sizer)
         self.compute_scroll_hints()

@@ -200,9 +200,7 @@ class DataEntry(object):
 def get_data_type_tree(obj):
     """ Create a tree containing all the DataEntry objects associated to the data in the *obj* output """
     entries = []
-    for k, v in obj.get_attrs_for().items():
-        if k[0] == '_':
-            continue
+    for k, v in obj.get_attrs_gen():
         help, _, is_alias = obj.get_doc(k, no_basic=True)
         if help is None or is_alias:
             continue
@@ -215,6 +213,6 @@ def get_data_type_tree(obj):
         valids = sorted(valids, key=lambda x: 200-TYPE_PRIORITY[x.kind])
         entry = DataEntry(k, valids, def_val, real_help)
         if entry.is_dict:
-            entry.sub = get_data_type_tree(v)
+            entry.sub = get_data_type_tree(v())
         entries.append(entry)
     return entries
