@@ -237,10 +237,7 @@ class CompressOptions(BaseOptions):
                 if out is not None:
                     config_output(out)
                     if out.category:
-                        if isinstance(out.category, str):
-                            cats.add(out.category)
-                        else:
-                            cats.update(out.category)
+                        cats.update(out.category)
             else:
                 cats.add('Compress')
         return list(cats)
