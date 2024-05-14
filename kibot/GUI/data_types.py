@@ -190,8 +190,12 @@ class DataTypeList(DataTypeBase):
         abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         list_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.lbox = wx.ListBox(sp, choices=[], style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
-        self.set_items(obj, entry.name)
+        self.lbox = wx.ListBox(sp, choices=[], size=wx.Size(def_text, -1), style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
+        try:
+            self.set_items(obj, entry.name)
+        except Exception:
+            logger.error(f'{entry.name} {getattr(obj, entry.name)}')
+            raise
         self.lbox.SetToolTip(self.help)
         list_sizer.Add(self.lbox, 1, wx.ALL | wx.EXPAND, 5)
 
