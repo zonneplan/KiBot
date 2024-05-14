@@ -1,14 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2019 Romain Deterre (@rdeterre)
-# License: GPL-3.0
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot/pull/10
 import os
 from re import compile
 from datetime import datetime
-from collections import OrderedDict
 from .gs import GS
 from .kiplot import run_command
 from .misc import UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES
@@ -20,6 +19,7 @@ from . import log
 
 logger = log.get_logger()
 ref_re = compile(r'([^\d]+)([\?\d]+)')
+DEFAULT_COLUMNS = ('Ref', 'Val', 'Package', 'PosX', 'PosY', 'Rot', 'Side')
 
 
 def _ref_key(ref_str):
@@ -40,7 +40,7 @@ def check_names(top, bot):
 
 class PosColumns(Optionable):
     """ Which columns we want and its names """
-    def __init__(self):
+    def __init__(self, id=None, name=None):
         super().__init__()
         self._unknown_is_error = True
         with document:
@@ -50,6 +50,9 @@ class PosColumns(Optionable):
             """ Name to use in the output file. The id is used when empty """
         self._id_example = 'Ref'
         self._name_example = 'Reference'
+        if id is not None:
+            self.id = id
+            self.name = name
 
     def config(self, parent):
         super().config(parent)
@@ -77,7 +80,6 @@ class PositionOptions(VariantOptions):
             """ [list(dict)|list(string)] Which columns are included in the output """
             self.right_digits = 4
             """ number of digits for mantissa part of coordinates (0 is auto) """
-            self.columns = PosColumns
             self.bottom_negative_x = False
             """ Use negative X coordinates for footprints on bottom layer """
             self.use_aux_axis_as_origin = True
@@ -98,10 +100,9 @@ class PositionOptions(VariantOptions):
         super().config(parent)
         if isinstance(self.columns, type):
             # Default list of columns
-            self.columns = OrderedDict([('Ref', 'Ref'), ('Val', 'Val'), ('Package', 'Package'), ('PosX', 'PosX'),
-                                        ('PosY', 'PosY'), ('Rot', 'Rot'), ('Side', 'Side')])
+            self.columns = [PosColumns(col, col) for col in DEFAULT_COLUMNS]
         else:
-            new_columns = OrderedDict()
+            new_columns = []
             for col in self.columns:
                 if isinstance(col, str):
                     # Just a string, add to the list of used
@@ -109,7 +110,7 @@ class PositionOptions(VariantOptions):
                 else:
                     new_col = col.id
                     new_name = col.name if col.name else new_col
-                new_columns[new_col] = new_name
+                new_columns.append(PosColumns(new_col, new_name))
             self.columns = new_columns
         self._expand_ext = 'pos' if self.format == 'ASCII' else self.format.lower()
 
@@ -255,7 +256,7 @@ class PositionOptions(VariantOptions):
             self.run_gerber(output_dir)
             return
         self.filter_pcb_components()
-        columns = self.columns.values()
+        columns = tuple(o.name for o in self.columns)
         conv = GS.unit_name_to_scale_factor(self.units)
         # Format all strings
         comps_hash = self.get_refs_hash()
@@ -309,7 +310,8 @@ class PositionOptions(VariantOptions):
                     float_format = "{{:.{}f}}".format(self.right_digits)
                 else:
                     float_format = "{}"
-                for k in self.columns:
+                for col in self.columns:
+                    k = col.id
                     if k == 'Ref':
                         row.append(quote_char+ref+quote_char)
                     elif k == 'Val':
