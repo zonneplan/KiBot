@@ -228,7 +228,7 @@ class DataTypeList(DataTypeBase):
 class DataTypeListString(DataTypeList):
     def set_items(self, obj, member):
         val = getattr(obj, member)
-        if val is None:
+        if val is None or isinstance(val, type):
             val = []
         self.lbox.SetItems(val)
 
@@ -246,7 +246,7 @@ class DataTypeListString(DataTypeList):
 class DataTypeListDict(DataTypeList):
     def set_items(self, obj, member):
         val = getattr(obj, member)
-        if val is None:
+        if val is None or isinstance(val, type):
             val = []
         set_items(self.lbox, val)
 
