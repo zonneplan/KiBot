@@ -799,7 +799,7 @@ class BoMOptions(BaseOptions):
         else:
             for field in self.no_conflict:
                 no_conflict.add(field.lower())
-        self.no_conflict = no_conflict
+        self._no_conflict = no_conflict
         # Make sure aggregate is a list
         if isinstance(self.aggregate, type):
             self.aggregate = []

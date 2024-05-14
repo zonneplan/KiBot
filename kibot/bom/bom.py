@@ -295,7 +295,7 @@ class ComponentGroup(object):
         else:
             # Config contains variant information, which is different for each component
             # Part can be one of the defined aliases
-            if field not in self.cfg.no_conflict:
+            if field not in self.cfg._no_conflict:
                 logger.warning(W_FIELDCONF + "Field conflict: ({refs}) [{name}] : '{flds}' <- '{fld}' (in {ref})".format(
                     refs=self.get_refs(),
                     name=field,
