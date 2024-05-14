@@ -70,3 +70,14 @@ def ok_cancel(parent):
     m_but_sizer.AddButton(wx.Button(parent, wx.ID_CANCEL))
     m_but_sizer.Realize()
     return m_but_sizer
+
+
+def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1):
+    sizer = wx.BoxSizer(wx.HORIZONTAL)
+    label = wx.StaticText(parent, label=lbl, size=wx.Size(lbl_w, -1), style=wx.ALIGN_RIGHT)
+    label.SetToolTip(help)
+    input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1))
+    input.SetToolTip(help)
+    sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
+    sizer.Add(input, 1, wx.EXPAND | wx.ALL, 5)
+    return input, sizer

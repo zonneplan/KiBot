@@ -5,7 +5,7 @@ from .. import __version__
 from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput
-from .data_types import get_data_type_tree, add_widgets
+from .data_types import EditDict
 from .gui_helpers import get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error
 logger = log.get_logger()
 
@@ -92,88 +92,12 @@ def get_selection(lbox):
 
 
 def edit_output(parent, o):
-    dlg = EditOutput(parent, o)
+    dlg = EditDict(parent, o, "Output "+str(o))
     res = dlg.ShowModal()
     if res == wx.ID_OK:
         dlg.get_values()
     dlg.Destroy()
     return res
-
-
-class EditOutput(wx.Dialog):
-    def __init__(self, parent, o):
-        # Generated code
-        wx.Dialog.__init__(self,
-                           parent,
-                           id=wx.ID_ANY,
-                           title="Output "+str(o),
-                           style=wx.STAY_ON_TOP | wx.BORDER_DEFAULT | wx.CAPTION)  # wx.RESIZE_BORDER
-        self.parent = parent
-        # Main sizer
-        b_sizer = wx.BoxSizer(wx.VERTICAL)
-        # Output widgets sizer
-        middle_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        # This is the area for the output widgets
-        self.scrollWindow = wx.ScrolledWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.VSCROLL)
-        self.scrollWindow.SetScrollRate(5, 5)
-
-        # Main widgets area, scrollable
-        self.scrl_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.data_type_tree = get_data_type_tree(RegOutput.get_class_for(o.name)())
-        add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer)
-        self.scrollWindow.SetSizer(self.scrl_sizer)
-        self.compute_scroll_hints()
-        self.scrl_sizer.Fit(self.scrollWindow)
-        self.scrollWindow.SetAutoLayout(True)
-        middle_sizer.Add(self.scrollWindow, 1, wx.EXPAND | wx.ALL, 5)
-        # Add the outputs are to the main sizer
-        b_sizer.Add(middle_sizer, 1, wx.ALL | wx.EXPAND, 5)
-
-        # Standard Ok/Cancel button
-        b_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
-
-        # Resize things when the collapsible panes change their state
-        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
-
-        # Add the main sizer to the dialog
-        self.SetSizer(b_sizer)
-        b_sizer.SetSizeHints(self)
-
-        # Auto doesn't work here, we want to adjust the size hints before
-        # self.SetAutoLayout(True)
-        # b_sizer.Fit(self)
-
-        self.Layout()
-        self.Centre(wx.BOTH)
-        self.old_size = self.GetSize()
-
-        self.delta = self.old_size-self.GetClientRect().Size
-
-    def compute_scroll_hints(self):
-        """ Adjust the scroller size hints according to the content and the display """
-        maxDisplayArea = wx.Display().GetClientArea()
-        max_usable_height = maxDisplayArea.Height - 200
-        max_usable_width = maxDisplayArea.Width
-        min_scroller_size = wx.Size(min(self.scrl_sizer.MinSize.width, max_usable_width),
-                                    min(self.scrl_sizer.MinSize.height, max_usable_height))
-        self.scrollWindow.SetSizeHints(min_scroller_size, wx.Size(min_scroller_size.width, -1))
-
-    def OnResize(self, event):
-        self.compute_scroll_hints()
-        sizer = self.GetSizer()
-        sizer.Layout()
-        # Not working ... why?
-        new_size = sizer.MinSize+self.delta
-        self.SetSize(new_size)
-
-    def get_values(self):
-        for entry in self.data_type_tree:
-            if entry.name == 'type':
-                continue
-            print(f'{entry.name} {entry.valids[0].get_value()}')
-
-    def __del__(self):
-        pass
 
 
 class OutputsPanel(main_dialog_base.OutputsPanelBase):

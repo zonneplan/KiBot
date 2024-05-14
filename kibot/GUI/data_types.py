@@ -4,7 +4,9 @@
 import math
 import wx
 from .validators import NumberValidator
-from .gui_helpers import get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item
+from .gui_helpers import get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text
+from .gui_config import USE_DIALOG_FOR_NESTED
+from ..registrable import RegOutput
 from .. import log
 logger = log.get_logger()
 TYPE_PRIORITY = {'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60, 'string': 50, 'number': 20,
@@ -39,14 +41,9 @@ class DataTypeString(DataTypeBase):
         help += self.get_restriction_help()
         if self.default is not None:
             help += f'\nDefault: {self.default}'
-        e_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
-        label.SetToolTip(help)
-        self.input = wx.TextCtrl(parent, value=str(getattr(obj, entry.name)), size=wx.Size(def_text, -1))
-        self.input.SetToolTip(help)
-        e_sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
-        e_sizer.Add(self.input, 1, wx.EXPAND | wx.ALL, 5)
-        return e_sizer
+        self.input, sizer = input_label_and_text(parent, self.get_label(entry), str(getattr(obj, entry.name)), help,
+                                                 def_text, max_label)
+        return sizer
 
     def get_value(self):
         return self.input.Value
@@ -123,21 +120,35 @@ class DataTypeChoice(DataTypeBase):
 
 class DataTypeDict(DataTypeBase):
     def get_widget(self, obj, parent, entry, level):
-
         help = entry.help
+        lbl = self.get_label(entry)
+        self.sub_obj = getattr(obj, entry.name)
+        self.parent = parent
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        cp = wx.CollapsiblePane(parent, label=self.get_label(entry))
-        cp.SetToolTip(help)
-        # cp.Collapse(False)  # Start expanded
 
-        pane = cp.GetPane()
-        pane_sizer = wx.BoxSizer(wx.VERTICAL)
-        sub_obj = getattr(obj, entry.name)
-        add_widgets(sub_obj, entry.sub, pane, pane_sizer, level+1)
-        pane.SetSizer(pane_sizer)
+        if USE_DIALOG_FOR_NESTED:
+            self.entry_name = lbl
+            self.btn = wx.Button(parent, label="Edit "+lbl)
+            e_sizer.Add(self.btn, 1, wx.EXPAND | wx.ALL, 5)
+            self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
+            self.sub_entries = entry.sub
+        else:
+            # Collapsible pane version
+            cp = wx.CollapsiblePane(parent, label=lbl)
+            cp.SetToolTip(help)
+            # cp.Collapse(False)  # Start expanded
 
-        e_sizer.Add(cp, 1, wx.EXPAND | wx.ALL, 5)
+            pane = cp.GetPane()
+            pane_sizer = wx.BoxSizer(wx.VERTICAL)
+
+            add_widgets(self.sub_obj, entry.sub, pane, pane_sizer, level+1)
+            pane.SetSizer(pane_sizer)
+
+            e_sizer.Add(cp, 1, wx.EXPAND | wx.ALL, 5)
         return e_sizer
+
+    def OnEdit(self, event):
+        edit_dict(self.parent.Parent, self.sub_obj, self.sub_entries, self.entry_name)
 
 
 class InputStringDialog(wx.Dialog):
@@ -145,13 +156,7 @@ class InputStringDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, title=title,
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
-        inp_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        label = wx.StaticText(self, label=lbl, style=wx.ALIGN_RIGHT)
-        label.SetToolTip(help)
-        self.input = wx.TextCtrl(self, value=initial, size=wx.Size(def_text, -1))
-        self.input.SetToolTip(help)
-        inp_sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
-        inp_sizer.Add(self.input, 1, wx.EXPAND | wx.ALL, 5)
+        self.input, inp_sizer = input_label_and_text(self, lbl, initial, help, def_text)
         main_sizer.Add(inp_sizer, 1, wx.ALL | wx.EXPAND, 5)
         main_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
         self.SetSizer(main_sizer)
@@ -168,7 +173,7 @@ class InputStringDialog(wx.Dialog):
             event.Skip()
 
 
-class DataTypeListString(DataTypeBase):
+class DataTypeList(DataTypeBase):
     def get_widget(self, obj, parent, entry, level):
         self.label = entry.name
         self.help = entry.help
@@ -205,13 +210,14 @@ class DataTypeListString(DataTypeBase):
         abm_sizer.Add(but_sizer, 0, 0, 5)
         main_sizer.Add(abm_sizer, 1, wx.EXPAND, 5)
 
-        # self.b_up.Bind(wx.EVT_BUTTON, self.OnUp)
         self.b_up.Bind(wx.EVT_BUTTON, lambda self, event: move_sel_up(self.lbox))
         self.b_down.Bind(wx.EVT_BUTTON, lambda self, event: move_sel_down(self.lbox))
         self.b_add.Bind(wx.EVT_BUTTON, self.OnAdd)
         self.b_remove.Bind(wx.EVT_BUTTON, lambda self, event: remove_item(self.lbox))
         return main_sizer
 
+
+class DataTypeListString(DataTypeList):
     def OnAdd(self, event):
         dlg = InputStringDialog(self.parent, self.label, "New "+self.label+" entry", self.help)
         res = dlg.ShowModal()
@@ -226,6 +232,89 @@ class DataTypeListString(DataTypeBase):
 # ##################################################################################################
 #  End of DataType* classes
 # ##################################################################################################
+
+
+class EditDict(wx.Dialog):
+    """ Dialog for a group of options """
+    def __init__(self, parent, o, title, data_tree=None):
+        # Generated code
+        wx.Dialog.__init__(self, parent, title=title,
+                           style=wx.STAY_ON_TOP | wx.BORDER_DEFAULT | wx.CAPTION)  # wx.RESIZE_BORDER
+        self.parent = parent
+        # Main sizer
+        b_sizer = wx.BoxSizer(wx.VERTICAL)
+        # Output widgets sizer
+        middle_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # This is the area for the output widgets
+        self.scrollWindow = wx.ScrolledWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.VSCROLL)
+        self.scrollWindow.SetScrollRate(5, 5)
+
+        # Main widgets area, scrollable
+        self.scrl_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.data_type_tree = get_data_type_tree(RegOutput.get_class_for(o.name)()) if data_tree is None else data_tree
+        add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer)
+        self.scrollWindow.SetSizer(self.scrl_sizer)
+        self.compute_scroll_hints()
+        self.scrl_sizer.Fit(self.scrollWindow)
+        self.scrollWindow.SetAutoLayout(True)
+        middle_sizer.Add(self.scrollWindow, 1, wx.EXPAND | wx.ALL, 5)
+        # Add the outputs are to the main sizer
+        b_sizer.Add(middle_sizer, 1, wx.ALL | wx.EXPAND, 5)
+
+        # Standard Ok/Cancel button
+        b_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
+
+        # Resize things when the collapsible panes change their state
+        self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
+
+        # Add the main sizer to the dialog
+        self.SetSizer(b_sizer)
+        b_sizer.SetSizeHints(self)
+
+        # Auto doesn't work here, we want to adjust the size hints before
+        # self.SetAutoLayout(True)
+        # b_sizer.Fit(self)
+
+        self.Layout()
+        self.Centre(wx.BOTH)
+        self.old_size = self.GetSize()
+
+        self.delta = self.old_size-self.GetClientRect().Size
+
+    def compute_scroll_hints(self):
+        """ Adjust the scroller size hints according to the content and the display """
+        maxDisplayArea = wx.Display().GetClientArea()
+        max_usable_height = maxDisplayArea.Height - 200
+        max_usable_width = maxDisplayArea.Width
+        min_scroller_size = wx.Size(min(self.scrl_sizer.MinSize.width, max_usable_width),
+                                    min(self.scrl_sizer.MinSize.height, max_usable_height))
+        self.scrollWindow.SetSizeHints(min_scroller_size, wx.Size(min_scroller_size.width, -1))
+
+    def OnResize(self, event):
+        self.compute_scroll_hints()
+        sizer = self.GetSizer()
+        sizer.Layout()
+        # Not working ... why?
+        new_size = sizer.MinSize+self.delta
+        self.SetSize(new_size)
+
+    def get_values(self):
+        for entry in self.data_type_tree:
+            if entry.name == 'type':
+                continue
+            print(f'{entry.name} {entry.valids[0].get_value()}')
+
+    def __del__(self):
+        pass
+
+
+def edit_dict(parent_dialog, obj, entries, entry_name):
+    dlg = EditDict(parent_dialog, obj, parent_dialog.GetTitle() + ' | ' + entry_name, entries)
+    res = dlg.ShowModal()
+    if res == wx.ID_OK:
+        dlg.get_values()
+    dlg.Destroy()
+    return res
 
 
 def get_class_for(kind, rest):
