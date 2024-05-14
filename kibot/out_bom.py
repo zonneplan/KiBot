@@ -773,9 +773,9 @@ class BoMOptions(BaseOptions):
         else:
             # Make the grouping fields lowercase
             self.group_fields_fallbacks = [f.lower() for f in self.group_fields_fallbacks]
-        # Fill with None if needed
+        # Fill with empty if needed
         if len(self.group_fields_fallbacks) < len(self.group_fields):
-            self.group_fields_fallbacks.extend([None]*(len(self.group_fields)-len(self.group_fields_fallbacks)))
+            self.group_fields_fallbacks.extend(['']*(len(self.group_fields)-len(self.group_fields_fallbacks)))
         # component_aliases
         if isinstance(self.component_aliases, type):
             self.component_aliases = DEFAULT_ALIASES

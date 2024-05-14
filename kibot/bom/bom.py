@@ -92,7 +92,7 @@ def compare_components(c1, c2, cfg):
     for i, field in enumerate(cfg.group_fields):
         # Check if we have a fallback
         field_alt = cfg.group_fields_fallbacks[i]
-        if field_alt is not None:
+        if field_alt:
             # Check if we have an empty field
             c1_value = c1.get_field_value(field)
             c2_value = c2.get_field_value(field)
