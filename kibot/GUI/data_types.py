@@ -255,10 +255,28 @@ class DataTypeListDict(DataTypeList):
         res = edit_dict(self.parent.Parent, new_obj, self.entry.sub, self.entry.name)
         if res == wx.ID_OK:
             self.lbox.Append(str(new_obj), new_obj)
-            logger.error(new_obj)
 
     def get_value(self):
         return get_client_data(self.lbox)
+
+
+class DummyForList(object):
+    def __init__(self, member, initial):
+        setattr(self, member, initial)
+
+
+class DataTypeListListString(DataTypeListDict):
+    def OnAdd(self, event):
+        # Here we create a dummy object with a data member named with the same name as the list
+        # We then use the "dict" edition
+        name = self.entry.name
+        valids = [DataTypeListString('list(string)', self.restriction, self.default)]
+        new_entries = [DataEntry(name, valids, None, self.help)]
+        new_obj = DummyForList(name, [])
+        res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name)
+        if res == wx.ID_OK:
+            new_val = getattr(new_obj, name)
+            self.lbox.Append(str(new_val), new_val)
 
 
 # ##################################################################################################
@@ -280,11 +298,11 @@ class EditDict(wx.Dialog):
         middle_sizer = wx.BoxSizer(wx.HORIZONTAL)
         # This is the area for the output widgets
         self.scrollWindow = wx.ScrolledWindow(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.VSCROLL)
-        self.scrollWindow.SetScrollRate(5, 5)
+        self.scrollWindow.SetScrollRate(15, 15)
 
         # Main widgets area, scrollable
         self.scrl_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.data_type_tree = get_data_type_tree(RegOutput.get_class_for(o.name)()) if data_tree is None else data_tree
+        self.data_type_tree = get_data_type_tree(RegOutput.get_class_for(o.type)()) if data_tree is None else data_tree
         add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer)
         self.scrollWindow.SetSizer(self.scrl_sizer)
         self.compute_scroll_hints()
@@ -366,6 +384,8 @@ def get_class_for(kind, rest):
         return DataTypeListString
     elif kind == 'list(dict)':
         return DataTypeListDict
+    elif kind == 'list(list(string))':
+        return DataTypeListListString
     return DataTypeBase
 
 
