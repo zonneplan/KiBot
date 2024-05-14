@@ -6,7 +6,8 @@ from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import EditDict
-from .gui_helpers import get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error
+from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
+                          set_items)
 logger = log.get_logger()
 
 import wx
@@ -35,10 +36,6 @@ def set_best_size(self, ref):
     # hack for some gtk themes that incorrectly calculate best size
     best_size.IncBy(dx=0, dy=30)
     self.SetClientSize(best_size)
-
-
-def get_client_data(container):
-    return [container.GetClientData(n) for n in range(container.GetCount())]
 
 
 class MainDialog(main_dialog_base.MainDialogBase):
@@ -75,14 +72,6 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
         # self.notebook.AddPage(self.fields, "Fields")
 
 
-def set_items_from_output_objs(lbox, outputs):
-    """ Set the list box items using the string representation of the outputs.
-        Keep the objects in the client data """
-    lbox.SetItems([str(o) for o in outputs])
-    for n, o in enumerate(outputs):
-        lbox.SetClientData(n, o)
-
-
 def get_selection(lbox):
     """ Helper to get the current index, string and data for a list box selection """
     index = lbox.Selection
@@ -109,7 +98,7 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         self.m_btnOutAdd.SetBitmap(get_btn_bitmap("plus"))
         self.m_btnOutRemove.SetBitmap(get_btn_bitmap("minus"))
         # Populate the listbox
-        set_items_from_output_objs(self.outputsBox, outputs)
+        set_items(self.outputsBox, outputs)
         self.Layout()
 
     def OnItemDClick(self, event):
@@ -255,7 +244,7 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         self.m_btnOutAddG.SetBitmap(get_btn_bitmap("plus-plus"))
         self.m_btnOutRemove.SetBitmap(get_btn_bitmap("minus"))
 
-        set_items_from_output_objs(self.outputsBox, selected)
+        set_items(self.outputsBox, selected)
         self.used_names = used_names
         self.group_names = group_names
         self.valid_list = bool(len(selected))

@@ -81,3 +81,15 @@ def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1):
     sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
     sizer.Add(input, 1, wx.EXPAND | wx.ALL, 5)
     return input, sizer
+
+
+def get_client_data(container):
+    return [container.GetClientData(n) for n in range(container.GetCount())]
+
+
+def set_items(lbox, objs):
+    """ Set the list box items using the string representation of the objs.
+        Keep the objects in the client data """
+    lbox.SetItems([str(o) for o in objs])
+    for n, o in enumerate(objs):
+        lbox.SetClientData(n, o)

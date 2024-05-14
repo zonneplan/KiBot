@@ -4,7 +4,8 @@
 import math
 import wx
 from .validators import NumberValidator
-from .gui_helpers import get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text
+from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
+                          get_client_data, set_items)
 from .gui_config import USE_DIALOG_FOR_NESTED
 from ..registrable import RegOutput
 from .. import log
@@ -20,7 +21,7 @@ class DataTypeBase(object):
         self.kind = kind
         self.restriction = restriction
         self.default = default
-        self.is_dict = kind == 'dict' or kind == 'list(dist)'
+        self.is_dict = kind == 'dict' or kind == 'list(dict)'
 
     def get_widget(self, obj, parent, entry, level):
         return None
@@ -108,7 +109,11 @@ class DataTypeChoice(DataTypeBase):
         label.SetToolTip(help)
         self.input = wx.Choice(parent, choices=self.restriction)
         val = getattr(obj, entry.name)
-        self.input.SetSelection(self.restriction.index(val))
+        try:
+            self.input.SetSelection(self.restriction.index(val))
+        except ValueError:
+            # New entry
+            self.input.SetSelection(0)
         self.input.SetToolTip(help)
         e_sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
         e_sizer.Add(self.input, 1, wx.EXPAND | wx.ALL, 5)
@@ -178,16 +183,15 @@ class DataTypeList(DataTypeBase):
         self.label = entry.name
         self.help = entry.help
         self.parent = parent
+        self.entry = entry
 
         main_sizer = wx.StaticBoxSizer(wx.VERTICAL, parent, entry.name)
         sp = main_sizer.GetStaticBox()
         abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         list_sizer = wx.BoxSizer(wx.VERTICAL)
-        val = getattr(obj, entry.name)
-        if val is None:
-            val = []
-        self.lbox = wx.ListBox(sp, choices=val, style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
+        self.lbox = wx.ListBox(sp, choices=[], style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
+        self.set_items(obj, entry.name)
         self.lbox.SetToolTip(self.help)
         list_sizer.Add(self.lbox, 1, wx.ALL | wx.EXPAND, 5)
 
@@ -218,6 +222,12 @@ class DataTypeList(DataTypeBase):
 
 
 class DataTypeListString(DataTypeList):
+    def set_items(self, obj, member):
+        val = getattr(obj, member)
+        if val is None:
+            val = []
+        self.lbox.SetItems(val)
+
     def OnAdd(self, event):
         dlg = InputStringDialog(self.parent, self.label, "New "+self.label+" entry", self.help)
         res = dlg.ShowModal()
@@ -227,6 +237,24 @@ class DataTypeListString(DataTypeList):
 
     def get_value(self):
         return [self.lbox.GetString(n) for n in range(self.lbox.GetCount())]
+
+
+class DataTypeListDict(DataTypeList):
+    def set_items(self, obj, member):
+        val = getattr(obj, member)
+        if val is None:
+            val = []
+        set_items(self.lbox, val)
+
+    def OnAdd(self, event):
+        new_obj = self.entry.cls()
+        res = edit_dict(self.parent.Parent, new_obj, self.entry.sub, self.entry.name)
+        if res == wx.ID_OK:
+            self.lbox.Append(str(new_obj), new_obj)
+            logger.error(new_obj)
+
+    def get_value(self):
+        return get_client_data(self.lbox)
 
 
 # ##################################################################################################
@@ -241,6 +269,7 @@ class EditDict(wx.Dialog):
         wx.Dialog.__init__(self, parent, title=title,
                            style=wx.STAY_ON_TOP | wx.BORDER_DEFAULT | wx.CAPTION)  # wx.RESIZE_BORDER
         self.parent = parent
+        self.obj = o
         # Main sizer
         b_sizer = wx.BoxSizer(wx.VERTICAL)
         # Output widgets sizer
@@ -302,7 +331,7 @@ class EditDict(wx.Dialog):
         for entry in self.data_type_tree:
             if entry.name == 'type':
                 continue
-            print(f'{entry.name} {entry.valids[0].get_value()}')
+            setattr(self.obj, entry.name, entry.valids[0].get_value())
 
     def __del__(self):
         pass
@@ -331,6 +360,8 @@ def get_class_for(kind, rest):
         return DataTypeDict
     elif kind == 'list(string)':
         return DataTypeListString
+    elif kind == 'list(dict)':
+        return DataTypeListDict
     return DataTypeBase
 
 
@@ -389,5 +420,6 @@ def get_data_type_tree(obj):
         entry = DataEntry(k, valids, def_val, real_help)
         if entry.is_dict:
             entry.sub = get_data_type_tree(v())
+            entry.cls = v
         entries.append(entry)
     return entries
