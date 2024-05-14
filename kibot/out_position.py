@@ -59,6 +59,9 @@ class PosColumns(Optionable):
         if not self.id:
             raise KiPlotConfigurationError("Missing or empty `id` in columns list ({})".format(str(self._tree)))
 
+    def __str__(self):
+        return f'{self.id} -> {self.name}'
+
 
 class PositionOptions(VariantOptions):
     def __init__(self):
