@@ -210,10 +210,10 @@ class DataTypeList(DataTypeBase):
         abm_sizer.Add(but_sizer, 0, 0, 5)
         main_sizer.Add(abm_sizer, 1, wx.EXPAND, 5)
 
-        self.b_up.Bind(wx.EVT_BUTTON, lambda self, event: move_sel_up(self.lbox))
-        self.b_down.Bind(wx.EVT_BUTTON, lambda self, event: move_sel_down(self.lbox))
+        self.b_up.Bind(wx.EVT_BUTTON, lambda event: move_sel_up(self.lbox))
+        self.b_down.Bind(wx.EVT_BUTTON, lambda event: move_sel_down(self.lbox))
         self.b_add.Bind(wx.EVT_BUTTON, self.OnAdd)
-        self.b_remove.Bind(wx.EVT_BUTTON, lambda self, event: remove_item(self.lbox))
+        self.b_remove.Bind(wx.EVT_BUTTON, lambda event: remove_item(self.lbox))
         return main_sizer
 
 
