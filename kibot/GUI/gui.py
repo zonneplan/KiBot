@@ -7,7 +7,7 @@ from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import EditDict
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
-                          set_items, get_selection)
+                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1)
 logger = log.get_logger()
 
 import wx
@@ -196,9 +196,9 @@ class ChooseOutput(wx.Dialog):
         # Main sizer
         b_sizer = wx.BoxSizer(wx.VERTICAL)
         self.outputsBox = wx.ListBox(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, available, l_style)
-        b_sizer.Add(self.outputsBox, 1, wx.ALL | wx.EXPAND, 5)
+        b_sizer.Add(self.outputsBox, get_sizer_flags_1())
         # Standard Ok/Cancel
-        b_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
+        b_sizer.Add(ok_cancel(self), get_sizer_flags_0())
         self.SetSizer(b_sizer)
         # Connect Events
         self.outputsBox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)

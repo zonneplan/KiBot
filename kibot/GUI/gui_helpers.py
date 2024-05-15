@@ -3,6 +3,8 @@ import wx
 from ..gs import GS
 loaded_btns = {}
 emp_font = None
+sizer_flags_0 = sizer_flags_1 = sizer_flags_0_no_border = sizer_flags_1_no_border = None
+sizer_flags_0_no_expand = sizer_flags_1_no_expand = None
 
 
 def _get_btn_bitmap(bitmap):
@@ -88,8 +90,8 @@ def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1, bold=False
     label.SetToolTip(help)
     input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1))
     input.SetToolTip(help)
-    sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
-    sizer.Add(input, 1, wx.EXPAND | wx.ALL, 5)
+    sizer.Add(label, get_sizer_flags_0())
+    sizer.Add(input, get_sizer_flags_1())
     return input, sizer
 
 
@@ -111,3 +113,45 @@ def get_selection(lbox):
     if index == wx.NOT_FOUND:
         return index, None, None
     return index, lbox.GetString(index), lbox.GetClientData(index)
+
+
+def get_sizer_flags_0():
+    global sizer_flags_0
+    if sizer_flags_0 is None:
+        sizer_flags_0 = wx.SizerFlags().Expand().Border(wx.ALL).CentreVertical()
+    return sizer_flags_0
+
+
+def get_sizer_flags_1():
+    global sizer_flags_1
+    if sizer_flags_1 is None:
+        sizer_flags_1 = wx.SizerFlags(1).Expand().Border(wx.ALL).CentreVertical()
+    return sizer_flags_1
+
+
+def get_sizer_flags_0_no_expand():
+    global sizer_flags_0_no_expand
+    if sizer_flags_0_no_expand is None:
+        sizer_flags_0_no_expand = wx.SizerFlags().Border(wx.ALL).CentreVertical()
+    return sizer_flags_0_no_expand
+
+
+def get_sizer_flags_1_no_expand():
+    global sizer_flags_1_no_expand
+    if sizer_flags_1_no_expand is None:
+        sizer_flags_1_no_expand = wx.SizerFlags(1).Border(wx.ALL).CentreVertical()
+    return sizer_flags_1_no_expand
+
+
+def get_sizer_flags_0_no_border():
+    global sizer_flags_0_no_border
+    if sizer_flags_0_no_border is None:
+        sizer_flags_0_no_border = wx.SizerFlags().Expand().CentreVertical()
+    return sizer_flags_0_no_border
+
+
+def get_sizer_flags_1_no_border():
+    global sizer_flags_1_no_border
+    if sizer_flags_1_no_border is None:
+        sizer_flags_1_no_border = wx.SizerFlags(1).Expand().CentreVertical()
+    return sizer_flags_1_no_border

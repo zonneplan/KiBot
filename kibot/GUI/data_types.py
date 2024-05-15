@@ -5,7 +5,8 @@ import math
 import wx
 from .validators import NumberValidator
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
-                          get_client_data, set_items, get_selection, get_emp_font)
+                          get_client_data, set_items, get_selection, get_emp_font, get_sizer_flags_0, get_sizer_flags_1,
+                          get_sizer_flags_0_no_border, get_sizer_flags_1_no_border, get_sizer_flags_0_no_expand)
 from .gui_config import USE_DIALOG_FOR_NESTED
 from ..registrable import RegOutput
 from .. import log
@@ -93,8 +94,8 @@ class DataTypeBoolean(DataTypeBase):
         self.input = wx.CheckBox(parent)
         self.input.SetValue(getattr(obj, entry.name))
         self.input.SetToolTip(help)
-        e_sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
-        e_sizer.Add(self.input, 1, wx.EXPAND | wx.ALL, 5)
+        e_sizer.Add(label, get_sizer_flags_0())
+        e_sizer.Add(self.input, get_sizer_flags_1())
         return e_sizer
 
     def get_value(self):
@@ -119,8 +120,9 @@ class DataTypeChoice(DataTypeBase):
             # New entry
             self.input.SetSelection(0)
         self.input.SetToolTip(help)
-        e_sizer.Add(label, 0, wx.EXPAND | wx.ALL, 5)
-        e_sizer.Add(self.input, 1, wx.EXPAND | wx.ALL, 5)
+
+        e_sizer.Add(label, get_sizer_flags_0())
+        e_sizer.Add(self.input, get_sizer_flags_1())
         return e_sizer
 
     def get_value(self):
@@ -138,7 +140,7 @@ class DataTypeDict(DataTypeBase):
         if USE_DIALOG_FOR_NESTED:
             self.entry_name = lbl
             self.btn = wx.Button(parent, label="Edit "+lbl)
-            e_sizer.Add(self.btn, 1, wx.EXPAND | wx.ALL, 5)
+            e_sizer.Add(self.btn, get_sizer_flags_1())
             self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
             self.sub_entries = entry.sub
         else:
@@ -153,7 +155,7 @@ class DataTypeDict(DataTypeBase):
             add_widgets(self.sub_obj, entry.sub, pane, pane_sizer, level+1)
             pane.SetSizer(pane_sizer)
 
-            e_sizer.Add(cp, 1, wx.EXPAND | wx.ALL, 5)
+            e_sizer.Add(cp, get_sizer_flags_1())
         return e_sizer
 
     def OnEdit(self, event):
@@ -166,8 +168,8 @@ class InputStringDialog(wx.Dialog):
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.input, inp_sizer = input_label_and_text(self, lbl, initial, help, def_text)
-        main_sizer.Add(inp_sizer, 1, wx.ALL | wx.EXPAND, 5)
-        main_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
+        main_sizer.Add(inp_sizer, get_sizer_flags_1())
+        main_sizer.Add(ok_cancel(self), get_sizer_flags_0())
         self.SetSizer(main_sizer)
         main_sizer.SetSizeHints(self)
         # Make ENTER finish it
@@ -203,26 +205,26 @@ class DataTypeList(DataTypeBase):
             logger.error(f'{entry.name} {getattr(obj, entry.name)}')
             raise
         self.lbox.SetToolTip(self.help)
-        list_sizer.Add(self.lbox, 1, wx.ALL | wx.EXPAND, 5)
+        list_sizer.Add(self.lbox, get_sizer_flags_1())
 
-        abm_sizer.Add(list_sizer, 1, wx.EXPAND, 5)
+        abm_sizer.Add(list_sizer, get_sizer_flags_1_no_border())
 
         but_sizer = wx.BoxSizer(wx.VERTICAL)
         self.b_up = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("arrow-up"))
         self.b_up.SetToolTip("Move the selection up")
-        but_sizer.Add(self.b_up, 0, wx.ALL, 5)
+        but_sizer.Add(self.b_up, get_sizer_flags_0_no_expand())
         self.b_down = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("arrow-down"))
         self.b_down.SetToolTip("Move the selection down")
-        but_sizer.Add(self.b_down, 0, wx.ALL, 5)
+        but_sizer.Add(self.b_down, get_sizer_flags_0_no_expand())
         self.b_add = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("plus"))
         self.b_add.SetToolTip("Add one entry")
-        but_sizer.Add(self.b_add, 0, wx.ALL, 5)
+        but_sizer.Add(self.b_add, get_sizer_flags_0_no_expand())
         self.b_remove = wx.BitmapButton(sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("minus"))
         self.b_remove.SetToolTip("Remove the entry")
-        but_sizer.Add(self.b_remove, 0, wx.ALL, 5)
+        but_sizer.Add(self.b_remove, get_sizer_flags_0_no_expand())
 
-        abm_sizer.Add(but_sizer, 0, 0, 5)
-        main_sizer.Add(abm_sizer, 1, wx.EXPAND, 5)
+        abm_sizer.Add(but_sizer, get_sizer_flags_0_no_expand())
+        main_sizer.Add(abm_sizer, get_sizer_flags_1_no_border())
 
         self.b_up.Bind(wx.EVT_BUTTON, lambda event: move_sel_up(self.lbox))
         self.b_down.Bind(wx.EVT_BUTTON, lambda event: move_sel_down(self.lbox))
@@ -340,12 +342,12 @@ class EditDict(wx.Dialog):
         self.compute_scroll_hints()
         self.scrl_sizer.Fit(self.scrollWindow)
         self.scrollWindow.SetAutoLayout(True)
-        middle_sizer.Add(self.scrollWindow, 1, wx.EXPAND | wx.ALL, 5)
+        middle_sizer.Add(self.scrollWindow, get_sizer_flags_1())
         # Add the outputs are to the main sizer
-        b_sizer.Add(middle_sizer, 1, wx.ALL | wx.EXPAND, 5)
+        b_sizer.Add(middle_sizer, get_sizer_flags_1())
 
         # Standard Ok/Cancel button
-        b_sizer.Add(ok_cancel(self), 0, wx.ALL | wx.EXPAND, 5)
+        b_sizer.Add(ok_cancel(self), get_sizer_flags_0())
 
         # Resize things when the collapsible panes change their state
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
@@ -452,7 +454,7 @@ def add_widgets(obj, entries, parent, sizer, level=0):
         logger.info(f'{entry.name} {entry.valids[0].kind}')
         e_sizer = entry.valids[0].get_widget(obj, parent, entry, level)
         if e_sizer:
-            sizer.Add(e_sizer, 0, wx.EXPAND | wx.ALL, 0)
+            sizer.Add(e_sizer, get_sizer_flags_0_no_border())
         else:
             logger.error(f'{entry.name} {entry.valids[0].kind}')
     max_label = cur_max
