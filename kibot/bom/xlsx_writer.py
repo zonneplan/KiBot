@@ -248,7 +248,7 @@ def insert_logo(worksheet, image_data, scale):
 
 
 def create_color_ref(workbook, col_colors, hl_empty, fmt_cols, do_kicost, kicost_colors, row_colors):
-    if not (col_colors or do_kicost):
+    if not (col_colors or row_colors or do_kicost):
         return
     row = 0
     worksheet = workbook.add_worksheet('Colors')
