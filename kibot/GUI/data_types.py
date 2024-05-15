@@ -438,10 +438,9 @@ def add_widgets(obj, entries, parent, sizer, level=0):
     dc_emp.SetFont(get_emp_font())
     global max_label
     cur_max = max_label
-    # TODO: the label can include restrictions, must be adjusted
     # TODO: GetTextExtent failing on bold!!!
-    max_label = max((int(dc_emp.GetTextExtent(e.name).width*1.15) if e.is_basic else
-                    dc.GetTextExtent(e.name).width for e in entries))
+    max_label = max((int(dc_emp.GetTextExtent(e.get_label()).width*1.15) if e.is_basic else
+                    dc.GetTextExtent(e.get_label()).width for e in entries))
     # This is also wrong:
     # max2 = max((parent.GetFullTextExtent(e.name, (get_emp_font() if e.is_basic else None)) for e in entries))
     # Size for input boxes
@@ -469,6 +468,9 @@ class DataEntry(object):
         self.help = '\n'.join((ln.strip() for ln in help.splitlines(True)))
         self.is_dict = any((x.is_dict for x in valids))
         self.is_basic = is_basic
+
+    def get_label(self):
+        return self.valids[0].get_label(self)
 
 
 def get_data_type_tree(obj):
