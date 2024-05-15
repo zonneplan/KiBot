@@ -2,6 +2,7 @@ import os
 import wx
 from ..gs import GS
 loaded_btns = {}
+emp_font = None
 
 
 def _get_btn_bitmap(bitmap):
@@ -72,9 +73,18 @@ def ok_cancel(parent):
     return m_but_sizer
 
 
-def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1):
+def get_emp_font():
+    global emp_font
+    if emp_font is None:
+        emp_font = wx.Font(70, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, True)
+    return emp_font
+
+
+def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1, bold=False):
     sizer = wx.BoxSizer(wx.HORIZONTAL)
     label = wx.StaticText(parent, label=lbl, size=wx.Size(lbl_w, -1), style=wx.ALIGN_RIGHT)
+    if bold:
+        label.SetFont(get_emp_font())
     label.SetToolTip(help)
     input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1))
     input.SetToolTip(help)

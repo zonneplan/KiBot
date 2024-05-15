@@ -5,7 +5,7 @@ import math
 import wx
 from .validators import NumberValidator
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
-                          get_client_data, set_items, get_selection)
+                          get_client_data, set_items, get_selection, get_emp_font)
 from .gui_config import USE_DIALOG_FOR_NESTED
 from ..registrable import RegOutput
 from .. import log
@@ -43,7 +43,7 @@ class DataTypeString(DataTypeBase):
         if self.default is not None:
             help += f'\nDefault: {self.default}'
         self.input, sizer = input_label_and_text(parent, self.get_label(entry), str(getattr(obj, entry.name)), help,
-                                                 def_text, max_label)
+                                                 def_text, max_label, entry.is_basic)
         return sizer
 
     def get_value(self):
@@ -87,6 +87,8 @@ class DataTypeBoolean(DataTypeBase):
             help += f'\nDefault: {self.default}'
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        if entry.is_basic:
+            label.SetFont(get_emp_font())
         label.SetToolTip(help)
         self.input = wx.CheckBox(parent)
         self.input.SetValue(getattr(obj, entry.name))
@@ -106,6 +108,8 @@ class DataTypeChoice(DataTypeBase):
             help += f'\nDefault: {self.default}'
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        if entry.is_basic:
+            label.SetFont(get_emp_font())
         label.SetToolTip(help)
         self.input = wx.Choice(parent, choices=self.restriction)
         val = getattr(obj, entry.name)
@@ -187,6 +191,8 @@ class DataTypeList(DataTypeBase):
 
         main_sizer = wx.StaticBoxSizer(wx.VERTICAL, parent, entry.name)
         sp = main_sizer.GetStaticBox()
+        if entry.is_basic:
+            sp.SetFont(get_emp_font())
         abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         list_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -426,10 +432,16 @@ def add_widgets(obj, entries, parent, sizer, level=0):
     font = wx.StaticText(parent).GetFont()
     dc = wx.ScreenDC()
     dc.SetFont(font)
+    dc_emp = wx.ScreenDC()
+    dc_emp.SetFont(get_emp_font())
     global max_label
     cur_max = max_label
     # TODO: the label can include restrictions, must be adjusted
-    max_label = max((dc.GetTextExtent(e.name).width for e in entries))
+    # TODO: GetTextExtent failing on bold!!!
+    max_label = max((int(dc_emp.GetTextExtent(e.name).width*1.15) if e.is_basic else
+                    dc.GetTextExtent(e.name).width for e in entries))
+    # This is also wrong:
+    # max2 = max((parent.GetFullTextExtent(e.name, (get_emp_font() if e.is_basic else None)) for e in entries))
     # Size for input boxes
     global def_text
     def_text = dc.GetTextExtent('M'*40).width
@@ -448,12 +460,13 @@ def add_widgets(obj, entries, parent, sizer, level=0):
 
 class DataEntry(object):
     """ Class to represent one data to be edited """
-    def __init__(self, name, valids, def_val, help):
+    def __init__(self, name, valids, def_val, help, is_basic):
         self.name = name
         self.valids = valids
         self.def_val = def_val
         self.help = '\n'.join((ln.strip() for ln in help.splitlines(True)))
         self.is_dict = any((x.is_dict for x in valids))
+        self.is_basic = is_basic
 
 
 def get_data_type_tree(obj):
@@ -468,11 +481,15 @@ def get_data_type_tree(obj):
         logger.error(m1)
         logger.error(m2)
     for k, v in m2.items():
-        help, _, is_alias = obj.get_doc(k, no_basic=True)
+        help, _, is_alias = obj.get_doc(k)
         if help is None or is_alias:
             if not is_alias:
                 logger.error(k)
             continue
+        is_basic = False
+        if help[0] == '*':
+            help = help[1:]
+            is_basic = True
         case = f'{k} = `{v}`'
         assert help[0] == '[', case
         valid, extra, def_val, real_help = obj.get_valid_types(help)
@@ -480,7 +497,7 @@ def get_data_type_tree(obj):
         case += f' {extra} """ {help} """'
         assert valids, case
         valids = sorted(valids, key=lambda x: 200-TYPE_PRIORITY[x.kind])
-        entry = DataEntry(k, valids, def_val, real_help)
+        entry = DataEntry(k, valids, def_val, real_help, is_basic)
         if entry.is_dict:
             entry.sub = get_data_type_tree(v())
             entry.cls = v
