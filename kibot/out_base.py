@@ -259,8 +259,8 @@ class VariantOptions(BaseOptions):
         super().__init__()
         self._comps = None
         self._sub_pcb = None
-        self.undo_3d_models = {}
-        self.undo_3d_models_rep = {}
+        self._undo_3d_models = {}
+        self._undo_3d_models_rep = {}
         self._highlight_3D_file = None
         self._highlighted_3D_components = None
 
@@ -546,7 +546,7 @@ class VariantOptions(BaseOptions):
 
     def replace_3D_models(self, models, new_model, c):
         """ Changes the 3D model using a provided model.
-            Stores changes in self.undo_3d_models_rep """
+            Stores changes in self._undo_3d_models_rep """
         logger.debug('Changing 3D models for '+c.ref)
         # Get the model references
         models_l = []
@@ -567,7 +567,7 @@ class VariantOptions(BaseOptions):
         for i, m3d in enumerate(models_l):
             replaced.append(m3d.m_Filename)
             m3d.m_Filename = new_model[i]
-        self.undo_3d_models_rep[c.ref] = replaced
+        self._undo_3d_models_rep[c.ref] = replaced
         # Push the models back
         for model in reversed(models_l):
             models.append(model)
@@ -581,18 +581,18 @@ class VariantOptions(BaseOptions):
             while not models.empty():
                 models_l.append(models.pop())
             # Fix any changed path
-            replaced = self.undo_3d_models_rep.get(m.GetReference())
+            replaced = self._undo_3d_models_rep.get(m.GetReference())
             for i, m3d in enumerate(models_l):
-                if m3d.m_Filename in self.undo_3d_models:
-                    m3d.m_Filename = self.undo_3d_models[m3d.m_Filename]
+                if m3d.m_Filename in self._undo_3d_models:
+                    m3d.m_Filename = self._undo_3d_models[m3d.m_Filename]
                 if replaced:
                     m3d.m_Filename = replaced[i]
             # Push the models back
             for model in reversed(models_l):
                 models.append(model)
         # Reset the list of changes
-        self.undo_3d_models = {}
-        self.undo_3d_models_rep = {}
+        self._undo_3d_models = {}
+        self._undo_3d_models_rep = {}
 
     def remove_3D_models(self, board, comps_hash):
         """ Removes 3D models for excluded or not fitted components.
