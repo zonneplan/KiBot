@@ -444,7 +444,7 @@ class Base3DOptions(VariantOptions):
         self.source_models.add(replace)
         old_name = m3d.m_Filename
         new_name = self.wrl_name(replace, force_wrl) if not is_copy_mode else rename_function(rename_data, replace)
-        self.undo_3d_models[new_name] = old_name
+        self._undo_3d_models[new_name] = old_name
         m3d.m_Filename = new_name
         self.models_replaced = True
 
@@ -452,7 +452,7 @@ class Base3DOptions(VariantOptions):
         """ Check we have the 3D models.
             Inform missing models.
             Try to download the missing models
-            Stores changes in self.undo_3d_models_rep """
+            Stores changes in self._undo_3d_models_rep """
         self.models_replaced = False
         # Load KiCad configuration so we can expand the 3D models path
         KiConf.init(GS.pcb_file)
