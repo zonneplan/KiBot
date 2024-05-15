@@ -32,6 +32,8 @@ Fixed:
 -  iBoM: *highlight_pin1* option didn’t allow the use of the new
    choices.
 -  PCB2Blender_Tools: transform filters might make it fail. (#618)
+-  BoM: No color reference when using row colors but not column or
+   kicost colors. (#619)
 
 Changed:
 ~~~~~~~~
