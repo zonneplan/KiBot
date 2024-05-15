@@ -459,9 +459,19 @@ class DataEntry(object):
 def get_data_type_tree(obj):
     """ Create a tree containing all the DataEntry objects associated to the data in the *obj* output """
     entries = []
-    for k, v in obj.get_attrs_gen():
+    # TODO: move this to Optionable
+    m1 = dict(obj.get_attrs_gen())
+    m2 = dict(filter(lambda k: k[0][0] != '_', vars(obj).items()))
+    diff = set(m2) - set(m1)
+    if len(diff) != 0:
+        logger.error(diff)
+        logger.error(m1)
+        logger.error(m2)
+    for k, v in m2.items():
         help, _, is_alias = obj.get_doc(k, no_basic=True)
         if help is None or is_alias:
+            if not is_alias:
+                logger.error(k)
             continue
         case = f'{k} = `{v}`'
         assert help[0] == '[', case
