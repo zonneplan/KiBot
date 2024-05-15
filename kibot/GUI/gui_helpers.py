@@ -93,3 +93,11 @@ def set_items(lbox, objs):
     lbox.SetItems([str(o) for o in objs])
     for n, o in enumerate(objs):
         lbox.SetClientData(n, o)
+
+
+def get_selection(lbox):
+    """ Helper to get the current index, string and data for a list box selection """
+    index = lbox.Selection
+    if index == wx.NOT_FOUND:
+        return index, None, None
+    return index, lbox.GetString(index), lbox.GetClientData(index)

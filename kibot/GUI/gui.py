@@ -7,7 +7,7 @@ from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import EditDict
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
-                          set_items)
+                          set_items, get_selection)
 logger = log.get_logger()
 
 import wx
@@ -70,14 +70,6 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
         # self.notebook.AddPage(self.general, "General")
         # self.notebook.AddPage(self.html, "Html defaults")
         # self.notebook.AddPage(self.fields, "Fields")
-
-
-def get_selection(lbox):
-    """ Helper to get the current index, string and data for a list box selection """
-    index = lbox.Selection
-    if index == wx.NOT_FOUND:
-        return index, None, None
-    return index, lbox.GetString(index), lbox.GetClientData(index)
 
 
 def edit_output(parent, o):

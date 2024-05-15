@@ -5,7 +5,7 @@ import math
 import wx
 from .validators import NumberValidator
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
-                          get_client_data, set_items)
+                          get_client_data, set_items, get_selection)
 from .gui_config import USE_DIALOG_FOR_NESTED
 from ..registrable import RegOutput
 from .. import log
@@ -222,7 +222,23 @@ class DataTypeList(DataTypeBase):
         self.b_down.Bind(wx.EVT_BUTTON, lambda event: move_sel_down(self.lbox))
         self.b_add.Bind(wx.EVT_BUTTON, self.OnAdd)
         self.b_remove.Bind(wx.EVT_BUTTON, lambda event: remove_item(self.lbox))
+
+        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)
         return main_sizer
+
+    def OnDClick(self, event):
+        index, string, obj = get_selection(self.lbox)
+        if index == wx.NOT_FOUND:
+            return
+        self.edit_item(string, obj, index)
+
+    def create_edit_title(self, index):
+        if index == -1:
+            return f'New {self.label} entry'
+        return f'Edit {self.label} entry {index+1}'
+
+    def OnAdd(self, event):
+        self.edit_item()
 
 
 class DataTypeListString(DataTypeList):
@@ -232,11 +248,14 @@ class DataTypeListString(DataTypeList):
             val = []
         self.lbox.SetItems(val)
 
-    def OnAdd(self, event):
-        dlg = InputStringDialog(self.parent, self.label, "New "+self.label+" entry", self.help)
+    def edit_item(self, string='', obj=None, index=-1):
+        dlg = InputStringDialog(self.parent, self.label, self.create_edit_title(index), self.help, initial=string)
         res = dlg.ShowModal()
         if res == wx.ID_OK:
-            self.lbox.Append(dlg.input.Value)
+            if index == -1:
+                self.lbox.Append(dlg.input.Value)
+            else:
+                self.lbox.SetString(index, dlg.input.Value)
         dlg.Destroy()
 
     def get_value(self):
@@ -250,11 +269,15 @@ class DataTypeListDict(DataTypeList):
             val = []
         set_items(self.lbox, val)
 
-    def OnAdd(self, event):
-        new_obj = self.entry.cls()
-        res = edit_dict(self.parent.Parent, new_obj, self.entry.sub, self.entry.name)
+    def edit_item(self, string='', obj=None, index=-1):
+        if obj is None:
+            obj = self.entry.cls()
+        res = edit_dict(self.parent.Parent, obj, self.entry.sub, self.entry.name, self.create_edit_title(index))
         if res == wx.ID_OK:
-            self.lbox.Append(str(new_obj), new_obj)
+            if index == -1:
+                self.lbox.Append(str(obj), obj)
+            else:
+                self.lbox.SetString(index, str(obj))
 
     def get_value(self):
         return get_client_data(self.lbox)
@@ -266,17 +289,20 @@ class DummyForList(object):
 
 
 class DataTypeListListString(DataTypeListDict):
-    def OnAdd(self, event):
+    def edit_item(self, string='', obj=None, index=-1):
         # Here we create a dummy object with a data member named with the same name as the list
         # We then use the "dict" edition
         name = self.entry.name
         valids = [DataTypeListString('list(string)', self.restriction, self.default)]
         new_entries = [DataEntry(name, valids, None, self.help)]
-        new_obj = DummyForList(name, [])
-        res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name)
+        new_obj = DummyForList(name, [] if obj is None else obj)
+        res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
         if res == wx.ID_OK:
             new_val = getattr(new_obj, name)
-            self.lbox.Append(str(new_val), new_val)
+            if index == -1:
+                self.lbox.Append(str(new_val), new_val)
+            else:
+                self.lbox.SetString(index, str(new_val))
 
 
 # ##################################################################################################
@@ -359,8 +385,10 @@ class EditDict(wx.Dialog):
         pass
 
 
-def edit_dict(parent_dialog, obj, entries, entry_name):
-    dlg = EditDict(parent_dialog, obj, parent_dialog.GetTitle() + ' | ' + entry_name, entries)
+def edit_dict(parent_dialog, obj, entries, entry_name, title=None):
+    if title is None:
+        title = parent_dialog.GetTitle() + ' | ' + entry_name
+    dlg = EditDict(parent_dialog, obj, title, entries)
     res = dlg.ShowModal()
     if res == wx.ID_OK:
         dlg.get_values()
@@ -400,6 +428,7 @@ def add_widgets(obj, entries, parent, sizer, level=0):
     dc.SetFont(font)
     global max_label
     cur_max = max_label
+    # TODO: the label can include restrictions, must be adjusted
     max_label = max((dc.GetTextExtent(e.name).width for e in entries))
     # Size for input boxes
     global def_text
