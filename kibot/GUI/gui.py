@@ -7,7 +7,7 @@ from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import EditDict
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
-                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1)
+                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars)
 logger = log.get_logger()
 
 import wx
@@ -29,6 +29,7 @@ else:
 OK_CHAR = '\U00002714'
 # NOT_OK_CHAR = '\U0000274C'
 NOT_OK_CHAR = '\U00002717'
+init_vars()
 
 
 def set_best_size(self, ref):

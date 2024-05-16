@@ -7,6 +7,18 @@ sizer_flags_0 = sizer_flags_1 = sizer_flags_0_no_border = sizer_flags_1_no_borde
 sizer_flags_0_no_expand = sizer_flags_1_no_expand = None
 
 
+def init_vars():
+    global emp_font, sizer_flags_0, sizer_flags_1, sizer_flags_0_no_border, sizer_flags_1_no_border, sizer_flags_0_no_expand
+    global sizer_flags_1_no_expand
+    emp_font = wx.Font(70, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, True)
+    sizer_flags_0 = wx.SizerFlags().Expand().Border(wx.ALL).CentreVertical()
+    sizer_flags_1 = wx.SizerFlags(1).Expand().Border(wx.ALL).CentreVertical()
+    sizer_flags_0_no_expand = wx.SizerFlags().Border(wx.ALL).CentreVertical()
+    sizer_flags_1_no_expand = wx.SizerFlags(1).Border(wx.ALL).CentreVertical()
+    sizer_flags_0_no_border = wx.SizerFlags().Expand().CentreVertical()
+    sizer_flags_1_no_border = wx.SizerFlags(1).Expand().CentreVertical()
+
+
 def _get_btn_bitmap(bitmap):
     path = os.path.join(GS.get_resource_path('images'), 'buttons', bitmap)
     png = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
@@ -76,9 +88,6 @@ def ok_cancel(parent):
 
 
 def get_emp_font():
-    global emp_font
-    if emp_font is None:
-        emp_font = wx.Font(70, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, True)
     return emp_font
 
 
@@ -121,42 +130,24 @@ def get_selection(lbox):
 
 
 def get_sizer_flags_0():
-    global sizer_flags_0
-    if sizer_flags_0 is None:
-        sizer_flags_0 = wx.SizerFlags().Expand().Border(wx.ALL).CentreVertical()
     return sizer_flags_0
 
 
 def get_sizer_flags_1():
-    global sizer_flags_1
-    if sizer_flags_1 is None:
-        sizer_flags_1 = wx.SizerFlags(1).Expand().Border(wx.ALL).CentreVertical()
     return sizer_flags_1
 
 
 def get_sizer_flags_0_no_expand():
-    global sizer_flags_0_no_expand
-    if sizer_flags_0_no_expand is None:
-        sizer_flags_0_no_expand = wx.SizerFlags().Border(wx.ALL).CentreVertical()
     return sizer_flags_0_no_expand
 
 
 def get_sizer_flags_1_no_expand():
-    global sizer_flags_1_no_expand
-    if sizer_flags_1_no_expand is None:
-        sizer_flags_1_no_expand = wx.SizerFlags(1).Border(wx.ALL).CentreVertical()
     return sizer_flags_1_no_expand
 
 
 def get_sizer_flags_0_no_border():
-    global sizer_flags_0_no_border
-    if sizer_flags_0_no_border is None:
-        sizer_flags_0_no_border = wx.SizerFlags().Expand().CentreVertical()
     return sizer_flags_0_no_border
 
 
 def get_sizer_flags_1_no_border():
-    global sizer_flags_1_no_border
-    if sizer_flags_1_no_border is None:
-        sizer_flags_1_no_border = wx.SizerFlags(1).Expand().CentreVertical()
     return sizer_flags_1_no_border
