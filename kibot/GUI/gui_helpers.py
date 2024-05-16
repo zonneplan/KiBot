@@ -82,17 +82,22 @@ def get_emp_font():
     return emp_font
 
 
-def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1, bold=False):
+# def get_deemp_font():
+#     global deemp_font
+#     if deemp_font is None:
+#         deemp_font = wx.Font(70, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_ITALIC, wx.FONTWEIGHT_NORMAL, False)
+#     return deemp_font
+
+
+def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1):
     sizer = wx.BoxSizer(wx.HORIZONTAL)
     label = wx.StaticText(parent, label=lbl, size=wx.Size(lbl_w, -1), style=wx.ALIGN_RIGHT)
-    if bold:
-        label.SetFont(get_emp_font())
     label.SetToolTip(help)
     input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1))
     input.SetToolTip(help)
     sizer.Add(label, get_sizer_flags_0())
     sizer.Add(input, get_sizer_flags_1())
-    return input, sizer
+    return label, input, sizer
 
 
 def get_client_data(container):

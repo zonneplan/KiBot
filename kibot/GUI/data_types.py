@@ -43,8 +43,12 @@ class DataTypeString(DataTypeBase):
         help += self.get_restriction_help()
         if self.default is not None:
             help += f'\nDefault: {self.default}'
-        self.input, sizer = input_label_and_text(parent, self.get_label(entry), str(getattr(obj, entry.name)), help,
-                                                 def_text, max_label, entry.is_basic)
+        self.ori_value = str(getattr(obj, entry.name))
+        label, self.input, sizer = input_label_and_text(parent, self.get_label(entry), self.ori_value, help, def_text,
+                                                        max_label)
+        entry.set_font(label)
+        self.user_defined = entry.user_defined
+        # self.input.Bind(wx.EVT_TEXT, self.OnText)
         return sizer
 
     def get_value(self):
@@ -88,8 +92,7 @@ class DataTypeBoolean(DataTypeBase):
             help += f'\nDefault: {self.default}'
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
-        if entry.is_basic:
-            label.SetFont(get_emp_font())
+        entry.set_font(label)
         label.SetToolTip(help)
         self.input = wx.CheckBox(parent)
         self.input.SetValue(getattr(obj, entry.name))
@@ -109,8 +112,7 @@ class DataTypeChoice(DataTypeBase):
             help += f'\nDefault: {self.default}'
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
         label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
-        if entry.is_basic:
-            label.SetFont(get_emp_font())
+        entry.set_font(label)
         label.SetToolTip(help)
         self.input = wx.Choice(parent, choices=self.restriction)
         val = getattr(obj, entry.name)
@@ -167,7 +169,7 @@ class InputStringDialog(wx.Dialog):
         wx.Dialog.__init__(self, parent, title=title,
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.input, inp_sizer = input_label_and_text(self, lbl, initial, help, def_text)
+        _, self.input, inp_sizer = input_label_and_text(self, lbl, initial, help, def_text)
         main_sizer.Add(inp_sizer, get_sizer_flags_1())
         main_sizer.Add(ok_cancel(self), get_sizer_flags_0())
         self.SetSizer(main_sizer)
@@ -193,8 +195,7 @@ class DataTypeList(DataTypeBase):
 
         main_sizer = wx.StaticBoxSizer(wx.VERTICAL, parent, entry.name)
         sp = main_sizer.GetStaticBox()
-        if entry.is_basic:
-            sp.SetFont(get_emp_font())
+        entry.set_font(sp)
         abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         list_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -387,7 +388,9 @@ class EditDict(wx.Dialog):
         for entry in self.data_type_tree:
             if entry.name == 'type':
                 continue
-            setattr(self.obj, entry.name, entry.valids[0].get_value())
+            new_value = entry.valids[0].get_value()
+            # cur_value = getattr(self.obj, entry.name)
+            setattr(self.obj, entry.name, new_value)
 
     def __del__(self):
         pass
@@ -450,6 +453,7 @@ def add_widgets(obj, entries, parent, sizer, level=0):
     for entry in entries:
         if entry.name == 'type':
             continue
+        entry.user_defined = obj.get_user_defined(entry.name)
         logger.info(f'{entry.name} {entry.valids[0].kind}')
         e_sizer = entry.valids[0].get_widget(obj, parent, entry, level)
         if e_sizer:
@@ -471,6 +475,13 @@ class DataEntry(object):
 
     def get_label(self):
         return self.valids[0].get_label(self)
+
+    def set_font(self, label):
+        if self.user_defined:
+            # TODO config/abstract
+            label.SetForegroundColour(wx.Colour(80, 250, 80))
+        if self.is_basic:
+            label.SetFont(get_emp_font())
 
 
 def get_data_type_tree(obj):
