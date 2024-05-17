@@ -531,9 +531,20 @@ class DataEntry(object):
             is_first = False
         if TYPE_SEL_RIGHT:
             self.sizer.Add(sel, wx.SizerFlags().Border(wx.LEFT).Center())
+        self.set_sel_tooltip()
         sizer.Add(self.sizer, get_sizer_flags_0_no_border())
         self.parent_sizer = sizer
         self.window = parent
+
+    def set_sel_tooltip(self):
+        if len(self.valids) == 1:
+            sel_tooltip = f'{TYPE_ABREV[self.valids[0].kind]}: {self.valids[0].kind}'
+        else:
+            sel_tooltip = ''
+            for c, valid in enumerate(self.valids):
+                sel_tooltip += ('→' if c == self.selected else '   ') + f' {TYPE_ABREV[valid.kind]}: {valid.kind}\n'
+            sel_tooltip = sel_tooltip[:-1]
+        self.sel_widget.SetToolTip(sel_tooltip)
 
     def OnChoice(self, event):
         """ A new data type was selected.
@@ -541,6 +552,7 @@ class DataEntry(object):
         self.sizer.Show(self.widgets[self.selected], False)
         self.selected = self.sel_widget.GetSelection()
         self.sizer.Show(self.widgets[self.selected], True)
+        self.set_sel_tooltip()
         self.window.Parent.Layout()
 
 
