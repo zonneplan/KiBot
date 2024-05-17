@@ -26,7 +26,7 @@ class DataTypeBase(object):
         self.default = default
         self.is_dict = kind == 'dict' or kind == 'list(dict)'
 
-    def get_widget(self, obj, parent, entry, level, init):
+    def get_widget(self, obj, parent, entry, level, init, value):
         return None
 
     def get_restriction_help(self):
@@ -40,12 +40,12 @@ class DataTypeBase(object):
 
 
 class DataTypeString(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init):
+    def get_widget(self, obj, parent, entry, level, init, value):
         help = entry.help
         help += self.get_restriction_help()
         if self.default is not None:
             help += f'\nDefault: {self.default}'
-        self.ori_value = str(getattr(obj, entry.name)) if init else ''
+        self.ori_value = value if init else ''
         label, self.input, sizer = input_label_and_text(parent, self.get_label(entry), self.ori_value, help, def_text,
                                                         max_label)
         entry.set_font(label)
@@ -69,8 +69,10 @@ class DataTypeNumber(DataTypeString):
                 restriction[1] = math.inf
         self.restriction = restriction
 
-    def get_widget(self, obj, parent, entry, level, init):
-        sizer = super().get_widget(obj, parent, entry, level, init)
+    def get_widget(self, obj, parent, entry, level, init, value):
+        if init:
+            value = str(value)
+        sizer = super().get_widget(obj, parent, entry, level, init, value)
         self.input.SetValidator(NumberValidator(self.input, self.restriction, self.default))
         return sizer
 
@@ -88,7 +90,7 @@ class DataTypeNumber(DataTypeString):
 
 
 class DataTypeBoolean(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init):
+    def get_widget(self, obj, parent, entry, level, init, value):
         help = entry.help
         if self.default is not None:
             help += f'\nDefault: {self.default}'
@@ -98,7 +100,7 @@ class DataTypeBoolean(DataTypeBase):
         label.SetToolTip(help)
         self.input = wx.CheckBox(parent)
         if init:
-            self.input.SetValue(getattr(obj, entry.name))
+            self.input.SetValue(value)
         self.input.SetToolTip(help)
         e_sizer.Add(label, get_sizer_flags_0())
         e_sizer.Add(self.input, get_sizer_flags_1())
@@ -109,7 +111,7 @@ class DataTypeBoolean(DataTypeBase):
 
 
 class DataTypeChoice(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init):
+    def get_widget(self, obj, parent, entry, level, init, value):
         help = entry.help
         if self.default is not None:
             help += f'\nDefault: {self.default}'
@@ -119,9 +121,8 @@ class DataTypeChoice(DataTypeBase):
         label.SetToolTip(help)
         self.input = wx.Choice(parent, choices=self.restriction)
         if init:
-            val = getattr(obj, entry.name)
             try:
-                self.input.SetSelection(self.restriction.index(val))
+                self.input.SetSelection(self.restriction.index(value))
             except ValueError:
                 # New entry
                 self.input.SetSelection(0)
@@ -136,7 +137,7 @@ class DataTypeChoice(DataTypeBase):
 
 
 class DataTypeDict(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init):
+    def get_widget(self, obj, parent, entry, level, init, value):
         help = entry.help
         lbl = self.get_label(entry)
         self.sub_obj = getattr(obj, entry.name)
@@ -191,7 +192,7 @@ class InputStringDialog(wx.Dialog):
 
 
 class DataTypeList(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init):
+    def get_widget(self, obj, parent, entry, level, init, value):
         self.label = entry.name
         self.help = entry.help
         self.parent = parent
@@ -204,11 +205,12 @@ class DataTypeList(DataTypeBase):
 
         list_sizer = wx.BoxSizer(wx.VERTICAL)
         self.lbox = wx.ListBox(sp, choices=[], size=wx.Size(def_text, -1), style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
-        try:
-            self.set_items(obj, entry.name)
-        except Exception:
-            logger.error(f'{entry.name} {getattr(obj, entry.name)}')
-            raise
+        if init:
+            try:
+                self.set_items(obj, entry.name)
+            except Exception:
+                logger.error(f'{entry.name} {getattr(obj, entry.name)}')
+                raise
         self.lbox.SetToolTip(self.help)
         list_sizer.Add(self.lbox, get_sizer_flags_1())
 
@@ -457,14 +459,12 @@ def add_widgets(obj, entries, parent, sizer, level=0):
     for entry in entries:
         if entry.name == 'type':
             continue
-        entry.user_defined = obj.get_user_defined(entry.name)
-        logger.info(f'{entry.name} {entry.valids[0].kind}')
         entry.add_widgets(obj, parent, sizer, level)
     max_label = cur_max
 
 
 class DataEntry(object):
-    """ Class to represent one data to be edited """
+    """ Class to represent one data value to be edited """
     def __init__(self, name, valids, def_val, help, is_basic):
         self.name = name
         self.valids = valids
@@ -486,7 +486,27 @@ class DataEntry(object):
 
     def add_widgets(self, obj, parent, sizer, level):
         """ Add a widget for each possible data type.
-            Also add a control to change the data type """
+            Also add a control to change the data type.
+            Here we bind the entry to the real object, during creation we just got a template (the class) """
+        self.obj = obj
+        # Solve the current value
+        if self.name in obj._tree:
+            # The user provided a value
+            self.user_defined = True
+            self.ori_val = obj._tree[self.name]
+        else:
+            # No user provided value
+            self.user_defined = False
+            # Get the current value in the object
+            self.ori_val = getattr(obj, self.name)
+            # Is this usable?
+            if self.ori_val is None or isinstance(self.ori_val, type):
+                # Nope, use the default
+                self.ori_val = self.def_val
+        data_type = obj._typeof(self.ori_val)
+        self.selected = next((c for c, v in enumerate(self.valids) if v.kind == data_type), -1)
+        assert self.selected != -1, (self.name, data_type, self.ori_val)
+        logger.info(f'{self.name} {self.ori_val} {self.user_defined} {data_type} {self.selected}')
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         is_first = True
         self.widgets = []
@@ -502,15 +522,18 @@ class DataEntry(object):
                 if not TYPE_SEL_RIGHT:
                     self.sizer.Add(sel, wx.SizerFlags().Border(wx.RIGHT).Center())
                 self.sel_widget = sel
-            e_sizer = valid.get_widget(obj, parent, self, level, is_first)
+            is_selected = c == self.selected
+            e_sizer = valid.get_widget(obj, parent, self, level, is_selected, self.ori_val)
             self.sizer.Add(e_sizer, get_sizer_flags_1_no_border())
             self.widgets.append(e_sizer)
-            if c != self.selected:
+            if not is_selected:
                 self.sizer.Show(e_sizer, False)
             is_first = False
         if TYPE_SEL_RIGHT:
             self.sizer.Add(sel, wx.SizerFlags().Border(wx.LEFT).Center())
         sizer.Add(self.sizer, get_sizer_flags_0_no_border())
+        self.parent_sizer = sizer
+        self.window = parent
 
     def OnChoice(self, event):
         """ A new data type was selected.
@@ -518,7 +541,25 @@ class DataEntry(object):
         self.sizer.Show(self.widgets[self.selected], False)
         self.selected = self.sel_widget.GetSelection()
         self.sizer.Show(self.widgets[self.selected], True)
-        self.sizer.Layout()
+        self.window.Parent.Layout()
+
+
+def adapt_default(val):
+    if val is None:
+        pass
+    elif val[0] == "'" and val[-1] == "'":
+        val = val[1:-1]
+    elif val == '[]':
+        val = []
+    elif val == 'true':
+        val = True
+    elif val == 'false':
+        val = False
+    elif val[0] in {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}:
+        val = float(val)
+    else:
+        logger.error(val)
+    return val
 
 
 def get_data_type_tree(obj):
@@ -545,6 +586,7 @@ def get_data_type_tree(obj):
         case = f'{k} = `{v}`'
         assert help[0] == '[', case
         valid, extra, def_val, real_help = obj.get_valid_types(help)
+        def_val = adapt_default(def_val)
         valids = [get_class_for(v, e)(v, e, def_val) for v, e in zip(valid, extra)]
         case += f' {extra} """ {help} """'
         assert valids, case
