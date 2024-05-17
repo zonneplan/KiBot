@@ -1,15 +1,17 @@
 import os
 import wx
 from ..gs import GS
+from . import gui_config
 loaded_btns = {}
 emp_font = None
 sizer_flags_0 = sizer_flags_1 = sizer_flags_0_no_border = sizer_flags_1_no_border = None
 sizer_flags_0_no_expand = sizer_flags_1_no_expand = None
+USER_EDITED_COLOR = None
 
 
 def init_vars():
     global emp_font, sizer_flags_0, sizer_flags_1, sizer_flags_0_no_border, sizer_flags_1_no_border, sizer_flags_0_no_expand
-    global sizer_flags_1_no_expand
+    global sizer_flags_1_no_expand, USER_EDITED_COLOR
     emp_font = wx.Font(70, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, True)
     sizer_flags_0 = wx.SizerFlags().Expand().Border(wx.ALL).CentreVertical()
     sizer_flags_1 = wx.SizerFlags(1).Expand().Border(wx.ALL).CentreVertical()
@@ -17,6 +19,7 @@ def init_vars():
     sizer_flags_1_no_expand = wx.SizerFlags(1).Border(wx.ALL).CentreVertical()
     sizer_flags_0_no_border = wx.SizerFlags().Expand().CentreVertical()
     sizer_flags_1_no_border = wx.SizerFlags(1).Expand().CentreVertical()
+    USER_EDITED_COLOR = wx.Colour(gui_config.USER_EDITED_COLOR)
 
 
 def _get_btn_bitmap(bitmap):

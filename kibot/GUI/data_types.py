@@ -7,6 +7,7 @@ from .validators import NumberValidator
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
                           get_client_data, set_items, get_selection, get_emp_font, get_sizer_flags_0, get_sizer_flags_1,
                           get_sizer_flags_0_no_border, get_sizer_flags_1_no_border, get_sizer_flags_0_no_expand)
+from . import gui_helpers
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..registrable import RegOutput
 from .. import log
@@ -478,11 +479,10 @@ class DataEntry(object):
         return self.valids[0].get_label(self)
 
     def set_font(self, label):
-        if self.user_defined:
-            # TODO config/abstract
-            label.SetForegroundColour(wx.Colour(80, 250, 80))
         if self.is_basic:
             label.SetFont(get_emp_font())
+        if self.user_defined:
+            label.SetForegroundColour(gui_helpers.USER_EDITED_COLOR)
 
     def add_widgets(self, obj, parent, sizer, level):
         """ Add a widget for each possible data type.
@@ -531,6 +531,8 @@ class DataEntry(object):
             is_first = False
         if TYPE_SEL_RIGHT:
             self.sizer.Add(sel, wx.SizerFlags().Border(wx.LEFT).Center())
+        if self.user_defined:
+            sel.SetForegroundColour(gui_helpers.USER_EDITED_COLOR)
         self.set_sel_tooltip()
         sizer.Add(self.sizer, get_sizer_flags_0_no_border())
         self.parent_sizer = sizer
