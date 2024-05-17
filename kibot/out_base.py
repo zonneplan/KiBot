@@ -74,7 +74,7 @@ class BaseOutput(RegOutput):
             self.run_by_default = True
             """ When enabled this output will be created when no specific outputs are requested """
             self.disable_run_by_default = ''
-            """ [string|boolean] Use it to disable the `run_by_default` status of other output.
+            """ [string|boolean=''] Use it to disable the `run_by_default` status of other output.
                 Useful when this output extends another and you don't want to generate the original.
                 Use the boolean true value to disable the output you are extending """
             self.output_id = ''

@@ -243,10 +243,10 @@ outputs:
         # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
         # A short-cut to use for simple cases where a variant is an overkill
         pre_transform: '_none'
-        # [list(string)|string=all] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
+        # [list(string)|string='all'] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
         # Ranges like *R5-R10* are supported.
         # Unlike the `pcbdraw` output, the default is `all`
-        show_components: all
+        show_components: 'all'
         # [boolean=true] Add solder paste only for the populated components.
         # Populated components are the ones listed in `show_components`
         solder_paste_for_populated: true
@@ -3363,10 +3363,10 @@ outputs:
       # Also note that KiCad 5 ray tracer shows comments outside the PCB, but newer KiCad versions
       # doesn't
       show_comments: false
-      # [list(string)|string=all] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
+      # [list(string)|string='all'] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
       # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
-      show_components: all
+      show_components: 'all'
       # [boolean=false] Show the content of the User.Drawings layer. Only available for KiCad 8 and newer.
       # Consult `show_comments` to learn when drawings are visible
       show_drawings: false
@@ -3880,10 +3880,10 @@ outputs:
       ref_x: 0
       # [number=0] Y coordinate to use as reference when `use_pcb_center_as_ref` and `use_pcb_center_as_ref` are disabled
       ref_y: 0
-      # [list(string)|string=all] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
+      # [list(string)|string='all'] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
       # Ranges like *R5-R10* are supported.
       # Unlike the `pcbdraw` output, the default is `all`
-      show_components: all
+      show_components: 'all'
       # [boolean=false] Use the auxiliary axis as origin for coordinates.
       # Has more precedence than `use_pcb_center_as_ref`
       use_aux_axis_as_origin: false

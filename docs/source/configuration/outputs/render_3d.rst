@@ -43,7 +43,7 @@ Parameters:
          Each step is currently 10 degrees. Only for KiCad 6 or newer.
       -  **rotate_z** :index:`: <pair: output - render_3d - options; rotate_z>` [:ref:`number <number>`] (default: ``0``) Steps to rotate around the Z axis, positive is clockwise.
          Each step is currently 10 degrees. Only for KiCad 6 or newer.
-      -  **show_components** :index:`: <pair: output - render_3d - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) (choices: "none", "all") (also accepts any string) List of components to draw, can be also a string for `none` or `all`.
+      -  **show_components** :index:`: <pair: output - render_3d - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "none", "all") (also accepts any string) List of components to draw, can be also a string for `none` or `all`.
          Ranges like *R5-R10* are supported.
          Unlike the `pcbdraw` output, the default is `all`.
 
@@ -127,7 +127,7 @@ Parameters:
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - render_3d; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - render_3d; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
 -  ``extends`` :index:`: <pair: output - render_3d; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.

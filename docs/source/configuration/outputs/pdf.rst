@@ -103,7 +103,7 @@ Parameters:
          Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
       -  ``output`` :index:`: <pair: output - pdf - custom_reports; output>` [:ref:`string <string>`] (default: ``'Custom_report.txt'``) File name for the custom report.
 
--  ``disable_run_by_default`` :index:`: <pair: output - pdf; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - pdf; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
 -  ``dnf_filter`` :index:`: <pair: output - pdf; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
