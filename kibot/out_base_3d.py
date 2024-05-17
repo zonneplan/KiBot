@@ -586,7 +586,7 @@ class Base3DOptionsWithHL(Base3DOptions):
     def __init__(self):
         with document:
             self.show_components = Optionable
-            """ *[list(string)|string=all] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
+            """ *[list(string)|string='all'] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
                 Ranges like *R5-R10* are supported.
                 Unlike the `pcbdraw` output, the default is `all` """
             self.highlight = Optionable
