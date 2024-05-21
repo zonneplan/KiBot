@@ -26,13 +26,14 @@ class GenericValidator(wx.Validator):
 
 
 class NumberValidator(GenericValidator):
-    def __init__(self, parent, restriction, default):
+    def __init__(self, parent, restriction, default, on_text=None):
         super().__init__(parent, restriction, default)
         self.Bind(wx.EVT_CHAR, self.OnChar)  # Char filter
         self.Bind(wx.EVT_TEXT, self.OnText)  # Number validation
+        self.on_text = on_text
 
     def Clone(self):
-        return NumberValidator(self.parent, self.restriction, self.default)
+        return NumberValidator(self.parent, self.restriction, self.default, self.on_text)
 
     def Validate(self, win):
         """ Check if the new value is usable """
@@ -74,6 +75,8 @@ class NumberValidator(GenericValidator):
         if not self.Validate(None):
             logger.debug(self.why_wrong)
             self.unroll_value()
+        elif self.on_text:
+            self.on_text(event)
 
     def OnChar(self, event):
         """ Filter characters that are usable for our data type.

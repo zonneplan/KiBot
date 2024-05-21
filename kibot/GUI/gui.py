@@ -77,7 +77,7 @@ def edit_output(parent, o):
     dlg = EditDict(parent, o, "Output "+str(o))
     res = dlg.ShowModal()
     if res == wx.ID_OK:
-        dlg.get_values()
+        dlg.update_values()
     dlg.Destroy()
     return res
 
