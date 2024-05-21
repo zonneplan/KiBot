@@ -32,7 +32,22 @@ class DataTypeBase(object):
         self.is_list_dict = kind == 'list(dict)'
 
     def get_widget(self, obj, parent, entry, level, init, value):
-        return None
+        entry.edited = False
+        help = entry.help
+        if self.default is not None:
+            help += f'\nDefault: {self.default}'
+        e_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        entry.show_status(self.label)
+        self.label.SetToolTip(help)
+        self.define_input(parent, value, init)
+        self.input.SetToolTip(help)
+
+        e_sizer.Add(self.label, get_sizer_flags_0())
+        e_sizer.Add(self.input, get_sizer_flags_1())
+        self.entry = entry
+        self.input.Bind(wx.EVT_TEXT, self.OnChange)
+        return e_sizer
 
     def get_restriction_help(self):
         return ''
@@ -41,29 +56,19 @@ class DataTypeBase(object):
         return entry.name
 
     def get_value(self):
-        return None
+        return self.input.Value
 
     def OnChange(self, event):
         self.entry.set_edited(self.input.Value != self.ori_value, self.label)
 
 
 class DataTypeString(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init, value):
-        entry.edited = False
-        help = entry.help
-        help += self.get_restriction_help()
-        if self.default is not None:
-            help += f'\nDefault: {self.default}'
-        self.ori_value = value if init else ''
-        self.label, self.input, sizer = input_label_and_text(parent, self.get_label(entry), self.ori_value, help, def_text,
-                                                             max_label)
-        entry.show_status(self.label)
-        self.entry = entry
+    def define_input(self, parent, value, init):
+        self.input = wx.TextCtrl(parent, size=wx.Size(def_text, -1))
+        if init:
+            self.input.SetValue(value)
+        self.ori_value = self.input.Value
         self.input.Bind(wx.EVT_TEXT, self.OnChange)
-        return sizer
-
-    def get_value(self):
-        return self.input.Value
 
 
 class DataTypeNumber(DataTypeString):
@@ -109,40 +114,16 @@ class DataTypeNumber(DataTypeString):
 
 
 class DataTypeBoolean(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init, value):
-        entry.edited = False
-        help = entry.help
-        if self.default is not None:
-            help += f'\nDefault: {self.default}'
-        e_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
-        entry.show_status(self.label)
-        self.label.SetToolTip(help)
+    def define_input(self, parent, value, init):
         self.input = wx.CheckBox(parent)
         if init:
             self.input.SetValue(value)
         self.ori_value = self.input.Value
-        self.input.SetToolTip(help)
-        e_sizer.Add(self.label, get_sizer_flags_0())
-        e_sizer.Add(self.input, get_sizer_flags_1())
-        self.entry = entry
         self.input.Bind(wx.EVT_CHECKBOX, self.OnChange)
-        return e_sizer
-
-    def get_value(self):
-        return self.input.Value
 
 
 class DataTypeChoice(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init, value):
-        entry.edited = False
-        help = entry.help
-        if self.default is not None:
-            help += f'\nDefault: {self.default}'
-        e_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
-        entry.show_status(self.label)
-        self.label.SetToolTip(help)
+    def define_input(self, parent, value, init):
         self.input = wx.Choice(parent, choices=self.restriction)
         if init:
             try:
@@ -151,19 +132,23 @@ class DataTypeChoice(DataTypeBase):
                 # New entry
                 self.input.SetSelection(0)
         self.ori_value = self.input.Selection
-        self.input.SetToolTip(help)
-
-        e_sizer.Add(self.label, get_sizer_flags_0())
-        e_sizer.Add(self.input, get_sizer_flags_1())
-        self.entry = entry
         self.input.Bind(wx.EVT_CHOICE, self.OnChange)
-        return e_sizer
 
     def get_value(self):
+        # Why not GetValue??!!
         return self.restriction[self.input.GetSelection()]
 
     def OnChange(self, event):
         self.entry.set_edited(self.input.Selection != self.ori_value, self.label)
+
+
+class DataTypeCombo(DataTypeBase):
+    def define_input(self, parent, value, init):
+        self.input = wx.ComboBox(parent, choices=[v for v in self.restriction if v != '*'])
+        if init:
+            self.input.SetValue(value)
+        self.ori_value = self.input.Value
+        self.input.Bind(wx.EVT_TEXT, self.OnChange)
 
 
 class DataTypeDict(DataTypeBase):
@@ -502,6 +487,8 @@ def get_class_for(kind, rest):
     """ Return a class suitable to edit data of the *kind* type. """
     if kind == 'string':
         if rest is not None:
+            if '*' in rest:
+                return DataTypeCombo
             return DataTypeChoice
         return DataTypeString
     elif kind == 'number':
