@@ -454,7 +454,7 @@ def group_components(cfg, components):
         if decimal_point == '.':
             decimal_point = None
     # Determine if we need information from the PCB
-    uses_fp_info = len(set(ColumnList.COLUMNS_FP_L).intersection({c.lower() for c in cfg.columns})) != 0
+    uses_fp_info = len(set(ColumnList.COLUMNS_FP_L).intersection({c.lower() for c in cfg._columns})) != 0
     # Coordinates origin for XYRS
     x_origin = 0.0
     y_origin = 0.0
@@ -542,5 +542,5 @@ def do_bom(file_name, ext, comps, cfg):
             prj.total_str = smd_tht(cfg, prj.comp_total, prj.comp_total_smd, prj.comp_total_tht)
             prj.fitted_str = smd_tht(cfg, prj.comp_fitted, prj.comp_fitted_smd, prj.comp_fitted_tht)
     # Create the BoM
-    write_bom(file_name, ext, groups, cfg.columns, cfg)
+    write_bom(file_name, ext, groups, cfg._columns, cfg)
     cfg.number = number
