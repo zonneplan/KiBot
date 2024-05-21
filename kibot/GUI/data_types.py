@@ -28,7 +28,8 @@ class DataTypeBase(object):
         self.kind = kind
         self.restriction = restriction
         self.default = default
-        self.is_dict = kind == 'dict' or kind == 'list(dict)'
+        self.is_dict = kind == 'dict'
+        self.is_list_dict = kind == 'list(dict)'
 
     def get_widget(self, obj, parent, entry, level, init, value):
         return None
@@ -255,7 +256,7 @@ class DataTypeList(DataTypeBase):
             except Exception:
                 logger.error(f'{entry.name} {getattr(obj, entry.name)}')
                 raise
-        self.ori_value, _ = self.get_value()
+        self.ori_value = self.get_value()
         self.lbox.SetToolTip(self.help)
         list_sizer.Add(self.lbox, get_sizer_flags_1())
 
@@ -298,7 +299,7 @@ class DataTypeList(DataTypeBase):
         return f'Edit {self.label} entry {index+1}'
 
     def mark_edited(self):
-        cur_value, _ = self.get_value()
+        cur_value = self.get_value()
         self.entry.set_edited(cur_value != self.ori_value, self.sp)
 
     def OnUp(self, event):
@@ -335,7 +336,7 @@ class DataTypeListString(DataTypeList):
         dlg.Destroy()
 
     def get_value(self):
-        return [self.lbox.GetString(n) for n in range(self.lbox.GetCount())], None
+        return [self.lbox.GetString(n) for n in range(self.lbox.GetCount())]
 
 
 class DataTypeListDict(DataTypeList):
@@ -357,7 +358,7 @@ class DataTypeListDict(DataTypeList):
             self.entry.set_edited(True)
 
     def get_value(self):
-        return get_client_data(self.lbox)
+        return [v._tree for v in get_client_data(self.lbox)]
 
 
 class DummyForList(object):
@@ -384,6 +385,9 @@ class DataTypeListListString(DataTypeListDict):
                 self.lbox.SetString(index, str(new_val))
                 self.lbox.SetClientData(index, new_val)
             self.mark_edited()
+
+    def get_value(self):
+        return get_client_data(self.lbox)
 
 
 # ##################################################################################################
@@ -547,12 +551,13 @@ def add_widgets(obj, entries, parent, sizer, level=0):
 
 class DataEntry(object):
     """ Class to represent one data value to be edited """
-    def __init__(self, name, valids, def_val, help, is_basic, obj):
+    def __init__(self, name, valids, def_val, help, is_basic, obj, level):
         self.name = name
         self.valids = valids
         self.def_val = def_val
         self.help = '\n'.join((ln.strip() for ln in help.splitlines(True)))
         self.is_dict = any((x.is_dict for x in valids))
+        self.is_list_dict = any((x.is_list_dict for x in valids))
         self.is_basic = is_basic
         self.selected = 0
         self.edited = False
@@ -577,7 +582,7 @@ class DataEntry(object):
         if self.selected == -1:  # I.e. optionable not used and hence is None
             self.selected = 0
             self.ori_val = TYPE_EMPTY[self.valids[0].kind]
-        logger.info(f'{self.name} {self.ori_val} {self.user_defined} {data_type} {self.selected}')
+        logger.debug(f'{" "*level*2}- {self.name} {self.ori_val} {self.user_defined} {data_type} {self.selected}')
 
     def get_label(self):
         return self.valids[0].get_label(self)
@@ -687,9 +692,10 @@ def adapt_default(val):
     return val
 
 
-def get_data_type_tree(template, obj):
+def get_data_type_tree(template, obj, level=0):
     """ Create a tree containing all the DataEntry objects associated to the data in the *obj* output """
     entries = []
+    logger.debug(f'{" "*level*2}Starting data tree for {type(template)}')
     # TODO: move this to Optionable
     m1 = dict(template.get_attrs_gen())
     m2 = dict(filter(lambda k: k[0][0] != '_', vars(template).items()))
@@ -716,12 +722,16 @@ def get_data_type_tree(template, obj):
         case += f' {extra} """ {help} """'
         assert valids, case
         valids = sorted(valids, key=lambda x: 200-TYPE_PRIORITY[x.kind])
-        entry = DataEntry(k, valids, def_val, real_help, is_basic, obj)
+        entry = DataEntry(k, valids, def_val, real_help, is_basic, obj, level)
         if entry.is_dict:
             value = getattr(obj, k)
             if value is None or isinstance(value, type):
                 value = v()
-            entry.sub = get_data_type_tree(v(), value)
+            entry.sub = get_data_type_tree(v(), value, level+1)
             entry.cls = v
+        elif entry.is_list_dict:
+            entry.cls = v
+            o = v()
+            entry.sub = get_data_type_tree(o, o, level+1)
         entries.append(entry)
     return entries
