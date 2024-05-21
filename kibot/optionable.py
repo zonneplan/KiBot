@@ -11,7 +11,7 @@ import re
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
+from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS, typeof
 from . import log
 
 logger = log.get_logger()
@@ -114,22 +114,6 @@ class Optionable(object):
     def set_doc(self, name, text):
         setattr(self, '_help_'+name, text)
 
-    @staticmethod
-    def _typeof(v):
-        if isinstance(v, bool):
-            return 'boolean'
-        if isinstance(v, (int, float)):
-            return 'number'
-        if isinstance(v, str):
-            return 'string'
-        if isinstance(v, dict):
-            return 'dict'
-        if isinstance(v, list):
-            if len(v) == 0:
-                return 'list(string)'
-            return 'list({})'.format(Optionable._typeof(v[0]))
-        return 'None'
-
     def get_valid_types(self, doc):
         # Separate the valid types for this key
         sections = doc[1:].split('] ')
@@ -190,7 +174,7 @@ class Optionable(object):
                 if '=' in valid[-1]:
                     valid[-1] = valid[-1].split('=')[0]
                 # Get the type used by the user as a string
-                v_type = Optionable._typeof(v)
+                v_type = typeof(v)
                 if v_type not in valid:
                     # Not a valid type for this key
                     if v_type == 'None':
@@ -201,7 +185,7 @@ class Optionable(object):
                         raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(k, valid, v_type))
             else:
                 valid = None
-                v_type = Optionable._typeof(cur_val)
+                v_type = typeof(cur_val)
             if v_type == 'boolean':
                 Optionable._check_bool(k, v)
             elif v_type == 'number':
@@ -229,7 +213,7 @@ class Optionable(object):
                     elif isinstance(v, list):
                         new_val = []
                         for element in v:
-                            e_type = 'list('+Optionable._typeof(element)+')'
+                            e_type = 'list('+typeof(element)+')'
                             if e_type not in valid:
                                 raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".
                                                                format(element, valid, e_type))

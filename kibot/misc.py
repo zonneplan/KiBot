@@ -539,3 +539,19 @@ def read_png(file):
 
 def force_list(v):
     return v if v is None or isinstance(v, list) else [v]
+
+
+def typeof(v):
+    if isinstance(v, bool):
+        return 'boolean'
+    if isinstance(v, (int, float)):
+        return 'number'
+    if isinstance(v, str):
+        return 'string'
+    if isinstance(v, dict):
+        return 'dict'
+    if isinstance(v, list):
+        if len(v) == 0:
+            return 'list(string)'
+        return 'list({})'.format(typeof(v[0]))
+    return 'None'
