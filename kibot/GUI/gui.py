@@ -1,5 +1,7 @@
 # https://github.com/wxFormBuilder/wxFormBuilder
 
+import os
+import yaml
 from . import main_dialog_base
 from .. import __version__
 from .. import log
@@ -40,37 +42,45 @@ def set_best_size(self, ref):
 
 
 class MainDialog(main_dialog_base.MainDialogBase):
-    def __init__(self, outputs):
+    def __init__(self, outputs, cfg_file):
         main_dialog_base.MainDialogBase.__init__(self, None)
-        self.panel = MainDialogPanel(self, outputs)
+        self.panel = MainDialogPanel(self, outputs, cfg_file)
         set_best_size(self, self.panel)
         self.SetTitle('KiBot '+__version__)
 
 
-def do_gui(outputs):
+def do_gui(outputs, cfg_file):
     for o in outputs:
         config_output(o, dry=True)
-    dlg = MainDialog(outputs)
+    dlg = MainDialog(outputs, cfg_file)
     res = dlg.ShowModal()
     dlg.Destroy()
     return res
 
 
 class MainDialogPanel(main_dialog_base.MainDialogPanel):
-    def __init__(self, parent, outputs):
+    def __init__(self, parent, outputs, cfg_file):
         main_dialog_base.MainDialogPanel.__init__(self, parent)
 
         self.outputs = OutputsPanel(self.notebook, outputs)
         self.groups = GroupsPanel(self.notebook, outputs)
-        self.general = main_dialog_base.GeneralSettingsPanelBase(self.notebook)
-        self.html = main_dialog_base.HtmlSettingsPanelBase(self.notebook)
-        self.fields = main_dialog_base.FieldsPanelBase(self.notebook)
         self.notebook.AddPage(self.outputs, "Outputs")
         self.notebook.AddPage(self.groups, "Groups")
         # TODO: Remove these panels used as examples
+        # self.general = main_dialog_base.GeneralSettingsPanelBase(self.notebook)
+        # self.html = main_dialog_base.HtmlSettingsPanelBase(self.notebook)
+        # self.fields = main_dialog_base.FieldsPanelBase(self.notebook)
         # self.notebook.AddPage(self.general, "General")
         # self.notebook.AddPage(self.html, "Html defaults")
         # self.notebook.AddPage(self.fields, "Fields")
+        self.cfg_file = cfg_file
+
+    def OnSave(self, event):
+        tree = {'kibot': {'version': 1}, 'outputs': [o._tree for o in get_client_data(self.outputs.outputsBox)]}
+        if os.path.isfile(self.cfg_file):
+            os.rename(self.cfg_file, os.path.join(os.path.dirname(self.cfg_file), '.'+os.path.basename(self.cfg_file)+'~'))
+        with open(self.cfg_file, 'wt') as f:
+            f.write(yaml.dump(tree, sort_keys=False))
 
 
 def edit_output(parent, o):
