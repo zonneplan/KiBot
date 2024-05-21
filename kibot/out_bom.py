@@ -477,6 +477,9 @@ class Aggregate(Optionable):
         if not self.name:
             self.name = os.path.splitext(os.path.basename(self.file))[0]
 
+    def __str__(self):
+        return f'{self.name} ({self.file})'
+
 
 class BoMOptions(BaseOptions):
     def __init__(self):
@@ -821,7 +824,7 @@ class BoMOptions(BaseOptions):
                                            format(self.footprint_type_values))
         # Columns
         (valid_columns, extra_columns) = self._get_columns()
-        (self.columns, self.column_levels, self.column_comments, self.column_rename,
+        (self._columns, self.column_levels, self.column_comments, self.column_rename,
          self.join) = self.process_columns_config(self.columns, valid_columns, extra_columns)
         (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
          self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns, add_all=False)
