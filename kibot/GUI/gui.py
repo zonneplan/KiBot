@@ -9,7 +9,7 @@ from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import edit_dict
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
-                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars)
+                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars, choose_from_list)
 logger = log.get_logger()
 
 import wx
@@ -100,7 +100,10 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         index, string, obj = get_selection(self.outputsBox)
         if obj is None:
             return
-        self.edited |= edit_dict(self, obj, None, None, title="Output "+str(obj))
+        self.editing = obj
+        if edit_dict(self, obj, None, None, title="Output "+str(obj), validator=self.validate):
+            self.edited = True
+            self.outputsBox.SetString(index, str(obj))
 
     def OnOutputsOrderUp(self, event):
         move_sel_up(self.outputsBox)
@@ -109,6 +112,29 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
     def OnOutputsOrderDown(self, event):
         move_sel_down(self.outputsBox)
         self.edited = True
+
+    def OnOutputsOrderAdd(self, event):
+        kind = choose_from_list(self, list(RegOutput.get_registered().keys()), 'an output type')
+        if kind is None:
+            return
+        # Create a new object of the selected type
+        obj = RegOutput.get_class_for(kind)()
+        obj.type = kind
+        obj._tree = {}
+        obj.config(None)
+        if edit_dict(self, obj, None, None, title=f"New {kind} output", validator=self.validate):
+            self.outputsBox.Append(str(obj), obj)
+            self.edited = True
+
+    def validate(self, obj):
+        if not obj.name:
+            pop_error('You must provide a name for the output')
+            return False
+        same_name = next((out for out in get_client_data(self.outputsBox) if out.name == obj.name), None)
+        if same_name is not None and same_name != self.editing:
+            pop_error(f'The `{obj.name}` name is already used by {same_name}')
+            return False
+        return True
 
 
 # ##########################################################################

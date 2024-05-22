@@ -383,12 +383,13 @@ class DataTypeListListString(DataTypeListDict):
 
 class EditDict(wx.Dialog):
     """ Dialog for a group of options """
-    def __init__(self, parent, o, title, data_tree=None):
+    def __init__(self, parent, o, title, data_tree=None, validator=None):
         # Generated code
         wx.Dialog.__init__(self, parent, title=title,
                            style=wx.STAY_ON_TOP | wx.BORDER_DEFAULT | wx.CAPTION)  # wx.RESIZE_BORDER
         self.parent = parent
         self.obj = o
+        self.validator = validator
         # Main sizer
         b_sizer = wx.BoxSizer(wx.VERTICAL)
         # Output widgets sizer
@@ -477,6 +478,10 @@ class EditDict(wx.Dialog):
             pop_error(str(e))
             # Ask to retry, the user can use Cancel because the original object isn't changed
             return True, True
+        # Perform extra validations, i.e. usable name
+        if self.validator:
+            if not self.validator(dummy):
+                return True, True
         # Ok, the configuration is valid, configure the real object
         self.obj.__init__()
         self.obj._tree = tree
@@ -488,10 +493,10 @@ class EditDict(wx.Dialog):
         return True, False
 
 
-def edit_dict(parent_dialog, obj, entries, entry_name, title=None):
+def edit_dict(parent_dialog, obj, entries, entry_name, title=None, validator=None):
     if title is None:
         title = parent_dialog.GetTitle() + ' | ' + entry_name
-    dlg = EditDict(parent_dialog, obj, title, entries)
+    dlg = EditDict(parent_dialog, obj, title, entries, validator)
     changed = dlg.ShowModal() == wx.ID_OK and dlg.changed
     dlg.Destroy()
     return changed

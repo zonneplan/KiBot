@@ -157,3 +157,39 @@ def get_sizer_flags_0_no_border():
 
 def get_sizer_flags_1_no_border():
     return sizer_flags_1_no_border
+
+
+class ChooseFromList(wx.Dialog):
+    def __init__(self, parent, items, what, l_style=wx.LB_SINGLE):
+        # Generated code
+        wx.Dialog.__init__(self, parent, title="Select "+what, size=wx.Size(463, 529),
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.lbox = wx.ListBox(self, choices=items, style=l_style)
+        main_sizer.Add(self.lbox, get_sizer_flags_1())
+        main_sizer.Add(ok_cancel(self), get_sizer_flags_0())
+        self.SetSizer(main_sizer)
+        main_sizer.SetSizeHints(self)
+        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)
+        # Adjust the width to be optimal for the width of the outputs
+#         size = self.GetClientSize()
+#         lb_size = self.lbox.BestSize
+#         if lb_size.Width > size.Width:
+#             size.Width = lb_size.Width
+#             self.SetClientSize(size)
+#         # Done
+#         self.Layout()
+#         self.Centre(wx.BOTH)
+
+    def OnDClick(self, event):
+        self.EndModal(wx.ID_OK)
+
+
+def choose_from_list(parent, items, what, l_style=wx.LB_SINGLE):
+    dlg = ChooseFromList(parent, items, what, l_style)
+    if dlg.ShowModal() == wx.ID_OK:
+        res = items[dlg.lbox.Selection]
+    else:
+        res = None
+    dlg.Destroy()
+    return res
