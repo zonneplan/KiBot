@@ -42,6 +42,7 @@ def pop_error(msg):
 
 
 def pop_confirm(msg):
+    # In wxGTK the Yes/No lacks icons, the Yes/No/Cancel is nicer
     return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION) == wx.YES
 
 
@@ -50,8 +51,9 @@ def move_sel_up(box):
     selection = box.Selection
     if selection != wx.NOT_FOUND and selection > 0:
         item = box.GetString(selection)
+        data = box.GetClientData(selection)
         box.Delete(selection)
-        box.Insert(item, selection-1)
+        box.Insert(item, selection-1, data)
         box.SetSelection(selection-1)
 
 
@@ -61,8 +63,9 @@ def move_sel_down(box):
     size = box.Count
     if selection != wx.NOT_FOUND and selection < size-1:
         item = box.GetString(selection)
+        data = box.GetClientData(selection)
         box.Delete(selection)
-        box.Insert(item, selection+1)
+        box.Insert(item, selection+1, data)
         box.SetSelection(selection+1)
 
 
