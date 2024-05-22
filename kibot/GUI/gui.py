@@ -74,6 +74,13 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
         # self.notebook.AddPage(self.html, "Html defaults")
         # self.notebook.AddPage(self.fields, "Fields")
         self.cfg_file = cfg_file
+        self.edited = False
+        self.saveConfigBtn.Disable()
+
+    def mark_edited(self):
+        if not self.edited:
+            self.saveConfigBtn.Enable(True)
+        self.edited = True
 
     def OnSave(self, event):
         tree = {'kibot': {'version': 1}, 'outputs': [o._tree for o in get_client_data(self.outputs.outputsBox)]}
@@ -81,6 +88,8 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
             os.rename(self.cfg_file, os.path.join(os.path.dirname(self.cfg_file), '.'+os.path.basename(self.cfg_file)+'~'))
         with open(self.cfg_file, 'wt') as f:
             f.write(yaml.dump(tree, sort_keys=False))
+        self.edited = False
+        self.saveConfigBtn.Disable()
 
 
 class OutputsPanel(main_dialog_base.OutputsPanelBase):
@@ -94,7 +103,9 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         # Populate the listbox
         set_items(self.outputsBox, outputs)
         self.Layout()
-        self.edited = False
+
+    def mark_edited(self):
+        self.Parent.Parent.mark_edited()
 
     def OnItemDClick(self, event):
         index, string, obj = get_selection(self.outputsBox)
@@ -102,16 +113,16 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
             return
         self.editing = obj
         if edit_dict(self, obj, None, None, title="Output "+str(obj), validator=self.validate):
-            self.edited = True
+            self.mark_edited()
             self.outputsBox.SetString(index, str(obj))
 
     def OnOutputsOrderUp(self, event):
         move_sel_up(self.outputsBox)
-        self.edited = True
+        self.mark_edited()
 
     def OnOutputsOrderDown(self, event):
         move_sel_down(self.outputsBox)
-        self.edited = True
+        self.mark_edited()
 
     def OnOutputsOrderAdd(self, event):
         kind = choose_from_list(self, list(RegOutput.get_registered().keys()), 'an output type')
@@ -124,11 +135,11 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         obj.config(None)
         if edit_dict(self, obj, None, None, title=f"New {kind} output", validator=self.validate):
             self.outputsBox.Append(str(obj), obj)
-            self.edited = True
+            self.mark_edited()
 
     def OnOutputsOrderRemove(self, event):
         remove_item(self.outputsBox, confirm='Are you sure you want to remove the `{}` output?')
-        self.edited = True
+        self.mark_edited()
 
     def validate(self, obj):
         if not obj.name:
