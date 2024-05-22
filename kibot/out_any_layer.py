@@ -11,7 +11,7 @@ from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu,
                     PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG, LSEQ, LSET)
 from .optionable import Optionable
 from .out_base import BaseOutput, VariantOptions
-from .error import PlotError, KiPlotConfigurationError
+from .error import PlotError
 from .layer import Layer
 from .gs import GS
 from .misc import W_NOLAYER, KICAD_VERSION_7_0_1, MISSING_TOOL, AUTO_SCALE
@@ -298,14 +298,14 @@ class AnyLayer(BaseOutput):
         super().__init__()
         with document:
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*] List
+            """ *[list(dict)|list(string)|string=all] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to plot """
 
     def config(self, parent):
         super().config(parent)
         # We need layers
         if isinstance(self.layers, type):
-            raise KiPlotConfigurationError("Missing `layers` list")
+            self.layers = 'all'
 
     def get_targets(self, out_dir):
         return self.options.get_targets(out_dir, self.layers)
