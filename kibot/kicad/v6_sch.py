@@ -862,6 +862,8 @@ class LibComponent(object):
                 comp.draw.append(vis_obj)
             elif i_type == 'text':
                 comp.draw.append(DrawTextV6.parse(i))
+            elif i_type == 'text_box':
+                comp.draw.append(TextBox.parse(i, i_type))
             # PINS...
             elif i_type == 'pin':
                 vis_obj = PinV6.parse(i)
@@ -1474,6 +1476,7 @@ class TextBox(object):
         text.name = name
         text.exclude_from_sim = None
         text.text = _check_str(items, 1, name)
+        text.uuid = None
         for c, i in enumerate(items[2:]):
             i_type = _check_is_symbol_list(i)
             if i_type == 'at':
@@ -1503,7 +1506,8 @@ class TextBox(object):
                      self.stroke.write(), Sep(),
                      self.fill.write(), Sep(),
                      self.effects.write(), Sep()])
-        add_uuid(data, self.uuid)
+        if self.uuid:
+            add_uuid(data, self.uuid)
         return _symbol(self.name, data)
 
 

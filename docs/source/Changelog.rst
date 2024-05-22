@@ -26,6 +26,9 @@ Added
 
 -  KiCost: option to specify a configuration file (#615)
 -  BoM: logo file name can contain env vars and/or ~ (#620)
+-  Schematic:
+
+   -  Support for text boxes inside symbols (#621)
 
 Fixed:
 ~~~~~~
