@@ -283,12 +283,13 @@ def test_out_needs_type(test_dir):
 #     ctx.clean_up()
 
 
-@pytest.mark.indep
-def test_no_layers(test_dir):
-    ctx = context.TestContext(test_dir, '3Rs', 'error_no_layers')
-    ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing .?layers.? list")
-    ctx.clean_up()
+# Now we interpret it as "all"
+# @pytest.mark.indep
+# def test_no_layers(test_dir):
+#     ctx = context.TestContext(test_dir, '3Rs', 'error_no_layers')
+#     ctx.run(EXIT_BAD_CONFIG)
+#     assert ctx.search_err("Missing .?layers.? list")
+#     ctx.clean_up()
 
 
 @pytest.mark.indep
