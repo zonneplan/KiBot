@@ -4,9 +4,10 @@
 import math
 import wx
 from .validators import NumberValidator
-from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
+from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
                           get_client_data, set_items, get_selection, get_emp_font, get_sizer_flags_0, get_sizer_flags_1,
-                          get_sizer_flags_0_no_border, get_sizer_flags_1_no_border, get_sizer_flags_0_no_expand, pop_error)
+                          get_sizer_flags_0_no_border, get_sizer_flags_1_no_border, get_sizer_flags_0_no_expand, pop_error,
+                          get_res_bitmap)
 from . import gui_helpers
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
@@ -249,16 +250,16 @@ class DataTypeList(DataTypeBase):
         abm_sizer.Add(list_sizer, get_sizer_flags_1_no_border())
 
         but_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.b_up = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("arrow-up"))
+        self.b_up = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_UP))
         self.b_up.SetToolTip("Move the selection up")
         but_sizer.Add(self.b_up, get_sizer_flags_0_no_expand())
-        self.b_down = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("arrow-down"))
+        self.b_down = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_DOWN))
         self.b_down.SetToolTip("Move the selection down")
         but_sizer.Add(self.b_down, get_sizer_flags_0_no_expand())
-        self.b_add = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("plus"))
+        self.b_add = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
         self.b_add.SetToolTip("Add one entry")
         but_sizer.Add(self.b_add, get_sizer_flags_0_no_expand())
-        self.b_remove = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_btn_bitmap("minus"))
+        self.b_remove = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_MINUS))
         self.b_remove.SetToolTip("Remove the entry")
         but_sizer.Add(self.b_remove, get_sizer_flags_0_no_expand())
 

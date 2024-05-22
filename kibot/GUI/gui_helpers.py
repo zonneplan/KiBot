@@ -1,8 +1,6 @@
-import os
 import wx
-from ..gs import GS
 from . import gui_config
-loaded_btns = {}
+# loaded_btns = {}
 emp_font = None
 sizer_flags_0 = sizer_flags_1 = sizer_flags_0_no_border = sizer_flags_1_no_border = None
 sizer_flags_0_no_expand = sizer_flags_1_no_expand = None
@@ -22,19 +20,19 @@ def init_vars():
     USER_EDITED_COLOR = wx.Colour(gui_config.USER_EDITED_COLOR)
 
 
-def _get_btn_bitmap(bitmap):
-    path = os.path.join(GS.get_resource_path('images'), 'buttons', bitmap)
-    png = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
-    return wx.BitmapBundle(png)
-
-
-def get_btn_bitmap(name):
-    bitmap = 'btn-'+name+'.png'
-    bmp = loaded_btns.get(bitmap, None)
-    if bmp is None:
-        bmp = _get_btn_bitmap(bitmap)
-        loaded_btns[bitmap] = bmp
-    return bmp
+# def _get_btn_bitmap(bitmap):
+#     path = os.path.join(GS.get_resource_path('images'), 'buttons', bitmap)
+#     png = wx.Bitmap(path, wx.BITMAP_TYPE_PNG)
+#     return wx.BitmapBundle(png)
+#
+#
+# def get_btn_bitmap(name):
+#     bitmap = 'btn-'+name+'.png'
+#     bmp = loaded_btns.get(bitmap, None)
+#     if bmp is None:
+#         bmp = _get_btn_bitmap(bitmap)
+#         loaded_btns[bitmap] = bmp
+#     return bmp
 
 
 def pop_error(msg):
@@ -198,5 +196,9 @@ def choose_from_list(parent, items, what, l_style=wx.LB_SINGLE):
     return res
 
 
+def get_res_bitmap(resource):
+    return wx.BitmapBundle(wx.ArtProvider.GetBitmap(resource))
+
+
 def set_button_bitmap(btn, resource):
-    btn.SetBitmap(wx.BitmapBundle(wx.ArtProvider.GetBitmap(resource)))
+    btn.SetBitmap(get_res_bitmap(resource))

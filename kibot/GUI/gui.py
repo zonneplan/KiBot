@@ -8,7 +8,7 @@ from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import edit_dict
-from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
+from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
                           set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars, choose_from_list,
                           set_button_bitmap)
 logger = log.get_logger()
@@ -99,10 +99,10 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
     def __init__(self, parent, outputs):
         main_dialog_base.OutputsPanelBase.__init__(self, parent)
         # Set the bitmaps for the buttons
-        self.m_btnOutUp.SetBitmap(get_btn_bitmap("arrow-up"))
-        self.m_btnOutDown.SetBitmap(get_btn_bitmap("arrow-down"))
-        self.m_btnOutAdd.SetBitmap(get_btn_bitmap("plus"))
-        self.m_btnOutRemove.SetBitmap(get_btn_bitmap("minus"))
+        set_button_bitmap(self.m_btnOutUp, wx.ART_GO_UP)
+        set_button_bitmap(self.m_btnOutDown, wx.ART_GO_DOWN)
+        set_button_bitmap(self.m_btnOutAdd, wx.ART_PLUS)
+        set_button_bitmap(self.m_btnOutRemove, wx.ART_MINUS)
         # Populate the listbox
         set_items(self.outputsBox, outputs)
         self.Layout()
@@ -163,10 +163,10 @@ class GroupsPanel(main_dialog_base.GroupsPanelBase):
     def __init__(self, parent, outputs):
         main_dialog_base.GroupsPanelBase.__init__(self, parent)
 
-        self.m_btnGrUp.SetBitmap(get_btn_bitmap("arrow-up"))
-        self.m_btnGrDown.SetBitmap(get_btn_bitmap("arrow-down"))
-        self.m_btnGrAdd.SetBitmap(get_btn_bitmap("plus"))
-        self.m_btnGrRemove.SetBitmap(get_btn_bitmap("minus"))
+        set_button_bitmap(self.m_btnGrUp, wx.ART_GO_UP)
+        set_button_bitmap(self.m_btnGrDown, wx.ART_GO_DOWN)
+        set_button_bitmap(self.m_btnGrAdd, wx.ART_PLUS)
+        set_button_bitmap(self.m_btnGrRemove, wx.ART_MINUS)
 
         self.groupsBox.SetItems(list(RegOutput.get_group_names()))
         for n, g in enumerate(RegOutput.get_groups().values()):
@@ -279,11 +279,11 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         main_dialog_base.AddGroupDialogBase.__init__(self, parent)
         self.initialized = True
 
-        self.m_btnOutUp.SetBitmap(get_btn_bitmap("arrow-up"))
-        self.m_btnOutDown.SetBitmap(get_btn_bitmap("arrow-down"))
-        self.m_btnOutAdd.SetBitmap(get_btn_bitmap("plus"))
-        self.m_btnOutAddG.SetBitmap(get_btn_bitmap("plus-plus"))
-        self.m_btnOutRemove.SetBitmap(get_btn_bitmap("minus"))
+        set_button_bitmap(self.m_btnOutUp, wx.ART_GO_UP)
+        set_button_bitmap(self.m_btnOutDown, wx.ART_GO_DOWN)
+        set_button_bitmap(self.m_btnOutAdd, wx.ART_PLUS)
+        set_button_bitmap(self.m_btnOutAddG, wx.ART_LIST_VIEW)
+        set_button_bitmap(self.m_btnOutRemove, wx.ART_MINUS)
 
         set_items(self.outputsBox, selected)
         self.used_names = used_names
