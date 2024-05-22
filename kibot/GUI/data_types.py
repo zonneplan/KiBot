@@ -6,11 +6,12 @@ import wx
 from .validators import NumberValidator
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
                           get_client_data, set_items, get_selection, get_emp_font, get_sizer_flags_0, get_sizer_flags_1,
-                          get_sizer_flags_0_no_border, get_sizer_flags_1_no_border, get_sizer_flags_0_no_expand)
+                          get_sizer_flags_0_no_border, get_sizer_flags_1_no_border, get_sizer_flags_0_no_expand, pop_error)
 from . import gui_helpers
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
-from ..registrable import RegOutput
+from ..error import KiPlotConfigurationError
 from ..misc import typeof
+from ..registrable import RegOutput
 from .. import log
 logger = log.get_logger()
 TYPE_PRIORITY = {'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60, 'string': 50, 'number': 20,
@@ -409,7 +410,7 @@ class EditDict(wx.Dialog):
         b_sizer.Add(middle_sizer, get_sizer_flags_1())
 
         # Standard Ok/Cancel button
-        b_sizer.Add(ok_cancel(self), get_sizer_flags_0())
+        b_sizer.Add(ok_cancel(self, self.OnOK), get_sizer_flags_0())
 
         # Resize things when the collapsible panes change their state
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
@@ -445,6 +446,11 @@ class EditDict(wx.Dialog):
         new_size = sizer.MinSize+self.delta
         self.SetSize(new_size)
 
+    def OnOK(self, event):
+        self.changed, retry = self.update_values()
+        if not retry:
+            self.EndModal(wx.ID_OK)
+
     def update_values(self):
         tree = {}
         modified = False
@@ -459,26 +465,34 @@ class EditDict(wx.Dialog):
                     modified = entry.edited
         if not modified:
             logger.debug(f'Not modified {tree}')
-            return False
+            return False, False
         logger.debug(f'Updating {self.obj} {tree}')
+        # First try using a dummy
+        dummy = self.obj.__class__()
+        dummy._tree = tree
+        try:
+            dummy.config(None)
+        except KiPlotConfigurationError as e:
+            logger.debug(f'Error configuring: {e}')
+            pop_error(str(e))
+            # Ask to retry, the user can use Cancel because the original object isn't changed
+            return True, True
+        # Ok, the configuration is valid, configure the real object
         self.obj.__init__()
         self.obj._tree = tree
         self.obj._configured = False
         self.obj.config(None)
-        # logger.error(self.obj)
+        # Transfer the new state to be the "original"
         for entry in self.data_type_tree:
             entry.update_value()
-        return True
+        return True, False
 
 
 def edit_dict(parent_dialog, obj, entries, entry_name, title=None):
     if title is None:
         title = parent_dialog.GetTitle() + ' | ' + entry_name
     dlg = EditDict(parent_dialog, obj, title, entries)
-    changed = False
-    res = dlg.ShowModal()
-    if res == wx.ID_OK:
-        changed = dlg.update_values()
+    changed = dlg.ShowModal() == wx.ID_OK and dlg.changed
     dlg.Destroy()
     return changed
 
