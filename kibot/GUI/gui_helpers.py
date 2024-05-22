@@ -196,3 +196,7 @@ def choose_from_list(parent, items, what, l_style=wx.LB_SINGLE):
         res = None
     dlg.Destroy()
     return res
+
+
+def set_button_bitmap(btn, resource):
+    btn.SetBitmap(wx.BitmapBundle(wx.ArtProvider.GetBitmap(resource)))

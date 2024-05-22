@@ -9,7 +9,8 @@ from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import edit_dict
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
-                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars, choose_from_list)
+                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars, choose_from_list,
+                          set_button_bitmap)
 logger = log.get_logger()
 
 import wx
@@ -75,7 +76,9 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
         # self.notebook.AddPage(self.fields, "Fields")
         self.cfg_file = cfg_file
         self.edited = False
+        set_button_bitmap(self.saveConfigBtn, wx.ART_FILE_SAVE)
         self.saveConfigBtn.Disable()
+        set_button_bitmap(self.generateOutputsBtn, wx.ART_EXECUTABLE_FILE)
 
     def mark_edited(self):
         if not self.edited:
