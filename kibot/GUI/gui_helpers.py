@@ -1,3 +1,4 @@
+import difflib
 import wx
 from . import gui_config
 # loaded_btns = {}
@@ -161,11 +162,17 @@ def get_sizer_flags_1_no_border():
 
 
 class ChooseFromList(wx.Dialog):
-    def __init__(self, parent, items, what, l_style=wx.LB_SINGLE):
-        # Generated code
+    def __init__(self, parent, items, what, search=True, l_style=wx.LB_SINGLE):
+        self.all_options = items
         wx.Dialog.__init__(self, parent, title="Select "+what, size=wx.Size(463, 529),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
+        if search:
+            self.search = wx.SearchCtrl(self)
+            main_sizer.Add(self.search, get_sizer_flags_0())
+            self.search.Bind(wx.EVT_TEXT, self.OnText)
+            # Take ENTER as a confirmation
+            self.search.Bind(wx.EVT_SEARCH, self.OnDClick)
         self.lbox = wx.ListBox(self, choices=items, style=l_style)
         main_sizer.Add(self.lbox, get_sizer_flags_1())
         main_sizer.Add(ok_cancel(self), get_sizer_flags_0())
@@ -185,11 +192,20 @@ class ChooseFromList(wx.Dialog):
     def OnDClick(self, event):
         self.EndModal(wx.ID_OK)
 
+    def OnText(self, event):
+        text = event.GetString()
+        items = [o for o in self.all_options if o.startswith(text)]
+        for s in difflib.get_close_matches(text, self.all_options, n=5, cutoff=0.3):
+            if s not in items:
+                items.append(s)
+        self.lbox.SetItems(items)
+        self.lbox.SetSelection(0)
+
 
 def choose_from_list(parent, items, what, l_style=wx.LB_SINGLE):
     dlg = ChooseFromList(parent, items, what, l_style)
     if dlg.ShowModal() == wx.ID_OK:
-        res = items[dlg.lbox.Selection]
+        res = dlg.lbox.GetString(dlg.lbox.Selection)
     else:
         res = None
     dlg.Destroy()
