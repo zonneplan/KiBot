@@ -7,7 +7,7 @@ from .. import __version__
 from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput
-from .data_types import EditDict
+from .data_types import edit_dict
 from .gui_helpers import (get_btn_bitmap, move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
                           set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars)
 logger = log.get_logger()
@@ -83,15 +83,6 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
             f.write(yaml.dump(tree, sort_keys=False))
 
 
-def edit_output(parent, o):
-    dlg = EditDict(parent, o, "Output "+str(o))
-    res = dlg.ShowModal()
-    if res == wx.ID_OK:
-        dlg.update_values()
-    dlg.Destroy()
-    return res
-
-
 class OutputsPanel(main_dialog_base.OutputsPanelBase):
     def __init__(self, parent, outputs):
         main_dialog_base.OutputsPanelBase.__init__(self, parent)
@@ -103,18 +94,21 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         # Populate the listbox
         set_items(self.outputsBox, outputs)
         self.Layout()
+        self.edited = False
 
     def OnItemDClick(self, event):
         index, string, obj = get_selection(self.outputsBox)
         if obj is None:
             return
-        edit_output(self, obj)
+        self.edited |= edit_dict(self, obj, None, None, title="Output "+str(obj))
 
     def OnOutputsOrderUp(self, event):
         move_sel_up(self.outputsBox)
+        self.edited = True
 
     def OnOutputsOrderDown(self, event):
         move_sel_down(self.outputsBox)
+        self.edited = True
 
 
 # ##########################################################################
