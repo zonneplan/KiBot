@@ -126,6 +126,10 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
             self.outputsBox.Append(str(obj), obj)
             self.edited = True
 
+    def OnOutputsOrderRemove(self, event):
+        remove_item(self.outputsBox, confirm='Are you sure you want to remove the `{}` output?')
+        self.edited = True
+
     def validate(self, obj):
         if not obj.name:
             pop_error('You must provide a name for the output')
