@@ -47,6 +47,7 @@ Changed:
    plotting a layer where we don’t have the hidden text. So currently
    KiBot is experimentally disabling the “hidden text layer”. This is a
    bug in KiCad (https://gitlab.com/kicad/code/kicad/-/issues/17958)
+-  Layers: now the default for missing layers is all layers.
 
 [1.7.0] - 2024-04-23
 --------------------
