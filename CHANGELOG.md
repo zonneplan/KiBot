@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - BoM: logo file name can contain env vars and/or ~ (#620)
 - Schematic:
   - Support for text boxes inside symbols (#621)
+- Worksheet:
+  - Support for KiCad 8 bitmaps (#623)
 
 ### Fixed:
 - iBoM: *highlight_pin1* option didn't allow the use of the new choices.

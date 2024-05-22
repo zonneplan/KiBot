@@ -30,6 +30,10 @@ Added
 
    -  Support for text boxes inside symbols (#621)
 
+-  Worksheet:
+
+   -  Support for KiCad 8 bitmaps (#623)
+
 Fixed:
 ~~~~~~
 

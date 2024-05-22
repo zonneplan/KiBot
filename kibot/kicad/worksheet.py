@@ -11,6 +11,7 @@ KiCad v5/6/7/8 Worksheet format.
 A basic implementation of the .kicad_wks file format.
 Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 """
+from base64 import b64decode
 import io
 from struct import unpack
 from pcbnew import (wxPoint, wxSize, FromMM, wxPointMM)
@@ -410,6 +411,12 @@ class WksBitmap(WksDrawing):
             for c in range(len(i)-1):
                 v = _check_symbol_str(i, c+1, self.c_name+' pngdata', 'data')
                 self.data += bytes([int(c, 16) for c in v.split(' ') if c])
+        elif i_type == 'data':
+            # New on KiCad 8, not documented 2024/05/22
+            self.data = ''
+            for c in range(len(i)-1):
+                self.data += i[c+1]
+            self.data = b64decode(self.data)
         else:
             super().parse_specific_args(i_type, i, items, offset)
 
