@@ -457,7 +457,7 @@ class EditDict(wx.Dialog):
         tree = {}
         modified = False
         for entry in self.data_type_tree:
-            if entry.name == 'type':
+            if entry.skip:
                 tree['type'] = self.obj.type
                 continue
             value = entry.get_value()
@@ -550,9 +550,8 @@ def add_widgets(obj, entries, parent, sizer, level=0):
 
     # logger.error(f'{obj._tree}')
     for entry in entries:
-        if entry.name == 'type':
-            continue
-        entry.add_widgets(obj, parent, sizer, level)
+        if not entry.skip:
+            entry.add_widgets(obj, parent, sizer, level)
     max_label = cur_max
 
 
@@ -569,6 +568,7 @@ class DataEntry(object):
         self.selected = 0
         self.edited = False
         self.obj = obj
+        self.skip = self.name == 'type' and level == 0
         # Solve the current value
         if self.name in obj._tree:
             # The user provided a value
