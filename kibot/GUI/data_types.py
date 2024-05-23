@@ -729,7 +729,14 @@ def get_data_type_tree(template, obj, level=0):
         case += f' {extra} """ {help} """'
         assert valids, case
         valids = sorted(valids, key=lambda x: 200-TYPE_PRIORITY[x.kind])
-        entry = DataEntry(k, valids, def_val, real_help, is_basic, obj, level)
+        obj_ref = obj
+        if isinstance(obj, list):
+            # list(dict)
+            if len(obj) == 0:
+                obj_ref = template
+            else:
+                obj_ref = obj[0]
+        entry = DataEntry(k, valids, def_val, real_help, is_basic, obj_ref, level)
         if entry.is_dict:
             value = getattr(obj, k)
             if value is None or isinstance(value, type):
