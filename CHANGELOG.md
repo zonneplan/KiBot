@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB2Blender_Tools: transform filters might make it fail. (#618)
 - BoM: No color reference when using row colors but not column or kicost
   colors. (#619)
+- Worksheet: Size of PNGs that specify its PPI resolution.
 
 ### Changed:
 - KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it is
