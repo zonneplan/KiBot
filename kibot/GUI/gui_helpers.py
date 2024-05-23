@@ -162,9 +162,12 @@ def get_sizer_flags_1_no_border():
 
 
 class ChooseFromList(wx.Dialog):
-    def __init__(self, parent, items, what, search=True, l_style=wx.LB_SINGLE):
+    def __init__(self, parent, items, what, search, l_style, search_on):
         self.all_options = items
-        wx.Dialog.__init__(self, parent, title="Select "+what, size=wx.Size(463, 529),
+        self.search_on = search_on
+        if search_on:
+            self.translate = dict(zip(search_on, self.all_options))
+        wx.Dialog.__init__(self, parent, title="Select "+what,
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         if search:
@@ -194,18 +197,25 @@ class ChooseFromList(wx.Dialog):
 
     def OnText(self, event):
         text = event.GetString()
-        items = [o for o in self.all_options if o.startswith(text)]
-        for s in difflib.get_close_matches(text, self.all_options, n=5, cutoff=0.3):
+        options = self.search_on or self.all_options
+        items = [o for o in options if o.startswith(text)]
+        for s in difflib.get_close_matches(text, options, n=5, cutoff=0.3):
             if s not in items:
                 items.append(s)
+        if self.search_on:
+            items = [self.translate[v] for v in items]
         self.lbox.SetItems(items)
         self.lbox.SetSelection(0)
 
 
-def choose_from_list(parent, items, what, l_style=wx.LB_SINGLE):
-    dlg = ChooseFromList(parent, items, what, l_style)
+def choose_from_list(parent, items, what, multiple=False, search_on=None):
+    l_style = wx.LB_MULTIPLE if multiple else wx.LB_SINGLE
+    dlg = ChooseFromList(parent, items, what, True, l_style, search_on)
     if dlg.ShowModal() == wx.ID_OK:
-        res = dlg.lbox.GetString(dlg.lbox.Selection)
+        if multiple:
+            res = [dlg.lbox.GetString(i) for i in dlg.lbox.GetSelections()]
+        else:
+            res = dlg.lbox.GetString(dlg.lbox.Selection)
     else:
         res = None
     dlg.Destroy()

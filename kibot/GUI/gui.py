@@ -8,8 +8,8 @@ from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput
 from .data_types import edit_dict
-from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, pop_error, get_client_data,
-                          set_items, get_selection, get_sizer_flags_0, get_sizer_flags_1, init_vars, choose_from_list,
+from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data,
+                          set_items, get_selection, init_vars, choose_from_list,
                           set_button_bitmap)
 logger = log.get_logger()
 
@@ -222,53 +222,6 @@ class GroupsPanel(main_dialog_base.GroupsPanelBase):
 
 
 # ##########################################################################
-# # Helper to choose an item from a list
-# # Used to choose one or more outputs or groups
-# ##########################################################################
-
-def choose_output(parent, available, what="an output", multiple=False):
-    """ Create a dialog to choose an output from the `available` list
-        Returns the index of the selected output or a list of if multiple enabled """
-    dlg = ChooseOutput(parent, available, what, wx.LB_MULTIPLE if multiple else wx.LB_SINGLE)
-    res = dlg.ShowModal()
-    sel = (dlg.outputsBox.GetSelections() if multiple else dlg.outputsBox.Selection) if res == wx.ID_OK else None
-    dlg.Destroy()
-    return sel
-
-
-class ChooseOutput(wx.Dialog):
-    def __init__(self, parent, available, what, l_style=wx.LB_SINGLE):
-        # Generated code
-        wx.Dialog.__init__(self, parent, id=wx.ID_ANY, title="Select "+what, pos=wx.DefaultPosition,
-                           size=wx.Size(463, 529), style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
-        self.SetSizeHints(wx.DefaultSize, wx.DefaultSize)
-        # Main sizer
-        b_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.outputsBox = wx.ListBox(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, available, l_style)
-        b_sizer.Add(self.outputsBox, get_sizer_flags_1())
-        # Standard Ok/Cancel
-        b_sizer.Add(ok_cancel(self), get_sizer_flags_0())
-        self.SetSizer(b_sizer)
-        # Connect Events
-        self.outputsBox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)
-        # Adjust the width to be optimal for the width of the outputs
-        size = self.GetClientSize()
-        lb_size = self.outputsBox.BestSize
-        if lb_size.Width > size.Width:
-            size.Width = lb_size.Width
-            self.SetClientSize(size)
-        # Done
-        self.Layout()
-        self.Centre(wx.BOTH)
-
-    def __del__(self):
-        pass
-
-    def OnDClick(self, event):
-        self.EndModal(wx.ID_OK)
-
-
-# ##########################################################################
 # # Dialog to edit one group
 # ##########################################################################
 
@@ -375,16 +328,16 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
 
     def OnOutputsOrderAdd(self, event):
         selected = set(get_client_data(self.outputsBox))
-        available = [str(o) for o in self.outputs if o not in selected]
+        available = {str(o): o for o in self.outputs if o not in selected}
+        available_names = [o.name for o in self.outputs if o not in selected]
         if not available:
             pop_error('No outputs available to add')
             return
-        outs = choose_output(self, available, multiple=True)
+        outs = choose_from_list(self, list(available.keys()), what="an output", multiple=True, search_on=available_names)
         if not outs:
             return
-        available_o = [o for o in self.outputs if o not in selected]
         for out in outs:
-            self.outputsBox.Append(available[out], available_o[out])
+            self.outputsBox.Append(out, available[out])
         self.valid_list = True
         self.eval_status()
 
@@ -392,12 +345,11 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         if not self.group_names:
             pop_error('No groups available to add')
             return
-        groups = choose_output(self, self.group_names, 'a group', multiple=True)
+        groups = choose_from_list(self, self.group_names, what='a group', multiple=True)
         if not groups:
             return
         for g in groups:
-            group = self.group_names[g]
-            self.outputsBox.Append(group, group)
+            self.outputsBox.Append(g, g)
         self.valid_list = True
         self.eval_status()
 
