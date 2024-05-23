@@ -336,7 +336,8 @@ class DataTypeListDict(DataTypeList):
     def edit_item(self, string='', obj=None, index=-1):
         if obj is None:
             obj = self.entry.cls()
-        res = edit_dict(self.parent.Parent, obj, self.entry.sub, self.entry.name, self.create_edit_title(index))
+        res = edit_dict(self.parent.Parent, obj, self.entry.sub, self.entry.name, self.create_edit_title(index),
+                        force_changed=True)
         if res:
             if index == -1:
                 self.lbox.Append(str(obj), obj)
@@ -494,11 +495,11 @@ class EditDict(wx.Dialog):
         return True, False
 
 
-def edit_dict(parent_dialog, obj, entries, entry_name, title=None, validator=None):
+def edit_dict(parent_dialog, obj, entries, entry_name, title=None, validator=None, force_changed=False):
     if title is None:
         title = parent_dialog.GetTitle() + ' | ' + entry_name
     dlg = EditDict(parent_dialog, obj, title, entries, validator)
-    changed = dlg.ShowModal() == wx.ID_OK and dlg.changed
+    changed = dlg.ShowModal() == wx.ID_OK and (dlg.changed or force_changed)
     dlg.Destroy()
     return changed
 
