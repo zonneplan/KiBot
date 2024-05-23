@@ -52,7 +52,7 @@ class MainDialog(main_dialog_base.MainDialogBase):
 
 def do_gui(outputs, cfg_file):
     for o in outputs:
-        config_output(o, dry=True)
+        config_output(o)
     dlg = MainDialog(outputs, cfg_file)
     res = dlg.ShowModal()
     dlg.Destroy()
@@ -135,7 +135,7 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         obj = RegOutput.get_class_for(kind)()
         obj.type = kind
         obj._tree = {}
-        obj.config(None)
+        config_output(obj)
         if edit_dict(self, obj, None, None, title=f"New {kind} output", validator=self.validate):
             self.outputsBox.Append(str(obj), obj)
             self.mark_edited()
