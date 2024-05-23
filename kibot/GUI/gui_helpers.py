@@ -3,21 +3,21 @@ import wx
 from . import gui_config
 # loaded_btns = {}
 emp_font = None
-sizer_flags_0 = sizer_flags_1 = sizer_flags_0_no_border = sizer_flags_1_no_border = None
-sizer_flags_0_no_expand = sizer_flags_1_no_expand = None
+SIZER_FLAGS_0 = SIZER_FLAGS_1 = SIZER_FLAGS_0_NO_BORDER = SIZER_FLAGS_1_NO_BORDER = None
+SIZER_FLAGS_0_NO_EXPAND = SIZER_FLAGS_1_NO_EXPAND = None
 USER_EDITED_COLOR = None
 
 
 def init_vars():
-    global emp_font, sizer_flags_0, sizer_flags_1, sizer_flags_0_no_border, sizer_flags_1_no_border, sizer_flags_0_no_expand
-    global sizer_flags_1_no_expand, USER_EDITED_COLOR
+    global emp_font, SIZER_FLAGS_0, SIZER_FLAGS_1, SIZER_FLAGS_0_NO_BORDER, SIZER_FLAGS_1_NO_BORDER, SIZER_FLAGS_0_NO_EXPAND
+    global SIZER_FLAGS_1_NO_EXPAND, USER_EDITED_COLOR
     emp_font = wx.Font(70, wx.FONTFAMILY_DEFAULT, wx.FONTSTYLE_NORMAL, wx.FONTWEIGHT_BOLD, True)
-    sizer_flags_0 = wx.SizerFlags().Expand().Border(wx.ALL).CentreVertical()
-    sizer_flags_1 = wx.SizerFlags(1).Expand().Border(wx.ALL).CentreVertical()
-    sizer_flags_0_no_expand = wx.SizerFlags().Border(wx.ALL).CentreVertical()
-    sizer_flags_1_no_expand = wx.SizerFlags(1).Border(wx.ALL).CentreVertical()
-    sizer_flags_0_no_border = wx.SizerFlags().Expand().CentreVertical()
-    sizer_flags_1_no_border = wx.SizerFlags(1).Expand().CentreVertical()
+    SIZER_FLAGS_0 = wx.SizerFlags().Expand().Border(wx.ALL).CentreVertical()
+    SIZER_FLAGS_1 = wx.SizerFlags(1).Expand().Border(wx.ALL).CentreVertical()
+    SIZER_FLAGS_0_NO_EXPAND = wx.SizerFlags().Border(wx.ALL).CentreVertical()
+    SIZER_FLAGS_1_NO_EXPAND = wx.SizerFlags(1).Border(wx.ALL).CentreVertical()
+    SIZER_FLAGS_0_NO_BORDER = wx.SizerFlags().Expand().CentreVertical()
+    SIZER_FLAGS_1_NO_BORDER = wx.SizerFlags(1).Expand().CentreVertical()
     USER_EDITED_COLOR = wx.Colour(gui_config.USER_EDITED_COLOR)
 
 
@@ -112,8 +112,8 @@ def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1):
     label.SetToolTip(help)
     input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1))
     input.SetToolTip(help)
-    sizer.Add(label, get_sizer_flags_0())
-    sizer.Add(input, get_sizer_flags_1())
+    sizer.Add(label, SIZER_FLAGS_0)
+    sizer.Add(input, SIZER_FLAGS_1)
     return label, input, sizer
 
 
@@ -137,30 +137,6 @@ def get_selection(lbox):
     return index, lbox.GetString(index), lbox.GetClientData(index)
 
 
-def get_sizer_flags_0():
-    return sizer_flags_0
-
-
-def get_sizer_flags_1():
-    return sizer_flags_1
-
-
-def get_sizer_flags_0_no_expand():
-    return sizer_flags_0_no_expand
-
-
-def get_sizer_flags_1_no_expand():
-    return sizer_flags_1_no_expand
-
-
-def get_sizer_flags_0_no_border():
-    return sizer_flags_0_no_border
-
-
-def get_sizer_flags_1_no_border():
-    return sizer_flags_1_no_border
-
-
 class ChooseFromList(wx.Dialog):
     def __init__(self, parent, items, what, search, l_style, search_on):
         self.all_options = items
@@ -172,13 +148,13 @@ class ChooseFromList(wx.Dialog):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         if search:
             self.search = wx.SearchCtrl(self)
-            main_sizer.Add(self.search, get_sizer_flags_0())
+            main_sizer.Add(self.search, SIZER_FLAGS_0)
             self.search.Bind(wx.EVT_TEXT, self.OnText)
             # Take ENTER as a confirmation
             self.search.Bind(wx.EVT_SEARCH, self.OnDClick)
         self.lbox = wx.ListBox(self, choices=items, style=l_style)
-        main_sizer.Add(self.lbox, get_sizer_flags_1())
-        main_sizer.Add(ok_cancel(self), get_sizer_flags_0())
+        main_sizer.Add(self.lbox, SIZER_FLAGS_1)
+        main_sizer.Add(ok_cancel(self), SIZER_FLAGS_0)
         self.SetSizer(main_sizer)
         main_sizer.SetSizeHints(self)
         self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)

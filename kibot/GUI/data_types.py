@@ -4,11 +4,9 @@
 import math
 import wx
 from .validators import NumberValidator
-from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text,
-                          get_client_data, set_items, get_selection, get_emp_font, get_sizer_flags_0, get_sizer_flags_1,
-                          get_sizer_flags_0_no_border, get_sizer_flags_1_no_border, get_sizer_flags_0_no_expand, pop_error,
-                          get_res_bitmap)
-from . import gui_helpers
+from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
+                          get_selection, get_emp_font, pop_error, get_res_bitmap)
+from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
 from ..misc import typeof
@@ -45,8 +43,8 @@ class DataTypeBase(object):
         self.define_input(parent, value, init)
         self.input.SetToolTip(help)
 
-        e_sizer.Add(self.label, get_sizer_flags_0())
-        e_sizer.Add(self.input, get_sizer_flags_1())
+        e_sizer.Add(self.label, gh.SIZER_FLAGS_0)
+        e_sizer.Add(self.input, gh.SIZER_FLAGS_1)
         self.entry = entry
         self.input.Bind(wx.EVT_TEXT, self.OnChange)
         return e_sizer
@@ -167,7 +165,7 @@ class DataTypeDict(DataTypeBase):
         if USE_DIALOG_FOR_NESTED:
             self.entry_name = lbl
             self.btn = wx.Button(parent, label="Edit "+lbl)
-            e_sizer.Add(self.btn, get_sizer_flags_1())
+            e_sizer.Add(self.btn, gh.SIZER_FLAGS_1)
             self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
         else:
             # Collapsible pane version
@@ -181,7 +179,7 @@ class DataTypeDict(DataTypeBase):
             add_widgets(self.sub_obj, entry.sub, pane, pane_sizer, level+1)
             pane.SetSizer(pane_sizer)
 
-            e_sizer.Add(cp, get_sizer_flags_1())
+            e_sizer.Add(cp, gh.SIZER_FLAGS_1)
         return e_sizer
 
     def OnEdit(self, event):
@@ -206,8 +204,8 @@ class InputStringDialog(wx.Dialog):
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         _, self.input, inp_sizer = input_label_and_text(self, lbl, initial, help, def_text)
-        main_sizer.Add(inp_sizer, get_sizer_flags_1())
-        main_sizer.Add(ok_cancel(self), get_sizer_flags_0())
+        main_sizer.Add(inp_sizer, gh.SIZER_FLAGS_1)
+        main_sizer.Add(ok_cancel(self), gh.SIZER_FLAGS_0)
         self.SetSizer(main_sizer)
         main_sizer.SetSizeHints(self)
         # Make ENTER finish it
@@ -245,26 +243,26 @@ class DataTypeList(DataTypeBase):
                 raise
         self.ori_value = self.get_value()
         self.lbox.SetToolTip(self.help)
-        list_sizer.Add(self.lbox, get_sizer_flags_1())
+        list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
 
-        abm_sizer.Add(list_sizer, get_sizer_flags_1_no_border())
+        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
 
         but_sizer = wx.BoxSizer(wx.VERTICAL)
         self.b_up = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_UP))
         self.b_up.SetToolTip("Move the selection up")
-        but_sizer.Add(self.b_up, get_sizer_flags_0_no_expand())
+        but_sizer.Add(self.b_up, gh.SIZER_FLAGS_0_NO_EXPAND)
         self.b_down = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_DOWN))
         self.b_down.SetToolTip("Move the selection down")
-        but_sizer.Add(self.b_down, get_sizer_flags_0_no_expand())
+        but_sizer.Add(self.b_down, gh.SIZER_FLAGS_0_NO_EXPAND)
         self.b_add = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
         self.b_add.SetToolTip("Add one entry")
-        but_sizer.Add(self.b_add, get_sizer_flags_0_no_expand())
+        but_sizer.Add(self.b_add, gh.SIZER_FLAGS_0_NO_EXPAND)
         self.b_remove = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_MINUS))
         self.b_remove.SetToolTip("Remove the entry")
-        but_sizer.Add(self.b_remove, get_sizer_flags_0_no_expand())
+        but_sizer.Add(self.b_remove, gh.SIZER_FLAGS_0_NO_EXPAND)
 
-        abm_sizer.Add(but_sizer, get_sizer_flags_0_no_expand())
-        main_sizer.Add(abm_sizer, get_sizer_flags_1_no_border())
+        abm_sizer.Add(but_sizer, gh.SIZER_FLAGS_0_NO_EXPAND)
+        main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
 
         self.b_up.Bind(wx.EVT_BUTTON, self.OnUp)
         self.b_down.Bind(wx.EVT_BUTTON, self.OnDown)
@@ -408,12 +406,12 @@ class EditDict(wx.Dialog):
         self.compute_scroll_hints()
         self.scrl_sizer.Fit(self.scrollWindow)
         self.scrollWindow.SetAutoLayout(True)
-        middle_sizer.Add(self.scrollWindow, get_sizer_flags_1())
+        middle_sizer.Add(self.scrollWindow, gh.SIZER_FLAGS_1)
         # Add the outputs are to the main sizer
-        b_sizer.Add(middle_sizer, get_sizer_flags_1())
+        b_sizer.Add(middle_sizer, gh.SIZER_FLAGS_1)
 
         # Standard Ok/Cancel button
-        b_sizer.Add(ok_cancel(self, self.OnOK), get_sizer_flags_0())
+        b_sizer.Add(ok_cancel(self, self.OnOK), gh.SIZER_FLAGS_0)
 
         # Resize things when the collapsible panes change their state
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
@@ -599,7 +597,7 @@ class DataEntry(object):
         if self.is_basic:
             label.SetFont(get_emp_font())
         if self.user_defined:
-            label.SetForegroundColour(gui_helpers.USER_EDITED_COLOR)
+            label.SetForegroundColour(gh.USER_EDITED_COLOR)
         else:
             label.SetForegroundColour(self.ori_fore_color)
 
@@ -629,7 +627,7 @@ class DataEntry(object):
                 self.sel_widget = sel
             is_selected = c == self.selected
             e_sizer = valid.get_widget(obj, parent, self, level, is_selected, self.ori_val)
-            self.sizer.Add(e_sizer, get_sizer_flags_1_no_border())
+            self.sizer.Add(e_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
             self.widgets.append(e_sizer)
             if not is_selected:
                 self.sizer.Show(e_sizer, False)
@@ -637,9 +635,9 @@ class DataEntry(object):
         if TYPE_SEL_RIGHT:
             self.sizer.Add(sel, wx.SizerFlags().Border(wx.LEFT).Center())
         if self.user_defined:
-            sel.SetForegroundColour(gui_helpers.USER_EDITED_COLOR)
+            sel.SetForegroundColour(gh.USER_EDITED_COLOR)
         self.set_sel_tooltip()
-        sizer.Add(self.sizer, get_sizer_flags_0_no_border())
+        sizer.Add(self.sizer, gh.SIZER_FLAGS_0_NO_BORDER)
         self.parent_sizer = sizer
         self.window = parent
 
@@ -649,7 +647,7 @@ class DataEntry(object):
         if new_user_defined == self.user_defined:
             return False
         self.user_defined = new_user_defined
-        self.sel_widget.SetForegroundColour(gui_helpers.USER_EDITED_COLOR if new_user_defined else self.ori_fore_color)
+        self.sel_widget.SetForegroundColour(gh.USER_EDITED_COLOR if new_user_defined else self.ori_fore_color)
         if widget:
             self.show_status(widget)
         return True
