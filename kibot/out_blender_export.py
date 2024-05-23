@@ -85,6 +85,14 @@ class BlenderOutputOptions(Optionable):
             """ Subdirectory for this output """
         self._unknown_is_error = True
 
+    def __str__(self):
+        txt = self.type
+        if self.dir:
+            txt += f' ({self.dir})'
+        if self.output != GS.def_global_output:
+            txt += f' ({self.output})'
+        return txt
+
 
 class BlenderObjOptions(Optionable):
     """ A light/camera in the scene. """
@@ -117,6 +125,9 @@ class BlenderObjOptions(Optionable):
         self.pos_x = self.solve('pos_x')
         self.pos_y = self.solve('pos_y')
         self.pos_z = self.solve('pos_z')
+
+    def __str__(self):
+        return f'{self.name} ({self.pos_x},{self.pos_y},{self.pos_z})'
 
 
 class BlenderLightOptions(BlenderObjOptions):
@@ -243,6 +254,14 @@ class BlenderPointOfViewOptions(Optionable):
         self.rotate_x += inc.rotate_x
         self.rotate_y += inc.rotate_y
         self.rotate_z += inc.rotate_z
+
+    def __str__(self):
+        txt = self.view
+        if self.rotate_x or self.rotate_y or self.rotate_z:
+            txt += f' ({self.rotate_x},{self.rotate_y},{self.rotate_z})'
+        if self.steps != 1:
+            txt += f' {self.steps} steps'
+        return txt
 
 
 class PCB3DExportOptions(Base3DOptionsWithHL):
