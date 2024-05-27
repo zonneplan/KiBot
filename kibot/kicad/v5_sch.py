@@ -1073,10 +1073,11 @@ class SchematicComponent(object):
     def split_ref(self, f=None):
         m = SchematicComponent.ref_re.match(self.ref)
         if not m:
+            pos = f'(@ {self.x},{self.y})'
             if f:
-                raise SchFileError('Malformed component reference', self.ref, f)
+                raise SchFileError(f'Malformed component reference {pos}', self.ref, f)
             else:
-                raise SchError('Malformed component reference `{}`'.format(self.ref))
+                raise SchError(f'Malformed component reference `{self.ref}` {pos}')
         self.ref_prefix, self.ref_suffix = m.groups()
 
     @staticmethod
