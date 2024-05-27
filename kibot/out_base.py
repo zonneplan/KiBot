@@ -1143,8 +1143,9 @@ class PcbMargin(Optionable):
     @staticmethod
     def solve(margin):
         if isinstance(margin, type):
-            return (0, 0, 0, 0)
+            return (0, 0, 0, 0), PcbMargin()
         if isinstance(margin, PcbMargin):
-            return (GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom))
+            return ((GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom)),
+                    margin)
         margin = GS.from_mm(margin)
-        return (margin, margin, margin, margin)
+        return (margin, margin, margin, margin), margin

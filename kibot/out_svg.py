@@ -67,7 +67,7 @@ class SVGOptions(DrillMarks):
     def config(self, parent):
         super().config(parent)
         # Margin
-        self.margin = PcbMargin.solve(self.margin)
+        self._margin, self.margin = PcbMargin.solve(self.margin)
 
     def run(self, output_dir, layers):
         super().run(output_dir, layers)
@@ -79,8 +79,8 @@ class SVGOptions(DrillMarks):
         # Limit the view box of the SVG
         bbox = GS.get_rect_for(GS.board.ComputeBoundingBox(self.size_detection == 'kicad_edge'))
         # Apply the margin (left right top bottom)
-        bbox = (bbox[0]-self.margin[0], bbox[1]-self.margin[2],
-                bbox[2]+self.margin[0]+self.margin[1], bbox[3]+self.margin[2]+self.margin[3])
+        bbox = (bbox[0]-self._margin[0], bbox[1]-self._margin[2],
+                bbox[2]+self._margin[0]+self._margin[1], bbox[3]+self._margin[2]+self._margin[3])
         # Width/height of the used area in cm
         width = ToMM(bbox[2])*0.1
         height = ToMM(bbox[3])*0.1
