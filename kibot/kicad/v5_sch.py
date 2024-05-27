@@ -1073,7 +1073,7 @@ class SchematicComponent(object):
     def split_ref(self, f=None):
         m = SchematicComponent.ref_re.match(self.ref)
         if not m:
-            pos = f'(@ {self.x},{self.y})'
+            pos = f'(@ {self.x},{self.y})' if hasattr(self, 'x') else ''
             if f:
                 raise SchFileError(f'Malformed component reference {pos}', self.ref, f)
             else:
