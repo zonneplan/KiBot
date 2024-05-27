@@ -264,7 +264,7 @@ class PcbDrawOptions(VariantOptions):
         else:
             self.highlight = self.solve_kf_filters(self.highlight)
         # Margin
-        self.margin = PcbMargin.solve(self.margin)
+        self._margin, self.margin = PcbMargin.solve(self.margin)
         # Filter
         if isinstance(self.show_components, type):
             # Default option is 'none'
@@ -451,7 +451,7 @@ class PcbDrawOptions(VariantOptions):
             plotter.libs = self.libs
             plotter.render_back = self.bottom
             plotter.mirror = self.mirror
-            plotter.margin = self.margin
+            plotter.margin = self._margin
             plotter.svg_precision = self.svg_precision
             if self.style:
                 if isinstance(self.style, str):
