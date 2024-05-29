@@ -753,7 +753,8 @@ class CfgYamlReader(object):
         outs = RegOutput.get_outputs()
         for o in outs:
             for g in o._groups:
-                if not RegOutput.add_to_group(o.name, g):
+                existing, _ = RegOutput.add_out_to_group(o, g)
+                if not existing:
                     grps = list(RegOutput.get_group_names())
                     grps.remove(g)
                     best_matches = difflib.get_close_matches(g, grps)
