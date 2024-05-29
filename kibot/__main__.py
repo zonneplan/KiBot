@@ -406,15 +406,18 @@ def detect_windows():  # pragma: no cover (Windows)
 def check_needs_convert():
     """ Try to convert Altium PCBs to KiCad.
         If successful just use the converted file. """
+    if GS.pcb_file is None:
+        return False
     ext = os.path.splitext(GS.pcb_fname)[1]
     if ext.lower() != '.pcbdoc':
-        return
+        return False
     command = GS.check_tool_dep('convert_pcb', 'KiAuto')
     new_name = GS.pcb_basename+'.kicad_pcb'
     cmd = [command, 'convert', '-o', new_name, GS.pcb_file, GS.pcb_dir]
     cmd, _ = GS.add_extra_options(cmd)
     exec_with_retry(cmd, FAILED_EXECUTE)
     GS.set_pcb(os.path.join(GS.pcb_dir, new_name))
+    return True
 
 
 def main():
