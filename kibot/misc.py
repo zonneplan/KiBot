@@ -556,3 +556,11 @@ def typeof(v):
             return 'list(string)'
         return 'list({})'.format(typeof(v[0]))
     return 'None'
+
+
+def pretty_list(items, short=False):
+    if short:
+        if len(items) == 1:
+            return items[0].short_str()
+        return ', '.join((x.short_str() for x in items[:-1]))+' and '+items[-1].short_str()
+    return str(items[0]) if len(items) == 1 else ', '.join(map(str, items[:-1]))+' and '+str(items[-1])
