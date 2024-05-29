@@ -45,6 +45,10 @@ def pop_confirm(msg):
     return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION) == wx.YES
 
 
+def pop_info(msg):
+    wx.MessageBox(msg, 'Information', wx.OK)
+
+
 def move_sel_up(box):
     """ Helper to move the selection up """
     selection = box.Selection
@@ -71,17 +75,18 @@ def move_sel_down(box):
 def remove_item(lbox, confirm=None):
     selection = lbox.Selection
     if selection == wx.NOT_FOUND:
-        return
+        return False
     ok = True
     if confirm is not None:
         name = lbox.GetString(selection)
         msg = confirm.format(name)
         ok = pop_confirm(msg)
     if not ok:
-        return
+        return False
     lbox.Delete(selection)
     count = lbox.GetCount()
     lbox.SetSelection(min(selection, count-1))
+    return True
 
 
 def ok_cancel(parent, ok_callback=None):

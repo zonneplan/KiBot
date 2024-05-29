@@ -1,14 +1,15 @@
 # https://github.com/wxFormBuilder/wxFormBuilder
 
+from copy import deepcopy
 import os
 import yaml
 from . import main_dialog_base
 from .. import __version__
 from .. import log
 from ..kiplot import config_output
-from ..registrable import RegOutput
+from ..registrable import RegOutput, Group, GroupEntry
 from .data_types import edit_dict
-from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data,
+from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info,
                           set_items, get_selection, init_vars, choose_from_list,
                           set_button_bitmap)
 logger = log.get_logger()
@@ -80,13 +81,27 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
         self.saveConfigBtn.Disable()
         set_button_bitmap(self.generateOutputsBtn, wx.ART_EXECUTABLE_FILE)
 
+    def refresh_groups(self):
+        self.groups.refresh_groups()
+
     def mark_edited(self):
         if not self.edited:
             self.saveConfigBtn.Enable(True)
         self.edited = True
 
     def OnSave(self, event):
-        tree = {'kibot': {'version': 1}, 'outputs': [o._tree for o in get_client_data(self.outputs.outputsBox)]}
+        tree = {'kibot': {'version': 1}}
+        # Groups: only skipping outputs added from the output itself
+        groups = RegOutput.get_groups_struct()
+        if groups:
+            grp_lst = []
+            for name, gi in groups.items():
+                items = [g.item for g in gi.items if g.defined_in()]
+                if items:
+                    grp_lst.append({'name': name, 'outputs': items})
+            if grp_lst:
+                tree['groups'] = grp_lst
+        tree['outputs'] = [o._tree for o in get_client_data(self.outputs.outputsBox)]
         if os.path.isfile(self.cfg_file):
             os.rename(self.cfg_file, os.path.join(os.path.dirname(self.cfg_file), '.'+os.path.basename(self.cfg_file)+'~'))
         with open(self.cfg_file, 'wt') as f:
@@ -115,9 +130,23 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         if obj is None:
             return
         self.editing = obj
+        grps_before = set(obj.groups)
         if edit_dict(self, obj, None, None, title="Output "+str(obj), validator=self.validate):
             self.mark_edited()
             self.outputsBox.SetString(index, str(obj))
+            # Adjust the groups involved
+            grps_after = set(obj.groups)
+            changed = False
+            # - Added
+            for g in grps_after-grps_before:
+                RegOutput.add_out_to_group(obj, g)
+                changed = True
+            # - Removed
+            for g in grps_before-grps_after:
+                RegOutput.remove_out_from_group(obj, g)
+                changed = True
+            if changed:
+                self.Parent.Parent.refresh_groups()
 
     def OnOutputsOrderUp(self, event):
         move_sel_up(self.outputsBox)
@@ -141,8 +170,8 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
             self.mark_edited()
 
     def OnOutputsOrderRemove(self, event):
-        remove_item(self.outputsBox, confirm='Are you sure you want to remove the `{}` output?')
-        self.mark_edited()
+        if remove_item(self.outputsBox, confirm='Are you sure you want to remove the `{}` output?'):
+            self.mark_edited()
 
     def validate(self, obj):
         if not obj.name:
@@ -168,57 +197,62 @@ class GroupsPanel(main_dialog_base.GroupsPanelBase):
         set_button_bitmap(self.m_btnGrAdd, wx.ART_PLUS)
         set_button_bitmap(self.m_btnGrRemove, wx.ART_MINUS)
 
-        self.groupsBox.SetItems(list(RegOutput.get_group_names()))
-        for n, g in enumerate(RegOutput.get_groups().values()):
-            outs = []
-            for name in g:
-                out = RegOutput.get_output(name)
-                if out is None:
-                    # Can be another group
-                    out = name
-                outs.append(out)
-            self.groupsBox.SetClientData(n, outs)
+        self.refresh_groups()
         self.outputs = outputs
 
         self.Layout()
 
-    def edit_group(self, name, selected, is_new=False, position=None):
-        group_names = self.groupsBox.GetItems()
+    def refresh_groups(self):
+        groups = list(RegOutput.get_groups_struct().values())
+        for g in groups:
+            g.update_out()
+        set_items(self.groupsBox, groups)
+
+    def mark_edited(self):
+        self.Parent.Parent.mark_edited()
+
+    def edit_group(self, group, is_new=False):
+        group_names = [g.name for g in get_client_data(self.groupsBox)]
         used_names = set(group_names+[o.name for o in self.outputs])
+        position = self.groupsBox.Selection
         if not is_new:
             del group_names[position]
-        dlg = EditGroupDialog(self, name, selected, self.outputs, used_names, group_names, is_new)
+        if not is_new:
+            # Avoid messing with the actual group
+            group = deepcopy(group)
+        dlg = EditGroupDialog(self, group, self.outputs, used_names, group_names, is_new)
         res = dlg.ShowModal()
         if res == wx.ID_OK:
             new_name = dlg.nameText.Value
             lst_objs = get_client_data(dlg.outputsBox)
-            lst_names = [o if isinstance(o, str) else o.name for o in lst_objs]
             if is_new:
-                RegOutput.add_group(new_name, lst_names)
-                self.groupsBox.Append(new_name, lst_objs)
+                new_grp = RegOutput.add_group(new_name, lst_objs)
+                self.groupsBox.Append(str(new_grp), new_grp)
             else:
-                RegOutput.replace_group(name, new_name, lst_names)
-                self.groupsBox.SetString(position, new_name)
-                self.groupsBox.SetClientData(position, lst_objs)
+                new_grp = RegOutput.replace_group(group.name, new_name, lst_objs)
+                self.groupsBox.SetString(position, str(new_grp))
+                self.groupsBox.SetClientData(position, new_grp)
+            new_grp.update_out()
+            self.mark_edited()
         dlg.Destroy()
 
     def OnItemDClick(self, event):
-        position = self.groupsBox.Selection
-        item = self.groupsBox.GetString(position)
-        outs = self.groupsBox.GetClientData(position)
-        self.edit_group(item, outs, position=position)
+        self.edit_group(self.groupsBox.GetClientData(self.groupsBox.Selection))
 
     def OnGroupsOrderUp(self, event):
         move_sel_up(self.groupsBox)
+        self.mark_edited()
 
     def OnGroupsOrderDown(self, event):
         move_sel_down(self.groupsBox)
+        self.mark_edited()
 
     def OnGroupsOrderAdd(self, event):
-        self.edit_group('new_group', [], is_new=True)
+        self.edit_group(Group('new_group', []), is_new=True)
 
     def OnGroupsOrderRemove(self, event):
-        remove_item(self.groupsBox, confirm='Are you sure you want to remove the `{}` group?')
+        if remove_item(self.groupsBox, confirm='Are you sure you want to remove the `{}` group?'):
+            self.mark_edited()
 
 
 # ##########################################################################
@@ -227,7 +261,7 @@ class GroupsPanel(main_dialog_base.GroupsPanelBase):
 
 class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
     """ Edit a group, can be a new one """
-    def __init__(self, parent, name, selected, outputs, used_names, group_names, is_new):
+    def __init__(self, parent, group, outputs, used_names, group_names, is_new):
         self.initialized = False
         main_dialog_base.AddGroupDialogBase.__init__(self, parent)
         self.initialized = True
@@ -238,12 +272,12 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         set_button_bitmap(self.m_btnOutAddG, wx.ART_LIST_VIEW)
         set_button_bitmap(self.m_btnOutRemove, wx.ART_MINUS)
 
-        set_items(self.outputsBox, selected)
+        set_items(self.outputsBox, group.items)
         self.used_names = used_names
         self.group_names = group_names
-        self.valid_list = bool(len(selected))
+        self.valid_list = bool(len(group.items))
         self.is_new = is_new
-        self.original_name = name
+        self.original_name = group.name
         self.input_is_normal = True
         self.normal_bkg = self.nameText.GetBackgroundColour()
         self.red = wx.Colour(0xFF, 0x40, 0x40)
@@ -256,7 +290,7 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         self.status_txt = ''
         self.eval_status()
 
-        self.nameText.Value = name
+        self.nameText.Value = group.name
 
         self.Layout()
 
@@ -327,7 +361,7 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         move_sel_down(self.outputsBox)
 
     def OnOutputsOrderAdd(self, event):
-        selected = set(get_client_data(self.outputsBox))
+        selected = {i.out for i in get_client_data(self.outputsBox)}
         available = {str(o): o for o in self.outputs if o not in selected}
         available_names = [o.name for o in self.outputs if o not in selected]
         if not available:
@@ -337,7 +371,9 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         if not outs:
             return
         for out in outs:
-            self.outputsBox.Append(out, available[out])
+            o = available[out]
+            i = GroupEntry(o.name, out=o)
+            self.outputsBox.Append(str(i), i)
         self.valid_list = True
         self.eval_status()
 
@@ -349,11 +385,27 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         if not groups:
             return
         for g in groups:
-            self.outputsBox.Append(g, g)
+            i = GroupEntry(g)
+            self.outputsBox.Append(str(i), i)
         self.valid_list = True
         self.eval_status()
 
     def OnOutputsOrderRemove(self, event):
+        index, string, obj = get_selection(self.outputsBox)
+        if obj is None:
+            # Nested group, can be only from the top-level definition
+            return
+        # Not defined in "groups" section
+        if not obj.is_from_top():
+            pop_info('This entry is from the `groups` option.\nRemove it from the output')
+            return
+        # Also defined in an output
+        if obj.is_from_output():
+            # Also defined in an output
+            obj.from_top = False
+            pop_info('This entry was also defined in the `groups` option.\nNow removed from the `groups` section.')
+            self.outputsBox.SetString(index, str(obj))
+            return
         remove_item(self.outputsBox)
         self.valid_list = bool(self.outputsBox.GetCount())
         self.eval_status()
