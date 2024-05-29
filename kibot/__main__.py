@@ -133,14 +133,15 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
 from .banner import get_banner, BANNERS
 from .gs import GS
 from . import dep_downloader
-from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN
+from .misc import (EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN,
+                   FAILED_EXECUTE)
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
                             print_filters_help, print_global_options_help, print_dependencies, print_variants_help,
                             print_errors, print_list_rotations, print_list_offsets)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
-                     solve_board_file, solve_project_file, check_board_file)
+                     solve_board_file, solve_project_file, check_board_file, exec_with_retry)
 from .registrable import RegOutput
 GS.kibot_version = __version__
 
@@ -402,6 +403,20 @@ def detect_windows():  # pragma: no cover (Windows)
     logger.warning(W_ONWIN+'Running on Windows, this is experimental, please report any problem')
 
 
+def check_needs_convert():
+    """ Try to convert Altium PCBs to KiCad.
+        If successful just use the converted file. """
+    ext = os.path.splitext(GS.pcb_fname)[1]
+    if ext.lower() != '.pcbdoc':
+        return
+    command = GS.check_tool_dep('convert_pcb', 'KiAuto')
+    new_name = GS.pcb_basename+'.kicad_pcb'
+    cmd = [command, 'convert', '-o', new_name, GS.pcb_file, GS.pcb_dir]
+    cmd, _ = GS.add_extra_options(cmd)
+    exec_with_retry(cmd, FAILED_EXECUTE)
+    GS.set_pcb(os.path.join(GS.pcb_dir, new_name))
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -508,6 +523,7 @@ def main():
         GS.set_pcb(solve_board_file('.', args.board_file))
         # Determine the project file
         GS.set_pro(solve_project_file())
+        check_needs_convert()
 
     # Parse preprocessor defines
     parse_defines(args)

@@ -404,7 +404,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 150004,\
+        "importance": 160004,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -589,6 +589,17 @@ deps = '{\
                     2,\
                     1,\
                     0\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "convert_pcb",\
+                "version": [\
+                    2,\
+                    3,\
+                    2\
                 ]\
             },\
             {\

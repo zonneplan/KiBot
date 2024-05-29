@@ -19,6 +19,7 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 Added
 ~~~~~
 
+-  Experimental Altium PCB conversion (#625)
 -  Report:
 
    -  Solder paste usage stats (#616)
