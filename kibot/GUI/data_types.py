@@ -13,12 +13,12 @@ from ..misc import typeof
 from ..registrable import RegOutput
 from .. import log
 logger = log.get_logger()
-TYPE_PRIORITY = {'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60, 'string': 50, 'number': 20,
-                 'boolean': 10}
-TYPE_ABREV = {'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS', 'dict': 'D', 'string': 'S', 'number': 'N',
-              'boolean': 'B'}
-TYPE_EMPTY = {'list(dict)': [], 'list(list(string))': [], 'list(string)': [], 'dict': {}, 'string': '', 'number': '',
-              'boolean': False}
+TYPE_PRIORITY = {'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60, 'string_dict': 55, 'string': 50,
+                 'number': 20, 'boolean': 10}
+TYPE_ABREV = {'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS', 'dict': 'D', 'string_dict': 'SD',
+              'string': 'S', 'number': 'N', 'boolean': 'B'}
+TYPE_EMPTY = {'list(dict)': [], 'list(list(string))': [], 'list(string)': [], 'dict': {}, 'string_dict': {}, 'string': '',
+              'number': '', 'boolean': False}
 max_label = 200
 def_text = 200
 
@@ -347,6 +347,52 @@ class DataTypeListDict(DataTypeList):
         return [v._tree for v in get_client_data(self.lbox)]
 
 
+class StringPair(object):
+    def __init__(self, key=None, value=None):
+        if key is None:
+            self.key = 'new_key'
+            self.value = 'new_value'
+            self._tree = {}  # Start indicating isn't from user
+        else:
+            self.key = key
+            self.value = value
+            self._tree = {'key': key, 'value': value}
+
+    def config(self, name):
+        self.key = self._tree.get('key', self.key)
+        self.value = self._tree.get('value', self.value)
+        if not self.key:
+            raise KiPlotConfigurationError("The `key` can't be empty")
+
+    def __repr__(self):
+        return f'{self.key} -> {self.value}'
+
+
+class DataTypeStringDict(DataTypeList):
+    """ Class to edit a pair key/value
+        Behaves like an Optionable """
+    def set_items(self, obj, member):
+        val = getattr(obj, member)
+        if val is None or isinstance(val, type):
+            val = {}
+        set_items(self.lbox, [StringPair(k, v) for k, v in val.items()])
+
+    def edit_item(self, string='', obj=None, index=-1):
+        new_obj = StringPair() if obj is None else obj
+        new_entries = [DataEntry('key', [DataTypeString('string', None, '')], None, self.help, False, new_obj, 0),
+                       DataEntry('value', [DataTypeString('string', None, '')], None, self.help, False, new_obj, 0)]
+        res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
+        if res:
+            if index == -1:
+                self.lbox.Append(str(new_obj), new_obj)
+            else:
+                self.lbox.SetString(index, str(new_obj))
+            self.entry.set_edited(True)
+
+    def get_value(self):
+        return {v.key: v.value for v in get_client_data(self.lbox)}
+
+
 class DummyForList(object):
     def __init__(self, member, initial):
         setattr(self, member, initial)
@@ -359,8 +405,8 @@ class DataTypeListListString(DataTypeListDict):
         # We then use the "dict" edition
         name = self.entry.name
         valids = [DataTypeListString('list(string)', self.restriction, self.default)]
-        new_entries = [DataEntry(name, valids, None, self.help, False)]
         new_obj = DummyForList(name, [] if obj is None else obj)
+        new_entries = [DataEntry(name, valids, None, self.help, False, new_obj, 0)]
         res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
         if res:
             new_val = getattr(new_obj, name)
@@ -514,6 +560,8 @@ def get_class_for(kind, rest):
         return DataTypeNumber
     elif kind == 'boolean':
         return DataTypeBoolean
+    elif kind == 'string_dict':
+        return DataTypeStringDict
     elif kind == 'dict':
         return DataTypeDict
     elif kind == 'list(string)':
@@ -522,7 +570,8 @@ def get_class_for(kind, rest):
         return DataTypeListDict
     elif kind == 'list(list(string))':
         return DataTypeListListString
-    return DataTypeBase
+    logger.error(f'Not implemented: {kind}')
+    raise AssertionError()
 
 
 def add_widgets(obj, entries, parent, sizer, level=0):
@@ -687,6 +736,8 @@ def adapt_default(val):
         val = val[1:-1]
     elif val == '[]':
         val = []
+    elif val == '{}':
+        val = {}
     elif val == 'true':
         val = True
     elif val == 'false':
