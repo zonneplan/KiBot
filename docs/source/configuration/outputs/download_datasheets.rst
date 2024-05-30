@@ -25,6 +25,11 @@ Parameters:
    -  Valid keys:
 
       -  **field** :index:`: <pair: output - download_datasheets - options; field>` [:ref:`string <string>`] (default: ``'Datasheet'``) Name of the field containing the URL.
+      -  ``classify`` :index:`: <pair: output - download_datasheets - options; classify>` [:ref:`boolean <boolean>`] (default: ``false``) Use the reference to classify the components in different sub-dirs.
+         In this way C7 will go into a Capacitors sub-dir, R3 into Resistors, etc.
+      -  ``classify_extra`` :index:`: <pair: output - download_datasheets - options; classify_extra>` [:ref:`string_dict <string_dict>`] (default: ``{}``) Extra reference associations used to classify the references.
+         They are pairs `Reference prefix` -> `Sub-dir`.
+
       -  ``dnf`` :index:`: <pair: output - download_datasheets - options; dnf>` [:ref:`boolean <boolean>`] (default: ``false``) Include the DNF components.
       -  ``dnf_filter`` :index:`: <pair: output - download_datasheets - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.

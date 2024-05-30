@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Report:
   - Solder paste usage stats (#616)
   - Support for variants (See #616)
+- Datasheet: option to classify the datasheets by reference.
 - KiCost: option to specify a configuration file (#615)
 
 ### Fixed:

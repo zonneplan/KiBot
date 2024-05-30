@@ -910,6 +910,12 @@ outputs:
     type: 'download_datasheets'
     dir: 'Example/download_datasheets_dir'
     options:
+      # [boolean=false] Use the reference to classify the components in different sub-dirs.
+      # In this way C7 will go into a Capacitors sub-dir, R3 into Resistors, etc
+      classify: false
+      # [string_dict={}] Extra reference associations used to classify the references.
+      # They are pairs `Reference prefix` -> `Sub-dir`
+      classify_extra: {}
       # [boolean=false] Include the DNF components
       dnf: false
       # [string|list(string)='_none'] Name of the filter to mark components as not fitted.

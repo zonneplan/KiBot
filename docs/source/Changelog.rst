@@ -19,12 +19,20 @@ Versioning <https://semver.org/spec/v2.0.0.html>`__.
 Added
 ~~~~~
 
+-  Datasheet: option to classify the datasheets by reference.
+-  KiCost: option to specify a configuration file (#615)
 -  Report:
 
    -  Solder paste usage stats (#616)
    -  Support for variants (See #616)
 
--  KiCost: option to specify a configuration file (#615)
+-  Schematic:
+
+   -  Support for text boxes inside symbols (#621)
+
+-  Worksheet:
+
+   -  Support for KiCad 8 bitmaps (#623)
 
 Fixed:
 ~~~~~~
