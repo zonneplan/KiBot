@@ -146,6 +146,15 @@ class Optionable(object):
             validation.append(None)
         return valid, validation, def_val, real_help
 
+    def check_string_dict(self, v_type, valid, k, v):
+        if v_type != 'dict' or 'string_dict' not in valid:
+            return False
+        # A particular case for dict
+        for key, value in v.items():
+            if not isinstance(value, str):
+                raise KiPlotConfigurationError(f"Key `{key}` of option `{k}` must be a string, not `{typeof(value)}`")
+        return True
+
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
         attrs = self.get_attrs_for()
@@ -175,7 +184,7 @@ class Optionable(object):
                     valid[-1] = valid[-1].split('=')[0]
                 # Get the type used by the user as a string
                 v_type = typeof(v)
-                if v_type not in valid:
+                if v_type not in valid and not self.check_string_dict(v_type, valid, k, v):
                     # Not a valid type for this key
                     if v_type == 'None':
                         raise KiPlotConfigurationError("Empty option `{}`".format(k))
@@ -205,11 +214,12 @@ class Optionable(object):
                     elif isinstance(v, dict):
                         # Dicts are solved using Optionable classes
                         new_val = v
-                        # Create an object for the valid class
-                        v = cur_val()
-                        # Delegate the validation to the object
-                        v.set_tree(new_val)
-                        v.config(self)
+                        if 'string_dict' not in valid:
+                            # Create an object for the valid class
+                            v = cur_val()
+                            # Delegate the validation to the object
+                            v.set_tree(new_val)
+                            v.config(self)
                     elif isinstance(v, list):
                         new_val = []
                         for element in v:
