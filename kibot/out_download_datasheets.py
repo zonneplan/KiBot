@@ -66,8 +66,7 @@ class Download_Datasheets_Options(VariantOptions):
         logger.warning(W_FAILDL+'{} during download of `{}` [{}]'.format(msg, ds, c.ref))
         return None
 
-    def download(self, c, ds, dir, known):
-        name = self.out_name(c)
+    def download(self, c, ds, dir, name, known):
         if self.classify:
             subdir = self.classify_extra.get(c.ref_prefix, SUBDIRS.get(c.ref_prefix, 'Miscellaneous'))
             os.makedirs(os.path.join(dir, subdir), exist_ok=True)
@@ -148,7 +147,8 @@ class Download_Datasheets_Options(VariantOptions):
             if ds and is_url(ds):
                 known = self._urls.get(ds, None)
                 if known is None or self.repeated:
-                    name = self.download(c, ds, output_dir, known)
+                    name = self.out_name(c)  # Here to simplify the tests
+                    name = self.download(c, ds, output_dir, name, known)
                     if known is None:
                         self._urls[ds] = name
                 else:
