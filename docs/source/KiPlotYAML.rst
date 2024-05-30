@@ -316,3 +316,36 @@ list (``&pcb_draw_ops``) and then we copy the data with
 Here we choose another ``style`` (ridiculous example), the bottom side
 (good example), a different list of components to show and we eliminate
 the ``remap`` dict.
+
+
+KiBot specific data types
+-------------------------
+
+KiBot defines some data types that are derived from YAML basic data types.
+
+.. _string_dict:
+
+string_dict
+...........
+
+This is a :ref:`dict <dict>` with the restriction that all the values must be strings.
+The following example is a valid `string_dict`:
+
+.. code:: yaml
+
+   v1: Hi!
+   v2: '3'
+   v3: "true"
+   v4: "  I have spaces  "
+
+But the following isn't:
+
+.. code:: yaml
+
+   v1: Hi!
+   v2: 3
+   v3: "true"
+   v4: "  I have spaces  "
+
+This is because we assign a number to the `v2` key, not a string.
+String dicts are used to define pairs of strings.
