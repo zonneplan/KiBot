@@ -8,11 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.7.1] - UNRELEASED
 ### Added
 - Experimental Altium PCB conversion (#625)
+- BoM: logo file name can contain env vars and/or ~ (#620)
+- Datasheet: option to classify the datasheets by reference.
+- KiCost: option to specify a configuration file (#615)
 - Report:
   - Solder paste usage stats (#616)
   - Support for variants (See #616)
-- KiCost: option to specify a configuration file (#615)
-- BoM: logo file name can contain env vars and/or ~ (#620)
 - Schematic:
   - Support for text boxes inside symbols (#621)
 - Worksheet:
