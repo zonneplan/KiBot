@@ -239,7 +239,7 @@ class BaseFilter(RegFilter):
 
     def config(self, parent):
         super().config(parent)
-        if self.name[0] == '_' and not self._internal:
+        if self.name and self.name.startswith('_') and not self._internal:
             raise KiPlotConfigurationError('Filter names starting with `_` are reserved ({})'.format(self.name))
 
     @staticmethod
