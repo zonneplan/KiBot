@@ -179,22 +179,6 @@ class RegOutput(Optionable, Registrable):
         return RegOutput._def_variants
 
     @staticmethod
-    def add_filters(filters):
-        RegOutput._def_filters.update(filters)
-
-    @staticmethod
-    def is_filter(name):
-        return name in RegOutput._def_filters
-
-    @staticmethod
-    def get_filter(name):
-        return RegOutput._def_filters[name]
-
-    @staticmethod
-    def add_filter(obj):
-        RegOutput._def_filters[obj.name] = obj
-
-    @staticmethod
     def add_output(obj, file=None):
         if obj.name in RegOutput._def_outputs:
             raise KiPlotConfigurationError("Output name `{}` already defined".format(obj.name)+fname(file))
@@ -314,6 +298,30 @@ class RegOutput(Optionable, Registrable):
                 # Recursive expand
                 new_targets.extend(RegOutput.solve_groups(new_grp.get_list(), t, level))
         return new_targets
+
+    # ###################################
+    #  Filters operations
+    # ###################################
+
+    @staticmethod
+    def add_filters(filters):
+        RegOutput._def_filters.update(filters)
+
+    @staticmethod
+    def is_filter(name):
+        return name in RegOutput._def_filters
+
+    @staticmethod
+    def get_filter(name):
+        return RegOutput._def_filters[name]
+
+    @staticmethod
+    def add_filter(obj):
+        RegOutput._def_filters[obj.name] = obj
+
+    @staticmethod
+    def get_filters():
+        return RegOutput._def_filters
 
 
 class RegVariant(Optionable, Registrable):
