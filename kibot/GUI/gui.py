@@ -134,12 +134,12 @@ class MainDialog(wx.Dialog):
 
 
 # ##########################################################################
-# # Class OutputsPanel
-# # Panel containing the outputs ABM
+# # class DictPanel
+# # Base class for the outputs and filters ABMs
 # ##########################################################################
 
-class OutputsPanel(wx.Panel):
-    def __init__(self, parent, outputs):
+class DictPanel(wx.Panel):
+    def __init__(self, parent):
         wx.Panel.__init__(self, parent)
 
         # All the widgets
@@ -149,7 +149,7 @@ class OutputsPanel(wx.Panel):
         #   List box
         list_sizer = wx.BoxSizer(wx.VERTICAL)
         self.lbox = wx.ListBox(self, choices=[], style=wx.LB_SINGLE)
-        set_items(self.lbox, outputs)   # Populate the listbox
+        self.refresh_lbox()
         list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
         abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
         #   Buttons at the right
@@ -172,25 +172,27 @@ class OutputsPanel(wx.Panel):
     def OnItemDClick(self, event):
         index, string, obj = get_selection(self.lbox)
         if obj is None:
-            return
+            return False
         self.editing = obj
-        grps_before = set(obj.groups)
-        if edit_dict(self, obj, None, None, title="Output "+str(obj), validator=self.validate):
+        self.pre_edit(obj)
+        if edit_dict(self, obj, None, None, title=self.dict_type.capitalize()+" "+str(obj), validator=self.validate):
             self.mark_edited()
             self.lbox.SetString(index, str(obj))
-            # Adjust the groups involved
-            grps_after = set(obj.groups)
-            changed = False
-            # - Added
-            for g in grps_after-grps_before:
-                RegOutput.add_out_to_group(obj, g)
-                changed = True
-            # - Removed
-            for g in grps_before-grps_after:
-                RegOutput.remove_out_from_group(obj, g)
-                changed = True
-            if changed:
-                self.Parent.Parent.refresh_groups()
+            return True
+        return False
+
+    def pre_edit(self, obj):
+        pass
+
+    def validate(self, obj):
+        if not obj.name:
+            pop_error('You must provide a name for the '+self.dict_type)
+            return False
+        same_name = next((o for o in get_client_data(self.lbox) if o.name == obj.name), None)
+        if same_name is not None and same_name != self.editing:
+            pop_error(f'The `{obj.name}` name is already used by {same_name}')
+            return False
+        return True
 
     def OnUp(self, event):
         move_sel_up(self.lbox)
@@ -201,32 +203,64 @@ class OutputsPanel(wx.Panel):
         self.mark_edited()
 
     def OnAdd(self, event):
-        kind = choose_from_list(self, list(RegOutput.get_registered().keys()), 'an output type')
+        kind = self.choose_type()
         if kind is None:
             return
+        # Create a new object of the selected type
+        self.editing = obj = self.new_obj(kind)
+        if edit_dict(self, obj, None, None, title=f"New {kind} filter", validator=self.validate):
+            self.lbox.Append(str(obj), obj)
+            self.mark_edited()
+
+    def OnRemove(self, event):
+        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` '+self.dict_type+'?'):
+            self.mark_edited()
+
+
+# ##########################################################################
+# # Class OutputsPanel
+# # Panel containing the outputs ABM
+# ##########################################################################
+
+class OutputsPanel(DictPanel):
+    def __init__(self, parent, outputs):
+        self.outputs = outputs
+        super().__init__(parent)
+        self.dict_type = "output"
+
+    def refresh_lbox(self):
+        set_items(self.lbox, self.outputs)   # Populate the listbox
+
+    def pre_edit(self, obj):
+        self.grps_before = set(obj.groups)
+
+    def OnItemDClick(self, event):
+        if super().OnItemDClick(event):
+            obj = self.editing
+            # Adjust the groups involved
+            grps_after = set(obj.groups)
+            changed = False
+            # - Added
+            for g in grps_after-self.grps_before:
+                RegOutput.add_out_to_group(obj, g)
+                changed = True
+            # - Removed
+            for g in self.grps_before-grps_after:
+                RegOutput.remove_out_from_group(obj, g)
+                changed = True
+            if changed:
+                self.Parent.Parent.refresh_groups()
+
+    def choose_type(self):
+        return choose_from_list(self, list(RegOutput.get_registered().keys()), 'an output type')
+
+    def new_obj(self, kind):
         # Create a new object of the selected type
         obj = RegOutput.get_class_for(kind)()
         obj.type = kind
         obj._tree = {}
         config_output(obj)
-        self.editing = obj
-        if edit_dict(self, obj, None, None, title=f"New {kind} output", validator=self.validate):
-            self.lbox.Append(str(obj), obj)
-            self.mark_edited()
-
-    def OnRemove(self, event):
-        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` output?'):
-            self.mark_edited()
-
-    def validate(self, obj):
-        if not obj.name:
-            pop_error('You must provide a name for the output')
-            return False
-        same_name = next((o for o in get_client_data(self.lbox) if o.name == obj.name), None)
-        if same_name is not None and same_name != self.editing:
-            pop_error(f'The `{obj.name}` name is already used by {same_name}')
-            return False
-        return True
+        return obj
 
 
 # ##########################################################################
@@ -517,83 +551,21 @@ class EditGroupDialog(wx.Dialog):
 # # Panel containing the filters ABM
 # ##########################################################################
 
-class FiltersPanel(wx.Panel):
+class FiltersPanel(DictPanel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        super().__init__(parent)
+        self.dict_type = "filter"
 
-        # All the widgets
-        main_sizer = wx.BoxSizer(wx.VERTICAL)
-        #  List box + buttons
-        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        #   List box
-        list_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.lbox = wx.ListBox(self, choices=[], style=wx.LB_SINGLE)
-        self.refresh_filters()
-        list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
-        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
-        #   Buttons at the right
-        abm_sizer.Add(add_abm_buttons(self), gh.SIZER_FLAGS_0_NO_EXPAND)
-        main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
-
-        self.SetSizer(main_sizer)
-        self.Layout()
-
-        # Connect Events
-        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnItemDClick)
-        self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
-        self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
-        self.but_add.Bind(wx.EVT_BUTTON, self.OnAdd)
-        self.but_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
-
-    def refresh_filters(self):
+    def refresh_lbox(self):
         set_items(self.lbox, [f for f in RegOutput.get_filters().values() if not f.name.startswith('_')])
 
-    def mark_edited(self):
-        self.Parent.Parent.mark_edited()
+    def choose_type(self):
+        return choose_from_list(self, list(RegFilter.get_registered().keys()), 'a filter type')
 
-    def OnItemDClick(self, event):
-        # self.edit(self.lbox.GetClientData(self.lbox.Selection))
-        index, string, obj = get_selection(self.lbox)
-        if obj is None:
-            return
-        self.editing = obj
-        if edit_dict(self, obj, None, None, title="Filter "+str(obj), validator=self.validate):
-            self.mark_edited()
-            self.lbox.SetString(index, str(obj))
-
-    def validate(self, obj):
-        if not obj.name:
-            pop_error('You must provide a name for the filter')
-            return False
-        same_name = next((o for o in get_client_data(self.lbox) if o.name == obj.name), None)
-        if same_name is not None and same_name != self.editing:
-            pop_error(f'The `{obj.name}` name is already used by {same_name}')
-            return False
-        return True
-
-    def OnUp(self, event):
-        move_sel_up(self.lbox)
-        self.mark_edited()
-
-    def OnDown(self, event):
-        move_sel_down(self.lbox)
-        self.mark_edited()
-
-    def OnAdd(self, event):
-        kind = choose_from_list(self, list(RegFilter.get_registered().keys()), 'a filter type')
-        if kind is None:
-            return
+    def new_obj(self, kind):
         # Create a new object of the selected type
         obj = RegFilter.get_class_for(kind)()
         obj.type = kind
         obj._tree = {'name': 'new_filter'}
-        # config_output(obj)
         obj.config(None)
-        self.editing = obj
-        if edit_dict(self, obj, None, None, title=f"New {kind} filter", validator=self.validate):
-            self.lbox.Append(str(obj), obj)
-            self.mark_edited()
-
-    def OnRemove(self, event):
-        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` filter?'):
-            self.mark_edited()
+        return obj
