@@ -243,6 +243,10 @@ class BoMRegex(Optionable):
         if not self.column:
             raise KiPlotConfigurationError("Missing or empty `column` in field regex ({})".format(str(self._tree)))
 
+    def __str__(self):
+        invert = '!' if self.invert else ''
+        return f'{self.column} {invert}`{self.regex}`'
+
 
 class VariantOptions(BaseOptions):
     """ BaseOptions plus generic support for variants. """
