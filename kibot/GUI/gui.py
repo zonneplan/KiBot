@@ -128,7 +128,8 @@ class MainDialog(wx.Dialog):
 
 
 # ##########################################################################
-# # Class OutputsPanelBase
+# # Class OutputsPanel
+# # Panel containing the outputs ABM
 # ##########################################################################
 
 class OutputsPanel(wx.Panel):
@@ -222,7 +223,8 @@ class OutputsPanel(wx.Panel):
 
 
 # ##########################################################################
-# # Panel for the groups
+# # class GroupsPanel
+# # Panel containing the groups ABM
 # ##########################################################################
 
 class GroupsPanel(wx.Panel):
@@ -308,6 +310,7 @@ class GroupsPanel(wx.Panel):
 
 
 # ##########################################################################
+# # class EditGroupDialog
 # # Dialog to edit one group
 # ##########################################################################
 
