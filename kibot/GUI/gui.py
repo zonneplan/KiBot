@@ -34,13 +34,6 @@ NOT_OK_CHAR = '\U00002717'
 init_vars()
 
 
-def set_best_size(self, ref):
-    best_size = ref.BestSize
-    # hack for some gtk themes that incorrectly calculate best size
-    best_size.IncBy(dx=0, dy=30)
-    self.SetClientSize(best_size)
-
-
 def do_gui(outputs, cfg_file):
     for o in outputs:
         config_output(o)
@@ -59,19 +52,6 @@ class MainDialog(wx.Dialog):
     def __init__(self, outputs, cfg_file):
         wx.Dialog.__init__(self, None, title='KiBot '+__version__,  # size = wx.Size(463,529),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
-        self.panel = MainDialogPanel(self, outputs, cfg_file)
-        set_best_size(self, self.panel)
-        self.Centre(wx.BOTH)
-
-
-# ##########################################################################
-# # Class MainDialogPanel
-# # Panel for the MainDialog, it contains all the widgets
-# ##########################################################################
-
-class MainDialogPanel(wx.Panel):
-    def __init__(self, parent, outputs, cfg_file):
-        wx.Panel.__init__(self, parent)  # wx.Size(493,300)
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         self.notebook = wx.Notebook(self)
@@ -103,7 +83,8 @@ class MainDialogPanel(wx.Panel):
         main_sizer.Add(but_sizer, gh.SIZER_FLAGS_0_NO_BORDER)
 
         self.SetSizer(main_sizer)
-        self.Layout()
+        main_sizer.Fit(self)
+        self.Centre(wx.BOTH)
 
         self.cfg_file = cfg_file
         self.edited = False
