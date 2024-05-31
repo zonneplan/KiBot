@@ -4,7 +4,7 @@ import yaml
 from .. import __version__
 from .. import log
 from ..kiplot import config_output
-from ..registrable import RegOutput, Group, GroupEntry
+from ..registrable import RegOutput, Group, GroupEntry, RegFilter
 from .data_types import edit_dict
 from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
                           set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
@@ -62,6 +62,8 @@ class MainDialog(wx.Dialog):
         self.notebook.AddPage(self.outputs, "Outputs")
         self.groups = GroupsPanel(self.notebook, outputs)
         self.notebook.AddPage(self.groups, "Groups")
+        self.filters = FiltersPanel(self.notebook)
+        self.notebook.AddPage(self.filters, "Filters")
 
         # Buttons
         but_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -108,7 +110,11 @@ class MainDialog(wx.Dialog):
 
     def OnSave(self, event):
         tree = {'kibot': {'version': 1}}
-        # Groups: only skipping outputs added from the output itself
+        # TODO: Should we delegate it to the class handling it?
+        # Filters
+        if self.filters.lbox.GetCount():
+            tree['filters'] = [o._tree for o in get_client_data(self.filters.lbox)]
+        # Groups: skipping outputs added from the output itself
         groups = RegOutput.get_groups_struct()
         if groups:
             grp_lst = []
@@ -203,6 +209,7 @@ class OutputsPanel(wx.Panel):
         obj.type = kind
         obj._tree = {}
         config_output(obj)
+        self.editing = obj
         if edit_dict(self, obj, None, None, title=f"New {kind} output", validator=self.validate):
             self.lbox.Append(str(obj), obj)
             self.mark_edited()
@@ -215,7 +222,7 @@ class OutputsPanel(wx.Panel):
         if not obj.name:
             pop_error('You must provide a name for the output')
             return False
-        same_name = next((out for out in get_client_data(self.lbox) if out.name == obj.name), None)
+        same_name = next((o for o in get_client_data(self.lbox) if o.name == obj.name), None)
         if same_name is not None and same_name != self.editing:
             pop_error(f'The `{obj.name}` name is already used by {same_name}')
             return False
@@ -503,3 +510,90 @@ class EditGroupDialog(wx.Dialog):
         remove_item(self.lbox)
         self.valid_list = bool(self.lbox.GetCount())
         self.eval_status()
+
+
+# ##########################################################################
+# # class FiltersPanel
+# # Panel containing the filters ABM
+# ##########################################################################
+
+class FiltersPanel(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        # All the widgets
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        #  List box + buttons
+        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        #   List box
+        list_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.lbox = wx.ListBox(self, choices=[], style=wx.LB_SINGLE)
+        self.refresh_filters()
+        list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
+        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        #   Buttons at the right
+        abm_sizer.Add(add_abm_buttons(self), gh.SIZER_FLAGS_0_NO_EXPAND)
+        main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+
+        self.SetSizer(main_sizer)
+        self.Layout()
+
+        # Connect Events
+        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnItemDClick)
+        self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
+        self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
+        self.but_add.Bind(wx.EVT_BUTTON, self.OnAdd)
+        self.but_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
+
+    def refresh_filters(self):
+        set_items(self.lbox, [f for f in RegOutput.get_filters().values() if not f.name.startswith('_')])
+
+    def mark_edited(self):
+        self.Parent.Parent.mark_edited()
+
+    def OnItemDClick(self, event):
+        # self.edit(self.lbox.GetClientData(self.lbox.Selection))
+        index, string, obj = get_selection(self.lbox)
+        if obj is None:
+            return
+        self.editing = obj
+        if edit_dict(self, obj, None, None, title="Filter "+str(obj), validator=self.validate):
+            self.mark_edited()
+            self.lbox.SetString(index, str(obj))
+
+    def validate(self, obj):
+        if not obj.name:
+            pop_error('You must provide a name for the filter')
+            return False
+        same_name = next((o for o in get_client_data(self.lbox) if o.name == obj.name), None)
+        if same_name is not None and same_name != self.editing:
+            pop_error(f'The `{obj.name}` name is already used by {same_name}')
+            return False
+        return True
+
+    def OnUp(self, event):
+        move_sel_up(self.lbox)
+        self.mark_edited()
+
+    def OnDown(self, event):
+        move_sel_down(self.lbox)
+        self.mark_edited()
+
+    def OnAdd(self, event):
+        kind = choose_from_list(self, list(RegFilter.get_registered().keys()), 'a filter type')
+        if kind is None:
+            return
+        # Create a new object of the selected type
+        obj = RegFilter.get_class_for(kind)()
+        obj.type = kind
+        obj._tree = {'name': 'new_filter'}
+        # config_output(obj)
+        obj.config(None)
+        self.editing = obj
+        if edit_dict(self, obj, None, None, title=f"New {kind} filter", validator=self.validate):
+            self.lbox.Append(str(obj), obj)
+            self.mark_edited()
+
+    def OnRemove(self, event):
+        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` filter?'):
+            self.mark_edited()

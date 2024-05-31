@@ -10,7 +10,6 @@ from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
 from ..misc import typeof
-from ..registrable import RegOutput
 from .. import log
 logger = log.get_logger()
 TYPE_PRIORITY = {'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60, 'string_dict': 55, 'string': 50,
@@ -431,7 +430,7 @@ class EditDict(wx.Dialog):
 
         # Main widgets area, scrollable
         self.scrl_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.data_type_tree = get_data_type_tree(RegOutput.get_class_for(o.type)(), o) if data_tree is None else data_tree
+        self.data_type_tree = get_data_type_tree(o.__class__(), o) if data_tree is None else data_tree
         add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer)
         self.scrollWindow.SetSizer(self.scrl_sizer)
         self.compute_scroll_hints()
