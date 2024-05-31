@@ -91,12 +91,12 @@ def remove_item(lbox, confirm=None):
 
 def ok_cancel(parent, ok_callback=None):
     m_but_sizer = wx.StdDialogButtonSizer()
-    btn_ok = wx.Button(parent, wx.ID_OK)
-    m_but_sizer.AddButton(btn_ok)
+    parent.but_ok = wx.Button(parent, wx.ID_OK)
+    m_but_sizer.AddButton(parent.but_ok)
     m_but_sizer.AddButton(wx.Button(parent, wx.ID_CANCEL))
     m_but_sizer.Realize()
     if ok_callback:
-        btn_ok.Bind(wx.EVT_BUTTON, ok_callback)
+        parent.but_ok.Bind(wx.EVT_BUTTON, ok_callback)
     return m_but_sizer
 
 
@@ -111,11 +111,11 @@ def get_emp_font():
 #     return deemp_font
 
 
-def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1):
+def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1, style=0):
     sizer = wx.BoxSizer(wx.HORIZONTAL)
     label = wx.StaticText(parent, label=lbl, size=wx.Size(lbl_w, -1), style=wx.ALIGN_RIGHT)
     label.SetToolTip(help)
-    input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1))
+    input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1), style=style)
     input.SetToolTip(help)
     sizer.Add(label, SIZER_FLAGS_0)
     sizer.Add(input, SIZER_FLAGS_1)
@@ -209,3 +209,29 @@ def get_res_bitmap(resource):
 
 def set_button_bitmap(btn, resource):
     btn.SetBitmap(get_res_bitmap(resource))
+
+
+def add_abm_buttons(self, sb=None, add_add=False, add_add_ttip='', add_ttip=None):
+    """ Buttons for the Add/Remove/Modify actions.
+        They are added to `self` inside an `sb` widget """
+    if sb is None:
+        sb = self
+    flags = SIZER_FLAGS_0
+    but_sizer = wx.BoxSizer(wx.VERTICAL)
+    self.but_up = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_UP))
+    self.but_up.SetToolTip("Move the selection up")
+    but_sizer.Add(self.but_up, flags)
+    self.but_down = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_DOWN))
+    self.but_down.SetToolTip("Move the selection down")
+    but_sizer.Add(self.but_down, flags)
+    self.but_add = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
+    self.but_add.SetToolTip(add_ttip or "Add one entry")
+    but_sizer.Add(self.but_add, flags)
+    if add_add:
+        self.but_add_add = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_LIST_VIEW))
+        self.but_add_add.SetToolTip(add_add_ttip)
+        but_sizer.Add(self.but_add_add, flags)
+    self.but_remove = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_MINUS))
+    self.but_remove.SetToolTip("Remove the entry")
+    but_sizer.Add(self.but_remove, flags)
+    return but_sizer

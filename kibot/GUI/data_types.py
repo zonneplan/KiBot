@@ -5,7 +5,7 @@ import math
 import wx
 from .validators import NumberValidator
 from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
-                          get_selection, get_emp_font, pop_error, get_res_bitmap)
+                          get_selection, get_emp_font, pop_error, add_abm_buttons)
 from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
@@ -246,28 +246,13 @@ class DataTypeList(DataTypeBase):
         list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
 
         abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
-
-        but_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.b_up = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_UP))
-        self.b_up.SetToolTip("Move the selection up")
-        but_sizer.Add(self.b_up, gh.SIZER_FLAGS_0_NO_EXPAND)
-        self.b_down = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_DOWN))
-        self.b_down.SetToolTip("Move the selection down")
-        but_sizer.Add(self.b_down, gh.SIZER_FLAGS_0_NO_EXPAND)
-        self.b_add = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
-        self.b_add.SetToolTip("Add one entry")
-        but_sizer.Add(self.b_add, gh.SIZER_FLAGS_0_NO_EXPAND)
-        self.b_remove = wx.BitmapButton(self.sp, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_MINUS))
-        self.b_remove.SetToolTip("Remove the entry")
-        but_sizer.Add(self.b_remove, gh.SIZER_FLAGS_0_NO_EXPAND)
-
-        abm_sizer.Add(but_sizer, gh.SIZER_FLAGS_0_NO_EXPAND)
+        abm_sizer.Add(add_abm_buttons(self, self.sp), gh.SIZER_FLAGS_0_NO_EXPAND)
         main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
 
-        self.b_up.Bind(wx.EVT_BUTTON, self.OnUp)
-        self.b_down.Bind(wx.EVT_BUTTON, self.OnDown)
-        self.b_add.Bind(wx.EVT_BUTTON, lambda event: self.edit_item())
-        self.b_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
+        self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
+        self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
+        self.but_add.Bind(wx.EVT_BUTTON, lambda event: self.edit_item())
+        self.but_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
 
         self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)
         return main_sizer
@@ -729,7 +714,7 @@ class DataEntry(object):
         self.window.Parent.Layout()
 
 
-def adapt_default(val):
+def adapt_default(val, name):
     if val is None:
         pass
     elif val[0] == "'" and val[-1] == "'":
@@ -745,7 +730,7 @@ def adapt_default(val):
     elif val[0] in {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}:
         val = float(val)
     else:
-        logger.error(val)
+        logger.error(f'Unknown default data type `{val}` for `{name}`')
     return val
 
 
@@ -774,7 +759,7 @@ def get_data_type_tree(template, obj, level=0):
         case = f'{k} = `{v}`'
         assert help[0] == '[', case
         valid, extra, def_val, real_help = template.get_valid_types(help)
-        def_val = adapt_default(def_val)
+        def_val = adapt_default(def_val, k)
         valids = [get_class_for(v, e)(v, e, def_val) for v, e in zip(valid, extra)]
         case += f' {extra} """ {help} """'
         assert valids, case

@@ -1,17 +1,15 @@
-# https://github.com/wxFormBuilder/wxFormBuilder
-
 from copy import deepcopy
 import os
 import yaml
-from . import main_dialog_base
 from .. import __version__
 from .. import log
 from ..kiplot import config_output
 from ..registrable import RegOutput, Group, GroupEntry
 from .data_types import edit_dict
-from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info,
-                          set_items, get_selection, init_vars, choose_from_list,
+from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
+                          set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
                           set_button_bitmap)
+from . import gui_helpers as gh
 logger = log.get_logger()
 
 import wx
@@ -43,14 +41,6 @@ def set_best_size(self, ref):
     self.SetClientSize(best_size)
 
 
-class MainDialog(main_dialog_base.MainDialogBase):
-    def __init__(self, outputs, cfg_file):
-        main_dialog_base.MainDialogBase.__init__(self, None)
-        self.panel = MainDialogPanel(self, outputs, cfg_file)
-        set_best_size(self, self.panel)
-        self.SetTitle('KiBot '+__version__)
-
-
 def do_gui(outputs, cfg_file):
     for o in outputs:
         config_output(o)
@@ -60,34 +50,80 @@ def do_gui(outputs, cfg_file):
     return res
 
 
-class MainDialogPanel(main_dialog_base.MainDialogPanel):
-    def __init__(self, parent, outputs, cfg_file):
-        main_dialog_base.MainDialogPanel.__init__(self, parent)
+# ##########################################################################
+# # Class MainDialog
+# # The main dialog for the GUI
+# ##########################################################################
 
+class MainDialog(wx.Dialog):
+    def __init__(self, outputs, cfg_file):
+        wx.Dialog.__init__(self, None, title='KiBot '+__version__,  # size = wx.Size(463,529),
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        self.panel = MainDialogPanel(self, outputs, cfg_file)
+        set_best_size(self, self.panel)
+        self.Centre(wx.BOTH)
+
+
+# ##########################################################################
+# # Class MainDialogPanel
+# # Panel for the MainDialog, it contains all the widgets
+# ##########################################################################
+
+class MainDialogPanel(wx.Panel):
+    def __init__(self, parent, outputs, cfg_file):
+        wx.Panel.__init__(self, parent)  # wx.Size(493,300)
+
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.notebook = wx.Notebook(self)
+        main_sizer.Add(self.notebook, gh.SIZER_FLAGS_1)
+
+        # Pages for the notebook
         self.outputs = OutputsPanel(self.notebook, outputs)
-        self.groups = GroupsPanel(self.notebook, outputs)
         self.notebook.AddPage(self.outputs, "Outputs")
+        self.groups = GroupsPanel(self.notebook, outputs)
         self.notebook.AddPage(self.groups, "Groups")
-        # TODO: Remove these panels used as examples
-        # self.general = main_dialog_base.GeneralSettingsPanelBase(self.notebook)
-        # self.html = main_dialog_base.HtmlSettingsPanelBase(self.notebook)
-        # self.fields = main_dialog_base.FieldsPanelBase(self.notebook)
-        # self.notebook.AddPage(self.general, "General")
-        # self.notebook.AddPage(self.html, "Html defaults")
-        # self.notebook.AddPage(self.fields, "Fields")
+
+        # Buttons
+        but_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # Save config
+        self.but_save = wx.Button(self, label="Save config")
+        self.but_save.Disable()
+        set_button_bitmap(self.but_save, wx.ART_FILE_SAVE)
+        but_sizer.Add(self.but_save, gh.SIZER_FLAGS_0_NO_EXPAND)
+        # Separator
+        but_sizer.Add((50, 0), gh.SIZER_FLAGS_1_NO_BORDER)
+        # Run
+        self.but_generate = wx.Button(self, label="Run")
+        set_button_bitmap(self.but_generate, wx.ART_EXECUTABLE_FILE)
+        self.but_generate.SetDefault()
+        but_sizer.Add(self.but_generate, gh.SIZER_FLAGS_0_NO_EXPAND)
+        # Cancel
+        self.but_cancel = wx.Button(self, id=wx.ID_CANCEL, label="Cancel")
+        but_sizer.Add(self.but_cancel, gh.SIZER_FLAGS_0_NO_EXPAND)
+        main_sizer.Add(but_sizer, gh.SIZER_FLAGS_0_NO_BORDER)
+
+        self.SetSizer(main_sizer)
+        self.Layout()
+
         self.cfg_file = cfg_file
         self.edited = False
-        set_button_bitmap(self.saveConfigBtn, wx.ART_FILE_SAVE)
-        self.saveConfigBtn.Disable()
-        set_button_bitmap(self.generateOutputsBtn, wx.ART_EXECUTABLE_FILE)
+
+        # Connect Events
+        self.but_save.Bind(wx.EVT_BUTTON, self.OnSave)
+        self.but_generate.Bind(wx.EVT_BUTTON, self.OnGenerateOuts)
+        # self.but_cancel.Bind(wx.EVT_BUTTON, self.OnExit)
 
     def refresh_groups(self):
         self.groups.refresh_groups()
 
     def mark_edited(self):
         if not self.edited:
-            self.saveConfigBtn.Enable(True)
+            self.but_save.Enable(True)
         self.edited = True
+
+    def OnGenerateOuts(self, event):
+        # TODO: implement
+        event.Skip()
 
     def OnSave(self, event):
         tree = {'kibot': {'version': 1}}
@@ -101,39 +137,59 @@ class MainDialogPanel(main_dialog_base.MainDialogPanel):
                     grp_lst.append({'name': name, 'outputs': items})
             if grp_lst:
                 tree['groups'] = grp_lst
-        tree['outputs'] = [o._tree for o in get_client_data(self.outputs.outputsBox)]
+        tree['outputs'] = [o._tree for o in get_client_data(self.outputs.lbox)]
         if os.path.isfile(self.cfg_file):
             os.rename(self.cfg_file, os.path.join(os.path.dirname(self.cfg_file), '.'+os.path.basename(self.cfg_file)+'~'))
         with open(self.cfg_file, 'wt') as f:
             f.write(yaml.dump(tree, sort_keys=False))
         self.edited = False
-        self.saveConfigBtn.Disable()
+        self.but_save.Disable()
 
 
-class OutputsPanel(main_dialog_base.OutputsPanelBase):
+# ##########################################################################
+# # Class OutputsPanelBase
+# ##########################################################################
+
+class OutputsPanel(wx.Panel):
     def __init__(self, parent, outputs):
-        main_dialog_base.OutputsPanelBase.__init__(self, parent)
-        # Set the bitmaps for the buttons
-        set_button_bitmap(self.m_btnOutUp, wx.ART_GO_UP)
-        set_button_bitmap(self.m_btnOutDown, wx.ART_GO_DOWN)
-        set_button_bitmap(self.m_btnOutAdd, wx.ART_PLUS)
-        set_button_bitmap(self.m_btnOutRemove, wx.ART_MINUS)
-        # Populate the listbox
-        set_items(self.outputsBox, outputs)
+        wx.Panel.__init__(self, parent)
+
+        # All the widgets
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        #  List box + buttons
+        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        #   List box
+        list_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.lbox = wx.ListBox(self, choices=[], style=wx.LB_SINGLE)
+        set_items(self.lbox, outputs)   # Populate the listbox
+        list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
+        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        #   Buttons at the right
+        abm_sizer.Add(add_abm_buttons(self), gh.SIZER_FLAGS_0_NO_EXPAND)
+        main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+
+        self.SetSizer(main_sizer)
         self.Layout()
+
+        # Connect Events
+        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnItemDClick)
+        self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
+        self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
+        self.but_add.Bind(wx.EVT_BUTTON, self.OnAdd)
+        self.but_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
 
     def mark_edited(self):
         self.Parent.Parent.mark_edited()
 
     def OnItemDClick(self, event):
-        index, string, obj = get_selection(self.outputsBox)
+        index, string, obj = get_selection(self.lbox)
         if obj is None:
             return
         self.editing = obj
         grps_before = set(obj.groups)
         if edit_dict(self, obj, None, None, title="Output "+str(obj), validator=self.validate):
             self.mark_edited()
-            self.outputsBox.SetString(index, str(obj))
+            self.lbox.SetString(index, str(obj))
             # Adjust the groups involved
             grps_after = set(obj.groups)
             changed = False
@@ -148,15 +204,15 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
             if changed:
                 self.Parent.Parent.refresh_groups()
 
-    def OnOutputsOrderUp(self, event):
-        move_sel_up(self.outputsBox)
+    def OnUp(self, event):
+        move_sel_up(self.lbox)
         self.mark_edited()
 
-    def OnOutputsOrderDown(self, event):
-        move_sel_down(self.outputsBox)
+    def OnDown(self, event):
+        move_sel_down(self.lbox)
         self.mark_edited()
 
-    def OnOutputsOrderAdd(self, event):
+    def OnAdd(self, event):
         kind = choose_from_list(self, list(RegOutput.get_registered().keys()), 'an output type')
         if kind is None:
             return
@@ -166,18 +222,18 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
         obj._tree = {}
         config_output(obj)
         if edit_dict(self, obj, None, None, title=f"New {kind} output", validator=self.validate):
-            self.outputsBox.Append(str(obj), obj)
+            self.lbox.Append(str(obj), obj)
             self.mark_edited()
 
-    def OnOutputsOrderRemove(self, event):
-        if remove_item(self.outputsBox, confirm='Are you sure you want to remove the `{}` output?'):
+    def OnRemove(self, event):
+        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` output?'):
             self.mark_edited()
 
     def validate(self, obj):
         if not obj.name:
             pop_error('You must provide a name for the output')
             return False
-        same_name = next((out for out in get_client_data(self.outputsBox) if out.name == obj.name), None)
+        same_name = next((out for out in get_client_data(self.lbox) if out.name == obj.name), None)
         if same_name is not None and same_name != self.editing:
             pop_error(f'The `{obj.name}` name is already used by {same_name}')
             return False
@@ -188,33 +244,48 @@ class OutputsPanel(main_dialog_base.OutputsPanelBase):
 # # Panel for the groups
 # ##########################################################################
 
-class GroupsPanel(main_dialog_base.GroupsPanelBase):
+class GroupsPanel(wx.Panel):
     def __init__(self, parent, outputs):
-        main_dialog_base.GroupsPanelBase.__init__(self, parent)
-
-        set_button_bitmap(self.m_btnGrUp, wx.ART_GO_UP)
-        set_button_bitmap(self.m_btnGrDown, wx.ART_GO_DOWN)
-        set_button_bitmap(self.m_btnGrAdd, wx.ART_PLUS)
-        set_button_bitmap(self.m_btnGrRemove, wx.ART_MINUS)
-
-        self.refresh_groups()
+        wx.Panel.__init__(self, parent)
         self.outputs = outputs
 
+        # All the widgets
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        #  List box + buttons
+        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        #   List box
+        list_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.lbox = wx.ListBox(self, choices=[], style=wx.LB_SINGLE)
+        self.refresh_groups()
+        list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
+        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        #   Buttons at the right
+        abm_sizer.Add(add_abm_buttons(self), gh.SIZER_FLAGS_0_NO_EXPAND)
+        main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+
+        self.SetSizer(main_sizer)
         self.Layout()
+
+        # Connect Events
+        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnItemDClick)
+        self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
+        self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
+        self.but_add.Bind(wx.EVT_BUTTON, self.OnAdd)
+        self.but_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
 
     def refresh_groups(self):
         groups = list(RegOutput.get_groups_struct().values())
         for g in groups:
             g.update_out()
-        set_items(self.groupsBox, groups)
+        set_items(self.lbox, groups)
 
     def mark_edited(self):
         self.Parent.Parent.mark_edited()
 
     def edit_group(self, group, is_new=False):
-        group_names = [g.name for g in get_client_data(self.groupsBox)]
+        group_names = [g.name for g in get_client_data(self.lbox)]
         used_names = set(group_names+[o.name for o in self.outputs])
-        position = self.groupsBox.Selection
+        position = self.lbox.Selection
         if not is_new:
             del group_names[position]
         if not is_new:
@@ -223,35 +294,35 @@ class GroupsPanel(main_dialog_base.GroupsPanelBase):
         dlg = EditGroupDialog(self, group, self.outputs, used_names, group_names, is_new)
         res = dlg.ShowModal()
         if res == wx.ID_OK:
-            new_name = dlg.nameText.Value
-            lst_objs = get_client_data(dlg.outputsBox)
+            new_name = dlg.name_text.Value
+            lst_objs = get_client_data(dlg.lbox)
             if is_new:
                 new_grp = RegOutput.add_group(new_name, lst_objs)
-                self.groupsBox.Append(str(new_grp), new_grp)
+                self.lbox.Append(str(new_grp), new_grp)
             else:
                 new_grp = RegOutput.replace_group(group.name, new_name, lst_objs)
-                self.groupsBox.SetString(position, str(new_grp))
-                self.groupsBox.SetClientData(position, new_grp)
+                self.lbox.SetString(position, str(new_grp))
+                self.lbox.SetClientData(position, new_grp)
             new_grp.update_out()
             self.mark_edited()
         dlg.Destroy()
 
     def OnItemDClick(self, event):
-        self.edit_group(self.groupsBox.GetClientData(self.groupsBox.Selection))
+        self.edit_group(self.lbox.GetClientData(self.lbox.Selection))
 
-    def OnGroupsOrderUp(self, event):
-        move_sel_up(self.groupsBox)
+    def OnUp(self, event):
+        move_sel_up(self.lbox)
         self.mark_edited()
 
-    def OnGroupsOrderDown(self, event):
-        move_sel_down(self.groupsBox)
+    def OnDown(self, event):
+        move_sel_down(self.lbox)
         self.mark_edited()
 
-    def OnGroupsOrderAdd(self, event):
+    def OnAdd(self, event):
         self.edit_group(Group('new_group', []), is_new=True)
 
-    def OnGroupsOrderRemove(self, event):
-        if remove_item(self.groupsBox, confirm='Are you sure you want to remove the `{}` group?'):
+    def OnRemove(self, event):
+        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` group?'):
             self.mark_edited()
 
 
@@ -259,50 +330,89 @@ class GroupsPanel(main_dialog_base.GroupsPanelBase):
 # # Dialog to edit one group
 # ##########################################################################
 
-class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
+class EditGroupDialog(wx.Dialog):
     """ Edit a group, can be a new one """
     def __init__(self, parent, group, outputs, used_names, group_names, is_new):
         self.initialized = False
-        main_dialog_base.AddGroupDialogBase.__init__(self, parent)
+        wx.Dialog.__init__(self, parent, title="Add/Edit group",
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+
+        # All the widgets
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        #  Group name
+        ttip = "Name for the group. Must be unique and different from any output."
+        _, self.name_text, grp_name_sizer = input_label_and_text(self, "Group name", group.name, ttip, -1,
+                                                                 style=wx.TE_PROCESS_ENTER)
+        main_sizer.Add(grp_name_sizer, gh.SIZER_FLAGS_0_NO_BORDER)
+        #  Static Box with the ABM
+        sb_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, "Outputs and groups")
+        sb = sb_sizer.GetStaticBox()
+        #   List box + buttons
+        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        #    List box
+        list_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.lbox = wx.ListBox(sb, choices=[], style=wx.LB_SINGLE)
+        self.lbox.SetToolTip("Outputs and groups that belongs to this group")
+        set_items(self.lbox, group.items)   # Populate the listbox
+        list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
+        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        #    Buttons at the right
+        abm_buts = add_abm_buttons(self, sb, add_add=True, add_add_ttip="Add a group to this group",
+                                   add_ttip="Add one or more outputs to the group")
+        abm_sizer.Add(abm_buts, gh.SIZER_FLAGS_0_NO_EXPAND)
+        sb_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        main_sizer.Add(sb_sizer, gh.SIZER_FLAGS_1)
+        #  Status
+        status_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.status_text = wx.StaticText(self, label="OK", style=wx.ST_NO_AUTORESIZE)
+        status_sizer.Add(self.status_text, gh.SIZER_FLAGS_1)
+        main_sizer.Add(status_sizer, gh.SIZER_FLAGS_0_NO_BORDER)
+        #  OK/Cancel
+        main_sizer.Add(ok_cancel(self), gh.SIZER_FLAGS_0)
+
+        self.SetSizer(main_sizer)  # Size hints comes from the main_sizer
+        main_sizer.Fit(self)       # Ask the main_sizer to make the dialog big enough
+        self.Layout()
+        self.Centre(wx.BOTH)
+
+        # Connect Events
+        self.Bind(wx.EVT_CHAR_HOOK, self.OnKey)
+        self.name_text.Bind(wx.EVT_TEXT, self.ValidateName)
+        self.lbox.Bind(wx.EVT_KEY_UP, self.OnKey)
+        self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
+        self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
+        self.but_add.Bind(wx.EVT_BUTTON, self.OnAdd)
+        self.but_add_add.Bind(wx.EVT_BUTTON, self.OnAddG)
+        self.but_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
+
         self.initialized = True
 
-        set_button_bitmap(self.m_btnOutUp, wx.ART_GO_UP)
-        set_button_bitmap(self.m_btnOutDown, wx.ART_GO_DOWN)
-        set_button_bitmap(self.m_btnOutAdd, wx.ART_PLUS)
-        set_button_bitmap(self.m_btnOutAddG, wx.ART_LIST_VIEW)
-        set_button_bitmap(self.m_btnOutRemove, wx.ART_MINUS)
-
-        set_items(self.outputsBox, group.items)
         self.used_names = used_names
         self.group_names = group_names
         self.valid_list = bool(len(group.items))
         self.is_new = is_new
         self.original_name = group.name
         self.input_is_normal = True
-        self.normal_bkg = self.nameText.GetBackgroundColour()
+        self.normal_bkg = self.name_text.GetBackgroundColour()
         self.red = wx.Colour(0xFF, 0x40, 0x40)
         self.green = wx.Colour(0x40, 0xFF, 0x40)
         self.outputs = outputs
 
-        self.m_Status.SetForegroundColour(wx.Colour(0, 0, 0))
+        self.status_text.SetForegroundColour(wx.Colour(0, 0, 0))
         self.valid_name = True
         self.ok = True
         self.status_txt = ''
         self.eval_status()
 
-        self.nameText.Value = group.name
-
-        self.Layout()
-
     def update_status(self):
         if self.ok:
-            self.m_Status.SetLabel(OK_CHAR+' '+self.status_txt)
-            self.m_Status.SetBackgroundColour(self.green)
-            self.m_butsOK.Enable()
+            self.status_text.SetLabel(OK_CHAR+' '+self.status_txt)
+            self.status_text.SetBackgroundColour(self.green)
+            self.but_ok.Enable()
         else:
-            self.m_Status.SetLabel(NOT_OK_CHAR+' '+self.status_txt)
-            self.m_Status.SetBackgroundColour(self.red)
-            self.m_butsOK.Disable()
+            self.status_text.SetLabel(NOT_OK_CHAR+' '+self.status_txt)
+            self.status_text.SetBackgroundColour(self.red)
+            self.but_ok.Disable()
 
     def set_status(self, ok, msg=None):
         if msg is None:
@@ -342,7 +452,7 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         """ Called by the TextCtrl On Text """
         if not self.initialized:
             return
-        cur_name = self.nameText.Value
+        cur_name = self.name_text.Value
         self.valid_name, self.name_why = self.is_valid_name(cur_name)
         self.eval_status()
 
@@ -354,14 +464,14 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
             # Not our key, continue processing it
             event.Skip()
 
-    def OnOutputsOrderUp(self, event):
-        move_sel_up(self.outputsBox)
+    def OnUp(self, event):
+        move_sel_up(self.lbox)
 
-    def OnOutputsOrderDown(self, event):
-        move_sel_down(self.outputsBox)
+    def OnDown(self, event):
+        move_sel_down(self.lbox)
 
-    def OnOutputsOrderAdd(self, event):
-        selected = {i.out for i in get_client_data(self.outputsBox)}
+    def OnAdd(self, event):
+        selected = {i.out for i in get_client_data(self.lbox)}
         available = {str(o): o for o in self.outputs if o not in selected}
         available_names = [o.name for o in self.outputs if o not in selected]
         if not available:
@@ -373,11 +483,11 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
         for out in outs:
             o = available[out]
             i = GroupEntry(o.name, out=o)
-            self.outputsBox.Append(str(i), i)
+            self.lbox.Append(str(i), i)
         self.valid_list = True
         self.eval_status()
 
-    def OnOutputsOrderAddG(self, event):
+    def OnAddG(self, event):
         if not self.group_names:
             pop_error('No groups available to add')
             return
@@ -386,12 +496,12 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
             return
         for g in groups:
             i = GroupEntry(g)
-            self.outputsBox.Append(str(i), i)
+            self.lbox.Append(str(i), i)
         self.valid_list = True
         self.eval_status()
 
-    def OnOutputsOrderRemove(self, event):
-        index, string, obj = get_selection(self.outputsBox)
+    def OnRemove(self, event):
+        index, string, obj = get_selection(self.lbox)
         if obj is None:
             # Nested group, can be only from the top-level definition
             return
@@ -404,8 +514,8 @@ class EditGroupDialog(main_dialog_base.AddGroupDialogBase):
             # Also defined in an output
             obj.from_top = False
             pop_info('This entry was also defined in the `groups` option.\nNow removed from the `groups` section.')
-            self.outputsBox.SetString(index, str(obj))
+            self.lbox.SetString(index, str(obj))
             return
-        remove_item(self.outputsBox)
-        self.valid_list = bool(self.outputsBox.GetCount())
+        remove_item(self.lbox)
+        self.valid_list = bool(self.lbox.GetCount())
         self.eval_status()
