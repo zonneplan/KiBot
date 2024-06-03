@@ -108,6 +108,10 @@ class SubPCBOptions(PanelOptions):
             """ Move the resulting PCB to the center of the page.
                 You can disable it only for the internal tool, KiKit should always do it """
 
+    def __str__(self):
+        res = self.name+' '
+        return res+(self.reference if self.reference else f'({self.tlx},{self.tly}) ({self.brx},{self.bry})')
+
     def is_zero(self, val):
         return isinstance(val, (int, float)) and val == 0
 
