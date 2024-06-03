@@ -4,7 +4,7 @@ import yaml
 from .. import __version__
 from .. import log
 from ..kiplot import config_output
-from ..registrable import RegOutput, Group, GroupEntry, RegFilter
+from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
 from .data_types import edit_dict
 from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
                           set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
@@ -64,6 +64,8 @@ class MainDialog(wx.Dialog):
         self.notebook.AddPage(self.groups, "Groups")
         self.filters = FiltersPanel(self.notebook)
         self.notebook.AddPage(self.filters, "Filters")
+        self.variants = VariantsPanel(self.notebook)
+        self.notebook.AddPage(self.variants, "Variants")
 
         # Buttons
         but_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -114,6 +116,9 @@ class MainDialog(wx.Dialog):
         # Filters
         if self.filters.lbox.GetCount():
             tree['filters'] = [o._tree for o in get_client_data(self.filters.lbox)]
+        # Variants
+        if self.variants.lbox.GetCount():
+            tree['variants'] = [o._tree for o in get_client_data(self.variants.lbox)]
         # Groups: skipping outputs added from the output itself
         groups = RegOutput.get_groups_struct()
         if groups:
@@ -567,5 +572,30 @@ class FiltersPanel(DictPanel):
         obj = RegFilter.get_class_for(kind)()
         obj.type = kind
         obj._tree = {'name': 'new_filter'}
+        obj.config(None)
+        return obj
+
+
+# ##########################################################################
+# # class VariantsPanel
+# # Panel containing the filters ABM
+# ##########################################################################
+
+class VariantsPanel(DictPanel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.dict_type = "variant"
+
+    def refresh_lbox(self):
+        set_items(self.lbox, list(RegOutput.get_variants().values()))
+
+    def choose_type(self):
+        return choose_from_list(self, list(RegVariant.get_registered().keys()), 'a variant type')
+
+    def new_obj(self, kind):
+        # Create a new object of the selected type
+        obj = RegVariant.get_class_for(kind)()
+        obj.type = kind
+        obj._tree = {'name': 'new_variant'}
         obj.config(None)
         return obj
