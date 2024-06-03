@@ -72,7 +72,7 @@ def move_sel_down(box):
         box.SetSelection(selection+1)
 
 
-def remove_item(lbox, confirm=None):
+def remove_item(lbox, confirm=None, callback=None):
     selection = lbox.Selection
     if selection == wx.NOT_FOUND:
         return False
@@ -83,6 +83,8 @@ def remove_item(lbox, confirm=None):
         ok = pop_confirm(msg)
     if not ok:
         return False
+    if callback is not None:
+        callback(lbox.GetClientData(selection))
     lbox.Delete(selection)
     count = lbox.GetCount()
     lbox.SetSelection(min(selection, count-1))

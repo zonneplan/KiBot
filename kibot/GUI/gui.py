@@ -34,10 +34,10 @@ NOT_OK_CHAR = '\U00002717'
 init_vars()
 
 
-def do_gui(outputs, cfg_file):
-    for o in outputs:
+def do_gui(cfg_file):
+    for o in RegOutput.get_outputs():
         config_output(o)
-    dlg = MainDialog(outputs, cfg_file)
+    dlg = MainDialog(cfg_file)
     res = dlg.ShowModal()
     dlg.Destroy()
     return res
@@ -49,7 +49,7 @@ def do_gui(outputs, cfg_file):
 # ##########################################################################
 
 class MainDialog(wx.Dialog):
-    def __init__(self, outputs, cfg_file):
+    def __init__(self, cfg_file):
         wx.Dialog.__init__(self, None, title='KiBot '+__version__,  # size = wx.Size(463,529),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
 
@@ -58,9 +58,9 @@ class MainDialog(wx.Dialog):
         main_sizer.Add(self.notebook, gh.SIZER_FLAGS_1)
 
         # Pages for the notebook
-        self.outputs = OutputsPanel(self.notebook, outputs)
+        self.outputs = OutputsPanel(self.notebook)
         self.notebook.AddPage(self.outputs, "Outputs")
-        self.groups = GroupsPanel(self.notebook, outputs)
+        self.groups = GroupsPanel(self.notebook)
         self.notebook.AddPage(self.groups, "Groups")
         self.filters = FiltersPanel(self.notebook)
         self.notebook.AddPage(self.filters, "Filters")
@@ -216,9 +216,11 @@ class DictPanel(wx.Panel):
         if edit_dict(self, obj, None, None, title=f"New {kind} filter", validator=self.validate):
             self.lbox.Append(str(obj), obj)
             self.mark_edited()
+            self.add_obj(obj)
 
     def OnRemove(self, event):
-        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` '+self.dict_type+'?'):
+        if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` '+self.dict_type+'?',
+                       callback=self.remove_obj):
             self.mark_edited()
 
 
@@ -228,16 +230,21 @@ class DictPanel(wx.Panel):
 # ##########################################################################
 
 class OutputsPanel(DictPanel):
-    def __init__(self, parent, outputs):
-        self.outputs = outputs
+    def __init__(self, parent):
         super().__init__(parent)
         self.dict_type = "output"
 
     def refresh_lbox(self):
-        set_items(self.lbox, self.outputs)   # Populate the listbox
+        set_items(self.lbox, RegOutput.get_outputs())   # Populate the listbox
 
     def pre_edit(self, obj):
         self.grps_before = set(obj.groups)
+
+    def add_obj(self, obj):
+        RegOutput.add_output(obj)
+
+    def remove_obj(self, obj):
+        RegOutput.remove_output(obj)
 
     def OnItemDClick(self, event):
         if super().OnItemDClick(event):
@@ -274,9 +281,8 @@ class OutputsPanel(DictPanel):
 # ##########################################################################
 
 class GroupsPanel(wx.Panel):
-    def __init__(self, parent, outputs):
+    def __init__(self, parent):
         wx.Panel.__init__(self, parent)
-        self.outputs = outputs
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -313,14 +319,14 @@ class GroupsPanel(wx.Panel):
 
     def edit_group(self, group, is_new=False):
         group_names = [g.name for g in get_client_data(self.lbox)]
-        used_names = set(group_names+[o.name for o in self.outputs])
+        used_names = set(group_names+[o.name for o in RegOutput.get_outputs()])
         position = self.lbox.Selection
         if not is_new:
             del group_names[position]
         if not is_new:
             # Avoid messing with the actual group
             group = deepcopy(group)
-        dlg = EditGroupDialog(self, group, self.outputs, used_names, group_names, is_new)
+        dlg = EditGroupDialog(self, group, used_names, group_names, is_new)
         res = dlg.ShowModal()
         if res == wx.ID_OK:
             new_name = dlg.name_text.Value
@@ -362,7 +368,7 @@ class GroupsPanel(wx.Panel):
 
 class EditGroupDialog(wx.Dialog):
     """ Edit a group, can be a new one """
-    def __init__(self, parent, group, outputs, used_names, group_names, is_new):
+    def __init__(self, parent, group, used_names, group_names, is_new):
         self.initialized = False
         wx.Dialog.__init__(self, parent, title="Add/Edit group",
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
@@ -426,7 +432,6 @@ class EditGroupDialog(wx.Dialog):
         self.normal_bkg = self.name_text.GetBackgroundColour()
         self.red = wx.Colour(0xFF, 0x40, 0x40)
         self.green = wx.Colour(0x40, 0xFF, 0x40)
-        self.outputs = outputs
 
         self.status_text.SetForegroundColour(wx.Colour(0, 0, 0))
         self.valid_name = True
@@ -502,8 +507,8 @@ class EditGroupDialog(wx.Dialog):
 
     def OnAdd(self, event):
         selected = {i.out for i in get_client_data(self.lbox)}
-        available = {str(o): o for o in self.outputs if o not in selected}
-        available_names = [o.name for o in self.outputs if o not in selected]
+        available = {str(o): o for o in RegOutput.get_outputs() if o not in selected}
+        available_names = [o.name for o in RegOutput.get_outputs() if o not in selected]
         if not available:
             pop_error('No outputs available to add')
             return
@@ -567,6 +572,12 @@ class FiltersPanel(DictPanel):
     def choose_type(self):
         return choose_from_list(self, list(RegFilter.get_registered().keys()), 'a filter type')
 
+    def add_obj(self, obj):
+        RegOutput.add_filter(obj)
+
+    def remove_obj(self, obj):
+        RegOutput.remove_filter(obj)
+
     def new_obj(self, kind):
         # Create a new object of the selected type
         obj = RegFilter.get_class_for(kind)()
@@ -591,6 +602,12 @@ class VariantsPanel(DictPanel):
 
     def choose_type(self):
         return choose_from_list(self, list(RegVariant.get_registered().keys()), 'a variant type')
+
+    def add_obj(self, obj):
+        RegOutput.add_variant(obj)
+
+    def remove_obj(self, obj):
+        RegOutput.remove_variant(obj)
 
     def new_obj(self, kind):
         # Create a new object of the selected type

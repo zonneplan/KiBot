@@ -547,7 +547,7 @@ def main():
         generate_makefile(args.makefile, plot_config, outputs)
     elif args.gui:
         from .GUI.gui import do_gui
-        do_gui(outputs, plot_config)
+        do_gui(plot_config)
     else:
         # Do all the job (preflight + outputs)
         generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,
