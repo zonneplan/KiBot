@@ -113,6 +113,7 @@ class MainDialog(wx.Dialog):
     def OnSave(self, event):
         tree = {'kibot': {'version': 1}}
         # TODO: Should we delegate it to the class handling it?
+        # We use the List Box items because they are sorted like the user wants
         # Filters
         if self.filters.lbox.GetCount():
             tree['filters'] = [o._tree for o in get_client_data(self.filters.lbox)]
@@ -120,13 +121,12 @@ class MainDialog(wx.Dialog):
         if self.variants.lbox.GetCount():
             tree['variants'] = [o._tree for o in get_client_data(self.variants.lbox)]
         # Groups: skipping outputs added from the output itself
-        groups = RegOutput.get_groups_struct()
-        if groups:
+        if self.groups.lbox.GetCount():
             grp_lst = []
-            for name, gi in groups.items():
-                items = [g.item for g in gi.items if g.defined_in()]
+            for grp in get_client_data(self.groups.lbox):
+                items = [g.item for g in grp.items if g.is_from_top()]
                 if items:
-                    grp_lst.append({'name': name, 'outputs': items})
+                    grp_lst.append({'name': grp.name, 'outputs': items})
             if grp_lst:
                 tree['groups'] = grp_lst
         tree['outputs'] = [o._tree for o in get_client_data(self.outputs.lbox)]
