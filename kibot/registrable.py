@@ -149,36 +149,6 @@ class RegOutput(Optionable, Registrable):
         RegOutput._def_outputs = OrderedDict()
 
     @staticmethod
-    def add_variants(variants):
-        for k, v in variants.items():
-            # Do we have sub-PCBs
-            if v.sub_pcbs:
-                # Add a variant for each sub-PCB
-                for sp in v.sub_pcbs:
-                    name = k+'['+sp.name+']'
-                    vn = copy(v)
-                    vn._sub_pcb = sp
-                    if sp.file_id:
-                        vn.file_id = sp.file_id
-                    else:
-                        vn.file_id += '_'+sp.name
-                    RegOutput._def_variants[name] = vn
-            else:
-                RegOutput._def_variants[k] = v
-
-    @staticmethod
-    def is_variant(name):
-        return name in RegOutput._def_variants
-
-    @staticmethod
-    def get_variant(name):
-        return RegOutput._def_variants[name]
-
-    @staticmethod
-    def get_variants():
-        return RegOutput._def_variants
-
-    @staticmethod
     def add_output(obj, file=None):
         if obj.name in RegOutput._def_outputs:
             raise KiPlotConfigurationError("Output name `{}` already defined".format(obj.name)+fname(file))
@@ -202,6 +172,55 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def is_output_or_group(name):
         return name in RegOutput._def_outputs or name in RegOutput._def_groups
+
+    # ###################################
+    #  Variants operations
+    # ###################################
+
+    @staticmethod
+    def add_variants(variants):
+        RegOutput._def_variants.update(variants)
+
+    @staticmethod
+    def separate_variant_and_subpcb(name):
+        """ Separate VARIANT[SUBPCB] into VARIANT, SUBPCB """
+        subpcb = None
+        if '[' in name:
+            try:
+                name, subpcb = name.split('[')
+                if subpcb.endswith(']'):
+                    subpcb = subpcb[:-1]
+            except ValueError:
+                pass
+        return name, subpcb
+
+    @staticmethod
+    def is_variant(name):
+        name, subpcb = RegOutput.separate_variant_and_subpcb(name)
+        variant = RegOutput._def_variants.get(name)
+        if variant is None:
+            return False
+        if subpcb is None:
+            return True
+        return any((sp.name == subpcb for sp in variant.sub_pcbs))
+
+    @staticmethod
+    def get_variant(name):
+        name, subpcb = RegOutput.separate_variant_and_subpcb(name)
+        variant = RegOutput._def_variants[name]
+        if variant and subpcb:
+            # Return a copy customized for the desired sub-pcb
+            variant = copy(variant)
+            variant._sub_pcb = sp = next((sp for sp in variant.sub_pcbs if sp.name == subpcb))
+            if sp.file_id:
+                variant.file_id = sp.file_id
+            else:
+                variant.file_id += '_'+sp.name
+        return variant
+
+    @staticmethod
+    def get_variants():
+        return RegOutput._def_variants
 
     @staticmethod
     def check_variant(variant):
