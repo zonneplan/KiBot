@@ -162,6 +162,10 @@ class RegOutput(Optionable, Registrable):
             RegOutput.add_output(o, file)
 
     @staticmethod
+    def remove_output(obj):
+        del RegOutput._def_outputs[obj.name]
+
+    @staticmethod
     def get_outputs():
         return RegOutput._def_outputs.values()
 
@@ -180,6 +184,14 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def add_variants(variants):
         RegOutput._def_variants.update(variants)
+
+    @staticmethod
+    def add_variant(variant):
+        RegOutput._def_variants[variant.name] = variant
+
+    @staticmethod
+    def remove_variant(variant):
+        del RegOutput._def_variants[variant.name]
 
     @staticmethod
     def separate_variant_and_subpcb(name):
@@ -325,6 +337,10 @@ class RegOutput(Optionable, Registrable):
     @staticmethod
     def add_filters(filters):
         RegOutput._def_filters.update(filters)
+
+    @staticmethod
+    def remove_filter(obj):
+        del RegOutput._def_filters[obj.name]
 
     @staticmethod
     def is_filter(name):
