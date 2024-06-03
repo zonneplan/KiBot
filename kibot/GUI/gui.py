@@ -129,13 +129,17 @@ class MainDialog(wx.Dialog):
                     grp_lst.append({'name': grp.name, 'outputs': items})
             if grp_lst:
                 tree['groups'] = grp_lst
-        tree['outputs'] = [o._tree for o in get_client_data(self.outputs.lbox)]
+        # Outputs
+        if self.outputs.lbox.GetCount():
+            tree['outputs'] = [o._tree for o in get_client_data(self.outputs.lbox)]
         if os.path.isfile(self.cfg_file):
             os.rename(self.cfg_file, os.path.join(os.path.dirname(self.cfg_file), '.'+os.path.basename(self.cfg_file)+'~'))
         with open(self.cfg_file, 'wt') as f:
             f.write(yaml.dump(tree, sort_keys=False))
         self.edited = False
         self.but_save.Disable()
+        # When we disable the button nothing is focused, so things like ESC stops working
+        self.notebook.SetFocus()
 
 
 # ##########################################################################
