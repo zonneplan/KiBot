@@ -59,6 +59,10 @@ Changed:
    KiBot is experimentally disabling the “hidden text layer”. This is a
    bug in KiCad (https://gitlab.com/kicad/code/kicad/-/issues/17958)
 -  Layers: now the default for missing layers is all layers.
+-  Preflights: The definition of preflight plug-ins changed. They are
+   slightly different now. Currently they are Optionable and share more
+   in common with outputs. If you need assistance to migrate a preflight
+   just open a GitHub issue.
 
 [1.7.0] - 2024-04-23
 --------------------
