@@ -154,7 +154,7 @@ class NoGetTargets(BaseOutput):
 
 class DummyPre(BasePreFlight):
     def __init__(self):
-        super().__init__('dummy', True)
+        super().__init__()
         self._sch_related = True
 
 
