@@ -369,7 +369,7 @@ def test_error_wrong_type_1(test_dir):
     """ run_drc = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_1')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?run_drc.?: must be boolean")
+    assert ctx.search_err("In preflight .?run_drc.?: (.*)not .?number.?")
     ctx.clean_up(keep_project=True)
 
 
@@ -378,7 +378,7 @@ def test_error_wrong_type_2(test_dir):
     """ ignore_unconnected = string """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_2')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?ignore_unconnected.?: must be boolean")
+    assert ctx.search_err("In preflight .?ignore_unconnected.?: (.*)must be a boolean")
     ctx.clean_up(keep_project=True)
 
 
@@ -387,7 +387,7 @@ def test_error_wrong_type_3(test_dir):
     """ run_erc = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_3')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?run_erc.?: must be boolean")
+    assert ctx.search_err("In preflight .?run_erc.?: (.*)must be any")
     ctx.clean_up(keep_project=True)
 
 
@@ -396,7 +396,7 @@ def test_error_wrong_type_4(test_dir):
     """ update_xml = number """
     ctx = context.TestContextSCH(test_dir, 'bom', 'error_pre_wrong_type_4')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?update_xml.?: must be boolean")
+    assert ctx.search_err("In preflight .?update_xml.?: (.*)must be any of")
     ctx.clean_up(keep_project=True)
 
 
@@ -405,7 +405,7 @@ def test_error_wrong_type_5(test_dir):
     """ check_zone_fills = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_5')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?check_zone_fills.?: must be boolean")
+    assert ctx.search_err("In preflight .?check_zone_fills.?: (.*)must be a boolean")
     ctx.clean_up(keep_project=True)
 
 
@@ -807,7 +807,7 @@ def test_pre_list_instead_of_dict(test_dir):
     """ Extend an undefined output """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_list_instead_of_dict_issue_360')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(r"Found .*list.* instead of dict")
+    assert ctx.search_err(r"must be a dict(.*)list")
     ctx.clean_up(keep_project=True)
 
 
