@@ -1008,15 +1008,15 @@ def generate_one_example(dest_dir, types):
         needed_imports = {}
         # All the preflights
         preflights = {}
-        for n, cls in OrderedDict(sorted(BasePreFlight.get_registered().items())).items():
-            o = cls(n, None)
+        for n in sorted(BasePreFlight.get_registered().keys()):
+            o = BasePreFlight.get_object_for(n)
             if types and n not in types:
                 logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
             if check_we_cant_use(o):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
-            tree = cls.get_conf_examples(n, layers)
+            tree = o.get_conf_examples(n, layers)
             if tree:
                 logger.debug('- {}, generated'.format(n))
                 preflights.update(tree)
