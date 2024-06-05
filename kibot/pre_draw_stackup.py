@@ -419,23 +419,23 @@ def update_drawing(ops, parent):
 
 @pre_class
 class Draw_Stackup(BasePreFlight):  # noqa: F821
-    """ [boolean=False|dict] Draw the PCB stackup. Needs KiCad 7 or newer.
-        To specify the position and size of the drawing you can use two methods.
-        You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options.
-        But you can also draw a rectangle in your PCB with the size and layer you want.
-        Then draw another thing inside the rectangle, select both and create a group
-        (right mouse button, then Grouping -> Group). Now edit the group and change its name
-        to *kibot_stackup*. After running this preflight the rectangle will contain the
-        stackup """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+    def __init__(self):
+        super().__init__()
         self._pcb_related = True
+        with document:
+            self.draw_stackup = DrawStackupOptions
+            """ [boolean|dict=false] Draw the PCB stackup. Needs KiCad 7 or newer.
+                To specify the position and size of the drawing you can use two methods.
+                You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options.
+                But you can also draw a rectangle in your PCB with the size and layer you want.
+                Then draw another thing inside the rectangle, select both and create a group
+                (right mouse button, then Grouping -> Group). Now edit the group and change its name
+                to *kibot_stackup*. After running this preflight the rectangle will contain the
+                stackup """
 
     def config(self):
-        o = DrawStackupOptions()
-        o.set_tree({'enabled': self._value} if isinstance(self._value, bool) else self._value)
-        o.config(self)
-        self._value = o
+        super().config()
+        self._value = DrawStackupOptions() if isinstance(self.draw_stackup, bool) else self.draw_stackup
 
     def apply(self):
         if not GS.ki7:

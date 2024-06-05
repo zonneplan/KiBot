@@ -657,7 +657,7 @@ def get_pre_targets(targets, dependencies, is_pre):
             tg = pre.get_targets()
             if not tg:
                 continue
-            name = pre._name
+            name = pre.type
             targets[name] = [adapt_file_name(fn) for fn in tg]
             dependencies[name] = [adapt_file_name(fn) for fn in pre.get_dependencies()]
             is_pre.add(name)

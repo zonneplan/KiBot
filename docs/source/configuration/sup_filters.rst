@@ -110,7 +110,7 @@ Supported filters
             -  ``skip_if_no_field`` :index:`: <pair: filter - generic - include_only; skip_if_no_field>` [:ref:`boolean <boolean>`] (default: ``false``) Skip this test if the field doesn't exist.
 
       -  ``invert`` :index:`: <pair: filter - generic; invert>` [:ref:`boolean <boolean>`] (default: ``false``) Invert the result of the filter.
-      -  ``keys`` :index:`: <pair: filter - generic; keys>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``dnf_list``) (choices: "dnc_list", "dnf_list") List of keys to match.
+      -  ``keys`` :index:`: <pair: filter - generic; keys>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'dnf_list'``) (choices: "dnc_list", "dnf_list") List of keys to match.
          The `dnf_list` and `dnc_list` internal lists can be specified as strings.
          Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
          Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].

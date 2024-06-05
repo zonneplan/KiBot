@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2023 Salvador E. Tropea
-# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
 import re
@@ -71,11 +71,6 @@ class Base_ReplaceOptions(Optionable):
 
 
 class Base_Replace(BasePreFlight):  # noqa: F821
-    """ [dict] Replaces tags in the PCB/schematic. I.e. to insert the git hash or last revision date """
-    def __init__(self, name, value):
-        super().__init__(name, value)
-        self._context = ''  # PCB/SCH
-
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """
@@ -86,12 +81,11 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 "\n        before: 'Git hash: <'"
                 "\n        after: '>'".format(cls._context, cls._context))
 
-    def replace(self, file):
+    def replace(self, file, o):
         logger.debug('Applying replacements to `{}`'.format(file))
         with open(file, 'rt') as f:
             content = f.read()
         os.environ['KIBOT_' + type(self)._context + '_NAME'] = file
-        o = self._value
         bash_command = None
         for r in o.replace_tags:
             text = r.text

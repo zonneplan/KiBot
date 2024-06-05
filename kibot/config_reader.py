@@ -273,7 +273,7 @@ class CfgYamlReader(object):
                 raise KiPlotConfigurationError("Unknown preflight: `{}`".format(k))
             try:
                 logger.debug("Parsing preflight "+k)
-                o_pre = BasePreFlight.get_class_for(k)(k, v)
+                o_pre = BasePreFlight.get_object_for(k, v)
             except KiPlotConfigurationError as e:
                 raise KiPlotConfigurationError("In preflight '"+k+"': "+str(e))
             preflights.append(o_pre)
@@ -355,9 +355,9 @@ class CfgYamlReader(object):
                 i_pres += self._parse_preflights(data['preflight'])
             if pre is not None:
                 for p in i_pres:
-                    if p._name in pre:
+                    if p.type in pre:
                         sel_pres.append(p)
-                        pre.remove(p._name)
+                        pre.remove(p.type)
                 for p in pre:
                     logger.warning(W_UNKOUT+"can't import `{}` preflight from `{}` (missing)".format(p, fn_rel))
             else:
@@ -366,7 +366,7 @@ class CfgYamlReader(object):
                 if explicit_pres:
                     logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
             else:
-                logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, [c._name for c in sel_pres]))
+                logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, [c.type for c in sel_pres]))
         if pre is None and explicit_pres and 'preflight' not in data:
             logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
         return sel_pres
@@ -797,7 +797,10 @@ def trim(docstring):
 
 def process_help_data_type(obj, help):
     valid, validations, def_val, real_help = obj.get_valid_types(help)
-    new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
+    if rst_mode:
+        new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
+    else:
+        new_data_type = '['+' | '.join(valid)+']'
     if def_val:
         new_data_type += f' (default: ``{def_val}``)'
     string_added = False
@@ -821,7 +824,7 @@ def process_help_data_type(obj, help):
     return help
 
 
-def print_output_options(name, cl, indent, context=None, skip_keys=False):
+def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_options=None, force_is_basic=False):
     ind_str = indent*' '
     obj = cl()
     num_opts = 0 if not skip_keys else 1
@@ -836,6 +839,8 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
             if indent == ind_size:
                 # Type is fixed for an output
                 continue
+        if skip_options and k in skip_options:
+            continue
         if not num_opts:
             # We found one, put the title
             if rst_mode:
@@ -849,7 +854,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         if k == 'type' and not indent:
             help = f"*'{name}'"
             dot = False
-        is_basic = False
+        is_basic = force_is_basic
         if help and help[0] == '*':
             help = help[1:]
             is_basic = True
@@ -1014,17 +1019,8 @@ def print_preflights_help(rst):
     prefs = BasePreFlight.get_registered()
     ind_size, extra = make_title(rst, 'preflights', len(prefs))
     for n, o in OrderedDict(sorted(prefs.items())).items():
-        help, options = o.get_doc()
-        if help is None:
-            help = 'Undocumented'
-        else:
-            help, rest = reformat_text(help, ind_size)
-            if rest:
-                help += '\n'+rest
-        index = f':index:`: <pair: preflights; {n}>` ' if rst else ''
-        print(f'- {extra}**{n}**: {index}{help}.')
-        if options:
-            print_output_options(n, options, ind_size, 'preflight - '+n)
+        print_output_options(n, o, ind_size, 'preflight - '+n, skip_options={'comment', 'name'}, skip_keys=True,
+                             force_is_basic=True)
 
 
 def print_variants_help(rst):
@@ -1208,8 +1204,10 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         f.write('\npreflight:\n')
         prefs = BasePreFlight.get_registered()
         for n, o in OrderedDict(sorted(prefs.items())).items():
-            if o.__doc__:
-                lines = trim(o.__doc__.rstrip()+'.')
+            obj = BasePreFlight.get_object_for(n)
+            help, _, _ = obj.get_doc(n)
+            if help:
+                lines = trim(help.rstrip()+'.')
                 for ln in lines:
                     f.write('  # '+ln.rstrip()+'\n')
             example = o.get_example()

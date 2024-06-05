@@ -20,26 +20,21 @@ SECTION_RPT = {'schematic_parity': 'Footprint errors', 'unconnected_items': 'unc
 
 @pre_class
 class DRC(XRC):  # noqa: F821
-    """ [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
-        You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
-        This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
-        GUI exclusions and schematic parity are supported """
-    def __init__(self, name, value):
-        super().__init__(name, value, DRCOptions)
+    def __init__(self):
+        super().__init__(DRCOptions)
         self._pcb_related = True
         self._expand_id = 'drc'
         self._category = 'PCB/docs'
-
-    @classmethod
-    def get_doc(cls):
-        return cls.__doc__, DRCOptions
+        with document:
+            self.drc = DRCOptions
+            """ [boolean|dict=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+                You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
+                This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
+                GUI exclusions and schematic parity are supported """
 
     def apply_filters(self, data):
-        filters = []
-        if self._filters:
-            filters += self._filters
+        filters = self._filters.copy()
         if GS.filters:
-            logger.error(GS.filters)
             filters += GS.filters
             logger.warning(W_FILXRC+'Using filters from the `filters` preflight, move them to `drc`')
         self.c_err = self.c_warn = self.c_tot = 0
