@@ -21,15 +21,15 @@ preflight:
     bottom_start: 101
     use_position_of: 'footprint'
     grid: 1.0
-  # [boolean=false] Annotates all power components.
+  # [boolean] Annotates all power components.
   # This preflight modifies the schematic, use it only in revision control environments.
   # Used to solve ERC problems when using filters that remove power reference numbers.
   annotate_power: true
-  # [boolean=false] Zones are filled before doing any operation involving PCB layers.
+  # [boolean] Zones are filled before doing any operation involving PCB layers.
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
   check_zone_fills: true
-  # [boolean=False|dict] Draw the PCB stackup. Needs KiCad 7 or newer.
+  # [boolean|dict=false] Draw the PCB stackup. Needs KiCad 7 or newer.
   # To specify the position and size of the drawing you can use two methods.
   # You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options.
   # But you can also draw a rectangle in your PCB with the size and layer you want.
@@ -38,12 +38,12 @@ preflight:
   # to *kibot_stackup*. After running this preflight the rectangle will contain the
   # stackup.
   draw_stackup: true
-  # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # [boolean|dict=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
   # This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
   # GUI exclusions and schematic parity are supported.
   drc: true
-  # [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+  # [boolean|dict=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
   # You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template.
   # This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
   erc: true
@@ -74,7 +74,7 @@ preflight:
         command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
         before: 'Git hash: <'
         after: '>'
-  # [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # [boolean|dict=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
   # Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
   # If you need to check the parity use the `update_xml` preflight.
@@ -82,7 +82,7 @@ preflight:
   # This will change in the future.
   # If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
   run_drc: true
-  # [boolean=false|dict] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
+  # [boolean|dict=false] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
   # To ensure the schematic is electrically correct.
   # The report file name is controlled by the global output pattern (%i=erc %x=txt).
   run_erc: true
@@ -106,26 +106,26 @@ preflight:
       command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
       before: 'Git hash: <'
       after: '>'
-  # [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
-  # This is useful to replace logos using freshly created versions.
+  # [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be
+  # updated. This is useful to replace logos using freshly created versions.
   update_footprint: QR1, QR2
-  # [boolean=False] Update the information in the Board Characteristics.
+  # [boolean=false] Update the information in the Board Characteristics.
   # Starting with KiCad 7 you can paste a block containing board information using
   # *Place* -> *Add Board Characteristics*. But this information is static, so if
   # you modify anything related to it the block will be obsolete.
   # This preflight tries to refresh the information.
   update_pcb_characteristics: true
-  # [boolean=false] Update the QR codes.
+  # [boolean] Update the QR codes.
   # Complements the `qr_lib` output.
   # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
   update_qr: true
-  # [boolean=False] Update the information in the Stackup Table.
+  # [boolean] Update the information in the Stackup Table.
   # Starting with KiCad 7 you can paste a block containing board information using
   # *Place* -> *Stackup Table*. But this information is static, so if
   # you modify anything related to it the block will be obsolete.
   # This preflight tries to refresh the information.
   update_stackup: true
-  # [boolean=false|dict] Update the XML version of the BoM (Bill of Materials).
+  # [boolean|dict=false] Update the XML version of the BoM (Bill of Materials).
   # To ensure our generated BoM is up to date.
   # Note that this isn't needed when using the internal BoM generator (`bom`).
   # You can compare the PCB and schematic netlists using it.

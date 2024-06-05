@@ -506,7 +506,7 @@ class Globals(FiltersOptions):
                 GS.global_silk_screen_color_top = GS.global_silk_screen_color
             if not GS.global_silk_screen_color_bottom:
                 GS.global_silk_screen_color_bottom = GS.global_silk_screen_color
-        set_filters(self.unparsed)
+        set_filters(self.filters)
         # 3D models aliases
         if isinstance(self.aliases_for_3d_models, list):
             KiConf.init(GS.pcb_file or GS.sch_file)

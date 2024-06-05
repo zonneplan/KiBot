@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .error import PlotError
 from .gs import GS
@@ -119,24 +119,16 @@ def sort_key(ops, obj, top=True):
 
 @pre_class
 class Annotate_PCB(BasePreFlight):  # noqa: F821
-    """ [dict] Annotates the PCB according to physical coordinates.
-        This preflight modifies the PCB and schematic, use it only in revision control environments.
-        Used to assign references according to footprint coordinates.
-        The project must be fully annotated first """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+    def __init__(self):
+        super().__init__()
         self._sch_related = True
         self._pcb_related = True
-
-    def config(self):
-        o = Annotate_PCBOptions()
-        o.set_tree(self._value)
-        o.config(self)
-        self._value = o
-
-    @classmethod
-    def get_doc(cls):
-        return cls.__doc__, Annotate_PCBOptions
+        with document:
+            self.annotate_pcb = Annotate_PCBOptions
+            """ [dict] Annotates the PCB according to physical coordinates.
+                This preflight modifies the PCB and schematic, use it only in revision control environments.
+                Used to assign references according to footprint coordinates.
+                The project must be fully annotated first """
 
     def get_example():
         """ Returns a YAML value for the example config """
@@ -180,7 +172,7 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
                         o.ref = c.ref_prefix+str(new_ref_suffix)
 
     def run(self):
-        o = self._value
+        o = self.annotate_pcb
         #
         # PCB part
         #

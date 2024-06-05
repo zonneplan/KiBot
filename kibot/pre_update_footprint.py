@@ -15,18 +15,19 @@ logger = get_logger(__name__)
 
 @pre_class
 class Update_Footprint(BasePreFlight):  # noqa: F821
-    """ [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
-        This is useful to replace logos using freshly created versions """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+    def __init__(self):
+        super().__init__()
         self._pcb_related = True
+        with document:
+            self.update_footprint = ''
+            """ [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be
+                updated. This is useful to replace logos using freshly created versions """
 
     def config(self):
-        if not isinstance(self._value, list) and not isinstance(self._value, str):
-            raise KiPlotConfigurationError('must be string or list of strings')
-        if isinstance(self._value, list) and any((not isinstance(x, str) for x in self._value)):
+        super().config()
+        if isinstance(self.update_footprint, list) and any((not isinstance(x, str) for x in self.update_footprint)):
             raise KiPlotConfigurationError('all items in the list must be strings')
-        self._refs = Optionable.force_list(self._value)
+        self._refs = Optionable.force_list(self.update_footprint)
         if not self._refs:
             raise KiPlotConfigurationError('nothing to update')
 

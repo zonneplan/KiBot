@@ -88,26 +88,23 @@ class DRCOptions(ERCOptions):
 
 
 class XRC(BasePreFlight):
-    def __init__(self, name, value, cls):
-        super().__init__(name, value)
+    def __init__(self, cls):
+        super().__init__()
         self._opts_cls = cls
 
     def config(self):
-        if isinstance(self._value, bool):
-            f = self._opts_cls()
-            f.enabled = self._value
-            f.format = ['HTML']
-        elif isinstance(self._value, dict):
-            f = self._opts_cls()
-            f.set_tree(self._value)
-            f.config(self)
-        else:
-            raise KiPlotConfigurationError('must be boolean or dict')
+        super().config()
+        ops = self.erc if self._sch_related else self.drc
+        if isinstance(ops, bool):
+            ops = self._opts_cls()
+            ops.enabled = self._value
+            ops.format = ['HTML']
+            ops.filters = []
         # Transfer the options to this class
-        for k, v in dict(f.get_attrs_gen()).items():
+        for k, v in dict(ops.get_attrs_gen()).items():
             setattr(self, '_'+k, v)
-        self._format = f.format
-        self._filters = None if isinstance(f.filters, type) else f.unparsed
+        self._format = ops.format
+        self._filters = ops.filters
         self._expand_ext = self._format[0].lower()
         self.dir = self._dir
 
