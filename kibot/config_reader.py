@@ -826,7 +826,12 @@ def process_help_data_type(obj, help):
 
 def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_options=None, force_is_basic=False):
     ind_str = indent*' '
-    obj = cl()
+    try:
+        obj = cl()
+    except TypeError as e:
+        if re.search(r'missing 2 required(.*)name(.*)value', str(e)):
+            config_error(f"Wong constructor for `{name}`, please migrate any plug-in ({e})")
+        raise
     num_opts = 0 if not skip_keys else 1
     ind_size = 3 if rst_mode else 2
     ind_base_sp = '- '
