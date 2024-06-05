@@ -32,9 +32,16 @@ class BasePreFlight(Optionable, Registrable):
         self._expand_ext = ''
         self._files_to_remove = []
         self._category = None
-        # Compatibility with outputs
-        self.name = ''
-        self.comment = ''
+
+    # Compatibility with outputs for navigate_results
+    @property
+    def name(self):
+        return self.type
+
+    # Compatibility with outputs for navigate_results
+    @property
+    def comment(self):
+        return ''
 
     def config(self):
         """ Default configuration assumes this is just a boolean """
