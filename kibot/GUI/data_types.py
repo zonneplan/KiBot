@@ -485,7 +485,6 @@ class EditDict(wx.Dialog):
 
     def update_values(self):
         tree = {}
-        modified = False
         for entry in self.data_type_tree:
             if entry.skip:
                 tree['type'] = self.obj.type
@@ -493,9 +492,7 @@ class EditDict(wx.Dialog):
             value = entry.get_value()
             if value is not None:
                 tree[entry.name] = value
-                if not modified:
-                    modified = entry.edited
-        if not modified:
+        if self.obj._tree == tree:
             logger.debug(f'Not modified {tree}')
             return False, False
         logger.debug(f'Updating {self.obj} {tree}')
