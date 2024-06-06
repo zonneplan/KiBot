@@ -81,6 +81,10 @@ class BasePreFlight(Optionable, Registrable):
             BasePreFlight._in_use[p.type] = p
 
     @staticmethod
+    def remove_preflight(o_pre):
+        del BasePreFlight._in_use[o_pre.type]
+
+    @staticmethod
     def get_preflight(name):
         return BasePreFlight._in_use.get(name)
 
