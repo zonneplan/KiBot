@@ -708,7 +708,8 @@ class DataEntry(object):
         self.selected = self.sel_widget.GetSelection()
         self.sizer.Show(self.widgets[self.selected], True)
         self.set_sel_tooltip()
-        self.window.Parent.Layout()
+        # The selected widget might be bigger, adjust the dialog
+        self.window.Parent.OnResize(None)
 
 
 def adapt_default(val, name):
