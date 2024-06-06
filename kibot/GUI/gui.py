@@ -4,6 +4,7 @@ import yaml
 from .. import __version__
 from .. import log
 from ..kiplot import config_output
+from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
 from .data_types import edit_dict
 from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
@@ -62,6 +63,8 @@ class MainDialog(wx.Dialog):
         self.notebook.AddPage(self.outputs, "Outputs")
         self.groups = GroupsPanel(self.notebook)
         self.notebook.AddPage(self.groups, "Groups")
+        self.preflights = PreflightsPanel(self.notebook)
+        self.notebook.AddPage(self.preflights, "Preflights")
         self.filters = FiltersPanel(self.notebook)
         self.notebook.AddPage(self.filters, "Filters")
         self.variants = VariantsPanel(self.notebook)
@@ -129,6 +132,12 @@ class MainDialog(wx.Dialog):
                     grp_lst.append({'name': grp.name, 'outputs': items})
             if grp_lst:
                 tree['groups'] = grp_lst
+        # Preflights
+        if self.preflights.lbox.GetCount():
+            res = {}
+            for o in get_client_data(self.preflights.lbox):
+                res.update(o._tree)
+            tree['preflight'] = res
         # Outputs
         if self.outputs.lbox.GetCount():
             tree['outputs'] = [o._tree for o in get_client_data(self.outputs.lbox)]
@@ -618,5 +627,38 @@ class VariantsPanel(DictPanel):
         obj = RegVariant.get_class_for(kind)()
         obj.type = kind
         obj._tree = {'name': 'new_variant'}
+        obj.config(None)
+        return obj
+
+
+# ##########################################################################
+# # class PreflightsPanel
+# # Panel containing the filters ABM
+# ##########################################################################
+
+class PreflightsPanel(DictPanel):
+    def __init__(self, parent):
+        super().__init__(parent)
+        self.dict_type = "preflight"
+
+    def refresh_lbox(self):
+        BasePreFlight.configure_all()
+        items = list(BasePreFlight.get_in_use_objs())
+        set_items(self.lbox, items)
+
+    def choose_type(self):
+        used = set(BasePreFlight.get_in_use_names())
+        available = [name for name in BasePreFlight.get_registered().keys() if name not in used]
+        return choose_from_list(self, available, 'a preflight')
+
+    def add_obj(self, obj):
+        BasePreFlight.add_preflight(obj)
+
+    def remove_obj(self, obj):
+        BasePreFlight.remove_preflight(obj)
+
+    def new_obj(self, kind):
+        # Create a new object of the selected type
+        obj = BasePreFlight.get_object_for(kind)
         obj.config(None)
         return obj
