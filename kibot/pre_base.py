@@ -36,9 +36,9 @@ class BasePreFlight(Optionable, Registrable):
         self.name = ''
         self.comment = ''
 
-    def config(self):
+    def config(self, parent):
         """ Default configuration assumes this is just a boolean """
-        super().config(None)
+        super().config(parent)
         # If this is just a boolean copy the result to _enabled
         main_value = getattr(self, self.type)
         if isinstance(main_value, bool):
@@ -114,7 +114,7 @@ class BasePreFlight(Optionable, Registrable):
             # Configure all of them
             for k, v in BasePreFlight._in_use.items():
                 logger.debug('Configuring preflight '+k)
-                v.config()
+                v.config(None)
         except KiPlotConfigurationError as e:
             GS.exit_with_error("In preflight `"+str(k)+"`: "+str(e), EXIT_BAD_CONFIG)
         BasePreFlight._configured = True

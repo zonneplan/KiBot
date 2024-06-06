@@ -55,8 +55,8 @@ class Update_XML(BasePreFlight):  # noqa: F821
                 Note that this isn't needed when using the internal BoM generator (`bom`).
                 You can compare the PCB and schematic netlists using it """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.update_xml, Update_XMLOptions):
             self._enabled = self.update_xml.enabled
             self._check_pcb_parity = self.update_xml.check_pcb_parity

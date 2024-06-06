@@ -23,8 +23,8 @@ class Update_Footprint(BasePreFlight):  # noqa: F821
             """ [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be
                 updated. This is useful to replace logos using freshly created versions """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.update_footprint, list) and any((not isinstance(x, str) for x in self.update_footprint)):
             raise KiPlotConfigurationError('all items in the list must be strings')
         self._refs = Optionable.force_list(self.update_footprint)

@@ -433,8 +433,8 @@ class Draw_Stackup(BasePreFlight):  # noqa: F821
                 to *kibot_stackup*. After running this preflight the rectangle will contain the
                 stackup """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         self._value = DrawStackupOptions() if isinstance(self.draw_stackup, bool) else self.draw_stackup
 
     def apply(self):

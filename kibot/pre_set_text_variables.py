@@ -69,8 +69,8 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 The KiCad project file is modified.
                 Warning: don't use `-s all` or this preflight will be skipped """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.set_text_variables, type):
             self.set_text_variables = []
         elif isinstance(self.set_text_variables, KiCadVariable):
