@@ -32,9 +32,17 @@ class BasePreFlight(Optionable, Registrable):
         self._expand_ext = ''
         self._files_to_remove = []
         self._category = None
-        # Compatibility with outputs
-        self.name = ''
-        self.comment = ''
+        self.type = self.__class__.__name__.lower()
+
+    # Compatibility with outputs for navigate_results
+    @property
+    def name(self):
+        return self.type
+
+    # Compatibility with outputs for navigate_results
+    @property
+    def comment(self):
+        return ''
 
     def config(self, parent):
         """ Default configuration assumes this is just a boolean """
@@ -58,7 +66,7 @@ class BasePreFlight(Optionable, Registrable):
     @staticmethod
     def get_object_for(name, value=False):
         obj = BasePreFlight._registered[name]()
-        obj.type = name
+        assert name == obj.type
         obj._value = value
         obj.set_tree({name: value})
         return obj
