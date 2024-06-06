@@ -155,7 +155,8 @@ class DataTypeDict(DataTypeBase):
         entry.edited = False
         help = entry.help
         lbl = self.get_label(entry)
-        self.sub_obj = getattr(obj, entry.name)
+        # Use the current value only when "init", otherwise use an empty object
+        self.sub_obj = getattr(obj, entry.name) if init else entry.cls()
         self.sub_entries = entry.sub
         self.parent = parent
         self.entry = entry
