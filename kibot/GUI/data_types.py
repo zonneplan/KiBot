@@ -774,9 +774,14 @@ def get_data_type_tree(template, obj, level=0):
         entry = DataEntry(k, valids, def_val, real_help, is_basic, obj_ref, level)
         if entry.is_dict:
             value = getattr(obj, k)
-            if value is None or isinstance(value, type):
-                value = v()
-            entry.sub = get_data_type_tree(v(), value, level+1)
+            reference = v()
+            # if value is None or isinstance(value, type):
+            if not isinstance(value, v):
+                # If the current value is different use an empty object
+                # I.e. something that can be a string or dict and is currently a string, then use a fresh dict
+                value = reference
+                logger.debug(f'{" "*level*2}- Using new object for {k}')
+            entry.sub = get_data_type_tree(reference, value, level+1)
             entry.cls = v
         elif entry.is_list_dict:
             entry.cls = v
