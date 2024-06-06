@@ -32,6 +32,7 @@ class BasePreFlight(Optionable, Registrable):
         self._expand_ext = ''
         self._files_to_remove = []
         self._category = None
+        self.type = self.__class__.__name__.lower()
 
     # Compatibility with outputs for navigate_results
     @property
@@ -65,7 +66,7 @@ class BasePreFlight(Optionable, Registrable):
     @staticmethod
     def get_object_for(name, value=False):
         obj = BasePreFlight._registered[name]()
-        obj.type = name
+        assert name == obj.type
         obj._value = value
         obj.set_tree({name: value})
         return obj
