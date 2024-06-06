@@ -53,8 +53,8 @@ class Run_DRC(BasePreFlight):  # noqa: F821
                 This will change in the future.
                 If you use DRC exclusions please consult the `drc_exclusions_workaround` global option """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.run_drc, bool):
             self._dir = ''
             self._ignore_unconnected = False

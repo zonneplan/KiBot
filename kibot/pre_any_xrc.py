@@ -92,8 +92,8 @@ class XRC(BasePreFlight):
         super().__init__()
         self._opts_cls = cls
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         ops = self.erc if self._sch_related else self.drc
         if isinstance(ops, bool):
             ops = self._opts_cls()

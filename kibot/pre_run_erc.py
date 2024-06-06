@@ -49,8 +49,8 @@ class Run_ERC(BasePreFlight):  # noqa: F821
                 To ensure the schematic is electrically correct.
                 The report file name is controlled by the global output pattern (%i=erc %x=txt) """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         if isinstance(self.run_erc, bool):
             self._dir = ''
             self._warnings_as_errors = False

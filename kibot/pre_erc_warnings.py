@@ -18,8 +18,8 @@ class ERC_Warnings(BasePreFlight):  # noqa: F821
             """ [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.
                 Option for `run_erc`. ERC warnings are considered errors """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         logger.warning(W_DEPR+'The `erc_warnings` preflight is deprecated, use the `warnings_as_errors` option')
 
     def get_example():

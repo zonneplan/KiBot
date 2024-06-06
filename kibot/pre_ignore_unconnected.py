@@ -19,8 +19,8 @@ class Ignore_Unconnected(BasePreFlight):  # noqa: F821
                 Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
                 It will also ignore KiCad 6 warnings when using `run_drc` """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         logger.warning(W_DEPR+'The `ignore_unconnected` preflight is deprecated, use the `ignore_unconnected` option')
 
     def get_example():
