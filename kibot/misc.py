@@ -564,3 +564,8 @@ def pretty_list(items, short=False):
             return items[0].short_str()
         return ', '.join((x.short_str() for x in items[:-1]))+' and '+items[-1].short_str()
     return str(items[0]) if len(items) == 1 else ', '.join(map(str, items[:-1]))+' and '+str(items[-1])
+
+
+def try_int(value):
+    i_val = int(value)
+    return i_val if i_val == value else value

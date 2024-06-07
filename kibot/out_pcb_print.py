@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Base idea: https://gitlab.com/dennevi/Board2Pdf/ (Released as Public Domain)
 """
@@ -45,7 +45,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
-                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418)
+                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418, pretty_list, try_int)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -165,12 +165,14 @@ class PagesOptions(Optionable):
             """ Mirror text in the footprints when mirror option is enabled and we plot a user layer """
             self.monochrome = False
             """ Print in gray scale """
-            self.scaling = None
-            """ *[number=1.0] Scale factor (0 means autoscaling)"""
-            self.autoscale_margin_x = None
-            """ [number=0] Horizontal margin used for the autoscaling mode [mm] """
-            self.autoscale_margin_y = None
-            """ [number=0] Vertical margin used for the autoscaling mode [mm] """
+            self.scaling = 1.0
+            """ *[number=1.0] Scale factor (0 means autoscaling). When not defined we use the default value for the output """
+            self.autoscale_margin_x = 0
+            """ [number=0] Horizontal margin used for the autoscaling mode [mm].
+                When not defined we use the default value for the output """
+            self.autoscale_margin_y = 0
+            """ [number=0] Vertical margin used for the autoscaling mode [mm].
+                When not defined we use the default value for the output """
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
                 If it starts with `+` the text is concatenated """
@@ -224,6 +226,17 @@ class PagesOptions(Optionable):
         self._scaling_example = 1.0
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
+        self._layers = None
+
+    def __str__(self):
+        txt = self.sheet
+        if self._layers:
+            txt += ' ['+pretty_list([la.layer for la in self._layers])+']'
+        if self.scaling != 1.0:
+            txt += ' auto' if not self.scaling else f' x{try_int(self.scaling)}'
+        if self.mirror:
+            txt += ' mirror'
+        return txt
 
     def expand_sheet_patterns(self, parent, sheet, layers, layer=None):
         sheet = sheet.replace('%ll', layers)
@@ -238,30 +251,30 @@ class PagesOptions(Optionable):
         if isinstance(self.layers, type):
             raise KiPlotConfigurationError("Missing `layers` list")
         # Fill the ID member for all the layers
-        self.layers = LayerOptions.solve(self.layers)
+        self._layers = LayerOptions.solve(self.layers)
         if self.sort_layers:
-            self.layers.sort(key=lambda x: get_priority(x._id), reverse=True)
+            self._layers.sort(key=lambda x: get_priority(x._id), reverse=True)
         if self.sheet_reference_color:
             self.validate_color('sheet_reference_color')
         if self.holes_color:
             self.validate_color('holes_color')
-        if self.scaling is None:
+        if not self.get_user_defined('scaling'):
             self.scaling = parent.scaling
-        if self.autoscale_margin_x is None:
+        if not self.get_user_defined('autoscale_margin_x'):
             self.autoscale_margin_x = parent.autoscale_margin_x
-        if self.autoscale_margin_y is None:
+        if not self.get_user_defined('self.autoscale_margin_y'):
             self.autoscale_margin_y = parent.autoscale_margin_y
-        self.sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
+        self._sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
         # Validate the repeat_* stuff
         if self.repeat_for_layer:
             layer = Layer.solve(self.repeat_for_layer)
             if len(layer) > 1:
                 raise KiPlotConfigurationError('Please specify a single layer for `repeat_for_layer`')
             layer = layer[0]
-            self._repeat_for_layer = next(filter(lambda x: x._id == layer._id, self.layers), None)
+            self._repeat_for_layer = next(filter(lambda x: x._id == layer._id, self._layers), None)
             if self._repeat_for_layer is None:
                 raise KiPlotConfigurationError("Layer `{}` specified in `repeat_for_layer` isn't valid".format(layer))
-            self._repeat_for_layer_index = self.layers.index(self._repeat_for_layer)
+            self._repeat_for_layer_index = self._layers.index(self._repeat_for_layer)
             if isinstance(self.repeat_layers, type):
                 raise KiPlotConfigurationError('`repeat_for_layer` specified, but nothing to repeat')
             self._repeat_layers = LayerOptions.solve(self.repeat_layers)
@@ -372,7 +385,7 @@ class PCB_PrintOptions(VariantOptions):
 
     def get_layers_for_page(self, page):
         layer = ''
-        for la in page.layers:
+        for la in page._layers:
             if len(layer):
                 layer += '+'
             layer = layer+la.layer
@@ -391,7 +404,7 @@ class PCB_PrintOptions(VariantOptions):
                     new_page = deepcopy(page)
                     if page.repeat_inherit:
                         la.copy_extra_from(page._repeat_for_layer)
-                    new_page.layers[page._repeat_for_layer_index] = la
+                    new_page._layers[page._repeat_for_layer_index] = la
                     page.sheet = new_page.expand_sheet_patterns(parent, page.sheet, la.layer+'+'+layers_for_page, la)
                     page.layer_var = new_page.expand_sheet_patterns(parent, page.layer_var, la.layer+'+'+layers_for_page, la)
                     pages.append(new_page)
@@ -399,21 +412,21 @@ class PCB_PrintOptions(VariantOptions):
                 page.sheet = page.expand_sheet_patterns(parent, page.sheet, layers_for_page)
                 page.layer_var = page.expand_sheet_patterns(parent, page.layer_var, layers_for_page)
                 pages.append(page)
-        self.pages = pages
+        self._pages = pages
         # Color theme
         self._color_theme = load_color_theme(self.color_theme)
         if self._color_theme is None:
             raise KiPlotConfigurationError("Unable to load `{}` color theme".format(self.color_theme))
         # Assign a color if none was defined
         layer_id2color = self._color_theme.layer_id2color
-        for p in self.pages:
-            for la in p.layers:
+        for p in self._pages:
+            for la in p._layers:
                 if not la.color:
                     if la._id in layer_id2color:
                         la.color = layer_id2color[la._id]
                     else:
                         la.color = "#000000"
-        self.drill_marks = DRILL_MARKS_MAP[self.drill_marks]
+        self._drill_marks = DRILL_MARKS_MAP[self.drill_marks]
         self._expand_ext = self.format.lower()
         for member, color in self._pad_colors.items():
             if getattr(self, member):
@@ -425,10 +438,11 @@ class PCB_PrintOptions(VariantOptions):
         if self.frame_plot_mechanism == 'plot' and GS.ki5:
             raise KiPlotConfigurationError("You can't use `plot` for `frame_plot_mechanism` with KiCad 5. It will crash.")
         KiConf.init(GS.pcb_file)
-        if self.sheet_reference_layout:
-            self.sheet_reference_layout = KiConf.expand_env(self.sheet_reference_layout)
-            if not os.path.isfile(self.sheet_reference_layout):
-                raise KiPlotConfigurationError("Missing page layout file: "+self.sheet_reference_layout)
+        self._sheet_reference_layout = self.sheet_reference_layout
+        if self._sheet_reference_layout:
+            self._sheet_reference_layout = KiConf.expand_env(self.sheet_reference_layout)
+            if not os.path.isfile(self._sheet_reference_layout):
+                raise KiPlotConfigurationError("Missing page layout file: "+self._sheet_reference_layout)
         if self.add_background:
             self.validate_color('background_color')
             if self.background_image:
@@ -452,7 +466,7 @@ class PCB_PrintOptions(VariantOptions):
     def get_targets(self, out_dir):
         if self.format in ['SVG', 'PNG', 'EPS']:
             files = []
-            for n, p in enumerate(self.pages):
+            for n, p in enumerate(self._pages):
                 id, ext = self.get_id_and_ext(n, p.page_id)
                 files.append(self.expand_filename(out_dir, self.output, id, ext))
             return files
@@ -1059,7 +1073,7 @@ class PCB_PrintOptions(VariantOptions):
             # Adjust the width
             convert_command = self.ensure_tool('ImageMagick')
             size = str(self.png_width)+'x'
-            for n in range(len(self.pages)):
+            for n in range(len(self._pages)):
                 file = output % (n+1)
                 cmd = [convert_command, file, '-resize', size, file]
                 _run_command(cmd)
@@ -1084,7 +1098,7 @@ class PCB_PrintOptions(VariantOptions):
         #    self.rsvg_command_eps = self.ensure_tool('rsvg2')
 
     def rename_pages(self, output_dir):
-        for n, p in enumerate(self.pages):
+        for n, p in enumerate(self._pages):
             id, ext = self.get_id_and_ext(n)
             cur_name = self.expand_filename(output_dir, self.output, id, ext)
             id, ext = self.get_id_and_ext(n, p.page_id)
@@ -1141,8 +1155,8 @@ class PCB_PrintOptions(VariantOptions):
         logger.debug(f'Starting to generate `{output}`')
         logger.debug(f'- Temporal dir: {temp_dir_base}')
         self.find_paper_size()
-        if self.sheet_reference_layout:
-            layout = self.sheet_reference_layout
+        if self._sheet_reference_layout:
+            layout = self._sheet_reference_layout
         else:
             # Find the layout file
             layout = KiConf.fix_page_layout(GS.pro_file, dry=True)[1]
@@ -1177,8 +1191,8 @@ class PCB_PrintOptions(VariantOptions):
         if not self.individual_page_scaling:
             # Make all the layers in all the pages visible
             vis_layers = LSET()
-            for p in self.pages:
-                for la in p.layers:
+            for p in self._pages:
+                for la in p._layers:
                     if la.use_for_center ^ self.invert_use_for_center:
                         vis_layers.addLayer(la._id)
             if self.force_edge_cuts and (self.forced_edge_cuts_use_for_center ^ self.invert_use_for_center):
@@ -1186,12 +1200,12 @@ class PCB_PrintOptions(VariantOptions):
             GS.board.SetVisibleLayers(vis_layers)
         # Generate the output, page by page
         pages = []
-        for n, p in enumerate(self.pages):
+        for n, p in enumerate(self._pages):
             # Make visible only the layers we need
             # This is very important when scaling, otherwise the results are controlled by the .kicad_prl (See #407)
             if self.individual_page_scaling:
                 vis_layers = LSET()
-                for la in p.layers:
+                for la in p._layers:
                     if la.use_for_center ^ self.invert_use_for_center:
                         vis_layers.addLayer(la._id)
                 if self.force_edge_cuts and (self.forced_edge_cuts_use_for_center ^ self.invert_use_for_center):
@@ -1220,19 +1234,19 @@ class PCB_PrintOptions(VariantOptions):
                 po.SetPlotPadsOnSilkLayer(not p.exclude_pads_from_silkscreen)
             else:
                 po.SetSketchPadsOnFabLayers(p.sketch_pads_on_fab_layers)
-                po.SetSketchPadLineWidth(p.sketch_pad_line_width)
+                po.SetSketchPadLineWidth(p._sketch_pad_line_width)
             filelist = []
-            if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p.layers), None) is None:
-                p.layers.append(edge_layer)
+            if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p._layers), None) is None:
+                p._layers.append(edge_layer)
             user_layer_ids = set(Layer._get_user().values())
-            for la in p.layers:
+            for la in p._layers:
                 id = la._id
                 logger.debug('- Plotting layer {} ({})'.format(la.layer, id))
                 po.SetPlotReference(la.plot_footprint_refs)
                 po.SetPlotValue(la.plot_footprint_values)
                 po.SetPlotInvisibleText(la.force_plot_invisible_refs_vals)
                 # Avoid holes on non-copper layers
-                po.SetDrillMarksType(self.drill_marks if IsCopperLayer(id) else 0)
+                po.SetDrillMarksType(self._drill_marks if IsCopperLayer(id) else 0)
                 pc.SetLayer(id)
                 if id in user_layer_ids:
                     self.mirror_text(p, id)
@@ -1255,7 +1269,7 @@ class PCB_PrintOptions(VariantOptions):
                 elif self.frame_plot_mechanism == 'plot':
                     self.plot_frame_api(pc, po, p)
                 else:   # internal
-                    self.plot_frame_internal(pc, po, p, len(pages)+1, len(self.pages))
+                    self.plot_frame_internal(pc, po, p, len(pages)+1, len(self._pages))
                 color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
                 filelist.append((GS.pcb_basename+"-frame.svg", color))
             # 3) Stack all layers in one file
