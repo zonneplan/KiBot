@@ -599,6 +599,9 @@ class DataEntry(object):
         self.edited = False
         self.obj = obj
         self.skip = self.name == 'type' and level == 0
+        self.select_data_type(obj, level)
+
+    def select_data_type(self, obj, level=0):
         # Solve the current value
         if self.name in obj._tree:
             # The user provided a value
@@ -642,6 +645,10 @@ class DataEntry(object):
             Here we bind the entry to the real object, during creation we just got a template (the class) """
         self.sizer = wx.BoxSizer(wx.HORIZONTAL)
         is_first = True
+        if obj != self.obj:
+            # This is common for lists
+            self.select_data_type(obj)
+            self.obj = obj
         self.widgets = []
         for c, valid in enumerate(self.valids):
             if is_first:
