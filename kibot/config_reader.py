@@ -839,7 +839,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
         ind_base_sp = ' '*ind_size+ind_base_sp
     if rst_mode:
         ind_base_sp += ' '
-    for k, v in sorted(obj.get_attrs_gen(), key=lambda x: not obj.is_basic_option(x[0])):
+    for k, v in sorted(obj.get_attrs_gen(), key=lambda x: (not obj.is_basic_option(x[0]), x[0])):
         if k == 'type':
             if indent == ind_size:
                 # Type is fixed for an output
