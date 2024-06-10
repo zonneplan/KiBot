@@ -67,7 +67,7 @@ Parameters:
       -  ``inner_extension_pattern`` :index:`: <pair: output - ps - options; inner_extension_pattern>` [:ref:`string <string>`] (default: ``''``) Used to change the Protel style extensions for inner layers.
          The replacement pattern can contain %n for the inner layer number and %N for the layer number.
          Example '.g%n'.
-      -  ``line_width`` :index:`: <pair: output - ps - options; line_width>` [:ref:`number <number>`] (default: ``0.15``) For objects without width [mm] (KiCad 5).
+      -  ``line_width`` :index:`: <pair: output - ps - options; line_width>` [:ref:`number <number>`] (default: ``0.15``) (range: 0.02 to 2) For objects without width [mm] (KiCad 5).
       -  ``mirror_plot`` :index:`: <pair: output - ps - options; mirror_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Plot mirrored.
       -  ``negative_plot`` :index:`: <pair: output - ps - options; negative_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Invert black and white.
       -  ``plot_footprint_refs`` :index:`: <pair: output - ps - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
