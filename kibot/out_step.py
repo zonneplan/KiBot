@@ -28,8 +28,9 @@ class STEPOptions(Base3DOptions):
         with document:
             self.metric_units = True
             """ Use metric units instead of inches """
-            self._origin = 'grid'
-            """ *Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+            self.origin = 'grid'
+            """ *[grid,drill,*] Determines the coordinates origin. Using grid the coordinates are the same as you have in the
+                design sheet.
                 The drill option uses the auxiliary reference defined by the user.
                 You can define any other origin using the format 'X,Y', i.e. '3.2,-10' """
             self.min_distance = -1
@@ -43,15 +44,11 @@ class STEPOptions(Base3DOptions):
         super().__init__()
         self._expand_ext = 'step'
 
-    @property
-    def origin(self):
-        return self._origin
-
-    @origin.setter
-    def origin(self, val):
+    def config(self, parent):
+        super().config(parent)
+        val = self.origin
         if (val not in ['grid', 'drill']) and (re.match(r'[-\d\.]+\s*,\s*[-\d\.]+\s*$', val) is None):
             raise KiPlotConfigurationError('Origin must be `grid` or `drill` or `X,Y`')
-        self._origin = val
 
     def run(self, output):
         super().run(output)
