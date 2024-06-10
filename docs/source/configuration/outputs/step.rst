@@ -31,7 +31,8 @@ Parameters:
          If you want to cache the downloaded files specify a directory using the
          KIBOT_3D_MODELS environment variable.
       -  **no_virtual** :index:`: <pair: output - step - options; no_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Used to exclude 3D models for components with 'virtual' attribute.
-      -  **origin** :index:`: <pair: output - step - options; origin>` [:ref:`string <string>`] (default: ``'grid'``) Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+      -  **origin** :index:`: <pair: output - step - options; origin>` [:ref:`string <string>`] (default: ``'grid'``) (choices: "grid", "drill") (also accepts any string) Determines the coordinates origin. Using grid the coordinates are the same as you have in the
+         design sheet.
          The drill option uses the auxiliary reference defined by the user.
          You can define any other origin using the format 'X,Y', i.e. '3.2,-10'.
       -  **output** :index:`: <pair: output - step - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated STEP file (%i='3D' %x='step'). Affected by global options.
