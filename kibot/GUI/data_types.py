@@ -1,6 +1,7 @@
 # Classes to edit the different data types used for the YAML config
 # Each class should provide a suitable widget
 
+from copy import deepcopy
 import math
 import wx
 from .validators import NumberValidator
@@ -495,12 +496,11 @@ class EditDict(wx.Dialog):
         if self.obj._tree == tree:
             logger.debug(f'Not modified {tree}')
             return False, False
-        logger.debug(f'Updating {self.obj} {tree}')
+        logger.debug(f'Updating {self.obj} {type(self.obj)} {tree}')
         # First try using a dummy
-        dummy = self.obj.__class__()
-        dummy._tree = tree
+        dummy = deepcopy(self.obj)
         try:
-            dummy.config(None)
+            dummy.reconfigure(tree)
         except KiPlotConfigurationError as e:
             logger.debug(f'Error configuring: {e}')
             pop_error(str(e))
@@ -511,10 +511,7 @@ class EditDict(wx.Dialog):
             if not self.validator(dummy):
                 return True, True
         # Ok, the configuration is valid, configure the real object
-        self.obj.__init__()
-        self.obj._tree = tree
-        self.obj._configured = False
-        self.obj.config(None)
+        self.obj.reconfigure(tree)
         # Transfer the new state to be the "original"
         for entry in self.data_type_tree:
             entry.update_value()
