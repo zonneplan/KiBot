@@ -50,7 +50,7 @@ class PCB2BlenderOptions(Optionable):
             self.cut_boards = True
             """ Separate the sub-PCBs in separated 3D models """
             self.texture_dpi = 1016.0
-            """ [508-2032] Texture density in dots per inch """
+            """ [508,2032] Texture density in dots per inch """
             self.center = True
             """ Center the PCB at the coordinates origin """
             self.enhance_materials = True
@@ -234,7 +234,7 @@ class BlenderPointOfViewOptions(Optionable):
             """ String to differentiate the name of this point of view.
                 When empty we use the `default_file_id` or the `view` """
             self.steps = 1
-            """ [1-1000] Generate this amount of steps using the rotation angles as increments.
+            """ [1,1000] Generate this amount of steps using the rotation angles as increments.
                 Use a value of 1 (default) to interpret the angles as absolute.
                 Used for animations. You should define the `default_file_id` to something like
                 '_%03d' to get the animation frames """
