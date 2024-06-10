@@ -39,9 +39,7 @@ Parameters:
 
          -  Valid keys:
 
-            -  **layers** :index:`: <pair: output - pcb_print - options - pages; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] List of layers printed in this page.
-               Order is important, the last goes on top.
-               You can reuse other layers lists, some options aren't used here, but they are valid.
+            -  **layers** :index:`: <pair: output - pcb_print - options - pages; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string).
 
                -  Valid keys:
 
@@ -82,8 +80,7 @@ Parameters:
                See `repeat_layers`.
             -  ``repeat_inherit`` :index:`: <pair: output - pcb_print - options - pages; repeat_inherit>` [:ref:`boolean <boolean>`] (default: ``true``) If we will inherit the options of the layer we are replacing.
                Disable it if you specify the options in `repeat_layers`, which is unlikely.
-            -  ``repeat_layers`` :index:`: <pair: output - pcb_print - options - pages; repeat_layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] List of layers to replace `repeat_for_layer`.
-               This can be used to generate a page for each copper layer, here you put `copper`.
+            -  ``repeat_layers`` :index:`: <pair: output - pcb_print - options - pages; repeat_layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string).
 
                -  Valid keys:
 
