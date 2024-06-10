@@ -35,7 +35,7 @@ outputs:
           sketch_pad_line_width: 1
           layers:
             - layer: Edge.Cuts
-            - layer: F.Cu
+            - F.Cu
             - layer: F.Mask
               color: '#14332440'
             - layer: F.Paste
