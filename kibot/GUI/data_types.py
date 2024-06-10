@@ -13,12 +13,12 @@ from ..error import KiPlotConfigurationError
 from ..misc import typeof
 from .. import log
 logger = log.get_logger()
-TYPE_PRIORITY = {'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60, 'string_dict': 55, 'string': 50,
-                 'number': 20, 'boolean': 10}
-TYPE_ABREV = {'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS', 'dict': 'D', 'string_dict': 'SD',
-              'string': 'S', 'number': 'N', 'boolean': 'B'}
-TYPE_EMPTY = {'list(dict)': [], 'list(list(string))': [], 'list(string)': [], 'dict': {}, 'string_dict': {}, 'string': '',
-              'number': '', 'boolean': False}
+TYPE_PRIORITY = {'list(dict|string)': 110, 'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60,
+                 'string_dict': 55, 'string': 50, 'number': 20, 'boolean': 10}
+TYPE_ABREV = {'list(dict|string)': 'LDS', 'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS', 'dict': 'D',
+              'string_dict': 'SD', 'string': 'S', 'number': 'N', 'boolean': 'B'}
+TYPE_EMPTY = {'list(dict|string)': [], 'list(dict)': [], 'list(list(string))': [], 'list(string)': [], 'dict': {},
+              'string_dict': {}, 'string': '', 'number': '', 'boolean': False}
 max_label = 200
 def_text = 200
 
@@ -29,7 +29,7 @@ class DataTypeBase(object):
         self.restriction = restriction
         self.default = default
         self.is_dict = kind == 'dict'
-        self.is_list_dict = kind == 'list(dict)'
+        self.is_list_dict = kind == 'list(dict)' or kind == 'list(dict|string)'
 
     def get_widget(self, obj, parent, entry, level, init, value):
         entry.edited = False
@@ -333,6 +333,50 @@ class DataTypeListDict(DataTypeList):
         return [v._tree for v in get_client_data(self.lbox)]
 
 
+class DummyForDictOrString(object):
+    def __init__(self, member, initial, cls):
+        if initial is None:
+            setattr(self, member, cls)
+            self._tree = {}  # Start indicating isn't from user
+        else:
+            setattr(self, member, initial)
+            self._tree = {member: initial if isinstance(initial, str) else initial._tree}
+
+    def reconfigure(self, tree):
+        self._tree = tree
+        k, v = tuple(tree.items())[0]
+        if isinstance(v, str):
+            setattr(self, k, v)
+        else:
+            obj = getattr(self, k)
+            obj.reconfigure(v)
+
+
+class DataTypeListDictOrString(DataTypeListDict):
+    def edit_item(self, string='', obj=None, index=-1):
+        name = self.entry.name
+        str_cls = get_class_for('string', self.restriction)
+        valids = [str_cls('string', self.restriction, self.default),
+                  DataTypeDict('dict', self.restriction, self.default)]
+        new_obj = DummyForDictOrString(name, obj, self.entry.cls())
+        new_obj._parent = self.entry.obj._parent
+        new_entry = DataEntry(name, valids, None, self.help, False, new_obj, 0)
+        new_entry.sub = self.entry.sub
+        new_entry.cls = self.entry.cls
+        res = edit_dict(self.parent.Parent, new_obj, [new_entry], name, self.create_edit_title(index))
+        if res:
+            new_val = getattr(new_obj, name)
+            if index == -1:
+                self.lbox.Append(str(new_val), new_val)
+            else:
+                self.lbox.SetString(index, str(new_val))
+                self.lbox.SetClientData(index, new_val)
+            self.mark_edited()
+
+    def get_value(self):
+        return [v if isinstance(v, str) else v._tree for v in get_client_data(self.lbox)]
+
+
 class StringPair(object):
     def __init__(self, key=None, value=None):
         if key is None:
@@ -547,6 +591,8 @@ def get_class_for(kind, rest):
         return DataTypeListString
     elif kind == 'list(dict)':
         return DataTypeListDict
+    elif kind == 'list(dict|string)':
+        return DataTypeListDictOrString
     elif kind == 'list(list(string))':
         return DataTypeListListString
     logger.error(f'Not implemented: {kind}')
@@ -650,7 +696,8 @@ class DataEntry(object):
         for c, valid in enumerate(self.valids):
             if is_first:
                 if len(self.valids) > 1:
-                    sel = wx.Choice(parent, choices=[TYPE_ABREV[v.kind] for v in self.valids], size=wx.Size(60, -1))
+                    sel = wx.Choice(parent, choices=[TYPE_ABREV[v.kind] for v in self.valids],
+                                    size=wx.Size(int(def_text/8), -1))
                     sel.SetSelection(self.selected)
                     sel.Bind(wx.EVT_CHOICE, self.OnChoice)
                 else:
@@ -736,6 +783,33 @@ def adapt_default(val, name):
     return val
 
 
+def join_lists(valid, extra):
+    # When we have things like list(dict)|list(string) in practice it means list(dict|string)
+    # So here we apply this conversion
+    list_index = None
+    new_valid = []
+    new_extra = []
+    for c, (v, e) in enumerate(zip(valid, extra)):
+        if v.startswith('list('):
+            if list_index is None:
+                # First list
+                list_index = c
+                v = v[:-1]
+            else:
+                # We have another list
+                kind = v[5:-1]
+                new_valid[list_index] += '|'+kind
+                if e is not None:
+                    assert new_extra[list_index] is None
+                    new_extra[list_index] = e
+                continue
+        new_valid.append(v)
+        new_extra.append(e)
+    if list_index is not None:
+        new_valid[list_index] += ')'
+    return new_valid, new_extra
+
+
 def get_data_type_tree(template, obj, level=0):
     """ Create a tree containing all the DataEntry objects associated to the data in the *obj* output """
     entries = []
@@ -755,6 +829,7 @@ def get_data_type_tree(template, obj, level=0):
         assert help[0] == '[', case
         valid, extra, def_val, real_help = template.get_valid_types(help)
         def_val = adapt_default(def_val, k)
+        valid, extra = join_lists(valid, extra)
         valids = [get_class_for(v, e)(v, e, def_val) for v, e in zip(valid, extra)]
         case += f' {extra} """ {help} """'
         assert valids, case
