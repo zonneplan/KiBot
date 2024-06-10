@@ -742,16 +742,9 @@ def adapt_default(val, name):
 def get_data_type_tree(template, obj, level=0):
     """ Create a tree containing all the DataEntry objects associated to the data in the *obj* output """
     entries = []
-    logger.debug(f'{" "*level*2}Starting data tree for {template} (type: {type(template)}) with {obj} as value')
-    # TODO: move this to Optionable
-    m1 = dict(template.get_attrs_gen())
-    m2 = dict(filter(lambda k: k[0][0] != '_', vars(template).items()))
-    diff = set(m2) - set(m1)
-    if len(diff) != 0:
-        logger.error(diff)
-        logger.error(m1)
-        logger.error(m2)
-    for k, v in m2.items():
+    logger.debug(f'{" "*level*2}Starting data tree for {template.__repr__()} '
+                 f'(type: {type(template)}) with {obj.__repr__()} as value')
+    for k, v in template.get_attrs_gen():
         help, _, is_alias = template.get_doc(k)
         if help is None or is_alias:
             if not is_alias and k != 'type':
