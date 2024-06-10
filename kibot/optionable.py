@@ -272,7 +272,7 @@ class Optionable(object):
         self.__init__()
         # self._configured = False  done by __init__()
         self.set_tree(tree)
-        self.config(self._parent)
+        self.config(self._parent if hasattr(self, '_parent') else None)
 
     def get_attrs_for(self):
         """ Returns all attributes """
