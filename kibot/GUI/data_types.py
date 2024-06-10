@@ -142,6 +142,18 @@ class DataTypeChoice(DataTypeBase):
         self.entry.set_edited(self.input.Selection != self.ori_value, self.label)
 
 
+class DataTypeNumberChoice(DataTypeChoice):
+    def __init__(self, kind, restriction, default):
+        super().__init__(kind, restriction, default)
+        self.restriction = self.restriction[1]
+
+    def define_input(self, parent, value, init):
+        super().define_input(parent, str(value), init)
+
+    def get_value(self):
+        return float(super().get_value())
+
+
 class DataTypeCombo(DataTypeBase):
     def define_input(self, parent, value, init):
         self.input = wx.ComboBox(parent, choices=[v for v in self.restriction if v != '*'])
@@ -580,6 +592,8 @@ def get_class_for(kind, rest):
             return DataTypeChoice
         return DataTypeString
     elif kind == 'number':
+        if rest and rest[0] == 'C':
+            return DataTypeNumberChoice
         return DataTypeNumber
     elif kind == 'boolean':
         return DataTypeBoolean
