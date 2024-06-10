@@ -486,7 +486,7 @@ def test_error_wrong_boolean(test_dir):
 def test_error_gerber_precision(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_gerber_precision')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(".?gerber_precision.? must be 4.5 or 4.6")
+    assert ctx.search_err(".?gerber_precision.? must be any of")
     ctx.clean_up(keep_project=True)
 
 

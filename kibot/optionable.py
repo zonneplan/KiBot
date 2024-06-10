@@ -30,7 +30,8 @@ class Optionable(object):
     """ A class to validate and hold configuration outputs/options.
         Is configured from a dict and the collected values are stored in its attributes. """
     _str_values_re = compile(r"string.*\](?:\[.*\])* \[([^\]]+)\]")
-    _num_range_re = compile(r"number.*\](?:\[.*\])* \[(-?\d+),(-?\d+)\]")
+    _num_range_re = compile(r"number.*\](?:\[.*\])* \[(-?[\d\.]+),(-?[\d\.]+)\]")
+    _num_values_re = compile(r"number.*\](?:\[.*\])* \[([^\]]+)\]")
     _default = None
 
     _color_re = re.compile(r"#("+HEX_DIGIT+"){3}$")
@@ -79,6 +80,12 @@ class Optionable(object):
             max = float(m.group(2))
             if val < min or val > max:
                 raise KiPlotConfigurationError("Option `{}` outside its range [{},{}]".format(key, min, max))
+            return
+        m = Optionable._num_values_re.search(doc)
+        if m:
+            vals = [float(v) for v in m.group(1).split(';')]
+            if val not in vals and '*' not in vals:
+                raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
 
     @staticmethod
     def _check_bool(key, val):
@@ -132,6 +139,10 @@ class Optionable(object):
                     if int(max) == max:
                         max = int(max)
                     validation.append((min, max))
+                    continue
+                m = Optionable._num_values_re.search(doc)
+                if m:
+                    validation.append(('C', m.group(1).split(';')))
                     continue
             if v == 'string' or v == 'list(string)':
                 m = Optionable._str_values_re.search(doc)

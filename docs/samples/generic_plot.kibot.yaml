@@ -272,7 +272,7 @@ outputs:
         solder_joints: 'SMART'
         # [boolean=true] Move the sub-PCBs to their relative position
         stack_boards: true
-        # [number=1016.0] [508-2032] Texture density in dots per inch
+        # [number=1016.0] [508,2032] Texture density in dots per inch
         texture_dpi: 1016.0
       # [dict|list(dict)] How the object is viewed by the camera
       point_of_view:
@@ -285,7 +285,7 @@ outputs:
           rotate_y: 0
           # [number=0] Angle to rotate the board in the Z axis, positive is clockwise [degrees]
           rotate_z: 0
-          # [number=1] [1-1000] Generate this amount of steps using the rotation angles as increments.
+          # [number=1] [1,1000] Generate this amount of steps using the rotation angles as increments.
           # Use a value of 1 (default) to interpret the angles as absolute.
           # Used for animations. You should define the `default_file_id` to something like
           # '_%03d' to get the animation frames
@@ -1198,7 +1198,7 @@ outputs:
       force_plot_invisible_refs_vals: false
       # [string='%f-%i%I%v.%x'] Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options
       gerber_job_file: '%f-%i%I%v.%x'
-      # [number=4.6] This the gerber coordinate format, can be 4.5 or 4.6
+      # [number=4.6] [4.5;4.6] This is the gerber coordinate format, can be 4.5 or 4.6
       gerber_precision: 4.6
       # [string=''] Used to change the Protel style extensions for inner layers.
       # The replacement pattern can contain %n for the inner layer number and %N for the layer number.
@@ -3638,7 +3638,8 @@ outputs:
       min_distance: -1
       # [boolean=false] Used to exclude 3D models for components with 'virtual' attribute
       no_virtual: false
-      # [string='grid'] Determines the coordinates origin. Using grid the coordinates are the same as you have in the design sheet.
+      # [string='grid'] [grid,drill,*] Determines the coordinates origin. Using grid the coordinates are the same as you have in the
+      # design sheet.
       # The drill option uses the auxiliary reference defined by the user.
       # You can define any other origin using the format 'X,Y', i.e. '3.2,-10'
       origin: 'grid'

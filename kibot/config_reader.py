@@ -819,7 +819,10 @@ def process_help_data_type(obj, help):
                 new_data_type += ' (also accepts any string)'
         elif not number_added and 'number' in tp:
             number_added = True
-            new_data_type += f' (range: {validation[0]} to {validation[1]})'
+            if validation[0] == 'C':
+                new_data_type += ' (choices: '+', '.join(validation[1])+')'
+            else:
+                new_data_type += f' (range: {validation[0]} to {validation[1]})'
     help = new_data_type+real_help
     return help
 

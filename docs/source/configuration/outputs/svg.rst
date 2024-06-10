@@ -69,7 +69,7 @@ Parameters:
          Example '.g%n'.
       -  ``limit_viewbox`` :index:`: <pair: output - svg - options; limit_viewbox>` [:ref:`boolean <boolean>`] (default: ``false``) When enabled the view box is limited to a selected area.
          This option can't be enabled when using a scale.
-      -  ``line_width`` :index:`: <pair: output - svg - options; line_width>` [:ref:`number <number>`] (default: ``0.25``) For objects without width [mm] (KiCad 5).
+      -  ``line_width`` :index:`: <pair: output - svg - options; line_width>` [:ref:`number <number>`] (default: ``0.25``) (range: 0.02 to 2) For objects without width [mm] (KiCad 5).
       -  ``margin`` :index:`: <pair: output - svg - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] Margin around the view box [mm].
          Using a number the margin is the same in the four directions.
          See `limit_viewbox` option.

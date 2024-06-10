@@ -66,11 +66,11 @@ Parameters:
       -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - gerber - options; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Do not plot the component pads in the silk screen (KiCad 5.x only).
       -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - gerber - options; force_plot_invisible_refs_vals>` [:ref:`boolean <boolean>`] (default: ``false``) Include references and values even when they are marked as invisible.
       -  ``gerber_job_file`` :index:`: <pair: output - gerber - options; gerber_job_file>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the gerber job file (%i='job', %x='gbrjob'). Affected by global options.
-      -  ``gerber_precision`` :index:`: <pair: output - gerber - options; gerber_precision>` [:ref:`number <number>`] (default: ``4.6``) This the gerber coordinate format, can be 4.5 or 4.6.
+      -  ``gerber_precision`` :index:`: <pair: output - gerber - options; gerber_precision>` [:ref:`number <number>`] (default: ``4.6``) (choices: 4.5, 4.6) This is the gerber coordinate format, can be 4.5 or 4.6.
       -  ``inner_extension_pattern`` :index:`: <pair: output - gerber - options; inner_extension_pattern>` [:ref:`string <string>`] (default: ``''``) Used to change the Protel style extensions for inner layers.
          The replacement pattern can contain %n for the inner layer number and %N for the layer number.
          Example '.g%n'.
-      -  ``line_width`` :index:`: <pair: output - gerber - options; line_width>` [:ref:`number <number>`] (default: ``0.1``) Line_width for objects without width [mm] (KiCad 5).
+      -  ``line_width`` :index:`: <pair: output - gerber - options; line_width>` [:ref:`number <number>`] (default: ``0.1``) (range: 0.02 to 2) Line_width for objects without width [mm] (KiCad 5).
       -  ``plot_footprint_refs`` :index:`: <pair: output - gerber - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
       -  ``plot_footprint_values`` :index:`: <pair: output - gerber - options; plot_footprint_values>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint values.
       -  ``pre_transform`` :index:`: <pair: output - gerber - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
