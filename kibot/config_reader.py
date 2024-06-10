@@ -1136,7 +1136,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
     first = True
     if po:
         obj.read_vals_from_po(po)
-    for k, _ in obj.get_attrs_gen():
+    for k, _ in sorted(obj.get_attrs_gen(), key=lambda x: x[0]):
         help, alias, is_alias = obj.get_doc(k, no_basic=True)
         if is_alias:
             f.write(ind_str+'# `{}` is an alias for `{}`\n'.format(k, alias))
