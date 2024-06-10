@@ -958,8 +958,9 @@ class SchematicComponent(object):
         f.value = value
         f.number = self.get_free_field_number()
         f.visible(bool(visible))
-        f.x = self.x
-        f.y = self.y
+        if hasattr(self, 'x'):
+            f.x = self.x
+            f.y = self.y
         self.add_field(f)
         return True, f
 
