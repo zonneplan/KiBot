@@ -81,7 +81,7 @@ Parameters:
             -  ``rotate_x`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_x>` [:ref:`number <number>`] (default: ``0``) Angle to rotate the board in the X axis, positive is clockwise [degrees].
             -  ``rotate_y`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_y>` [:ref:`number <number>`] (default: ``0``) Angle to rotate the board in the Y axis, positive is clockwise [degrees].
             -  ``rotate_z`` :index:`: <pair: output - blender_export - options - point_of_view; rotate_z>` [:ref:`number <number>`] (default: ``0``) Angle to rotate the board in the Z axis, positive is clockwise [degrees].
-            -  ``steps`` :index:`: <pair: output - blender_export - options - point_of_view; steps>` [:ref:`number <number>`] (default: ``1``) Generate this amount of steps using the rotation angles as increments.
+            -  ``steps`` :index:`: <pair: output - blender_export - options - point_of_view; steps>` [:ref:`number <number>`] (default: ``1``) (range: 1 to 1000) Generate this amount of steps using the rotation angles as increments.
                Use a value of 1 (default) to interpret the angles as absolute.
                Used for animations. You should define the `default_file_id` to something like
                '_%03d' to get the animation frames.
@@ -168,7 +168,7 @@ Parameters:
             -  ``solder_joints`` :index:`: <pair: output - blender_export - options - pcb_import; solder_joints>` [:ref:`string <string>`] (default: ``'SMART'``) (choices: "NONE", "SMART", "ALL") The plug-in can add nice looking solder joints.
                This option controls if we add it for none, all or only for THT/SMD pads with solder paste.
             -  ``stack_boards`` :index:`: <pair: output - blender_export - options - pcb_import; stack_boards>` [:ref:`boolean <boolean>`] (default: ``true``) Move the sub-PCBs to their relative position.
-            -  ``texture_dpi`` :index:`: <pair: output - blender_export - options - pcb_import; texture_dpi>` [:ref:`number <number>`] (default: ``1016.0``) Texture density in dots per inch.
+            -  ``texture_dpi`` :index:`: <pair: output - blender_export - options - pcb_import; texture_dpi>` [:ref:`number <number>`] (default: ``1016.0``) (range: 508 to 2032) Texture density in dots per inch.
 
 
 -  **type** :index:`: <pair: output - blender_export; type>` 'blender_export'
