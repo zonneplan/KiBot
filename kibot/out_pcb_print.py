@@ -202,7 +202,8 @@ class PagesOptions(Optionable):
             self.sort_layers = False
             """ *Try to sort the layers in the same order that uses KiCad for printing """
             self.layers = LayerOptions
-            """ *[list(dict)|list(string)|string] List of layers printed in this page.
+            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+                List of layers printed in this page.
                 Order is important, the last goes on top.
                 You can reuse other layers lists, some options aren't used here, but they are valid """
             self.page_id = '%02d'
@@ -218,7 +219,8 @@ class PagesOptions(Optionable):
                 This can be used to generate a page for each copper layer, here you put `F.Cu`.
                 See `repeat_layers` """
             self.repeat_layers = LayerOptions
-            """ [list(dict)|list(string)|string] List of layers to replace `repeat_for_layer`.
+            """ [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+                List of layers to replace `repeat_for_layer`.
                 This can be used to generate a page for each copper layer, here you put `copper` """
             self.repeat_inherit = True
             """ If we will inherit the options of the layer we are replacing.
