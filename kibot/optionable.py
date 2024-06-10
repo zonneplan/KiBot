@@ -5,7 +5,6 @@
 # Project: KiBot (formerly KiPlot)
 """ Base class for output options """
 import difflib
-import inspect
 import os
 import re
 from re import compile
@@ -20,10 +19,6 @@ INVALID_CHARS = r'[?%*:|"<>]'
 PATTERNS_DEP = ['%c', '%d', '%F', '%f', '%M', '%p', '%r']
 for n in range(1, 10):
     PATTERNS_DEP.append('%C'+str(n))
-
-
-def do_filter(v):
-    return inspect.isclass(v) or not (callable(v) or isinstance(v, (dict, list)))
 
 
 def _cl(text):
@@ -262,12 +257,11 @@ class Optionable(object):
 
     def get_attrs_for(self):
         """ Returns all attributes """
-        return dict(inspect.getmembers(self, do_filter))
+        return dict(vars(self).items())
 
     def get_attrs_gen(self):
         """ Returns a (key, val) iterator on public attributes """
-        attrs = self.get_attrs_for()
-        return ((k, v) for k, v in attrs.items() if k[0] != '_')
+        return filter(lambda k: k[0][0] != '_', vars(self).items())
 
     @staticmethod
     def _find_global_variant():
