@@ -881,3 +881,21 @@ def test_download_datasheets_no_output(test_dir):
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Empty `output`")
     ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_line_width_min(test_dir):
+    """ line_width < min """
+    ctx = context.TestContext(test_dir, 'bom', 'error_wrong_line_width_min')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`line_width` outside its range ")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_line_width_max(test_dir):
+    """ line_width > max """
+    ctx = context.TestContext(test_dir, 'bom', 'error_wrong_line_width_max')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`line_width` outside its range ")
+    ctx.clean_up(keep_project=True)

@@ -23,7 +23,7 @@ outputs:
       drill_marks: small
       mirror_plot: false
       negative_plot: false
-      line_width: 0.01
+      line_width: 0.02
     layers:
       - layer: B.Cu
         suffix: B_Cu
