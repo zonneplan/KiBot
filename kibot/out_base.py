@@ -821,25 +821,25 @@ class VariantOptions(BaseOptions):
     def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
         if not self.will_filter_pcb_components():
             return False
-        self.comps_hash = self.get_refs_hash()
+        self._comps_hash = self.get_refs_hash()
         if self._sub_pcb:
-            self._sub_pcb.apply(self.comps_hash)
+            self._sub_pcb.apply(self._comps_hash)
         if self._comps:
             if do_2D:
-                self.apply_footprint_variants(GS.board, self.comps_hash)
-                self.cross_modules(GS.board, self.comps_hash)
-                self.remove_paste_and_glue(GS.board, self.comps_hash)
+                self.apply_footprint_variants(GS.board, self._comps_hash)
+                self.cross_modules(GS.board, self._comps_hash)
+                self.remove_paste_and_glue(GS.board, self._comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                    self.remove_fab(GS.board, self.comps_hash)
+                    self.remove_fab(GS.board, self._comps_hash)
                 # Copy any change in the schematic fields to the PCB properties
                 # I.e. the value of a component so it gets updated in the *.Fab layer
                 # Also useful for iBoM that can read the sch fields from the PCB
-                self.sch_fields_to_pcb(GS.board, self.comps_hash)
+                self.sch_fields_to_pcb(GS.board, self._comps_hash)
             if do_3D:
                 # Disable the models that aren't for this variant
                 self.apply_3D_variant_aspect(GS.board)
                 # Remove the 3D models for not fitted components (also rename)
-                self.remove_3D_models(GS.board, self.comps_hash)
+                self.remove_3D_models(GS.board, self._comps_hash)
                 # Highlight selected components
                 self.highlight_3D_models(GS.board, highlight)
         return True
@@ -847,22 +847,22 @@ class VariantOptions(BaseOptions):
     def unfilter_pcb_components(self, do_3D=False, do_2D=True):
         if not self.will_filter_pcb_components():
             return
-        if do_2D and self.comps_hash:
-            self.uncross_modules(GS.board, self.comps_hash)
-            self.restore_paste_and_glue(GS.board, self.comps_hash)
+        if do_2D and self._comps_hash:
+            self.uncross_modules(GS.board, self._comps_hash)
+            self.restore_paste_and_glue(GS.board, self._comps_hash)
             if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                self.restore_fab(GS.board, self.comps_hash)
+                self.restore_fab(GS.board, self._comps_hash)
             # Restore the PCB properties and values
             self.restore_sch_fields_to_pcb(GS.board)
-        if do_3D and self.comps_hash:
+        if do_3D and self._comps_hash:
             # Undo the removing (also rename)
-            self.restore_3D_models(GS.board, self.comps_hash)
+            self.restore_3D_models(GS.board, self._comps_hash)
             # Re-enable the modules that aren't for this variant
             self.apply_3D_variant_aspect(GS.board, enable=True)
             # Remove the highlight 3D object
             self.unhighlight_3D_models(GS.board)
         if self._sub_pcb:
-            self._sub_pcb.revert(self.comps_hash)
+            self._sub_pcb.revert(self._comps_hash)
 
     def set_title(self, title, sch=False):
         self.old_title = None
@@ -891,7 +891,7 @@ class VariantOptions(BaseOptions):
     def sch_fields_to_pcb(self, board, comps_hash):
         """ Change the module/footprint data according to the filtered fields.
             iBoM can parse it. """
-        self.sch_fields_to_pcb_bkp = {}
+        self._sch_fields_to_pcb_bkp = {}
         has_GetFPIDAsString = False
         first = True
         for m in GS.get_modules_board(board):
@@ -910,7 +910,7 @@ class VariantOptions(BaseOptions):
                 m.SetValue(fields['Value'])
                 if has_GetFPIDAsString:
                     m.SetFPIDAsString(fields['Footprint'])
-                self.sch_fields_to_pcb_bkp[ref] = (old_value, old_fields, old_fp)
+                self._sch_fields_to_pcb_bkp[ref] = (old_value, old_fields, old_fp)
         self._has_GetFPIDAsString = has_GetFPIDAsString
 
     def restore_sch_fields_to_pcb(self, board):
@@ -918,7 +918,7 @@ class VariantOptions(BaseOptions):
         has_GetFPIDAsString = self._has_GetFPIDAsString
         for m in GS.get_modules_board(board):
             ref = m.GetReference()
-            data = self.sch_fields_to_pcb_bkp.get(ref, None)
+            data = self._sch_fields_to_pcb_bkp.get(ref, None)
             if data is not None:
                 m.SetValue(data[0])
                 if has_GetFPIDAsString:
