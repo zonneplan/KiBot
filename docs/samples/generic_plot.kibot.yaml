@@ -2557,9 +2557,11 @@ outputs:
       # [list(dict)] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
       pages:
-        # [number=0] Horizontal margin used for the autoscaling mode [mm]
+        # [number=0] Horizontal margin used for the autoscaling mode [mm].
+        # When not defined we use the default value for the output
         - autoscale_margin_x: 0
-          # [number=0] Vertical margin used for the autoscaling mode [mm]
+          # [number=0] Vertical margin used for the autoscaling mode [mm].
+          # When not defined we use the default value for the output
           autoscale_margin_y: 0
           # [boolean=true] Change the drill holes to be colored instead of white
           colored_holes: true
@@ -2639,7 +2641,7 @@ outputs:
               # [boolean=true] Use this layer for centering purposes.
               # You can invert the meaning using the `invert_use_for_center` option
               use_for_center: true
-          # [number=1.0] Scale factor (0 means autoscaling)
+          # [number=1.0] Scale factor (0 means autoscaling). When not defined we use the default value for the output
           scaling: 1.0
           # [string='Assembly'] Text to use for the `SHEET` in the title block.
           # Pattern (%*) and text variables are expanded.

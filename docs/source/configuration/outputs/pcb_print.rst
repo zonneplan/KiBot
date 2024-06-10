@@ -58,10 +58,12 @@ Parameters:
                   -  ``use_for_center`` :index:`: <pair: output - pcb_print - options - pages - layers; use_for_center>` [:ref:`boolean <boolean>`] (default: ``true``) Use this layer for centering purposes.
                      You can invert the meaning using the `invert_use_for_center` option.
 
-            -  **scaling** :index:`: <pair: output - pcb_print - options - pages; scaling>` [:ref:`number <number>`] (default: ``1.0``) Scale factor (0 means autoscaling).
+            -  **scaling** :index:`: <pair: output - pcb_print - options - pages; scaling>` [:ref:`number <number>`] (default: ``1.0``) Scale factor (0 means autoscaling). When not defined we use the default value for the output.
             -  **sort_layers** :index:`: <pair: output - pcb_print - options - pages; sort_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Try to sort the layers in the same order that uses KiCad for printing.
             -  ``autoscale_margin_x`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_x>` [:ref:`number <number>`] (default: ``0``) Horizontal margin used for the autoscaling mode [mm].
+               When not defined we use the default value for the output.
             -  ``autoscale_margin_y`` :index:`: <pair: output - pcb_print - options - pages; autoscale_margin_y>` [:ref:`number <number>`] (default: ``0``) Vertical margin used for the autoscaling mode [mm].
+               When not defined we use the default value for the output.
             -  ``colored_holes`` :index:`: <pair: output - pcb_print - options - pages; colored_holes>` [:ref:`boolean <boolean>`] (default: ``true``) Change the drill holes to be colored instead of white.
             -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - pcb_print - options - pages; exclude_pads_from_silkscreen>` [:ref:`boolean <boolean>`] (default: ``false``) Do not plot the component pads in the silk screen (KiCad 5.x only).
             -  ``holes_color`` :index:`: <pair: output - pcb_print - options - pages; holes_color>` [:ref:`string <string>`] (default: ``'#000000'``) Color used for the holes when `colored_holes` is enabled.
