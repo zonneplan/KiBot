@@ -158,7 +158,8 @@ class Optionable(object):
         # A particular case for dict
         for key, value in v.items():
             if not isinstance(value, str):
-                raise KiPlotConfigurationError(f"Key `{key}` of option `{k}` must be a string, not `{typeof(value)}`")
+                raise KiPlotConfigurationError(f"Key `{key}` of option `{k}` must be a string, not"
+                                               f" `{typeof(value,Optionable)}`")
         return True
 
     def _perform_config_mapping(self):
@@ -189,7 +190,7 @@ class Optionable(object):
                 if '=' in valid[-1]:
                     valid[-1] = valid[-1].split('=')[0]
                 # Get the type used by the user as a string
-                v_type = typeof(v)
+                v_type = typeof(v, Optionable)
                 if v_type not in valid and not self.check_string_dict(v_type, valid, k, v):
                     # Not a valid type for this key
                     if v_type == 'None':
@@ -200,7 +201,7 @@ class Optionable(object):
                         raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(k, valid, v_type))
             else:
                 valid = None
-                v_type = typeof(cur_val)
+                v_type = typeof(cur_val, Optionable)
             if v_type == 'boolean':
                 Optionable._check_bool(k, v)
             elif v_type == 'number':
@@ -229,7 +230,7 @@ class Optionable(object):
                     elif isinstance(v, list):
                         new_val = []
                         for element in v:
-                            e_type = 'list('+typeof(element)+')'
+                            e_type = 'list('+typeof(element, Optionable)+')'
                             if e_type not in valid:
                                 raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".
                                                                format(element, valid, e_type))
