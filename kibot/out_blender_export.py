@@ -102,11 +102,11 @@ class BlenderObjOptions(Optionable):
             self.name = ""
             """ Name for the """
             self.pos_x = 0
-            """ [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions """
+            """ [number|string=0] X position [m]. You can use `width`, `height` and `size` for PCB dimensions """
             self.pos_y = 0
-            """ [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions """
+            """ [number|string=0] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions """
             self.pos_z = 0
-            """ [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions """
+            """ [number|string=0] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions """
         self._unknown_is_error = True
 
     def solve(self, member):
