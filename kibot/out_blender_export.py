@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2023 Salvador E. Tropea
-# Copyright (c) 2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2023-2024 Salvador E. Tropea
+# Copyright (c) 2023-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -18,7 +18,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
 from .gs import GS
-from .misc import MISSING_TOOL, BLENDER_ERROR
+from .misc import MISSING_TOOL, BLENDER_ERROR, force_list
 from .optionable import Optionable, BaseOptions
 from .out_base_3d import Base3D, Base3DOptionsWithHL
 from .registrable import RegOutput
@@ -122,9 +122,9 @@ class BlenderObjOptions(Optionable):
     def config(self, parent):
         super().config(parent)
         self._width, self._height, self._size = get_board_size()
-        self.pos_x = self.solve('pos_x')
-        self.pos_y = self.solve('pos_y')
-        self.pos_z = self.solve('pos_z')
+        self._pos_x = self.solve('pos_x')
+        self._pos_y = self.solve('pos_y')
+        self._pos_z = self.solve('pos_z')
 
     def __str__(self):
         return f'{self.name} ({self.pos_x},{self.pos_y},{self.pos_z})'
@@ -144,9 +144,9 @@ class BlenderLightOptions(BlenderObjOptions):
     def adjust(self):
         self._width, self._height, self._size = get_board_size()
         if not self.get_user_defined('pos_x') and not self.get_user_defined('pos_y') and not self.get_user_defined('pos_z'):
-            self.pos_x = -self._size*3.33
-            self.pos_y = self._size*3.33
-            self.pos_z = self._size*5.0
+            self._pos_x = -self._size*3.33
+            self._pos_y = self._size*3.33
+            self._pos_z = self._size*5.0
         if self.energy == 0:
             if self.type == "POINT":
                 # 10 W is the default, works for 5 cm board, we make it grow cudratically
@@ -216,7 +216,6 @@ class BlenderRenderOptions(Optionable):
 class BlenderPointOfViewOptions(Optionable):
     """ Point of View parameters """
     _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
-    _rviews = {v: k for k, v in _views.items()}
 
     def __init__(self):
         super().__init__()
@@ -239,16 +238,15 @@ class BlenderPointOfViewOptions(Optionable):
                 Used for animations. You should define the `default_file_id` to something like
                 '_%03d' to get the animation frames """
         self._unknown_is_error = True
+        self._view = 'z'
 
     def config(self, parent):
         super().config(parent)
         # View point
-        view = self._views.get(self.view, None)
-        if view is not None:
-            self.view = view
+        self._view = self._views.get(self.view, self.view)
 
     def get_view(self):
-        return self._rviews.get(self.view, 'no_view')
+        return self.view
 
     def increment(self, inc):
         self.rotate_x += inc.rotate_x
@@ -374,9 +372,6 @@ class Blender_ExportOptions(BaseOptions):
         # Do we have outputs?
         if isinstance(self.outputs, type):
             self.outputs = []
-        elif isinstance(self.outputs, BlenderOutputOptions):
-            # One, make a list
-            self.outputs = [self.outputs]
         # Ensure we have import options
         if isinstance(self.pcb_import, type):
             self.pcb_import = PCB2BlenderOptions()
@@ -392,9 +387,6 @@ class Blender_ExportOptions(BaseOptions):
             else:
                 # The dark ...
                 self.light = []
-        elif isinstance(self.light, BlenderLightOptions):
-            # Ensure a list
-            self.light = [self.light]
         # Check light names
         light_names = set()
         for li in self.light:
@@ -416,11 +408,7 @@ class Blender_ExportOptions(BaseOptions):
         # Point of View, make sure we have a list and at least 1 element
         if isinstance(self.point_of_view, type):
             pov = BlenderPointOfViewOptions()
-            # Manually translate top -> z
-            pov.view = 'z'
             self.point_of_view = [pov]
-        elif isinstance(self.point_of_view, BlenderPointOfViewOptions):
-            self.point_of_view = [self.point_of_view]
 
     def get_output_filename(self, o, output_dir, pov, order):
         if o.type == 'render':
@@ -448,9 +436,9 @@ class Blender_ExportOptions(BaseOptions):
         if isinstance(self.pcb3d, PCB3DExportOptions):
             files.append(self.pcb3d.get_output_name(out_dir))
         order = 1
-        for pov in self.point_of_view:
+        for pov in force_list(self.point_of_view):
             for _ in range(pov.steps):
-                for o in self.outputs:
+                for o in force_list(self.outputs):
                     files.append(self.get_output_filename(o, out_dir, pov, order))
                 order += 1
         return files
@@ -583,6 +571,8 @@ class Blender_ExportOptions(BaseOptions):
         # Can be used to export the PCB to Blender
         if not self.outputs:
             return
+        outputs = force_list(self.outputs)
+        point_of_view = force_list(self.point_of_view)
         # Make sure Blender is available
         command = self._pcb3d.ensure_tool('Blender')
         if self.render_options.auto_crop:
@@ -594,9 +584,9 @@ class Blender_ExportOptions(BaseOptions):
             scene = {}
             if self.light:
                 lights = [{'name': light.name,
-                           'position': (light.pos_x, light.pos_y, light.pos_z),
+                           'position': (light._pos_x, light._pos_y, light._pos_z),
                            'type': light.type,
-                           'energy': light.energy} for light in self.light]
+                           'energy': light.energy} for light in force_list(self.light)]
                 scene['lights'] = lights
             if self.camera:
                 ca = self.camera
@@ -604,7 +594,7 @@ class Blender_ExportOptions(BaseOptions):
                                    'type': ca._type}
                 if (hasattr(ca, '_pos_x_user_defined') or hasattr(ca, '_pos_y_user_defined') or
                    hasattr(ca, '_pos_z_user_defined')):
-                    scene['camera']['position'] = (ca.pos_x, ca.pos_y, ca.pos_z)
+                    scene['camera']['position'] = (ca._pos_x, ca._pos_y, ca._pos_z)
                 if ca.clip_start >= 0:
                     scene['camera']['clip_start'] = ca.clip_start
             scene['fixed_auto_camera'] = self.fixed_auto_camera
@@ -618,7 +608,7 @@ class Blender_ExportOptions(BaseOptions):
                                'background2': ro.background2}
             povs = []
             last_pov = BlenderPointOfViewOptions()
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 if pov.steps > 1:
                     for _ in range(pov.steps):
                         last_pov.increment(pov)
@@ -660,16 +650,16 @@ class Blender_ExportOptions(BaseOptions):
             if self.render_options.no_denoiser:
                 cmd.append('--no_denoiser')
             cmd.append('--format')
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 for _ in range(pov.steps):
-                    for o in self.outputs:
+                    for o in outputs:
                         cmd.append(o.type)
             cmd.append('--output')
             names = set()
             order = 1
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 for _ in range(pov.steps):
-                    for o in self.outputs:
+                    for o in outputs:
                         name = self.get_output_filename(o, self._parent.output_dir, pov, order)
                         if name in names:
                             raise KiPlotConfigurationError('Repeated name (use `file_id`): '+name)
@@ -683,9 +673,9 @@ class Blender_ExportOptions(BaseOptions):
             self.analyze_errors(run_command(cmd))
         if self.render_options.auto_crop:
             order = 1
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 for _ in range(pov.steps):
-                    for o in self.outputs:
+                    for o in outputs:
                         if o.type != 'render':
                             continue
                         name = self.get_output_filename(o, self._parent.output_dir, pov, order)
@@ -723,7 +713,7 @@ class Blender_Export(Base3D):
     def get_renderer_options(self):
         """ Where are the options for this output when used as a 'renderer' """
         ops = self.options
-        out = next(filter(lambda x: x.type == 'render', ops.outputs), None)
+        out = next(filter(lambda x: x.type == 'render', force_list(ops.outputs)), None)
         res = None
         if out is not None:
             if isinstance(ops.pcb3d, str):
@@ -731,7 +721,7 @@ class Blender_Export(Base3D):
                 out = None
             else:
                 res = ops.pcb3d
-                res._pov = ops.point_of_view[0]
+                res._pov = force_list(ops.point_of_view)[0]
                 res._out = out
         return res if out is not None else None
 
