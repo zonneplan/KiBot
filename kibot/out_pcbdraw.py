@@ -142,6 +142,9 @@ class PcbDrawResistorRemap(Optionable):
         if not self.ref or not self.val:
             raise KiPlotConfigurationError("The resistors remapping must specify a `ref` and a `val`")
 
+    def __str__(self):
+        return f'{self.ref} -> {self.val}'
+
 
 class PcbDrawRemapComponents(Optionable):
     """ Reference -> Library + Footprint """
@@ -166,6 +169,9 @@ class PcbDrawRemapComponents(Optionable):
         if not self.ref or not self.lib or not self.comp:
             raise KiPlotConfigurationError("The component remapping must specify a `ref`, a `lib` and a `comp`")
 
+    def __str__(self):
+        return f'{self.ref} -> {self.lib}:{self.comp}'
+
 
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
@@ -177,7 +183,7 @@ class PcbDrawOptions(VariantOptions):
             self.placeholder = False
             """ Show placeholder for missing components """
             self.remap = PcbDrawRemap
-            """ [dict|string=None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+            """ [dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
                 Use `remap_components` instead """
             self.remap_components = PcbDrawRemapComponents
             """ [list(dict)] Replacements for PCB references using specified components.
@@ -192,7 +198,7 @@ class PcbDrawOptions(VariantOptions):
             """ [list(string)=[]] List of components to highlight. Filter expansion is also allowed here,
                 see `show_components` """
             self.show_components = Optionable
-            """ *[list(string)|string=none] [none,all,*] List of components to draw, can be also a string for none or all.
+            """ *[list(string)|string='none'] [none,all,*] List of components to draw, can be also a string for none or all.
                 The default is none.
                 There two ways of using this option, please consult the `add_to_variant` option.
                 You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
@@ -218,7 +224,7 @@ class PcbDrawOptions(VariantOptions):
             self.output = GS.def_global_output
             """ *Name for the generated file """
             self.margin = PcbMargin
-            """ [number|dict] Margin around the generated image [mm].
+            """ [number|dict=0] Margin around the generated image [mm].
                 Using a number the margin is the same in the four directions """
             self.outline_width = 0.15
             """ [0,10] Width of the trace to draw the PCB border [mm].
@@ -302,11 +308,13 @@ class PcbDrawOptions(VariantOptions):
         # Style
         if isinstance(self.style, type):
             # Apply the global defaults
-            style = PcbDrawStyle()
-            style.config(self)
-            self.style = style.to_dict()
+            self.style = PcbDrawStyle()
+            self.style.config(self)
+            self._style = self.style.to_dict()
         elif isinstance(self.style, PcbDrawStyle):
-            self.style = self.style.to_dict()
+            self._style = self.style.to_dict()
+        else:
+            self._style = self.style
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
 
@@ -453,11 +461,11 @@ class PcbDrawOptions(VariantOptions):
             plotter.mirror = self.mirror
             plotter.margin = self._margin
             plotter.svg_precision = self.svg_precision
-            if self.style:
-                if isinstance(self.style, str):
-                    plotter.resolve_style(self.style)
+            if self._style:
+                if isinstance(self._style, str):
+                    plotter.resolve_style(self._style)
                 else:
-                    plotter.style = self.style
+                    plotter.style = self._style
             plotter.plot_plan = [PlotSubstrate(drill_holes=not self.no_drillholes, outline_width=mm2ki(self.outline_width))]
             if self.show_solderpaste:
                 plotter.plot_plan.append(PlotPaste())
