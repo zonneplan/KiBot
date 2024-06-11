@@ -120,9 +120,9 @@ Parameters:
                For cameras without position KiBot will ask Blender to compute its position and the use a clip
                distance that is 1/10th of the Z distance.
             -  ``name`` :index:`: <pair: output - blender_export - options - camera; name>` [:ref:`string <string>`] (default: ``''``) Name for the camera.
-            -  ``pos_x`` :index:`: <pair: output - blender_export - options - camera; pos_x>` [:ref:`number <number>` | :ref:`string <string>`] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_y`` :index:`: <pair: output - blender_export - options - camera; pos_y>` [:ref:`number <number>` | :ref:`string <string>`] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_z`` :index:`: <pair: output - blender_export - options - camera; pos_z>` [:ref:`number <number>` | :ref:`string <string>`] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_x`` :index:`: <pair: output - blender_export - options - camera; pos_x>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_y`` :index:`: <pair: output - blender_export - options - camera; pos_y>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_z`` :index:`: <pair: output - blender_export - options - camera; pos_z>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``type`` :index:`: <pair: output - blender_export - options - camera; type>` [string='perspective'] [perspective,orthographic,panoramic] Type of camera.
 
       -  ``default_file_id`` :index:`: <pair: output - blender_export - options; default_file_id>` [:ref:`string <string>`] (default: ``''``) Default value for the `file_id` in the `point_of_view` options.
@@ -135,9 +135,9 @@ Parameters:
 
             -  ``energy`` :index:`: <pair: output - blender_export - options - light; energy>` [:ref:`number <number>`] (default: ``0``) How powerful is the light. Using 0 for POINT and SUN KiBot will try to use something useful.
             -  ``name`` :index:`: <pair: output - blender_export - options - light; name>` [:ref:`string <string>`] (default: ``''``) Name for the light.
-            -  ``pos_x`` :index:`: <pair: output - blender_export - options - light; pos_x>` [:ref:`number <number>` | :ref:`string <string>`] X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_y`` :index:`: <pair: output - blender_export - options - light; pos_y>` [:ref:`number <number>` | :ref:`string <string>`] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
-            -  ``pos_z`` :index:`: <pair: output - blender_export - options - light; pos_z>` [:ref:`number <number>` | :ref:`string <string>`] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_x`` :index:`: <pair: output - blender_export - options - light; pos_x>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) X position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_y`` :index:`: <pair: output - blender_export - options - light; pos_y>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Y position [m]. You can use `width`, `height` and `size` for PCB dimensions.
+            -  ``pos_z`` :index:`: <pair: output - blender_export - options - light; pos_z>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Z position [m]. You can use `width`, `height` and `size` for PCB dimensions.
             -  ``type`` :index:`: <pair: output - blender_export - options - light; type>` [string='POINT'] [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly.
 
       -  ``outputs`` :index:`: <pair: output - blender_export - options; outputs>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Outputs to generate in the same run.

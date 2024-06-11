@@ -164,11 +164,11 @@ outputs:
         clip_start: -1
         # [string=''] Name for the camera
         name: ''
-        # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
+        # [number|string=0] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
         pos_x: 0
-        # [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions
+        # [number|string=0] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions
         pos_y: 0
-        # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
+        # [number|string=0] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
         pos_z: 0
         # [string='perspective'] [perspective,orthographic,panoramic] Type of camera
         type: 'perspective'
@@ -184,11 +184,11 @@ outputs:
         - energy: 0
           # [string=''] Name for the light
           name: ''
-          # [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
+          # [number|string=0] X position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_x: 0
-          # [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions
+          # [number|string=0] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_y: 0
-          # [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
+          # [number|string=0] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions
           pos_z: 0
           # [string='POINT'] [POINT,SUN,SPOT,HEMI,AREA] Type of light. SUN lights will illuminate more evenly
           type: 'POINT'
