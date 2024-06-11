@@ -567,5 +567,6 @@ def pretty_list(items, short=False):
 
 
 def try_int(value):
-    i_val = int(value)
-    return i_val if i_val == value else value
+    f_val = float(value)
+    i_val = int(f_val)
+    return i_val if i_val == f_val else f_val
