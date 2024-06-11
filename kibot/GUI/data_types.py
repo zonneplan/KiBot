@@ -661,10 +661,17 @@ class DataEntry(object):
 
     def select_data_type(self, obj, level=0):
         # Solve the current value
-        if self.name in obj._tree:
+        user_value = obj._tree.get(self.name)
+        if user_value is not None:
             # The user provided a value
             self.user_defined = True
-            self.ori_val = obj._tree[self.name]
+            if isinstance(user_value, (dict, list)):
+                # For complex data types we get the configured value
+                # They will extract data from the tree
+                self.ori_val = getattr(obj, self.name)
+            else:
+                # If the data is simple, get it from the tree, so the user sees the same found in the YAML
+                self.ori_val = user_value
         else:
             # No user provided value
             self.user_defined = False
