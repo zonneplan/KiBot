@@ -6,11 +6,11 @@ import math
 import wx
 from .validators import NumberValidator
 from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
-                          get_selection, get_emp_font, pop_error, add_abm_buttons)
+                          get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm)
 from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
-from ..misc import typeof
+from ..misc import typeof, try_int
 from ..optionable import Optionable
 from .. import log
 logger = log.get_logger()
@@ -22,13 +22,15 @@ TYPE_EMPTY = {'list(dict|string)': [], 'list(dict)': [], 'list(list(string))': [
               'string_dict': {}, 'string': '', 'number': '', 'boolean': False}
 max_label = 200
 def_text = 200
+BMP_CLEAR = wx.ART_DELETE
+# BMP_CLEAR = wx.ART_CROSS_MARK
 
 
 class DataTypeBase(object):
-    def __init__(self, kind, restriction, default):
+    def __init__(self, kind, restriction, default, name):
         self.kind = kind
         self.restriction = restriction
-        self.default = default
+        self.default = self.reset_value = default
         self.is_dict = kind == 'dict'
         self.is_list_dict = kind == 'list(dict)' or kind == 'list(dict|string)'
 
@@ -59,6 +61,15 @@ class DataTypeBase(object):
     def get_value(self):
         return self.input.Value
 
+    def focus(self):
+        self.input.SetFocus()
+
+    def reset(self, get_focus=True):
+        self.entry.set_edited(False, self.label)
+        self.ori_value = self.input.Value = self.reset_value
+        if get_focus:
+            self.focus()
+
     def OnChange(self, event):
         self.entry.set_edited(self.input.Value != self.ori_value, self.label)
 
@@ -73,8 +84,8 @@ class DataTypeString(DataTypeBase):
 
 
 class DataTypeNumber(DataTypeString):
-    def __init__(self, kind, restriction, default):
-        super().__init__(kind, restriction, default)
+    def __init__(self, kind, restriction, default, name):
+        super().__init__(kind, restriction, default, name)
         self.has_min = False
         self.has_max = False
         if restriction is None:
@@ -89,6 +100,11 @@ class DataTypeNumber(DataTypeString):
             else:
                 self.has_max = True
         self.restriction = restriction
+        try:
+            self.reset_value = str(try_int(self.default))
+        except TypeError:
+            logger.error(f'Missing default for {name}')
+            self.reset_value = '0'
 
     def get_widget(self, obj, parent, entry, level, init, value):
         if init:
@@ -109,9 +125,7 @@ class DataTypeNumber(DataTypeString):
         val = self.input.Value
         if val == '-' or val == '':
             return self.default
-        val_float = float(val)
-        val_int = int(val_float)
-        return val_int if val_int == val_float else val_float
+        return try_int(val)
 
 
 class DataTypeBoolean(DataTypeBase):
@@ -139,14 +153,24 @@ class DataTypeChoice(DataTypeBase):
         # Why not GetValue??!!
         return self.restriction[self.input.GetSelection()]
 
+    def reset(self, get_focus=True):
+        self.entry.set_edited(False, self.label)
+        if self.default is None:
+            logger.error(f'Missing default for {self.entry.name}')
+        self.reset_value = self.restriction.index(self.default) if self.default is not None else 0
+        self.ori_value = self.input.Selection = self.reset_value
+        if get_focus:
+            self.focus()
+
     def OnChange(self, event):
         self.entry.set_edited(self.input.Selection != self.ori_value, self.label)
 
 
 class DataTypeNumberChoice(DataTypeChoice):
-    def __init__(self, kind, restriction, default):
-        super().__init__(kind, restriction, default)
+    def __init__(self, kind, restriction, default, name):
+        super().__init__(kind, restriction, default, name)
         self.restriction = self.restriction[1]
+        self.default = str(self.default)
 
     def define_input(self, parent, value, init):
         super().define_input(parent, str(value), init)
@@ -170,10 +194,16 @@ class DataTypeDict(DataTypeBase):
         help = entry.help
         lbl = self.get_label(entry)
         # Use the current value only when "init", otherwise use an empty object
-        self.sub_obj = getattr(obj, entry.name) if init else entry.cls()
+        if init:
+            self.sub_obj = getattr(obj, entry.name)
+        else:
+            self.sub_obj = entry.cls()
+            self.sub_obj.config(obj)
+        # self.ori_value = deepcopy(self.sub_obj._tree)
         self.sub_entries = entry.sub
         self.parent = parent
         self.entry = entry
+        self.obj = obj
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         if USE_DIALOG_FOR_NESTED:
@@ -194,11 +224,26 @@ class DataTypeDict(DataTypeBase):
             pane.SetSizer(pane_sizer)
 
             e_sizer.Add(cp, gh.SIZER_FLAGS_1)
+            self.pane = pane
         return e_sizer
 
     def OnEdit(self, event):
         if edit_dict(self.parent.Parent, self.sub_obj, self.sub_entries, self.entry_name):
             self.entry.set_edited(True)
+
+    def focus(self):
+        if USE_DIALOG_FOR_NESTED:
+            self.btn.SetFocus()
+        else:
+            self.pane.SetFocus()
+
+    def reset(self, get_focus=True):
+        self.entry.set_edited(False)
+        # self.ori_value = {}
+        self.sub_obj = self.entry.cls()
+        self.sub_obj.config(self.obj)
+        if get_focus:
+            self.focus()
 
     def get_value(self):
         if USE_DIALOG_FOR_NESTED:
@@ -285,6 +330,15 @@ class DataTypeList(DataTypeBase):
     def mark_edited(self):
         cur_value = self.get_value()
         self.entry.set_edited(cur_value != self.ori_value, self.sp)
+
+    def focus(self):
+        self.lbox.SetFocus()
+
+    def reset(self, get_focus=True):
+        self.entry.set_edited(False, self.sp)
+        self.lbox.SetItems([])
+        if get_focus:
+            self.focus()
 
     def OnUp(self, event):
         move_sel_up(self.lbox)
@@ -687,7 +741,7 @@ class DataEntry(object):
         if self.selected == -1:  # I.e. optionable not used and hence is None
             self.selected = 0
             self.ori_val = TYPE_EMPTY[self.valids[0].kind]
-        logger.debug(f'{" "*level*2}- {self.name} {self.ori_val} {self.user_defined} {data_type} {self.selected}')
+        logger.debug(f'{" "*level*2}- {self.name} ori:{self.ori_val} user:{self.user_defined} {data_type} sel:{self.selected}')
 
     def get_label(self):
         return self.valids[0].get_label(self)
@@ -718,17 +772,26 @@ class DataEntry(object):
         for c, valid in enumerate(self.valids):
             if is_first:
                 if len(self.valids) > 1:
+                    # Choice to select the data type when multiple are allowed
                     sel = wx.Choice(parent, choices=[TYPE_ABREV[v.kind] for v in self.valids],
                                     size=wx.Size(int(def_text/8), -1))
                     sel.SetSelection(self.selected)
                     sel.Bind(wx.EVT_CHOICE, self.OnChoice)
                 else:
+                    # Just a hint abou the data type
                     sel = wx.StaticText(parent, label=TYPE_ABREV[valid.kind], size=wx.Size(60, -1),
                                         style=wx.ALIGN_CENTER)
+                # Button to clear the data, and remove it from the YAML
+                clr = wx.BitmapButton(parent, bitmap=get_res_bitmap(BMP_CLEAR))
+                clr.SetToolTip(f'Reset {self.name}')
+                clr.Bind(wx.EVT_BUTTON, self.OnRemove)
                 self.ori_fore_color = sel.GetForegroundColour()
                 if not TYPE_SEL_RIGHT:
-                    self.sizer.Add(sel, wx.SizerFlags().Border(wx.RIGHT).Center())
+                    flgs = wx.SizerFlags().Border(wx.RIGHT).Center()
+                    self.sizer.Add(sel, flgs)
+                    self.sizer.Add(clr, flgs)
                 self.sel_widget = sel
+                self.clr_widget = clr
             is_selected = c == self.selected
             e_sizer = valid.get_widget(obj, parent, self, level, is_selected, self.ori_val)
             self.sizer.Add(e_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
@@ -737,9 +800,13 @@ class DataEntry(object):
                 self.sizer.Show(e_sizer, False)
             is_first = False
         if TYPE_SEL_RIGHT:
-            self.sizer.Add(sel, wx.SizerFlags().Border(wx.LEFT).Center())
+            flgs = wx.SizerFlags().Border(wx.LEFT).Center()
+            self.sizer.Add(sel, flgs)
+            self.sizer.Add(clr, flgs)
         if self.user_defined:
             sel.SetForegroundColour(gh.USER_EDITED_COLOR)
+        else:
+            clr.Disable()
         self.set_sel_tooltip()
         sizer.Add(self.sizer, gh.SIZER_FLAGS_0_NO_BORDER)
         self.parent_sizer = sizer
@@ -752,6 +819,7 @@ class DataEntry(object):
             return False
         self.user_defined = new_user_defined
         self.sel_widget.SetForegroundColour(gh.USER_EDITED_COLOR if new_user_defined else self.ori_fore_color)
+        self.clr_widget.Enable(new_user_defined)
         if widget:
             self.show_status(widget)
         return True
@@ -783,6 +851,11 @@ class DataEntry(object):
         self.set_sel_tooltip()
         # The selected widget might be bigger, adjust the dialog
         self.window.Parent.OnResize(None)
+
+    def OnRemove(self, event):
+        if pop_confirm(f'Remove the data from {self.name}?'):
+            self.user_defined_ori = False
+            self.valids[self.selected].reset()
 
 
 def adapt_default(val, name):
@@ -852,7 +925,7 @@ def get_data_type_tree(template, obj, level=0):
         valid, extra, def_val, real_help = template.get_valid_types(help)
         def_val = adapt_default(def_val, k)
         valid, extra = join_lists(valid, extra)
-        valids = [get_class_for(v, e)(v, e, def_val) for v, e in zip(valid, extra)]
+        valids = [get_class_for(v, e)(v, e, def_val, k) for v, e in zip(valid, extra)]
         case += f' {extra} """ {help} """'
         assert valids, case
         valids = sorted(valids, key=lambda x: 200-TYPE_PRIORITY[x.kind])
