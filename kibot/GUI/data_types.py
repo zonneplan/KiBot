@@ -11,6 +11,7 @@ from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
 from ..misc import typeof
+from ..optionable import Optionable
 from .. import log
 logger = log.get_logger()
 TYPE_PRIORITY = {'list(dict|string)': 110, 'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60,
@@ -693,7 +694,7 @@ class DataEntry(object):
             label.SetForegroundColour(self.ori_fore_color)
 
     def get_used_data_type(self, value):
-        data_type = typeof(value)
+        data_type = typeof(value, Optionable)
         return next((c for c, v in enumerate(self.valids) if v.kind == data_type), -1), data_type
 
     def add_widgets(self, obj, parent, sizer, level):
