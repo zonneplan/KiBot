@@ -111,7 +111,7 @@ class MainDialog(wx.Dialog):
 
     def OnGenerateOuts(self, event):
         # TODO: implement
-        event.Skip()
+        pop_error('Not implemented')
 
     def OnSave(self, event):
         tree = {'kibot': {'version': 1}}

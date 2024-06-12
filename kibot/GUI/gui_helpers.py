@@ -36,17 +36,77 @@ def init_vars():
 #     return bmp
 
 
+class MessageDialog(wx.Dialog):
+    def __init__(self, msg, title, icon=None, ok_btn=True):
+        wx.Dialog.__init__(self, None, title=title,
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        msg_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        if icon is not None:
+            sz = self.GetTextExtent('M')*2
+            sz.height = -1
+            bmp = wx.StaticBitmap(self, bitmap=get_res_bitmap(icon, sz))
+            msg_sizer.Add(bmp, SIZER_FLAGS_0)
+        if msg:
+            txt = wx.StaticText(self, label=msg, style=wx.ALIGN_LEFT)
+            msg_sizer.Add(txt, SIZER_FLAGS_1_NO_EXPAND)
+        main_sizer.Add(msg_sizer, SIZER_FLAGS_1)
+        m_but_sizer = wx.StdDialogButtonSizer()
+        if ok_btn:
+            m_but_sizer.AddButton(wx.Button(self, wx.ID_OK))
+        else:
+            but_yes = wx.Button(self, wx.ID_YES)
+            but_no = wx.Button(self, wx.ID_NO)
+            m_but_sizer.AddButton(but_yes)
+            m_but_sizer.AddButton(but_no)
+            but_yes.Bind(wx.EVT_BUTTON, self.OnYes)
+            but_no.Bind(wx.EVT_BUTTON, self.OnNo)
+        m_but_sizer.Realize()
+        main_sizer.Add(m_but_sizer, SIZER_FLAGS_0)
+        self.SetSizer(main_sizer)
+        main_sizer.Fit(self)
+        self.Centre(wx.BOTH)
+        self.Bind(wx.EVT_CHAR_HOOK, self.OnKeyUP)
+
+    def OnYes(self, event):
+        self.EndModal(wx.YES)
+
+    def OnNo(self, event):
+        self.EndModal(wx.NO)
+
+    def OnKeyUP(self, event):
+        keyCode = event.GetKeyCode()
+        if keyCode == wx.WXK_ESCAPE:
+            self.EndModal(wx.CANCEL)
+        event.Skip()
+
+
+def MessageBox(msg, title, icon=None, ok_btn=True):
+    dlg = MessageDialog(msg, title, icon, ok_btn)
+    res = dlg.ShowModal()
+    dlg.Destroy()
+    return res
+
+
 def pop_error(msg):
-    wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
+    if gui_config.USE_MSGBOX:
+        wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
+    else:
+        MessageBox(msg, 'Error', wx.ART_ERROR)
 
 
 def pop_confirm(msg):
-    # In wxGTK the Yes/No lacks icons, the Yes/No/Cancel is nicer
-    return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION) == wx.YES
+    if gui_config.USE_MSGBOX:
+        # In wxGTK the Yes/No lacks icons, the Yes/No/Cancel is nicer
+        return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION) == wx.YES
+    return MessageBox(msg, 'Confirm', wx.ART_QUESTION, ok_btn=False) == wx.YES
 
 
 def pop_info(msg):
-    wx.MessageBox(msg, 'Information', wx.OK)
+    if gui_config.USE_MSGBOX:
+        wx.MessageBox(msg, 'Information', wx.OK)
+    else:
+        MessageBox(msg, 'Information', wx.ART_INFORMATION)
 
 
 def move_sel_up(box):
@@ -205,8 +265,9 @@ def choose_from_list(parent, items, what, multiple=False, search_on=None):
     return res
 
 
-def get_res_bitmap(resource):
-    return wx.BitmapBundle(wx.ArtProvider.GetBitmap(resource))
+def get_res_bitmap(resource, size=wx.DefaultSize):
+    # return wx.BitmapBundle(wx.ArtProvider.GetBitmap(resource))
+    return wx.ArtProvider.GetBitmapBundle(resource, size=size)
 
 
 def set_button_bitmap(btn, resource):
