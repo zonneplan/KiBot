@@ -423,8 +423,8 @@ class DataTypeListDictOrString(DataTypeListDict):
     def edit_item(self, string='', obj=None, index=-1):
         name = self.entry.name
         str_cls = get_class_for('string', self.restriction)
-        valids = [str_cls('string', self.restriction, self.default),
-                  DataTypeDict('dict', self.restriction, self.default)]
+        valids = [str_cls('string', self.restriction, self.default, name),
+                  DataTypeDict('dict', self.restriction, self.default, name)]
         new_obj = DummyForDictOrString(name, obj, self.entry.cls())
         new_obj._parent = self.entry.obj._parent
         new_entry = DataEntry(name, valids, None, self.help, False, new_obj, 0)
@@ -476,8 +476,8 @@ class DataTypeStringDict(DataTypeList):
 
     def edit_item(self, string='', obj=None, index=-1):
         new_obj = StringPair() if obj is None else obj
-        new_entries = [DataEntry('key', [DataTypeString('string', None, '')], None, self.help, False, new_obj, 0),
-                       DataEntry('value', [DataTypeString('string', None, '')], None, self.help, False, new_obj, 0)]
+        new_entries = [DataEntry('key', [DataTypeString('string', None, '', 'key')], None, self.help, False, new_obj, 0),
+                       DataEntry('value', [DataTypeString('string', None, '', 'value')], None, self.help, False, new_obj, 0)]
         res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
         if res:
             if index == -1:
@@ -501,7 +501,7 @@ class DataTypeListListString(DataTypeListDict):
         # Here we create a dummy object with a data member named with the same name as the list
         # We then use the "dict" edition
         name = self.entry.name
-        valids = [DataTypeListString('list(string)', self.restriction, self.default)]
+        valids = [DataTypeListString('list(string)', self.restriction, self.default, name)]
         new_obj = DummyForList(name, [] if obj is None else obj)
         new_entries = [DataEntry(name, valids, None, self.help, False, new_obj, 0)]
         res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
