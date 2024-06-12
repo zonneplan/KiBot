@@ -6,7 +6,7 @@ import math
 import wx
 from .validators import NumberValidator
 from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
-                          get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm)
+                          get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm, pop_info)
 from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
@@ -188,6 +188,19 @@ class DataTypeCombo(DataTypeBase):
         self.input.Bind(wx.EVT_TEXT, self.OnChange)
 
 
+def create_new_optionable(cls, parent):
+    """ Create an Optionable from the cls class and configure it to get the default values.
+        Some objects needs filled values or they fail to be configured, so here we use the docs examples to fill them """
+    o = cls()
+    tree = {}
+    for k, v in o.get_attrs_for().items():
+        if k.startswith('_') and k.endswith('_example'):
+            tree[k[1:-8]] = v
+    o.set_tree(tree)
+    o.config(parent)
+    return o
+
+
 class DataTypeDict(DataTypeBase):
     def get_widget(self, obj, parent, entry, level, init, value):
         entry.edited = False
@@ -197,8 +210,7 @@ class DataTypeDict(DataTypeBase):
         if init:
             self.sub_obj = getattr(obj, entry.name)
         else:
-            self.sub_obj = entry.cls()
-            self.sub_obj.config(obj)
+            self.sub_obj = create_new_optionable(entry.cls, obj)
         # self.ori_value = deepcopy(self.sub_obj._tree)
         self.sub_entries = entry.sub
         self.parent = parent
@@ -240,8 +252,7 @@ class DataTypeDict(DataTypeBase):
     def reset(self, get_focus=True):
         self.entry.set_edited(False)
         # self.ori_value = {}
-        self.sub_obj = self.entry.cls()
-        self.sub_obj.config(self.obj)
+        self.sub_obj = create_new_optionable(self.entry.cls, self.obj)
         if get_focus:
             self.focus()
 
@@ -386,7 +397,7 @@ class DataTypeListDict(DataTypeList):
 
     def edit_item(self, string='', obj=None, index=-1):
         if obj is None:
-            obj = self.entry.cls()
+            obj = create_new_optionable(self.entry.cls, self.entry.obj)
         res = edit_dict(self.parent.Parent, obj, self.entry.sub, self.entry.name, self.create_edit_title(index),
                         force_changed=True)
         if res:
@@ -401,9 +412,10 @@ class DataTypeListDict(DataTypeList):
 
 
 class DummyForDictOrString(object):
-    def __init__(self, member, initial, cls):
+    def __init__(self, member, initial, cls, parent):
+        logger.debug(f'Creating {member} = {initial} for class {cls}')
         if initial is None:
-            setattr(self, member, cls)
+            setattr(self, member, create_new_optionable(cls, parent))
             self._tree = {}  # Start indicating isn't from user
         else:
             setattr(self, member, initial)
@@ -425,7 +437,7 @@ class DataTypeListDictOrString(DataTypeListDict):
         str_cls = get_class_for('string', self.restriction)
         valids = [str_cls('string', self.restriction, self.default, name),
                   DataTypeDict('dict', self.restriction, self.default, name)]
-        new_obj = DummyForDictOrString(name, obj, self.entry.cls())
+        new_obj = DummyForDictOrString(name, obj, self.entry.cls, self.entry.obj)
         new_obj._parent = self.entry.obj._parent
         new_entry = DataEntry(name, valids, None, self.help, False, new_obj, 0)
         new_entry.sub = self.entry.sub
@@ -439,6 +451,8 @@ class DataTypeListDictOrString(DataTypeListDict):
                 self.lbox.SetString(index, str(new_val))
                 self.lbox.SetClientData(index, new_val)
             self.mark_edited()
+        elif index == -1:
+            pop_info('Refusing to add an empty value')
 
     def get_value(self):
         return [v if isinstance(v, str) else v._tree for v in get_client_data(self.lbox)]
