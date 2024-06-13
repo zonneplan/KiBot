@@ -51,6 +51,7 @@ Fixed:
 -  Worksheet: Size of PNGs that specify its PPI resolution.
 -  Filters: Problems with filters that change fields for components that
    are only in the PCB. (#628)
+-  Draw Stackup: Dimension always drawn on User.Drawings layer (#629)
 
 Changed:
 ~~~~~~~~

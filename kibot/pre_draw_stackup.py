@@ -261,6 +261,7 @@ def draw_thickness(g, x, y, w, font_h, first, last, layer, right=True):
     y1 = int(y+(first+0.5)*font_h)
     y2 = int(y+(last+0.5)*font_h)
     dim = pcbnew.PCB_DIM_ALIGNED(GS.board, pcbnew.PCB_DIM_ALIGNED_T)
+    dim.SetLayer(layer)
     pos = dim.GetStart()
     pos.x = x1
     pos.y = y1

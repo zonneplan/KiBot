@@ -29,6 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Worksheet: Size of PNGs that specify its PPI resolution.
 - Filters: Problems with filters that change fields for components that are
   only in the PCB. (#628)
+- Draw Stackup: Dimension always drawn on User.Drawings layer (#629)
 
 ### Changed:
 - KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it is
