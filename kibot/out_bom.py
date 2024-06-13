@@ -73,9 +73,9 @@ class BoMJoinField(Optionable):
         super().__init__()
         if field:
             self.field = field.lower()
-            self.text = None
-            self.text_before = ''
-            self.text_after = ''
+            self.text = self._text = None
+            self.text_before = self._text_before = ''
+            self.text_after = self._text_after = ''
             return
         self._unknown_is_error = True
         with document:
