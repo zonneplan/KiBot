@@ -114,18 +114,18 @@ class BoMJoinField(Optionable):
             self.text_before = ''
         if self.text_after is None:
             self.text_after = ''
-        self.text = self.unescape(self.text)
-        self.text_before = self.unescape(self.text_before)
-        self.text_after = self.unescape(self.text_after)
+        self._text = self.unescape(self.text)
+        self._text_before = self.unescape(self.text_before)
+        self._text_after = self.unescape(self.text_after)
 
     def get_text(self, field_getter):
-        if self.text:
-            return self.text
+        if self._text:
+            return self._text
         value = field_getter(self.field)
         if not value:
             return None
-        separator = '' if self.text_before else ' '
-        return separator + self.text_before + value + self.text_after
+        separator = '' if self._text_before else ' '
+        return separator + self._text_before + value + self._text_after
 
     def __repr__(self):
         if self.text:
