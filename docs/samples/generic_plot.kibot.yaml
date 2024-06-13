@@ -2750,7 +2750,7 @@ outputs:
       highlight: []
       # [list(string)=[]] List of libraries
       libs: []
-      # [number|dict] Margin around the generated image [mm].
+      # [number|dict=0] Margin around the generated image [mm].
       # Using a number the margin is the same in the four directions
       margin:
         # [number=0] Bottom margin [mm]
@@ -2775,7 +2775,7 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [dict|string=None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+      # [dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
       # Use `remap_components` instead
       remap:
       # [list(dict)] Replacements for PCB references using specified components.
@@ -2800,12 +2800,12 @@ outputs:
           # [string=''] Value to use for `ref`
           val: ''
           # `value` is an alias for `val`
-      # [list(string)|string=none] [none,all,*] List of components to draw, can be also a string for none or all.
+      # [list(string)|string='none'] [none,all,*] List of components to draw, can be also a string for none or all.
       # The default is none.
       # There two ways of using this option, please consult the `add_to_variant` option.
       # You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
       # You can even use `_kf(FILTER1;FILTER2)` to concatenate filters
-      show_components: none
+      show_components: 'none'
       # [boolean=true] Show the solder paste layers
       show_solderpaste: true
       # [string='kicad_edge'] [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.

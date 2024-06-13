@@ -33,7 +33,7 @@ Parameters:
       -  **format** :index:`: <pair: output - pcbdraw - options; format>` [:ref:`string <string>`] (default: ``'svg'``) (choices: "svg", "png", "jpg", "bmp") Output format. Only used if no `output` is specified.
       -  **mirror** :index:`: <pair: output - pcbdraw - options; mirror>` [:ref:`boolean <boolean>`] (default: ``false``) Mirror the board.
       -  **output** :index:`: <pair: output - pcbdraw - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated file. Affected by global options.
-      -  **show_components** :index:`: <pair: output - pcbdraw - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``none``) (choices: "none", "all") (also accepts any string) List of components to draw, can be also a string for none or all.
+      -  **show_components** :index:`: <pair: output - pcbdraw - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'none'``) (choices: "none", "all") (also accepts any string) List of components to draw, can be also a string for none or all.
          The default is none.
          There two ways of using this option, please consult the `add_to_variant` option.
          You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
@@ -69,7 +69,7 @@ Parameters:
 
       -  ``libs`` :index:`: <pair: output - pcbdraw - options; libs>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of libraries.
 
-      -  ``margin`` :index:`: <pair: output - pcbdraw - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] Margin around the generated image [mm].
+      -  ``margin`` :index:`: <pair: output - pcbdraw - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] (default: ``0``) Margin around the generated image [mm].
          Using a number the margin is the same in the four directions.
 
          -  Valid keys:
@@ -86,7 +86,7 @@ Parameters:
       -  ``pre_transform`` :index:`: <pair: output - pcbdraw - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
-      -  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``None``) (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+      -  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``'None'``) (DEPRECATED) Replacements for PCB references using specified components (lib:component).
          Use `remap_components` instead.
 
       -  ``remap_components`` :index:`: <pair: output - pcbdraw - options; remap_components>` [:ref:`list(dict) <list(dict)>`] Replacements for PCB references using specified components.
