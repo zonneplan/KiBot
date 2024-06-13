@@ -6,7 +6,7 @@ import math
 import wx
 from .validators import NumberValidator
 from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
-                          get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm, pop_info)
+                          get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm)
 from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
@@ -34,16 +34,16 @@ class DataTypeBase(object):
         self.is_dict = kind == 'dict'
         self.is_list_dict = kind == 'list(dict)' or kind == 'list(dict|string)'
 
-    def get_widget(self, obj, parent, entry, level, init, value):
+    def get_widget(self, obj, window, entry, level, init, value, **kwargs):
         entry.edited = False
         help = entry.help
         if self.default is not None:
             help += f'\nDefault: {self.default}'
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.label = wx.StaticText(parent, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        self.label = wx.StaticText(window, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
         entry.show_status(self.label)
         self.label.SetToolTip(help)
-        self.define_input(parent, value, init)
+        self.define_input(window, value, init)
         self.input.SetToolTip(help)
 
         e_sizer.Add(self.label, gh.SIZER_FLAGS_0)
@@ -75,8 +75,8 @@ class DataTypeBase(object):
 
 
 class DataTypeString(DataTypeBase):
-    def define_input(self, parent, value, init):
-        self.input = wx.TextCtrl(parent, size=wx.Size(def_text, -1))
+    def define_input(self, window, value, init):
+        self.input = wx.TextCtrl(window, size=wx.Size(def_text, -1))
         if init:
             self.input.SetValue(value)
         self.ori_value = self.input.Value
@@ -106,10 +106,10 @@ class DataTypeNumber(DataTypeString):
             logger.error(f'Missing default for {name}')
             self.reset_value = '0'
 
-    def get_widget(self, obj, parent, entry, level, init, value):
+    def get_widget(self, obj, window, entry, level, init, value, **kwargs):
         if init:
             value = str(value)
-        sizer = super().get_widget(obj, parent, entry, level, init, value)
+        sizer = super().get_widget(obj, window, entry, level, init, value, **kwargs)
         self.input.SetValidator(NumberValidator(self.input, self.restriction, self.default, self.OnChange))
         return sizer
 
@@ -129,8 +129,8 @@ class DataTypeNumber(DataTypeString):
 
 
 class DataTypeBoolean(DataTypeBase):
-    def define_input(self, parent, value, init):
-        self.input = wx.CheckBox(parent)
+    def define_input(self, window, value, init):
+        self.input = wx.CheckBox(window)
         if init:
             self.input.SetValue(value)
         self.ori_value = self.input.Value
@@ -138,8 +138,8 @@ class DataTypeBoolean(DataTypeBase):
 
 
 class DataTypeChoice(DataTypeBase):
-    def define_input(self, parent, value, init):
-        self.input = wx.Choice(parent, choices=self.restriction)
+    def define_input(self, window, value, init):
+        self.input = wx.Choice(window, choices=self.restriction)
         if init:
             try:
                 self.input.SetSelection(self.restriction.index(value))
@@ -172,16 +172,16 @@ class DataTypeNumberChoice(DataTypeChoice):
         self.restriction = self.restriction[1]
         self.default = str(self.default)
 
-    def define_input(self, parent, value, init):
-        super().define_input(parent, str(value), init)
+    def define_input(self, window, value, init):
+        super().define_input(window, str(value), init)
 
     def get_value(self):
         return float(super().get_value())
 
 
 class DataTypeCombo(DataTypeBase):
-    def define_input(self, parent, value, init):
-        self.input = wx.ComboBox(parent, choices=[v for v in self.restriction if v != '*'])
+    def define_input(self, window, value, init):
+        self.input = wx.ComboBox(window, choices=[v for v in self.restriction if v != '*'])
         if init:
             self.input.SetValue(value)
         self.ori_value = self.input.Value
@@ -192,17 +192,26 @@ def create_new_optionable(cls, parent):
     """ Create an Optionable from the cls class and configure it to get the default values.
         Some objects needs filled values or they fail to be configured, so here we use the docs examples to fill them """
     o = cls()
-    tree = {}
-    for k, v in o.get_attrs_for().items():
-        if k.startswith('_') and k.endswith('_example'):
-            tree[k[1:-8]] = v
-    o.set_tree(tree)
+    # TODO: Is this ok?
+    if True:
+        # This approach adds the examples to the tree, but then they get marked as defined by user, which is confusing
+        # But is the best way because the internal mechanism relies on the values found on the tree
+        tree = {}
+        for k, v in o.get_attrs_for().items():
+            if k.startswith('_') and k.endswith('_example'):
+                tree[k[1:-8]] = v
+        o.set_tree(tree)
+    else:
+        # Here we put the examples directly in the members
+        for k, v in o.get_attrs_for().items():
+            if k.startswith('_') and k.endswith('_example'):
+                setattr(o, k[1:-8], v)
     o.config(parent)
     return o
 
 
 class DataTypeDict(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init, value):
+    def get_widget(self, obj, window, entry, level, init, value, **kwargs):
         entry.edited = False
         help = entry.help
         lbl = self.get_label(entry)
@@ -213,19 +222,35 @@ class DataTypeDict(DataTypeBase):
             self.sub_obj = create_new_optionable(entry.cls, obj)
         # self.ori_value = deepcopy(self.sub_obj._tree)
         self.sub_entries = entry.sub
-        self.parent = parent
+        self.window = window
         self.entry = entry
         self.obj = obj
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         if USE_DIALOG_FOR_NESTED:
-            self.entry_name = lbl
-            self.btn = wx.Button(parent, label="Edit "+lbl)
-            e_sizer.Add(self.btn, gh.SIZER_FLAGS_1)
-            self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
+            if kwargs.get('force_embedded'):
+                self.embedded = True
+                sb_sizer = wx.StaticBoxSizer(wx.VERTICAL, window, lbl)
+                sb = sb_sizer.GetStaticBox()
+                # TODO: better solution than an extra sizer?
+                sep_sizer = wx.BoxSizer(wx.VERTICAL)  # Add some border
+                add_widgets(self.sub_obj, entry.sub, sb, sep_sizer, level+1)
+                sb_sizer.Add(sep_sizer, gh.SIZER_FLAGS_1)
+                e_sizer.Add(sb_sizer, gh.SIZER_FLAGS_1)
+                # Which widget will be focused
+                self.input = sb
+            else:
+                self.embedded = False
+                self.entry_name = lbl
+                self.btn = wx.Button(window, label="Edit "+lbl)
+                e_sizer.Add(self.btn, gh.SIZER_FLAGS_1)
+                self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
+                # Which widget will be focused
+                self.input = self.btn
         else:
             # Collapsible pane version
-            cp = wx.CollapsiblePane(parent, label=lbl)
+            self.embedded = True
+            cp = wx.CollapsiblePane(window, label=lbl)
             cp.SetToolTip(help)
             # cp.Collapse(False)  # Start expanded
 
@@ -236,18 +261,13 @@ class DataTypeDict(DataTypeBase):
             pane.SetSizer(pane_sizer)
 
             e_sizer.Add(cp, gh.SIZER_FLAGS_1)
-            self.pane = pane
+            # Which widget will be focused
+            self.input = self.pane
         return e_sizer
 
     def OnEdit(self, event):
-        if edit_dict(self.parent.Parent, self.sub_obj, self.sub_entries, self.entry_name):
+        if edit_dict(self.window.Parent, self.sub_obj, self.sub_entries, self.entry_name):
             self.entry.set_edited(True)
-
-    def focus(self):
-        if USE_DIALOG_FOR_NESTED:
-            self.btn.SetFocus()
-        else:
-            self.pane.SetFocus()
 
     def reset(self, get_focus=True):
         self.entry.set_edited(False)
@@ -257,7 +277,7 @@ class DataTypeDict(DataTypeBase):
             self.focus()
 
     def get_value(self):
-        if USE_DIALOG_FOR_NESTED:
+        if not self.embedded:
             tree = self.sub_obj._tree
         else:
             tree = {}
@@ -269,8 +289,8 @@ class DataTypeDict(DataTypeBase):
 
 
 class InputStringDialog(wx.Dialog):
-    def __init__(self, parent, lbl, title, help, initial=''):
-        wx.Dialog.__init__(self, parent, title=title,
+    def __init__(self, window, lbl, title, help, initial=''):
+        wx.Dialog.__init__(self, window, title=title,
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         _, self.input, inp_sizer = input_label_and_text(self, lbl, initial, help, def_text)
@@ -291,14 +311,14 @@ class InputStringDialog(wx.Dialog):
 
 
 class DataTypeList(DataTypeBase):
-    def get_widget(self, obj, parent, entry, level, init, value):
+    def get_widget(self, obj, window, entry, level, init, value, **kwargs):
         entry.edited = False
         self.label = entry.name
         self.help = entry.help
-        self.parent = parent
+        self.window = window
         self.entry = entry
 
-        main_sizer = wx.StaticBoxSizer(wx.VERTICAL, parent, entry.name)
+        main_sizer = wx.StaticBoxSizer(wx.VERTICAL, window, entry.name)
         self.sp = main_sizer.GetStaticBox()
         entry.show_status(self.sp)
         abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -373,7 +393,7 @@ class DataTypeListString(DataTypeList):
 
     def edit_item(self, string='', obj=None, index=-1):
         ori = string
-        dlg = InputStringDialog(self.parent, self.label, self.create_edit_title(index), self.help, initial=string)
+        dlg = InputStringDialog(self.window, self.label, self.create_edit_title(index), self.help, initial=string)
         res = dlg.ShowModal()
         if res == wx.ID_OK:
             if index == -1:
@@ -398,7 +418,7 @@ class DataTypeListDict(DataTypeList):
     def edit_item(self, string='', obj=None, index=-1):
         if obj is None:
             obj = create_new_optionable(self.entry.cls, self.entry.obj)
-        res = edit_dict(self.parent.Parent, obj, self.entry.sub, self.entry.name, self.create_edit_title(index),
+        res = edit_dict(self.window.Parent, obj, self.entry.sub, self.entry.name, self.create_edit_title(index),
                         force_changed=True)
         if res:
             if index == -1:
@@ -439,10 +459,14 @@ class DataTypeListDictOrString(DataTypeListDict):
                   DataTypeDict('dict', self.restriction, self.default, name)]
         new_obj = DummyForDictOrString(name, obj, self.entry.cls, self.entry.obj)
         new_obj._parent = self.entry.obj._parent
-        new_entry = DataEntry(name, valids, None, self.help, False, new_obj, 0)
-        new_entry.sub = self.entry.sub
+        new_entry = DataEntry(name, valids, None, self.help, False, new_obj, 0, self.entry)
+        # Copy the entries
+        new_entry.sub = deepcopy(self.entry.sub)
+        # But link them to the new_entry
+        for e in new_entry.sub:
+            e.parent = new_entry
         new_entry.cls = self.entry.cls
-        res = edit_dict(self.parent.Parent, new_obj, [new_entry], name, self.create_edit_title(index))
+        res = edit_dict(self.window.Parent, new_obj, [new_entry], name, self.create_edit_title(index), force_changed=True)
         if res:
             new_val = getattr(new_obj, name)
             if index == -1:
@@ -451,8 +475,6 @@ class DataTypeListDictOrString(DataTypeListDict):
                 self.lbox.SetString(index, str(new_val))
                 self.lbox.SetClientData(index, new_val)
             self.mark_edited()
-        elif index == -1:
-            pop_info('Refusing to add an empty value')
 
     def get_value(self):
         return [v if isinstance(v, str) else v._tree for v in get_client_data(self.lbox)]
@@ -492,7 +514,7 @@ class DataTypeStringDict(DataTypeList):
         new_obj = StringPair() if obj is None else obj
         new_entries = [DataEntry('key', [DataTypeString('string', None, '', 'key')], None, self.help, False, new_obj, 0),
                        DataEntry('value', [DataTypeString('string', None, '', 'value')], None, self.help, False, new_obj, 0)]
-        res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
+        res = edit_dict(self.window.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
         if res:
             if index == -1:
                 self.lbox.Append(str(new_obj), new_obj)
@@ -518,7 +540,7 @@ class DataTypeListListString(DataTypeListDict):
         valids = [DataTypeListString('list(string)', self.restriction, self.default, name)]
         new_obj = DummyForList(name, [] if obj is None else obj)
         new_entries = [DataEntry(name, valids, None, self.help, False, new_obj, 0)]
-        res = edit_dict(self.parent.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
+        res = edit_dict(self.window.Parent, new_obj, new_entries, self.entry.name, self.create_edit_title(index))
         if res:
             new_val = getattr(new_obj, name)
             # logger.error(new_val)
@@ -586,6 +608,7 @@ class EditDict(wx.Dialog):
         self.old_size = self.GetSize()
 
         self.delta = self.old_size-self.GetClientRect().Size
+        # self.SetMinSize(wx.Size(100,100))
 
     def compute_scroll_hints(self):
         """ Adjust the scroller size hints according to the content and the display """
@@ -601,8 +624,17 @@ class EditDict(wx.Dialog):
         sizer = self.GetSizer()
         sizer.Layout()
         # Not working ... why?
+        # The window doesn't shrink pass some values, the returned values are OK, but the window is bigger in the screen
         new_size = sizer.MinSize+self.delta
+        # logger.error(f'Before SetSize({new_size}): {self.Size} MinSize: {self.MinSize} MinClientSize: {self.MinClientSize}')
+        # logger.error(f'{self.GetEffectiveMinSize()} {self.GetBestSize()}')
+        self.SetMinSize(new_size)
         self.SetSize(new_size)
+        # self.Layout()
+        # self.Fit()
+        # logger.error(f'After SetSize({new_size}): {self.Size} MinSize: {self.MinSize} MinClientSize: {self.MinClientSize}')
+        # logger.error(f'{self.GetEffectiveMinSize()} {self.GetBestSize()}')
+        # logger.error(f'{sizer.Size}')
 
     def OnOK(self, event):
         self.changed, retry = self.update_values()
@@ -682,13 +714,13 @@ def get_class_for(kind, rest):
     raise AssertionError()
 
 
-def add_widgets(obj, entries, parent, sizer, level=0):
+def add_widgets(obj, entries, window, sizer, level=0):
     if isinstance(obj, type):
         logger.error(f'- !!! {obj.__dict__} {type(obj)}')
         return
 
     # Compute the len for the largest label
-    font = wx.StaticText(parent).GetFont()
+    font = wx.StaticText(window).GetFont()
     dc = wx.ScreenDC()
     dc.SetFont(font)
     dc_emp = wx.ScreenDC()
@@ -699,21 +731,25 @@ def add_widgets(obj, entries, parent, sizer, level=0):
     max_label = max((int(dc_emp.GetTextExtent(e.get_label()).width*1.15) if e.is_basic else
                     dc.GetTextExtent(e.get_label()).width for e in entries))
     # This is also wrong:
-    # max2 = max((parent.GetFullTextExtent(e.name, (get_emp_font() if e.is_basic else None)) for e in entries))
+    # max2 = max((window.GetFullTextExtent(e.name, (get_emp_font() if e.is_basic else None)) for e in entries))
     # Size for input boxes
     global def_text
     def_text = dc.GetTextExtent('M'*40).width
 
     # logger.error(f'{obj._tree}')
+    n_entries = sum((1 for e in entries if not e.skip))
+    extra_args = {}
+    if n_entries == 1:
+        extra_args['force_embedded'] = True
     for entry in entries:
         if not entry.skip:
-            entry.add_widgets(obj, parent, sizer, level)
+            entry.add_widgets(obj, window, sizer, level, extra_args)
     max_label = cur_max
 
 
 class DataEntry(object):
     """ Class to represent one data value to be edited """
-    def __init__(self, name, valids, def_val, help, is_basic, obj, level):
+    def __init__(self, name, valids, def_val, help, is_basic, obj, level, parent=None):
         self.name = name
         self.valids = valids
         self.def_val = def_val
@@ -726,6 +762,7 @@ class DataEntry(object):
         self.obj = obj
         self.skip = self.name == 'type' and level == 0
         self.select_data_type(obj, level)
+        self.parent = parent
 
     def select_data_type(self, obj, level=0):
         # Solve the current value
@@ -772,7 +809,7 @@ class DataEntry(object):
         data_type = typeof(value, Optionable)
         return next((c for c, v in enumerate(self.valids) if v.kind == data_type), -1), data_type
 
-    def add_widgets(self, obj, parent, sizer, level):
+    def add_widgets(self, obj, window, sizer, level, extra_args):
         """ Add a widget for each possible data type.
             Also add a control to change the data type.
             Here we bind the entry to the real object, during creation we just got a template (the class) """
@@ -787,16 +824,16 @@ class DataEntry(object):
             if is_first:
                 if len(self.valids) > 1:
                     # Choice to select the data type when multiple are allowed
-                    sel = wx.Choice(parent, choices=[TYPE_ABREV[v.kind] for v in self.valids],
+                    sel = wx.Choice(window, choices=[TYPE_ABREV[v.kind] for v in self.valids],
                                     size=wx.Size(int(def_text/8), -1))
                     sel.SetSelection(self.selected)
                     sel.Bind(wx.EVT_CHOICE, self.OnChoice)
                 else:
                     # Just a hint abou the data type
-                    sel = wx.StaticText(parent, label=TYPE_ABREV[valid.kind], size=wx.Size(60, -1),
+                    sel = wx.StaticText(window, label=TYPE_ABREV[valid.kind], size=wx.Size(60, -1),
                                         style=wx.ALIGN_CENTER)
                 # Button to clear the data, and remove it from the YAML
-                clr = wx.BitmapButton(parent, bitmap=get_res_bitmap(BMP_CLEAR))
+                clr = wx.BitmapButton(window, bitmap=get_res_bitmap(BMP_CLEAR))
                 clr.SetToolTip(f'Reset {self.name}')
                 clr.Bind(wx.EVT_BUTTON, self.OnRemove)
                 self.ori_fore_color = sel.GetForegroundColour()
@@ -807,7 +844,7 @@ class DataEntry(object):
                 self.sel_widget = sel
                 self.clr_widget = clr
             is_selected = c == self.selected
-            e_sizer = valid.get_widget(obj, parent, self, level, is_selected, self.ori_val)
+            e_sizer = valid.get_widget(obj, window, self, level, is_selected, self.ori_val, **extra_args)
             self.sizer.Add(e_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
             self.widgets.append(e_sizer)
             if not is_selected:
@@ -824,7 +861,7 @@ class DataEntry(object):
         self.set_sel_tooltip()
         sizer.Add(self.sizer, gh.SIZER_FLAGS_0_NO_BORDER)
         self.parent_sizer = sizer
-        self.window = parent
+        self.window = window
 
     def set_edited(self, edited, widget=None):
         new_user_defined = edited or self.user_defined_ori
@@ -836,7 +873,17 @@ class DataEntry(object):
         self.clr_widget.Enable(new_user_defined)
         if widget:
             self.show_status(widget)
+        if self.parent_embedded():
+            self.parent.set_edited(new_user_defined)
         return True
+
+    def parent_embedded(self):
+        if self.parent is None:
+            return False
+        dt = self.parent.valids[self.parent.selected]
+        if not dt.is_dict:
+            return False
+        return dt.embedded
 
     def get_value(self):
         return self.valids[self.selected].get_value() if self.user_defined else None
@@ -862,9 +909,19 @@ class DataEntry(object):
         self.sizer.Show(self.widgets[self.selected], False)
         self.selected = self.sel_widget.GetSelection()
         self.sizer.Show(self.widgets[self.selected], True)
+        # Show isn't supposed to be recursive ... but we need to adjust this
+        sel_dt = self.valids[self.selected]
+        if sel_dt.is_dict and sel_dt.embedded:
+            for e in sel_dt.sub_entries:
+                e.update_shown()
         self.set_sel_tooltip()
         # The selected widget might be bigger, adjust the dialog
-        self.window.Parent.OnResize(None)
+        ev = wx.PyCommandEvent(wx.EVT_COLLAPSIBLEPANE_CHANGED.typeId, self.window.GetId())
+        wx.PostEvent(self.window.GetEventHandler(), ev)
+
+    def update_shown(self):
+        for c, w in enumerate(self.widgets):
+            self.sizer.Show(w, c == self.selected)
 
     def OnRemove(self, event):
         if pop_confirm(f'Remove the data from {self.name}?'):
@@ -919,7 +976,7 @@ def join_lists(valid, extra):
     return new_valid, new_extra
 
 
-def get_data_type_tree(template, obj, level=0):
+def get_data_type_tree(template, obj, level=0, parent=None):
     """ Create a tree containing all the DataEntry objects associated to the data in the *obj* output """
     entries = []
     logger.debug(f'{" "*level*2}Starting data tree for {template.__repr__()} '
@@ -960,7 +1017,7 @@ def get_data_type_tree(template, obj, level=0):
                 # I.e. something that can be a string or dict and is currently a string, then use a fresh dict
                 value = reference
                 logger.debug(f'{" "*level*2}- Using new object for {k}')
-            entry.sub = get_data_type_tree(reference, value, level+1)
+            entry.sub = get_data_type_tree(reference, value, level+1, entry)
             entry.cls = v
         elif entry.is_list_dict:
             entry.cls = v
