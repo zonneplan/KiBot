@@ -153,6 +153,12 @@ class BoMColumns(Optionable):
         self._field_example = 'Row'
         self._name_example = 'Line'
 
+    def __str__(self):
+        txt = f'{self.name} ({self.field})'
+        if self.join:
+            txt += f' {self.join}'
+        return txt
+
     def config(self, parent):
         super().config(parent)
         if not self.field:
