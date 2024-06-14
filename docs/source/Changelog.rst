@@ -68,6 +68,7 @@ Changed:
    just open a GitHub issue.
 -  Copy files: Now we don’t stop when nothing to copy is specified
 -  KiKit Present: Missing description is no longer fatal
+-  PCB Print: Missing pages/layers is no longer fatal
 
 [1.7.0] - 2024-04-23
 --------------------

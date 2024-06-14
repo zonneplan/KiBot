@@ -2554,7 +2554,7 @@ outputs:
       # [boolean=false] When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
       # Note: page numbers can be customized using the `page_id` option for each page
       page_number_as_extension: false
-      # [list(dict)] List of pages to include in the output document.
+      # [list(dict)=[]] List of pages to include in the output document.
       # Each page contains one or more layers of the PCB
       pages:
         # [number=0] Horizontal margin used for the autoscaling mode [mm].
@@ -2572,7 +2572,7 @@ outputs:
           # [string='%ll'] Text to use for the `LAYER` in the title block.
           # All the expansions available for `sheet` are also available here
           layer_var: '%ll'
-          # [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+          # [list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*]
           # List of layers printed in this page.
           # Order is important, the last goes on top.
           # You can reuse other layers lists, some options aren't used here, but they are valid

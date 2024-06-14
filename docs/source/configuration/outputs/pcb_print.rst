@@ -34,12 +34,12 @@ Parameters:
       -  **output** :index:`: <pair: output - pcb_print - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=assembly, %x=pdf/ps)/(%i=assembly_page_NN, %x=svg/png/eps).
          Consult the `page_number_as_extension` and `page_id` options. Affected by global options.
       -  *output_name* :index:`: <pair: output - pcb_print - options; output_name>` Alias for output.
-      -  **pages** :index:`: <pair: output - pcb_print - options; pages>` [:ref:`list(dict) <list(dict)>`] List of pages to include in the output document.
+      -  **pages** :index:`: <pair: output - pcb_print - options; pages>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) List of pages to include in the output document.
          Each page contains one or more layers of the PCB.
 
          -  Valid keys:
 
-            -  **layers** :index:`: <pair: output - pcb_print - options - pages; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string).
+            -  **layers** :index:`: <pair: output - pcb_print - options - pages; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string).
 
                -  Valid keys:
 
