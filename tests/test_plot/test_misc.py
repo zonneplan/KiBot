@@ -1986,6 +1986,7 @@ def test_present_3(test_dir):
     ctx.expect_out_file_d(['boards/light_control-back.png', 'boards/light_control-front.png',
                            'boards/light_control-gerbers.png', 'boards/light_control.kicad_pcb',
                            'css/styles.css', 'index.html'])
+    ctx.search_err('No project description')
     ctx.clean_up(keep_project=True)
 
 
