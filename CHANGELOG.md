@@ -44,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   issue.
 - Copy files: Now we don't stop when nothing to copy is specified
 - KiKit Present: Missing description is no longer fatal
-- PCB Print: Missing pages/layers is no longer fatal
+- Any PCB Print/PCB Print: Missing pages/layers is no longer fatal
 
 
 ## [1.7.0] - 2024-04-23
