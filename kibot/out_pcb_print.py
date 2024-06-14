@@ -45,7 +45,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
-                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418, pretty_list, try_int)
+                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418, pretty_list, try_int, W_NOPAGES, W_NOLAYERS)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -202,7 +202,7 @@ class PagesOptions(Optionable):
             self.sort_layers = False
             """ *Try to sort the layers in the same order that uses KiCad for printing """
             self.layers = LayerOptions
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*]
                 List of layers printed in this page.
                 Order is important, the last goes on top.
                 You can reuse other layers lists, some options aren't used here, but they are valid """
@@ -251,7 +251,7 @@ class PagesOptions(Optionable):
     def config(self, parent):
         super().config(parent)
         if isinstance(self.layers, type):
-            raise KiPlotConfigurationError("Missing `layers` list")
+            self.layers = 'all'
         # Fill the ID member for all the layers
         self._layers = LayerOptions.solve(self.layers)
         if self.sort_layers:
@@ -320,7 +320,7 @@ class PCB_PrintOptions(VariantOptions):
                 plot: uses KiCad Python API. Not available for KiCad 5.
                 You get the default frame and some substitutions doesn't work """
             self.pages = PagesOptions
-            """ *[list(dict)] List of pages to include in the output document.
+            """ *[list(dict)=[]] List of pages to include in the output document.
                 Each page contains one or more layers of the PCB """
             self.title = ''
             """ Text used to replace the sheet title. %VALUE expansions are allowed.
@@ -396,7 +396,7 @@ class PCB_PrintOptions(VariantOptions):
     def config(self, parent):
         super().config(parent)
         if isinstance(self.pages, type):
-            raise KiPlotConfigurationError("Missing `pages` list")
+            self.pages = []
         # Expand any repeat_for_layer
         pages = []
         for page in self.pages:
@@ -1150,6 +1150,8 @@ class PCB_PrintOptions(VariantOptions):
 
     def generate_output(self, output):
         self.check_tools()
+        if not self._pages:
+            logger.warning(W_NOPAGES+f'No pages to include in `{self._parent.name}`')
         # Avoid KiCad 5 complaining about fake vias diameter == drill == 0
         self.min_w = 2 if GS.ki5 else 0
         output_dir = os.path.dirname(output)
@@ -1241,6 +1243,8 @@ class PCB_PrintOptions(VariantOptions):
             if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p._layers), None) is None:
                 p._layers.append(edge_layer)
             user_layer_ids = set(Layer._get_user().values())
+            if p.layers == 'all' and not p.get_user_defined('layers'):
+                logger.warning(W_NOLAYERS+f'No layers specified for `{p}` (`{self._parent.name}`), including `all`')
             for la in p._layers:
                 id = la._id
                 logger.debug('- Plotting layer {} ({})'.format(la.layer, id))
