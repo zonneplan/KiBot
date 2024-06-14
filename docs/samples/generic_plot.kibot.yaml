@@ -1898,32 +1898,32 @@ outputs:
       configs:
         # [dict] Fill non-board areas of the panel with copper
         - copperfill:
-            # [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
+            # [number|string=0.5] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
             # copper
             clearance: 0.5
-            # [number|string] Diameter of hexagons
+            # [number|string=7] Diameter of hexagons
             diameter: 7
             # `edge_clearance` is an alias for `edgeclearance`
-            # [number|string] Specifies clearance between the fill and panel perimeter
+            # [number|string=0.5] Specifies clearance between the fill and panel perimeter
             edgeclearance: 0.5
-            # [string|list(string)] List of layers to fill. Can be a comma-separated string.
+            # [string|list(string)='F.Cu,B.Cu'] List of layers to fill. Can be a comma-separated string.
             # Using *all* means all external copper layers
             layers: 'F.Cu,B.Cu'
-            # [number|string] The orientation of the hatched strokes
+            # [number|string=45] The orientation of the hatched strokes
             orientation: 45
-            # [number|string] The space between the hatched strokes or hexagons
+            # [number|string=1] The space between the hatched strokes or hexagons
             spacing: 1
             # [number=15] Remove fragments smaller than threshold. Expressed as a percentage
             threshold: 15
             # [string='none'] [none,solid,hatched,hex] How to fill non-board areas of the panel with copper
             type: 'none'
-            # [number|string] The width of the hatched strokes
+            # [number|string=1] The width of the hatched strokes
             width: 1
           # [dict] Specify how to perform the cuts on the tabs separating the board
           cuts:
             # [string=''] Argument to pass to the plugin. Used for *plugin*
             arg: ''
-            # [number|string] Specify clearance for copper around V-cuts
+            # [number|string=0] Specify clearance for copper around V-cuts
             clearance: 0
             # [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*
             code: ''
@@ -1931,23 +1931,23 @@ outputs:
             # [boolean=false] Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
             # Used for *vcuts*
             cutcurves: false
-            # [number|string] Drill size used for the *mousebites*
+            # [number|string=0.5] Drill size used for the *mousebites*
             drill: 0.5
             # `end_prolongation` is an alias for `endprolongation`
-            # [number|string] Prolongation on the end of V-CUT without text
+            # [number|string=3] Prolongation on the end of V-CUT without text
             endprolongation: 3
             # [string='Cmts.User'] Specify the layer to render V-cuts on. Also used for the *layer* type
             layer: 'Cmts.User'
             # `line_width` is an alias for `linewidth`
-            # [number|string] Line width to plot cuts with
+            # [number|string=0.3] Line width to plot cuts with
             linewidth: 0.3
-            # [number|string] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
+            # [number|string=0] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
             # negative puts the cuts into the tabs
             offset: 0
-            # [number|string] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
+            # [number|string=0] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
             # caused by milling). Used for *mousebites* and *layer*
             prolong: 0
-            # [number|string] The spacing of the holes used for the *mousebites*
+            # [number|string=0.8] The spacing of the holes used for the *mousebites*
             spacing: 0.8
             # [string='V-CUT'] Text template for the V-CUT
             template: 'V-CUT'
@@ -1955,13 +1955,13 @@ outputs:
             # `text_prolongation` is an alias for `textprolongation`
             # `text_size` is an alias for `textsize`
             # `text_thickness` is an alias for `textthickness`
-            # [number|string] Text offset from the V-CUT
+            # [number|string=3] Text offset from the V-CUT
             textoffset: 3
-            # [number|string] Prolongation of the text size of V-CUT
+            # [number|string=3] Prolongation of the text size of V-CUT
             textprolongation: 3
             # [number|string] Text size for vcuts
             textsize: 2
-            # [number|string] Text thickness for width
+            # [number|string=0.3] Text thickness for width
             textthickness: 0.3
             # [string='none'] [none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
             # into a layer with this option to understand what's going on. Shouldn't be used for the final design
@@ -1987,28 +1987,28 @@ outputs:
           # [dict] Used to add fiducial marks to the (rail/frame of) the panel
           fiducials:
             # `copper_size` is an alias for `coppersize`
-            # [number|string] Diameter of the copper spot
+            # [number|string=1] Diameter of the copper spot
             coppersize: 1
-            # [number|string] Horizontal offset from panel edges
+            # [number|string=0] Horizontal offset from panel edges
             hoffset: 0
-            # [number|string] Diameter of the solder mask opening
+            # [number|string=1] Diameter of the solder mask opening
             opening: 1
             # [boolean=false] Include the fiducials in the paste layer (therefore they appear on the stencil)
             paste: false
             # [string='none'] [none,3fid,4fid,plugin] Add none, 3 or 4 fiducials to the (rail/frame of) the panel
             type: 'none'
-            # [number|string] Vertical offset from panel edges
+            # [number|string=0] Vertical offset from panel edges
             voffset: 0
           # [dict] Specify the frame around the boards
           framing:
             # [string=''] Argument to pass to the plugin. Used for *plugin*
             arg: ''
-            # [number|string] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
+            # [number|string=0] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
             # and `chamferheight` to create a non 45 degrees chamfer
             chamfer: 0
             # `chamfer_height` is an alias for `chamferheight`
             # `chamfer_width` is an alias for `chamferwidth`
-            # [number|string] Height of the chamfer frame corners, used for non 45 degrees chamfer
+            # [number|string=0] Height of the chamfer frame corners, used for non 45 degrees chamfer
             chamferheight: 0
             # [number|string] Width of the chamfer frame corners, used for non 45 degrees chamfer
             chamferwidth: 0
@@ -2017,29 +2017,29 @@ outputs:
             # [string='both'] [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
             # Used for *frame*
             cuts: 'both'
-            # [number|string] Specify radius of fillet frame corners
+            # [number|string=0] Specify radius of fillet frame corners
             fillet: 0
-            # [number|string] Specify the horizontal space between PCB and the frame/rail
+            # [number|string=2] Specify the horizontal space between PCB and the frame/rail
             hspace: 2
             # `max_total_height` is an alias for `maxtotalheight`
             # `max_total_width` is an alias for `maxtotalwidth`
-            # [number|string] Maximal height of the panel
+            # [number|string=10000] Maximal height of the panel
             maxtotalheight: 10000
-            # [number|string] Maximal width of the panel
+            # [number|string=10000] Maximal width of the panel
             maxtotalwidth: 10000
             # `min_total_height` is an alias for `mintotalheight`
             # `min_total_width` is an alias for `mintotalwidth`
-            # [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
+            # [number|string=0] If needed, add extra material to the rail or frame to meet the minimal requested size.
             # Useful for services that require minimal panel size
             mintotalheight: 0
-            # [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
+            # [number|string=0] If needed, add extra material to the rail or frame to meet the minimal requested size.
             # Useful for services that require minimal panel size
             mintotalwidth: 0
             # `slot_width` is an alias for `slotwidth`
-            # [number|string] Width of the milled slot for *tightframe*
+            # [number|string=2] Width of the milled slot for *tightframe*
             slotwidth: 2
-            # [number|string] Specify the space between PCB and the frame/rail. Overrides `hspace` and `vspace`
-            space: null
+            # [number|string=2] Specify the space between PCB and the frame/rail. Overrides `hspace` and `vspace`
+            space: 2
             # [string='none'] [none,railstb,railslr,frame,tightframe,plugin] Railstb: Add rails on top and bottom.
             # Railslr: Add rails on left and right.
             # Frame: Add a frame around the board.
@@ -2047,9 +2047,9 @@ outputs:
             # the boards have just a milled slot around their perimeter.
             # Plugin: Uses an external python function, only `code` and `arg` are relevant
             type: 'none'
-            # [number|string] Specify the vertical space between PCB and the frame/rail
+            # [number|string=2] Specify the vertical space between PCB and the frame/rail
             vspace: 2
-            # [number|string] Specify with of the rails or frame
+            # [number|string=5] Specify with of the rails or frame
             width: 5
           # [dict] Layout used for the panel
           layout:
@@ -2072,7 +2072,7 @@ outputs:
             # `h_bone_cut` is an alias for `hbonecut`
             # `h_bone_first` is an alias for `hbonefirst`
             # `h_bone_skip` is an alias for `hboneskip`
-            # [number|string] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
+            # [number|string=0] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
             # spacing of the boards
             hbackbone: 0
             # [boolean=true] If there are both backbones specified, specifies if there should be a horizontal cut where the backbones
@@ -2082,7 +2082,7 @@ outputs:
             hbonefirst: 0
             # [number=0] Skip every n horizontal backbones. I.e., 1 means place only every other backbone
             hboneskip: 0
-            # [number|string] Specify the horizontal gap between the boards
+            # [number|string=0] Specify the horizontal gap between the boards
             hspace: 0
             # `rename_net` is an alias for `renamenet`
             # `rename_ref` is an alias for `renameref`
@@ -2091,19 +2091,19 @@ outputs:
             # [string='{orig}'] A pattern by which to rename the references. You can use {n} and {orig} to get the board number and original
             # name
             renameref: '{orig}'
-            # [number|string] Rotate the boards before placing them in the panel
+            # [number|string=0] Rotate the boards before placing them in the panel
             rotation: 0
             # [number=1] Specify the number of rows of boards in the grid pattern
             rows: 1
-            # [number|string] Specify the gap between the boards, overwrites `hspace` and `vspace`
-            space: null
+            # [number|string=0] Specify the gap between the boards, overwrites `hspace` and `vspace`
+            space: 0
             # [string='grid'] [grid,plugin] In the plugin type only `code` and `arg` are relevant
             type: 'grid'
             # `v_back_bone` is an alias for `vbackbone`
             # `v_bone_cut` is an alias for `vbonecut`
             # `v_bone_first` is an alias for `vbonefirst`
             # `v_bone_skip` is an alias for `vboneskip`
-            # [number|string] The width of vertical backbone (0 means no backbone). The backbone does not increase the
+            # [number|string=0] The width of vertical backbone (0 means no backbone). The backbone does not increase the
             # spacing of the boards
             vbackbone: 0
             # [boolean=true] If there are both backbones specified, specifies if there should be a vertical cut where the backbones
@@ -2113,7 +2113,7 @@ outputs:
             vbonefirst: 0
             # [number=0] Skip every n vertical backbones. I.e., 1 means place only every other backbone
             vboneskip: 0
-            # [number|string] Specify the vertical gap between the boards
+            # [number|string=0] Specify the vertical gap between the boards
             vspace: 0
           # [string=''] A name to identify this configuration. If empty will be the order in the list, starting with 1.
           # Don't use just a number or it will be confused as an index
@@ -2123,14 +2123,14 @@ outputs:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
             # (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline
             anchor: 'mt'
-            # [number|string] Height for the `custom` paper size
+            # [number|string=210] Height for the `custom` paper size
             height: 210
             # `page_size` is an alias for `type`
             # `pos_x` is an alias for `posx`
             # `pos_y` is an alias for `posy`
-            # [number|string] The X position of the panel on the page. Can be expressed as a page size percentage
+            # [number|string='50%'] The X position of the panel on the page. Can be expressed as a page size percentage
             posx: '50%'
-            # [number|string] The Y position of the panel on the page. Can be expressed as a page size percentage
+            # [number|string=20] The Y position of the panel on the page. Can be expressed as a page size percentage
             posy: 20
             # `size` is an alias for `type`
             # [string='inherit'] [inherit,custom,A0,A1,A2,A3,A4,A5,A,B,C,D,E,USLetter,USLegal,USLedger,A0-portrait,A1-portrait,A2-portrait,
@@ -2138,7 +2138,7 @@ outputs:
             # USLetter-portrait,USLegal-portrait,USLedger-portrait] Paper size. The default `inherit` option inherits
             # paper size from the source board. This feature is not supported on KiCAD 5
             type: 'inherit'
-            # [number|string] Width for the `custom` paper size
+            # [number|string=297] Width for the `custom` paper size
             width: 297
           # [dict] Finishing touches to the panel
           post:
@@ -2147,14 +2147,14 @@ outputs:
             # [boolean=false] Draw dimensions with the panel size.
             dimensions: false
             # `edge_width` is an alias for `edgewidth`
-            # [number|string] Specify line width for the Edge.Cuts of the panel
+            # [number|string=0.1] Specify line width for the Edge.Cuts of the panel
             edgewidth: 0.1
             # `mill_radius` is an alias for `millradius`
             # `mill_radius_outer` is an alias for `millradiusouter`
-            # [number|string] Simulate the milling operation (add fillets to the internal corners).
+            # [number|string=0] Simulate the milling operation (add fillets to the internal corners).
             # Specify mill radius (usually 1 mm). 0 radius disables the functionality
             millradius: 0
-            # [number|string] Like `millradius`, but modifies only board outer counter.
+            # [number|string=0] Like `millradius`, but modifies only board outer counter.
             # No internal features of the board are affected
             millradiusouter: 0
             # [string='tl'] [tl,tr,bl,br,mt,mb,ml,mr,c] Specify if the auxiliary origin an grid origin should be placed.
@@ -2183,19 +2183,19 @@ outputs:
             type: 'auto'
           # [dict] Used to adjust details of which part of the PCB is panelized
           source:
-            # [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle*
+            # [number|string=0] Bottom right X coordinate of the rectangle used. Used for *rectangle*
             brx: 0
-            # [number|string] Bottom right Y coordinate of the rectangle used. Used for *rectangle*
+            # [number|string=0] Bottom right Y coordinate of the rectangle used. Used for *rectangle*
             bry: 0
             # [string=''] Reference for the kikit:Board footprint used to select the contour. Used for *annotation*
             ref: ''
             # [string='inherit'] [inherit,2layer,4layer,6layer] Used to reduce the number of layers used for the panel
             stack: 'inherit'
-            # [number|string] Top left X coordinate of the rectangle used. Used for *rectangle*
+            # [number|string=0] Top left X coordinate of the rectangle used. Used for *rectangle*
             tlx: 0
-            # [number|string] Top left Y coordinate of the rectangle used. Used for *rectangle*
+            # [number|string=0] Top left Y coordinate of the rectangle used. Used for *rectangle*
             tly: 0
-            # [number|string] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*
+            # [number|string=1] Extra space around the PCB reported size to be included. Used for *auto* and *annotation*
             tolerance: 1
             # [string='auto'] [auto,rectangle,annotation] How we select the area of the PCB used for the panelization.
             # *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
@@ -2207,15 +2207,15 @@ outputs:
             arg: ''
             # [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*
             code: ''
-            # [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
+            # [number|string=1] When your design features open pockets on the side, this parameter specifies extra cutout
             # depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full*
             cutout: 1
             # [number=1] Number of tabs in the horizontal direction. Used for *fixed*
             hcount: 1
-            # [number|string] The width of tabs in the horizontal direction. Used for *fixed* and *spacing*
+            # [number|string=3] The width of tabs in the horizontal direction. Used for *fixed* and *spacing*
             hwidth: 3
             # `min_distance` is an alias for `mindistance`
-            # [number|string] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
+            # [number|string=0] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
             # Used for *fixed*
             mindistance: 0
             # `patch_corners` is an alias for `patchcorners`
@@ -2223,7 +2223,7 @@ outputs:
             # add patches of substrate to these corners. However, if the PCB has fillet or miter, you don't want to
             # apply the patches
             patchcorners: true
-            # [number|string] The maximum spacing of the tabs. Used for *spacing*
+            # [number|string=10] The maximum spacing of the tabs. Used for *spacing*
             spacing: 10
             # `tab_footprints` is an alias for `tabfootprints`
             # [string='kikit:Tab'] The footprint/s used for the *annotation* type. You can specify a list of footprints separated by comma
@@ -2237,25 +2237,25 @@ outputs:
             type: 'spacing'
             # [number=1] Number of tabs in the vertical direction. Used for *fixed*
             vcount: 1
-            # [number|string] The width of tabs in the vertical direction. Used for *fixed* and *spacing*
+            # [number|string=3] The width of tabs in the vertical direction. Used for *fixed* and *spacing*
             vwidth: 3
-            # [number|string] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
+            # [number|string=3] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
             # Used for *fixed*, *spacing*, *corner* and *annotation*
-            width: null
+            width: 3
           # [dict] Used to add text to the panel
           text:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
             anchor: 'mt'
-            # [number|string] Height of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Height of the characters (the same parameters as KiCAD uses)
             height: 1.5
             # [string='center'] [left,right,center] Horizontal justification of the text
             hjustify: 'center'
-            # [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
             hoffset: 0
             # [string='F.SilkS'] Specify text layer
             layer: 'F.SilkS'
-            # [number|string] Specify the orientation (angle)
+            # [number|string=0] Specify the orientation (angle)
             orientation: 0
             # [string=''] Specify the plugin that provides extra variables for the text
             plugin: ''
@@ -2268,30 +2268,30 @@ outputs:
             # *boardCompany* the company from the source board,
             # *boardComment1*-*boardComment9* comments from the source board
             text: ''
-            # [number|string] Stroke thickness
+            # [number|string=0.3] Stroke thickness
             thickness: 0.3
             # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
             type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
-            # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the vertical offset from anchor. Respects KiCAD coordinate system
             voffset: 0
-            # [number|string] Width of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
           # [dict] Used to add text to the panel
           text2:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
             anchor: 'mt'
-            # [number|string] Height of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Height of the characters (the same parameters as KiCAD uses)
             height: 1.5
             # [string='center'] [left,right,center] Horizontal justification of the text
             hjustify: 'center'
-            # [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
             hoffset: 0
             # [string='F.SilkS'] Specify text layer
             layer: 'F.SilkS'
-            # [number|string] Specify the orientation (angle)
+            # [number|string=0] Specify the orientation (angle)
             orientation: 0
             # [string=''] Specify the plugin that provides extra variables for the text
             plugin: ''
@@ -2304,30 +2304,30 @@ outputs:
             # *boardCompany* the company from the source board,
             # *boardComment1*-*boardComment9* comments from the source board
             text: ''
-            # [number|string] Stroke thickness
+            # [number|string=0.3] Stroke thickness
             thickness: 0.3
             # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
             type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
-            # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the vertical offset from anchor. Respects KiCAD coordinate system
             voffset: 0
-            # [number|string] Width of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
           # [dict] Used to add text to the panel
           text3:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
             anchor: 'mt'
-            # [number|string] Height of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Height of the characters (the same parameters as KiCAD uses)
             height: 1.5
             # [string='center'] [left,right,center] Horizontal justification of the text
             hjustify: 'center'
-            # [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
             hoffset: 0
             # [string='F.SilkS'] Specify text layer
             layer: 'F.SilkS'
-            # [number|string] Specify the orientation (angle)
+            # [number|string=0] Specify the orientation (angle)
             orientation: 0
             # [string=''] Specify the plugin that provides extra variables for the text
             plugin: ''
@@ -2340,30 +2340,30 @@ outputs:
             # *boardCompany* the company from the source board,
             # *boardComment1*-*boardComment9* comments from the source board
             text: ''
-            # [number|string] Stroke thickness
+            # [number|string=0.3] Stroke thickness
             thickness: 0.3
             # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
             type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
-            # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the vertical offset from anchor. Respects KiCAD coordinate system
             voffset: 0
-            # [number|string] Width of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
           # [dict] Used to add text to the panel
           text4:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
             anchor: 'mt'
-            # [number|string] Height of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Height of the characters (the same parameters as KiCAD uses)
             height: 1.5
             # [string='center'] [left,right,center] Horizontal justification of the text
             hjustify: 'center'
-            # [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the horizontal offset from anchor. Respects KiCAD coordinate system
             hoffset: 0
             # [string='F.SilkS'] Specify text layer
             layer: 'F.SilkS'
-            # [number|string] Specify the orientation (angle)
+            # [number|string=0] Specify the orientation (angle)
             orientation: 0
             # [string=''] Specify the plugin that provides extra variables for the text
             plugin: ''
@@ -2376,15 +2376,15 @@ outputs:
             # *boardCompany* the company from the source board,
             # *boardComment1*-*boardComment9* comments from the source board
             text: ''
-            # [number|string] Stroke thickness
+            # [number|string=0.3] Stroke thickness
             thickness: 0.3
             # [string='none'] [none,simple] Currently fixed. BTW: don't ask me about this ridiculous default, is how KiKit works
             type: 'none'
             # [string='center'] [left,right,center] Vertical justification of the text
             vjustify: 'center'
-            # [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system
+            # [number|string=0] Specify the vertical offset from anchor. Respects KiCAD coordinate system
             voffset: 0
-            # [number|string] Width of the characters (the same parameters as KiCAD uses)
+            # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
           # [dict] Used to add tooling holes to the (rail/frame of) the panel
           tooling:
@@ -2392,18 +2392,18 @@ outputs:
             arg: ''
             # [string=''] Plugin specification (PACKAGE.FUNCTION or PYTHON_FILE.FUNCTION). Used for *plugin*
             code: ''
-            # [number|string] Horizontal offset from panel edges
+            # [number|string=0] Horizontal offset from panel edges
             hoffset: 0
             # [boolean=false] If True, the holes are included in the paste layer (therefore they appear on the stencil)
             paste: false
-            # [number|string] Diameter of the holes
+            # [number|string=1.152] Diameter of the holes
             size: 1.152
             # `solder_mask_margin` is an alias for `soldermaskmargin`
-            # [number|string] Solder mask expansion/margin. Use 1.3mm for JLCPCB
+            # [number|string=0] Solder mask expansion/margin. Use 1.3mm for JLCPCB
             soldermaskmargin: 0
             # [string='none'] [none,3hole,4hole,plugin] Add none, 3 or 4 holes to the (rail/frame of) the panel
             type: 'none'
-            # [number|string] Vertical offset from panel edges
+            # [number|string=0] Vertical offset from panel edges
             voffset: 0
       # [boolean=false] Use PcbDraw to create a preview of the panel
       create_preview: false
