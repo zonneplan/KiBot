@@ -502,8 +502,8 @@ def test_error_wrong_drill_marks_1(test_dir):
 def test_error_print_pcb_no_layer(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'error_print_pcb_no_layer')
-    ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing .?layers.? list")
+    ctx.run()  # EXIT_BAD_CONFIG Now allowed
+    assert ctx.search_err("No layers specified for")
     ctx.clean_up()
 
 

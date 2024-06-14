@@ -12,7 +12,6 @@ Dependencies:
 import os
 from .gs import GS
 from .out_any_pcb_print import Any_PCB_PrintOptions
-from .error import KiPlotConfigurationError
 from .kicad.patch_svg import patch_svg_file
 from .kicad.pcb import PCB
 from .misc import FONT_HELP_TEXT
@@ -60,7 +59,7 @@ class SVG_PCB_Print(BaseOutput):  # noqa: F821
             self.options = SVG_PCB_PrintOptions
             """ *[dict] Options for the `pdf_pcb_print` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*] List
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to include in the PDF """
         self._category = 'PCB/docs'
 
@@ -68,5 +67,5 @@ class SVG_PCB_Print(BaseOutput):  # noqa: F821
         super().config(parent)
         # We need layers
         if isinstance(self.layers, type):
-            raise KiPlotConfigurationError("Missing `layers` list")
+            self.layers = 'all'
         self.options.set_layers(self.layers)
