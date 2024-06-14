@@ -63,7 +63,7 @@ class KiCostOptions(VariantOptions):
             self.no_distributors = Optionable
             """ *[string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
             self.currency = Optionable
-            """ *[string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
+            """ *[string|list(string)='USD'] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
             self.group_fields = Optionable
             """ [string|list(string)] List of fields that can be different for a group.
                 Parts with differences in these fields are grouped together, but displayed individually """

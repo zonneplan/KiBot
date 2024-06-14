@@ -45,7 +45,7 @@ class AnyDrill(VariantOptions):
             self.use_aux_axis_as_origin = False
             """ Use the auxiliary axis as origin for coordinates """
             self.map = DrillMap
-            """ [dict|string=None] [hpgl,ps,gerber,dxf,svg,pdf,None] Format for a graphical drill map.
+            """ [dict|string='None'] [hpgl,ps,gerber,dxf,svg,pdf,None] Format for a graphical drill map.
                 Not generated unless a format is specified """
             self.output = GS.def_global_output
             """ *name for the drill file, KiCad defaults if empty (%i='PTH_drill') """
