@@ -26,7 +26,7 @@ Parameters:
    -  Valid keys:
 
       -  *board_qty* :index:`: <pair: output - kicost - options; board_qty>` Alias for number.
-      -  **currency** :index:`: <pair: output - kicost - options; currency>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``USD``) Currency priority. Use ISO4217 codes (i.e. USD, EUR).
+      -  **currency** :index:`: <pair: output - kicost - options; currency>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'USD'``) Currency priority. Use ISO4217 codes (i.e. USD, EUR).
 
       -  **distributors** :index:`: <pair: output - kicost - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Include this distributors list. Default is all the available.
 

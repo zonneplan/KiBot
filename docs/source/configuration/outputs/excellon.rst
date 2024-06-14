@@ -33,7 +33,7 @@ Parameters:
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``left_digits`` :index:`: <pair: output - excellon - options; left_digits>` [:ref:`number <number>`] (default: ``0``) number of digits for integer part of coordinates (0 is auto).
-      -  ``map`` :index:`: <pair: output - excellon - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``None``) (choices: "hpgl", "ps", "gerber", "dxf", "svg", "pdf", "None") Format for a graphical drill map.
+      -  ``map`` :index:`: <pair: output - excellon - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``'None'``) (choices: "hpgl", "ps", "gerber", "dxf", "svg", "pdf", "None") Format for a graphical drill map.
          Not generated unless a format is specified.
 
          -  Valid keys:
