@@ -1766,7 +1766,8 @@ outputs:
       # [string=''] Name for a markdown file containing the main part of the page to be generated.
       # This is mandatory and is the description of your project.
       # You can embed the markdown code. If the text doesn't map to a file and contains
-      # more than one line KiBot will assume this is the markdown
+      # more than one line KiBot will assume this is the markdown.
+      # If empty KiBot will generate a silly text and a warning
       description: ''
       # [string=''] Name of the project. Will be passed to the template.
       # If empty we use the name of the KiCad project.
