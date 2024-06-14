@@ -35,6 +35,7 @@ class DataTypeBase(object):
         self.is_list_dict = kind == 'list(dict)' or kind == 'list(dict|string)'
 
     def get_widget(self, obj, window, entry, level, init, value, **kwargs):
+        self.entry = entry
         entry.edited = False
         help = entry.help
         if self.default is not None:
@@ -48,7 +49,6 @@ class DataTypeBase(object):
 
         e_sizer.Add(self.label, gh.SIZER_FLAGS_0)
         e_sizer.Add(self.input, gh.SIZER_FLAGS_1)
-        self.entry = entry
         self.input.Bind(wx.EVT_TEXT, self.OnChange)
         return e_sizer
 
@@ -669,6 +669,7 @@ class EditDict(wx.Dialog):
                 return True, True
         # Ok, the configuration is valid, configure the real object
         self.obj.reconfigure(tree)
+        logger.debug(f'New state: {dict(self.obj.get_attrs_gen())}')
         # Transfer the new state to be the "original"
         for entry in self.data_type_tree:
             entry.update_value()
@@ -926,7 +927,11 @@ class DataEntry(object):
     def OnRemove(self, event):
         if pop_confirm(f'Remove the data from {self.name}?'):
             self.user_defined_ori = False
-            self.valids[self.selected].reset()
+            sel_dt = self.valids[self.selected]
+            # Reset the selected data
+            sel_dt.reset()
+            # Sync
+            self.ori_val = sel_dt.get_value()
 
 
 def adapt_default(val, name):
