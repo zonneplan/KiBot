@@ -13,7 +13,7 @@ from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import config_output, get_output_dir, run_output, register_xmp_import
 from .kicad.config import KiConf, LibAlias, FP_LIB_TABLE, SYM_LIB_TABLE
-from .misc import WRONG_ARGUMENTS, INTERNAL_ERROR, W_COPYOVER, W_MISSLIB, W_MISSCMP
+from .misc import WRONG_ARGUMENTS, INTERNAL_ERROR, W_COPYOVER, W_MISSLIB, W_MISSCMP, W_NOFILES
 from .optionable import Optionable
 from .out_base_3d import Base3DOptions
 from .registrable import RegOutput
@@ -81,7 +81,7 @@ class Copy_FilesOptions(Base3DOptions):
     def __init__(self):
         with document:
             self.files = FilesList
-            """ *[list(dict)] Which files will be included """
+            """ *[list(dict)=[]] Which files will be included """
             self.follow_links = True
             """ Store the file pointed by symlinks, not the symlink """
             self.link_no_copy = False
@@ -93,7 +93,8 @@ class Copy_FilesOptions(Base3DOptions):
     def config(self, parent):
         super().config(parent)
         if isinstance(self.files, type):
-            raise KiPlotConfigurationError('No files provided')
+            # raise KiPlotConfigurationError('No files provided')
+            self.files = []
 
     def get_from_output(self, f, no_out_run):
         from_output = f.source
@@ -361,6 +362,8 @@ class Copy_FilesOptions(Base3DOptions):
         logger.debug('Copying files')
         output += os.path.sep
         copied = {}
+        if not files:
+            logger.warning(W_NOFILES+'Nothing to copy')
         for (src, dst) in files:
             if src is None:
                 # Files we generate, we don't need to copy them
