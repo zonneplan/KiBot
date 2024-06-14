@@ -30,9 +30,8 @@ Parameters:
    -  Valid keys:
 
       -  **output** :index:`: <pair: output - pcb2blender_tools - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=pcb2blender, %x=pcb3d). Affected by global options.
-      -  **show_components** :index:`: <pair: output - pcb2blender_tools - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``all``) (choices: "none", "all") (also accepts any string) List of components to include in the pads list,
-         can be also a string for `none` or `all`. The default is `all`.
-         Ranges like *R5-R10* are supported.
+      -  **show_components** :index:`: <pair: output - pcb2blender_tools - options; show_components>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "none", "all") (also accepts any string) List of components to include in the pads list,
+         can be also a string for `none` or `all`. Ranges like *R5-R10* are supported.
 
       -  ``board_bounds_create`` :index:`: <pair: output - pcb2blender_tools - options; board_bounds_create>` [:ref:`boolean <boolean>`] (default: ``true``) Create the file that informs the size of the used PCB area.
          This is the bounding box reported by KiCad for the PCB edge with 1 mm of margin.

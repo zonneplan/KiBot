@@ -2455,10 +2455,9 @@ outputs:
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_none'
-      # [list(string)|string=all] [none,all,*] List of components to include in the pads list,
-      # can be also a string for `none` or `all`. The default is `all`.
-      # Ranges like *R5-R10* are supported
-      show_components: all
+      # [list(string)|string='all'] [none,all,*] List of components to include in the pads list,
+      # can be also a string for `none` or `all`. Ranges like *R5-R10* are supported
+      show_components: 'all'
       # [boolean=false] Create a file containing the board stackup
       stackup_create: false
       # [string='.'] Directory for the stackup file. Use 'layers' for 2.7+
