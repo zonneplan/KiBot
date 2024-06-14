@@ -769,7 +769,7 @@ outputs:
       # part number. The field containing the LCSC part number is defined by the
       # `field_lcsc_part` global variable
       download_lcsc: true
-      # [list(dict)] Which files will be included
+      # [list(dict)=[]] Which files will be included
       files:
         # [string=''] Destination directory inside the output dir, empty means the same of the file
         # relative to the source directory.

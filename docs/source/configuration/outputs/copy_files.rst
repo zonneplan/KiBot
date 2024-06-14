@@ -30,7 +30,7 @@ Parameters:
          They are downloaded to a temporal directory and discarded.
          If you want to cache the downloaded files specify a directory using the
          KIBOT_3D_MODELS environment variable.
-      -  **files** :index:`: <pair: output - copy_files - options; files>` [:ref:`list(dict) <list(dict)>`] Which files will be included.
+      -  **files** :index:`: <pair: output - copy_files - options; files>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
 
          -  Valid keys:
 

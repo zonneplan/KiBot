@@ -66,6 +66,7 @@ Changed:
    slightly different now. Currently they are Optionable and share more
    in common with outputs. If you need assistance to migrate a preflight
    just open a GitHub issue.
+-  Copy files: Now we don’t stop when nothing to copy is specified
 
 [1.7.0] - 2024-04-23
 --------------------
