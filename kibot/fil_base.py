@@ -304,6 +304,8 @@ class BaseFilter(RegFilter):
 
     @staticmethod
     def _create_internal_filter(name):
+        if name == '_none':
+            return DummyFilter()
         if name == IFILT_MECHANICAL:
             tree = BaseFilter._create_mechanical(name)
         elif name.startswith('_kibom_dn') and len(name) >= 10:

@@ -49,8 +49,12 @@ Fixed:
    -  “0 pico” for “0”
 
 -  Worksheet: Size of PNGs that specify its PPI resolution.
--  Filters: Problems with filters that change fields for components that
-   are only in the PCB. (#628)
+-  Filters:
+
+   -  Problems with filters that change fields for components that are
+      only in the PCB. (#628)
+   -  Use of ’_none’ filter in lists of filters and \_kf()
+
 -  Draw Stackup: Dimension always drawn on User.Drawings layer (#629)
 
 Changed:
