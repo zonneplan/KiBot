@@ -30,7 +30,8 @@ Parameters:
       -  **format** :index:`: <pair: output - populate - options; format>` [:ref:`string <string>`] (default: ``'html'``) (choices: "html", "md") Format for the generated output.
       -  **input** :index:`: <pair: output - populate - options; input>` [:ref:`string <string>`] (default: ``''``) Name of the input file describing the assembly. Must be a markdown file.
          Note that the YAML section of the file will be skipped, all the needed information
-         comes from this output and the `renderer` output.
+         comes from this output and the `renderer` output, not from the YAML section.
+         When empty we use a dummy template, you should provide something better.
       -  **renderer** :index:`: <pair: output - populate - options; renderer>` [:ref:`string <string>`] (default: ``''``) Name of the output used to render the PCB steps.
          Currently this must be a `pcbdraw` or `render_3d` output.
       -  ``dnf_filter`` :index:`: <pair: output - populate - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.

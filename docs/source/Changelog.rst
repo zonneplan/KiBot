@@ -65,14 +65,19 @@ Changed:
    plotting a layer where we don’t have the hidden text. So currently
    KiBot is experimentally disabling the “hidden text layer”. This is a
    bug in KiCad (https://gitlab.com/kicad/code/kicad/-/issues/17958)
--  Layers: now the default for missing layers is all layers.
 -  Preflights: The definition of preflight plug-ins changed. They are
    slightly different now. Currently they are Optionable and share more
    in common with outputs. If you need assistance to migrate a preflight
    just open a GitHub issue.
--  Copy files: Now we don’t stop when nothing to copy is specified
--  KiKit Present: Missing description is no longer fatal
--  Any PCB Print/PCB Print: Missing pages/layers is no longer fatal
+-  In many cases now we allow empty lists and use some sort of default.
+   A warning is issued, but we continue.
+
+   -  Layers: now the default for missing layers is all layers.
+   -  Copy files: Now we don’t stop when nothing to copy is specified
+   -  Layers: now the default for missing layers is all layers.
+   -  KiKit Present: Missing description is no longer fatal
+   -  Any PCB Print/PCB Print: Missing pages/layers is no longer fatal
+   -  Populate: Missing input file is no longer fatal
 
 [1.7.0] - 2024-04-23
 --------------------

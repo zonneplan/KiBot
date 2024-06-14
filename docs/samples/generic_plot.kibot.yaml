@@ -3056,7 +3056,8 @@ outputs:
       initial_components: ''
       # [string=''] Name of the input file describing the assembly. Must be a markdown file.
       # Note that the YAML section of the file will be skipped, all the needed information
-      # comes from this output and the `renderer` output
+      # comes from this output and the `renderer` output, not from the YAML section.
+      # When empty we use a dummy template, you should provide something better
       input: ''
       # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
