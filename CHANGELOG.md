@@ -31,7 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems with filters that change fields for components that are
     only in the PCB. (#628)
   - Use of '_none' filter in lists of filters and _kf()
-- Draw Stackup: Dimension always drawn on User.Drawings layer (#629)
+- Draw Stackup:
+  - Dimension always drawn on User.Drawings layer (#629)
+  - Problems when the PCB wasn't loaded by another preflight
 
 ### Changed:
 - KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it is
