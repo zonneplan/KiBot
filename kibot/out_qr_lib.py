@@ -13,6 +13,7 @@ Dependencies:
 """
 import os
 from .gs import GS
+from .misc import W_NOQR
 from .optionable import BaseOptions, Optionable
 from .error import KiPlotConfigurationError
 from .kicad.pcb import save_pcb_from_sexp
@@ -104,7 +105,7 @@ class QR_LibOptions(BaseOptions):
     def config(self, parent):
         super().config(parent)
         if isinstance(self.qrs, type):
-            raise KiPlotConfigurationError("You must specify at least one QR code")
+            self.qrs = [QRCodeOptions()]
         names = set()
         for qr in self.qrs:
             if qr.name in names:
@@ -459,6 +460,8 @@ class QR_LibOptions(BaseOptions):
         global qrcodegen
         if qrcodegen is None:
             qrcodegen = self.ensure_tool('QRCodeGen')
+        if not self.get_user_defined('qrs'):
+            logger.warning(W_NOQR+'Using a default QR configuration, please provide one')
         # Now we are sure we have qrcodegen
         QR_ECCS = {'low': qrcodegen.QrCode.Ecc.LOW,
                    'medium': qrcodegen.QrCode.Ecc.MEDIUM,
