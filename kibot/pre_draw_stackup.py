@@ -437,7 +437,11 @@ class Draw_Stackup(BasePreFlight):  # noqa: F821
 
     def config(self, parent):
         super().config(parent)
-        self._value = DrawStackupOptions() if isinstance(self.draw_stackup, bool) else self.draw_stackup
+        if isinstance(self.draw_stackup, bool):
+            self._value = DrawStackupOptions()
+            self._value.config(self)
+        else:
+            self._value = self.draw_stackup
 
     def apply(self):
         if not GS.ki7:
