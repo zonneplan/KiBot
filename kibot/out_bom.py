@@ -207,7 +207,7 @@ class RowColors(Optionable):
         if not self.description:
             raise KiPlotConfigurationError('You must add a description for a colored row')
         if isinstance(self.filter, type):
-            raise KiPlotConfigurationError('You must provide a filter to match the rows')
+            self.filter = '_none'
         self.filter = BaseFilter.solve_filter(self.filter, 'colored rows')
 
     def __str__(self):
