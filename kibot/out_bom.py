@@ -127,7 +127,7 @@ class BoMJoinField(Optionable):
         separator = '' if self._text_before else ' '
         return separator + self._text_before + value + self._text_after
 
-    def __repr__(self):
+    def __str__(self):
         if self.text:
             return '`{}`'.format(self.text)
         return '`{}`+{}+`{}`'.format(self.text_before, self.field, self.text_after)
@@ -209,6 +209,10 @@ class RowColors(Optionable):
         if isinstance(self.filter, type):
             raise KiPlotConfigurationError('You must provide a filter to match the rows')
         self.filter = BaseFilter.solve_filter(self.filter, 'colored rows')
+
+    def __str__(self):
+        desc = self.description if self.description else 'No description'
+        return f'`{desc}` ({self.color}) {self.filter}'
 
 
 class BoMLinkable(Optionable):

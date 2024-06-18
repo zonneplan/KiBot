@@ -271,6 +271,11 @@ class PresentBoards(Optionable):
         # external
         return self.solve_external()
 
+    def __str__(self):
+        desc = self.comment if self.comment else 'No comment'
+        name = self.name if self.name else 'No name'
+        return f'`{desc}` ({name}) [{self.mode}]'
+
 
 class KiKit_PresentOptions(BaseOptions):
     def __init__(self):

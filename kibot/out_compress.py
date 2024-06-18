@@ -54,6 +54,12 @@ class FilesList(Optionable):
             self.dest = ''
             """ Destination directory inside the archive, empty means the same of the file """
 
+    def __str__(self):
+        txt = self.from_output if self.from_output else self.source
+        filter = f' (filter: `{self.filter}`)' if self.filter and self.filter != '.*' else ''
+        dest = f' -> {self.dest}' if self.dest else ''
+        return txt+filter+dest
+
 
 class CompressOptions(BaseOptions):
     ZIP_ALGORITHMS = {'auto': ZIP_DEFLATED,

@@ -83,6 +83,9 @@ class QRCodeOptions(Optionable):
         super().config(parent)
         self.layer = 'F.SilkS' if self.layer == 'silk' else 'F.Cu'
 
+    def __str__(self):
+        return f'`{self.name} "{self.text}" ({self.size_sch}/{self.size_pcb} {self.size_units}) [{self.layer}]'
+
 
 class QR_LibOptions(BaseOptions):
     def __init__(self):

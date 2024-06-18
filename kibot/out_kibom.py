@@ -89,6 +89,12 @@ class KiBoMColumns(Optionable):
         elif isinstance(self.join, list):
             self.join = '\t'.join(self.join)
 
+    def __str__(self):
+        txt = f'{self.name} ({self.field})'
+        if self.join:
+            txt += f' {self.join}'
+        return txt
+
 
 class ComponentAliases(Optionable):
     _default = [['r', 'r_small', 'res', 'resistor'],

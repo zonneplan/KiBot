@@ -35,6 +35,11 @@ class FilesList(Optionable):
             self.filter = r'.*\.pdf'
             """ A regular expression that source files must match """
 
+    def __str__(self):
+        txt = self.from_output if self.from_output else self.source
+        filter = f' (filter: `{self.filter}`)' if self.filter and self.filter != '.*' else ''
+        return txt+filter
+
 
 class PDFUniteOptions(BaseOptions):
     def __init__(self):
