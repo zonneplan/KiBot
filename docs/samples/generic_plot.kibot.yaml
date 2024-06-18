@@ -1648,7 +1648,7 @@ outputs:
       aggregate:
         # `board_qty` is an alias for `number`
         # [string=''] Name of the XML to aggregate
-        - file: ''
+        - file: 'netlist.xml'
           # [number=100] Number of boards to build (components multiplier)
           number: 100
           # [string=' '] Variant for this project
