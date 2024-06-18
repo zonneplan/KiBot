@@ -46,6 +46,12 @@ class Aggregate(Optionable):
         if not self.file:
             raise KiPlotConfigurationError("Missing or empty `file` in aggregate list ({})".format(str(self._tree)))
 
+    def __str__(self):
+        txt = self.file
+        if self.variant.strip():
+            txt += ' ({self.variant)'
+        return txt+f' x{self.number}'
+
 
 class KiCostOptions(VariantOptions):
     def __init__(self):

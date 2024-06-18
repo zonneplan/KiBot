@@ -409,3 +409,6 @@ class FieldRename(Optionable):
         if not self.name:
             raise KiPlotConfigurationError("Missing or empty `name` in rename list ({})".format(str(self._tree)))
         self.field = self.field.lower()
+
+    def __str__(self):
+        return f'{self.field} -> {self.name}'

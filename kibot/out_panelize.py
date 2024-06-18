@@ -640,6 +640,12 @@ class PanelizeConfig(PanelOptions):
             if isinstance(v, type):
                 setattr(self, k, None)
 
+    def __str__(self):
+        txt = f'`{self.name}`'
+        if self.extends:
+            txt += f' (extends: {self.extends})'
+        return txt
+
 
 class PanelizeOptions(VariantOptions):
     _extends_regex = re.compile(r'(.+)\[(.+)\]')

@@ -76,6 +76,12 @@ class FilesList(Optionable):
         res = '${KIPRJMOD}/'+os.path.join(self.output_dir, dest)
         return res
 
+    def __str__(self):
+        txt = f'{self.source} [{self.source_type}]'
+        filter = f' (filter: `{self.filter}`)' if self.filter and self.filter != '.*' else ''
+        dest = f' -> {self.dest}' if self.dest else ''
+        return txt+filter+dest
+
 
 class Copy_FilesOptions(Base3DOptions):
     def __init__(self):

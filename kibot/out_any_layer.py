@@ -39,6 +39,9 @@ class CustomReport(Optionable):
             """ Content for the report. Use ``${basename}`` for the project name without extension.
                 Use ``${filename(LAYER)}`` for the file corresponding to LAYER """
 
+    def __str__(self):
+        return self.output
+
 
 class AnyLayerOptions(VariantOptions):
     """ Base class for: DXF, Gerber, HPGL, PDF, PS and SVG """
