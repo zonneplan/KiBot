@@ -383,13 +383,13 @@ class Blender_ExportOptions(BaseOptions):
                 light = BlenderLightOptions()
                 light.name = 'kibot_light'
                 light.adjust()
-                self.light = [light]
+                self.light = light
             else:
                 # The dark ...
                 self.light = []
         # Check light names
         light_names = set()
-        for li in self.light:
+        for li in force_list(self.light):
             name = li.name if li.name else 'kibot_light'
             if name in light_names:
                 id = 2
