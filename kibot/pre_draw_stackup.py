@@ -392,6 +392,7 @@ def update_drawing_group(g, pos_x, pos_y, width, height, tlayer, border, gerber,
 
 
 def update_drawing(ops, parent):
+    load_board()
     gerber = look_for_output(ops.gerber, 'gerber', parent, {'gerber'}) if ops.gerber else None
     if gerber:
         targets, _, _ = get_output_targets(ops.gerber, parent)
