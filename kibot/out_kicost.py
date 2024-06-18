@@ -40,6 +40,7 @@ class Aggregate(Optionable):
             self.board_qty = None
             """ {number} """
         self._category = 'Schematic/BoM'
+        self._file_example = 'netlist.xml'
 
     def config(self, parent):
         super().config(parent)
