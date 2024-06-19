@@ -32,7 +32,7 @@ Parameters:
 
    -  Valid keys:
 
-      -  **columns** :index:`: <pair: output - bom - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] List of columns to display.
+      -  **columns** :index:`: <pair: output - bom - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: computed for your project) List of columns to display.
          Can be just the name of the field.
          In addition to all user defined fields you have various special columns, consult :ref:`bom_columns`.
 
