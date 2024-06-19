@@ -100,9 +100,11 @@ class DataTypeNumber(DataTypeString):
             else:
                 self.has_max = True
         self.restriction = restriction
+        if not isinstance(default, (int, float)):
+            default = 0
         try:
-            self.reset_value = str(try_int(self.default))
-        except TypeError:
+            self.reset_value = str(try_int(default))
+        except (TypeError, ValueError):
             logger.error(f'Missing default for {name}')
             self.reset_value = '0'
 
