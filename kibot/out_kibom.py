@@ -52,6 +52,7 @@ class KiBoMRegex(Optionable):
             self.regexp = None
             """ {regex} """
         self._category = 'Schematic/BoM'
+        self._column_example = 'References'
 
     def config(self, parent):
         super().config(parent)

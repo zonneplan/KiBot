@@ -136,6 +136,8 @@ class PcbDrawResistorRemap(Optionable):
             """ *Value to use for `ref` """
             self.value = None
             """ {val} """
+        self._ref_example = 'R1'
+        self._val_example = '10k'
 
     def config(self, parent):
         super().config(parent)
@@ -163,6 +165,9 @@ class PcbDrawRemapComponents(Optionable):
             """ *Component to use (from `lib`) """
             self.component = None
             """ {comp} """
+        self._ref_example = 'D1'
+        self._lib_example = 'LEDs'
+        self._comp_example = 'LED-5MM_green'
 
     def config(self, parent):
         super().config(parent)
