@@ -358,7 +358,7 @@ outputs:
         # [string=','] Delimiter used for CSV files
         - delimiter: ','
           # [string=''] Name of the schematic to aggregate
-          file: ''
+          file: 'another_schematic.kicad_sch'
           # [string=''] Name to identify this source. If empty we use the name of the schematic
           name: ''
           # [number=1] Number of boards to build (components multiplier). Use negative to subtract
@@ -1539,7 +1539,7 @@ outputs:
         exclude_any:
           # [string=''] Name of the column to apply the regular expression.
           # Use `_field_lcsc_part` to get the value defined in the global options
-          - column: ''
+          - column: 'References'
             # `field` is an alias for `column`
             # [string=''] Regular expression to match
             regex: ''
@@ -1568,7 +1568,7 @@ outputs:
         include_only:
           # [string=''] Name of the column to apply the regular expression.
           # Use `_field_lcsc_part` to get the value defined in the global options
-          - column: ''
+          - column: 'References'
             # `field` is an alias for `column`
             # [string=''] Regular expression to match
             regex: ''
@@ -2586,7 +2586,7 @@ outputs:
               # [boolean=false] Include references and values even when they are marked as invisible
               force_plot_invisible_refs_vals: false
               # [string=''] Name of the layer. As you see it in KiCad
-              layer: ''
+              layer: 'F.Cu'
               # [boolean=true] Include the footprint references
               plot_footprint_refs: true
               # [boolean=true] Include the footprint values
@@ -2632,7 +2632,7 @@ outputs:
               # [boolean=false] Include references and values even when they are marked as invisible
               force_plot_invisible_refs_vals: false
               # [string=''] Name of the layer. As you see it in KiCad
-              layer: ''
+              layer: 'F.Cu'
               # [boolean=true] Include the footprint references
               plot_footprint_refs: true
               # [boolean=true] Include the footprint values
@@ -2782,23 +2782,23 @@ outputs:
       # Replaces `remap` with type check
       remap_components:
         # [string=''] Component to use (from `lib`)
-        - comp: ''
+        - comp: 'LED-5MM_green'
           # `component` is an alias for `comp`
           # [string=''] Library to use
-          lib: ''
+          lib: 'LEDs'
           # `library` is an alias for `lib`
           # [string=''] Reference for the component to change
-          ref: ''
+          ref: 'D1'
           # `reference` is an alias for `ref`
       # [string|list(string)=''] List of resistors to flip its bands
       resistor_flip: ''
       # [list(dict)] List of resistors to be remapped. You can change the value of the resistors here
       resistor_remap:
         # [string=''] Reference for the resistor to change
-        - ref: ''
+        - ref: 'R1'
           # `reference` is an alias for `ref`
           # [string=''] Value to use for `ref`
-          val: ''
+          val: '10k'
           # `value` is an alias for `val`
       # [list(string)|string='none'] [none,all,*] List of components to draw, can be also a string for none or all.
       # The default is none.
