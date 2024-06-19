@@ -267,13 +267,13 @@ class Optionable(object):
         if self._output_multiple_files and ('%i' not in self.output or '%x' not in self.output):
             raise KiPlotConfigurationError('The output pattern must contain %i and %x, otherwise file names will collide')
 
-    def reconfigure(self, tree):
+    def reconfigure(self, tree, parent=None):
         """ Configures an already configured object """
         # We need to reset the members that indicates which class is used for them
         self.__init__()
         # self._configured = False  done by __init__()
         self.set_tree(tree)
-        self.config(self._parent if hasattr(self, '_parent') else None)
+        self.config(parent if parent is not None else (self._parent if hasattr(self, '_parent') else None))
 
     def get_attrs_for(self):
         """ Returns all attributes """
