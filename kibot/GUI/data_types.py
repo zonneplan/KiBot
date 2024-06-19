@@ -954,6 +954,9 @@ def adapt_default(val, name):
         val = False
     elif val[0] in {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}:
         val = float(val)
+    elif val == '?':
+        # Means we don't know because this is filled by the config()
+        return None
     else:
         logger.error(f'Unknown default data type `{val}` for `{name}`')
     return val
