@@ -443,6 +443,9 @@ class DummyForDictOrString(object):
             setattr(self, member, initial)
             self._tree = {member: initial if isinstance(initial, str) else initial._tree}
 
+    def get_attrs_gen(self):
+        return filter(lambda k: k[0][0] != '_', vars(self).items())
+
     def reconfigure(self, tree):
         self._tree = tree
         k, v = tuple(tree.items())[0]
