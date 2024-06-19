@@ -151,6 +151,7 @@ class Layer(Optionable):
                 A default can be specified using the `layer_defaults` global option """
         self._unknown_is_error = True
         self._protel_extension = None
+        self._layer_example = 'F.Cu'
 
     def config(self, parent):
         super().config(parent)

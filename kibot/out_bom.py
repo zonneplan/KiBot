@@ -480,6 +480,7 @@ class Aggregate(Optionable):
             """ Number of boards to build (components multiplier). Use negative to subtract """
             self.delimiter = ','
             """ Delimiter used for CSV files """
+        self._file_example = 'another_schematic.kicad_sch'
 
     def config(self, parent):
         super().config(parent)
