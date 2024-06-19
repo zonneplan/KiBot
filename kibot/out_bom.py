@@ -154,7 +154,7 @@ class BoMColumns(Optionable):
         self._name_example = 'Line'
 
     def __str__(self):
-        txt = f'{self.name} ({self.field})'
+        txt = f'{self.name} ({self.field})' if self.name else self.field
         if self.join:
             txt += f' {self.join}'
         return txt
@@ -515,7 +515,7 @@ class BoMOptions(BaseOptions):
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.columns = BoMColumns
-            """ *[list(dict)|list(string)] List of columns to display.
+            """ *[list(dict)|list(string)=?] List of columns to display.
                 Can be just the name of the field.
                 In addition to all user defined fields you have various special columns, consult :ref:`bom_columns` """
             self.cost_extra_columns = BoMColumns
@@ -683,64 +683,48 @@ class BoMOptions(BaseOptions):
             self.exclude_filter = self.dnf_filter = self.dnc_filter = self.pre_transform = None
             self.variant.config(self)  # Fill or adjust any detail
 
-    def process_columns_config(self, cols, valid_columns, extra_columns, add_all=True):
+    def process_columns_config(self, cols, valid_columns, extra_columns):
         column_rename = {}
         join = []
         if isinstance(cols, type):
-            if not add_all:
-                return ([], [], [], column_rename, join)
-            # If none specified make a list with all the possible columns.
-            # Here are some exceptions:
-            # Ignore the part and footprint library, also sheetpath and the Reference in singular
-            ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L,
-                      ColumnList.COL_REFERENCE_L[:-1]]
-            if len(self.aggregate) == 0:
-                ignore.append(ColumnList.COL_SOURCE_BOM_L)
-                if self.number == 1:
-                    # For one board avoid COL_GRP_BUILD_QUANTITY
-                    ignore.append(ColumnList.COL_GRP_BUILD_QUANTITY_L)
-            # Exclude the particular columns
-            columns = [h for h in valid_columns if not h.lower() in ignore]
-            column_levels = [0]*len(columns)
-            column_comments = ['']*len(columns)
-        else:
-            columns = []
-            column_levels = []
-            column_comments = []
-            # Ensure the column names are valid.
-            # Also create the rename and join lists.
-            # Lower case available columns (to check if valid)
-            valid_columns_l = {c.lower(): c for c in valid_columns + extra_columns}
-            logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
-            # Create the different lists
-            for col in cols:
-                if isinstance(col, str):
-                    # Just a string, add to the list of used
-                    new_col = col
-                    new_col_l = new_col.lower()
-                    level = 0
-                    comment = ''
-                else:
-                    # A complete entry
-                    new_col = col.field
-                    new_col_l = new_col.lower()
-                    # A column rename
-                    if col.name:
-                        column_rename[new_col_l] = col.name
-                    # Attach other columns
-                    if col.join:
-                        join.append(col.join)
-                    level = col.level
-                    comment = col.comment
-                # Check this is a valid column
-                if new_col_l not in valid_columns_l:
-                    # The Field_Rename filter can change this situation:
-                    # raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
-                    logger.warning(W_BADFIELD+'Invalid column name `{}`. Valid columns are {}.'.
-                                   format(new_col, list(valid_columns_l.values())))
-                columns.append(new_col)
-                column_levels.append(level)
-                column_comments.append(comment)
+            return ([], [], [], column_rename, join)
+        columns = []
+        column_levels = []
+        column_comments = []
+        # Ensure the column names are valid.
+        # Also create the rename and join lists.
+        # Lower case available columns (to check if valid)
+        valid_columns_l = {c.lower(): c for c in valid_columns + extra_columns}
+        logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
+        # Create the different lists
+        for col in cols:
+            if isinstance(col, str):
+                # Just a string, add to the list of used
+                new_col = col
+                new_col_l = new_col.lower()
+                level = 0
+                comment = ''
+            else:
+                # A complete entry
+                new_col = col.field
+                new_col_l = new_col.lower()
+                # A column rename
+                if col.name:
+                    column_rename[new_col_l] = col.name
+                # Attach other columns
+                if col.join:
+                    join.append(col.join)
+                level = col.level
+                comment = col.comment
+            # Check this is a valid column
+            if new_col_l not in valid_columns_l:
+                # The Field_Rename filter can change this situation:
+                # raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
+                logger.warning(W_BADFIELD+'Invalid column name `{}`. Valid columns are {}.'.
+                               format(new_col, list(valid_columns_l.values())))
+            columns.append(new_col)
+            column_levels.append(level)
+            column_comments.append(comment)
         return (columns, column_levels, column_comments, column_rename, join)
 
     def config(self, parent):
@@ -836,10 +820,35 @@ class BoMOptions(BaseOptions):
                                            format(self.footprint_type_values))
         # Columns
         (valid_columns, extra_columns) = self._get_columns()
+        self.create_default_columns(valid_columns)
         (self._columns, self.column_levels, self.column_comments, self.column_rename,
          self.join) = self.process_columns_config(self.columns, valid_columns, extra_columns)
         (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
-         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns, add_all=False)
+         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns)
+
+    def create_default_columns(self, valid_columns):
+        if not isinstance(self.columns, type):
+            # Something defined
+            return
+        # If none specified make a list with all the possible columns.
+        # Here are some exceptions:
+        # Ignore the part and footprint library, also sheetpath and the Reference in singular
+        ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L,
+                  ColumnList.COL_REFERENCE_L[:-1]]
+        if len(self.aggregate) == 0:
+            ignore.append(ColumnList.COL_SOURCE_BOM_L)
+            if self.number == 1:
+                # For one board avoid COL_GRP_BUILD_QUANTITY
+                ignore.append(ColumnList.COL_GRP_BUILD_QUANTITY_L)
+        # Exclude the particular columns
+        self.columns = []
+        for col in valid_columns:
+            if col.lower() in ignore:
+                continue
+            c = BoMColumns()
+            # Here we set the values from a fake tree, note that we don't set self._tree because this isn't from the YAML
+            c.reconfigure({'field': col}, self)
+            self.columns.append(c)
 
     def get_ref_index(self, header, fname):
         ref_n = ColumnList.COL_REFERENCE_L
