@@ -800,7 +800,10 @@ def process_help_data_type(obj, help):
     else:
         new_data_type = '['+' | '.join(valid)+']'
     if def_val:
-        new_data_type += f' (default: ``{def_val}``)'
+        if def_val == '?':
+            new_data_type += ' (default: computed for your project)'
+        else:
+            new_data_type += f' (default: ``{def_val}``)'
     string_added = False
     number_added = False
     for tp, validation in zip(valid, validations):
@@ -1147,7 +1150,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
             for hl in help_lines:
                 # Dots at the beginning are replaced by spaces.
                 # Used to keep indentation.
-                hl = hl.strip()
+                hl = hl.strip().replace('=?]', '=computed for your project]')
                 if hl[0] == '.':
                     for i in range(1, len(hl)):
                         if hl[i] != '.':

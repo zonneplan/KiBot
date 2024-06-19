@@ -369,7 +369,7 @@ outputs:
       angle_positive: true
       # [boolean=false] Use negative X coordinates for footprints on bottom layer (for XYRS)
       bottom_negative_x: false
-      # [list(dict)|list(string)] List of columns to display.
+      # [list(dict)|list(string)=computed for your project] List of columns to display.
       # Can be just the name of the field.
       # In addition to all user defined fields you have various special columns, consult :ref:`bom_columns`
       columns:
