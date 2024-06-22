@@ -31,6 +31,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Problems with filters that change fields for components that are
     only in the PCB. (#628)
   - Use of '_none' filter in lists of filters and _kf()
+- Variants:
+  - Problems when remove_solder_paste_for_dnp and remove_adhesive_for_dnp are
+    both disabled (remove_solder_mask_for_dnp wrongly defined) (#632)
 - Draw Stackup:
   - Dimension always drawn on User.Drawings layer (#629)
   - Problems when the PCB wasn't loaded by another preflight

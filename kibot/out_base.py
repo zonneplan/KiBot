@@ -399,7 +399,7 @@ class VariantOptions(BaseOptions):
     def remove_paste_and_glue(self, board, comps_hash):
         """ Remove from solder paste layers the filtered components. """
         if comps_hash is None or not (GS.global_remove_solder_paste_for_dnp or GS.global_remove_adhesive_for_dnp or
-                                      GS.remove_solder_mask_for_dnp):
+                                      GS.global_remove_solder_mask_for_dnp):
             return
         logger.debug('Removing paste, mask and/or glue')
         exclude = LSET()
