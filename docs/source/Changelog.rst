@@ -91,6 +91,8 @@ Changed:
    -  Any PCB Print/PCB Print: Missing pages/layers is no longer fatal
    -  Populate: Missing input file is no longer fatal
    -  QR Lib: Missing QR definition is no longer fatal (%p %r used)
+   -  Blender Options outputs: Make a render when no outputs are
+      specified
 
 [1.7.0] - 2024-04-23
 --------------------
