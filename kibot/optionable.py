@@ -120,6 +120,7 @@ class Optionable(object):
         setattr(self, '_help_'+name, text)
 
     def get_valid_types(self, doc):
+        assert doc[0] == '[', doc[0]+'\n'+str(self.__dict__)
         # Separate the valid types for this key
         sections = doc[1:].split('] ')
         valid = sections[0].split('|')
@@ -185,26 +186,23 @@ class Optionable(object):
                 continue
             # Check the data type
             cur_doc, alias, is_alias = self.get_doc(k, no_basic=True)
+            assert cur_doc[0] == '[', cur_doc[0]
+            # Separate the valid types for this key
+            valid, extra, def_val, real_help = self.get_valid_types(cur_doc)
+            if isinstance(v, type):
+                # An optionable
+                v.set_default(def_val)
             cur_val = getattr(self, alias)
-            if cur_doc[0] == '[':
-                # Separate the valid types for this key
-                valid = cur_doc[1:].split(']')[0].split('|')
-                # Remove the XXXX=Value
-                if '=' in valid[-1]:
-                    valid[-1] = valid[-1].split('=')[0]
-                # Get the type used by the user as a string
-                v_type = typeof(v, Optionable)
-                if v_type not in valid and not self.check_string_dict(v_type, valid, k, v):
-                    # Not a valid type for this key
-                    if v_type == 'None':
-                        raise KiPlotConfigurationError("Empty option `{}`".format(k))
-                    if len(valid) == 1:
-                        raise KiPlotConfigurationError("Option `{}` must be a {} not `{}`".format(k, valid[0], v_type))
-                    else:
-                        raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(k, valid, v_type))
-            else:
-                valid = None
-                v_type = typeof(cur_val, Optionable)
+            # Get the type used by the user as a string
+            v_type = typeof(v, Optionable)
+            if v_type not in valid and not self.check_string_dict(v_type, valid, k, v):
+                # Not a valid type for this key
+                if v_type == 'None':
+                    raise KiPlotConfigurationError("Empty option `{}`".format(k))
+                if len(valid) == 1:
+                    raise KiPlotConfigurationError("Option `{}` must be a {} not `{}`".format(k, valid[0], v_type))
+                else:
+                    raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(k, valid, v_type))
             if v_type == 'boolean':
                 Optionable._check_bool(k, v)
             elif v_type == 'number':
