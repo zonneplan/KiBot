@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the KiBoM and IBoM filters.
 from re import compile, IGNORECASE
@@ -14,13 +14,6 @@ from .out_base import BoMRegex
 from . import log
 
 logger = log.get_logger()
-
-
-class DNFList(Optionable):
-    _default = DNF
-
-#     def __init__(self):
-#         super().__init__()
 
 
 @filter_class
@@ -45,7 +38,7 @@ class Generic(BaseFilter):  # noqa: F821
             """ [list(dict)] A series of regular expressions used to exclude parts.
                 If a component matches ANY of these, it will be excluded.
                 Column names are case-insensitive  """
-            self.keys = DNFList
+            self.keys = Optionable
             """ [string|list(string)='dnf_list'] [dnc_list,dnf_list] List of keys to match.
                 The `dnf_list` and `dnc_list` internal lists can be specified as strings """
             self.exclude_value = False
@@ -109,12 +102,12 @@ class Generic(BaseFilter):  # noqa: F821
                 r.regex = compile(r.regex, flags=IGNORECASE)
         # keys
         if isinstance(self.keys, type):
-            self.keys = DNF
-        elif isinstance(self.keys, str):
-            self.keys = DNF if self.keys == 'dnf_list' else DNC
+            self.keys = 'dnf_list'
+        if isinstance(self.keys, str):
+            self._keys = DNF if self.keys == 'dnf_list' else DNC
         else:
             # Ensure lowercase
-            self.keys = [v.lower() for v in self.keys]
+            self._keys = [v.lower() for v in self.keys]
         # Config field must be lowercase
         self.config_field = self.config_field.lower()
         # exclude_refs
@@ -202,13 +195,13 @@ class Generic(BaseFilter):  # noqa: F821
         if self.exclude_refs and (comp.ref in self.exclude_refs or comp.ref_prefix+'*' in self.exclude_refs):
             return exclude
         # All stuff where keys are involved
-        if self.keys:
+        if self._keys:
             # Exclude components if their 'Value' is any of the keys
-            if self.exclude_value and value in self.keys:
+            if self.exclude_value and value in self._keys:
                 return exclude
             # Exclude components if a field is named as any of the keys
             if self.exclude_field:
-                for k in self.keys:
+                for k in self._keys:
                     if k in comp.dfields:
                         return exclude
             # Exclude components containing a key value in the config field.
@@ -220,10 +213,10 @@ class Generic(BaseFilter):  # noqa: F821
                         opts = config.split(sep)
                         # Try with all the extracted values
                         for opt in opts:
-                            if opt.strip() in self.keys:
+                            if opt.strip() in self._keys:
                                 return exclude
                 else:  # No separator
-                    if config in self.keys:
+                    if config in self._keys:
                         return exclude
         # Regular expressions
         if not self.test_reg_include(comp):
