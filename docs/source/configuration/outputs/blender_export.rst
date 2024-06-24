@@ -70,7 +70,7 @@ Parameters:
             -  ``variant`` :index:`: <pair: output - blender_export - options - pcb3d; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
             -  ``version`` :index:`: <pair: output - blender_export - options - pcb3d; version>` [:ref:`string <string>`] (default: ``'2.7'``) (choices: "2.1", "2.1_haschtl", "2.7") Variant of the format used.
 
-      -  **point_of_view** :index:`: <pair: output - blender_export - options; point_of_view>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] How the object is viewed by the camera.
+      -  **point_of_view** :index:`: <pair: output - blender_export - options; point_of_view>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[{'view': 'top'}]``) How the object is viewed by the camera.
 
          -  Valid keys:
 

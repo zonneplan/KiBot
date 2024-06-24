@@ -220,6 +220,7 @@ class BlenderRenderOptions(Optionable):
 class BlenderPointOfViewOptions(Optionable):
     """ Point of View parameters """
     _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
+    _default = [{'view': 'top'}]
 
     def __init__(self):
         super().__init__()
@@ -408,8 +409,7 @@ class Blender_ExportOptions(BaseOptions):
             self.render_options = BlenderRenderOptions()
         # Point of View, make sure we have a list and at least 1 element
         if isinstance(self.point_of_view, type):
-            pov = BlenderPointOfViewOptions()
-            self.point_of_view = [pov]
+            self.configure_from_default('point_of_view')
 
     def get_output_filename(self, o, output_dir, pov, order):
         if o.type == 'render':
