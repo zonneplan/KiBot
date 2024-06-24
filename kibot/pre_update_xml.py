@@ -160,7 +160,8 @@ class Update_XML(BasePreFlight):  # noqa: F821
             GS.exit_with_error("Connectivity API is broken on KiCad 7.0.0\n"
                                "Please upgrade KiCad to 7.0.1 or newer", MISSING_TOOL)
         if GS.ki8:
-            GS.exit_with_error('For KiCad 8 use the `drc` preflight, it supports parity checks from KiCad', MISSING_TOOL)
+            GS.exit_with_error('`check_pcb_parity` not available for KiCad 8 (broken API).\n'
+                               ' Use the `drc` preflight, it supports parity checks from KiCad', MISSING_TOOL)
         fname = GS.sch_no_ext+'.xml'
         logger.debug('Loading XML: '+fname)
         try:
