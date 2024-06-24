@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the KiCost subparts mechanism.
 #              The 'manf#' field can contain more than one value separated by ;
@@ -67,10 +67,11 @@ class Subparts(BaseFilter):  # noqa: F821
         if not self.ref_sep:
             self.ref_sep = '#'
         if isinstance(self.split_fields, type):
-            self.split_fields = DISTRIBUTORS_F
+            self._split_fields = self.split_fields = DISTRIBUTORS_F
         else:
+            self._split_fields = self.split_fields
             if self.split_fields_expand:
-                self.split_fields.extend(DISTRIBUTORS_F)
+                self._split_fields += DISTRIBUTORS_F
         # (?<!\\) is used to skip \;
         self._part_sep = re.compile(r'(?<!\\)\s*['+self.separators+r']\s*')
         self._qty_sep = re.compile(r'(?<!\\)\s*['+self.mult_separators+r']\s*')
@@ -79,7 +80,7 @@ class Subparts(BaseFilter):  # noqa: F821
         self._num_format = re.compile(r"^\s*[\-\+]?\s*[0-9]*\s*[\.\/]*\s*?[0-9]*\s*$")
         self._remove_sep = re.compile(r'[\.\/]')
         # The list of all fields that controls the process
-        self._fields = self.split_fields
+        self._fields = self._split_fields
         if self.manf_pn_field:
             self._fields.append(self.manf_pn_field)
         # List of fields that needs qty computation
