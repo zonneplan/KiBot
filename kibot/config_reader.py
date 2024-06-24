@@ -793,7 +793,7 @@ def trim(docstring):
     return trimmed
 
 
-def process_help_data_type(obj, help):
+def process_help_data_type(obj, help, v):
     valid, validations, def_val, real_help = obj.get_valid_types(help)
     if rst_mode:
         new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
@@ -803,6 +803,10 @@ def process_help_data_type(obj, help):
         if def_val == '?':
             new_data_type += ' (default: computed for your project)'
         else:
+            new_data_type += f' (default: ``{def_val}``)'
+    elif isinstance(v, type):
+        def_val = v.get_default()
+        if def_val:
             new_data_type += f' (default: ``{def_val}``)'
     string_added = False
     number_added = False
@@ -878,7 +882,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
         assert help is not None, f'Undocumented option: `{k}`'
         if not is_alias and k != 'type':
             assert help[0] == '[', f'Missing option data type: `{k}`: {help}'
-            help = process_help_data_type(obj, help)
+            help = process_help_data_type(obj, help, v)
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         if rst_mode and context:
@@ -1167,13 +1171,15 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
         elif isinstance(val, bool):
             val = str(val).lower()
         if isinstance(val, type):
+            default = val.get_default()
             if val.__name__ == 'Optionable' and help and '=' in help_lines[0]:
                 # Get the text after =
                 txt = help_lines[0].split('=')[1]
                 # Get the text before the space, without the ]
                 txt = txt.split()[0][:-1]
                 f.write(ind_str+'{}: {}\n'.format(k, txt))
-            elif val.get_default():
+            elif default and not (isinstance(default, dict) or
+                                  (isinstance(default, list) and isinstance(default[0], dict))):
                 f.write(ind_str+'{}: {}\n'.format(k, val.get_default()))
             else:
                 if is_list and first:

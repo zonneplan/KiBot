@@ -47,14 +47,14 @@ Parameters:
 
 
             -  **fit_field** :index:`: <pair: output - kibom - options - conf; fit_field>` [:ref:`string <string>`] (default: ``'Config'``) Field name used to determine if a particular part is to be fitted (also DNC and variants).
-            -  **group_fields** :index:`: <pair: output - kibom - options - conf; group_fields>` [:ref:`list(string) <list(string)>`] List of fields used for sorting individual components into groups.
+            -  **group_fields** :index:`: <pair: output - kibom - options - conf; group_fields>` [:ref:`list(string) <list(string)>`] (default: ``['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']``) List of fields used for sorting individual components into groups.
                Components which match (comparing *all* fields) will be grouped together.
                Field names are case-insensitive.
                If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used.
 
             -  **ignore_dnf** :index:`: <pair: output - kibom - options - conf; ignore_dnf>` [:ref:`boolean <boolean>`] (default: ``true``) Exclude DNF (Do Not Fit) components.
             -  **number_rows** :index:`: <pair: output - kibom - options - conf; number_rows>` [:ref:`boolean <boolean>`] (default: ``true``) First column is the row number.
-            -  ``component_aliases`` :index:`: <pair: output - kibom - options - conf; component_aliases>` [:ref:`list(list(string)) <list(list(string))>`] A series of values which are considered to be equivalent for the part name.
+            -  ``component_aliases`` :index:`: <pair: output - kibom - options - conf; component_aliases>` [:ref:`list(list(string)) <list(list(string))>`] (default: ``[['r', 'r_small', 'res', 'resistor'], ['l', 'l_small', 'inductor'], ['c', 'c_small', 'cap', 'capacitor'], ['sw', 'switch'], ['zener', 'zenersmall'], ['d', 'diode', 'd_small']]``) A series of values which are considered to be equivalent for the part name.
                Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
                will ensure the equivalent capacitor symbols can be grouped together.
                If empty the following aliases are used:
