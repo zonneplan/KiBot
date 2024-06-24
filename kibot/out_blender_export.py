@@ -67,6 +67,8 @@ class PCB2BlenderOptions(Optionable):
 
 class BlenderOutputOptions(Optionable):
     """ What is generated """
+    _default = [{'type': 'render'}]
+
     def __init__(self):
         super().__init__()
         with document:
@@ -371,7 +373,7 @@ class Blender_ExportOptions(BaseOptions):
             self.pcb3d.config(self)
         # Do we have outputs?
         if isinstance(self.outputs, type):
-            self.outputs = []
+            self.configure_from_default('outputs')
         # Ensure we have import options
         if isinstance(self.pcb_import, type):
             self.pcb_import = PCB2BlenderOptions()

@@ -481,6 +481,26 @@ class Optionable(object):
     def get_default(cls):
         return cls._default
 
+    def configure_from_default(self, member):
+        """ Initializes the `member` using its default value.
+            The `member` should be assigned with the class used for it """
+        v = getattr(self, member)
+        default = v.get_default()
+        if isinstance(default, dict):
+            o = v()
+            o.set_tree(default)
+            o.config(self)
+            default = o
+        elif isinstance(default, list) and isinstance(default[0], dict):
+            res = []
+            for item in default:
+                o = v()
+                o.set_tree(item)
+                o.config(self)
+                res.append(o)
+            default = res
+        setattr(self, member, default)
+
     def validate_color_str(self, color):
         return self._color_re.match(color) or self._color_re_a.match(color)
 
