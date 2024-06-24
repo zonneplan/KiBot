@@ -134,6 +134,8 @@ class BlenderObjOptions(Optionable):
 
 class BlenderLightOptions(BlenderObjOptions):
     """ A light in the scene. """
+    _default = [{'name': 'kibot_light', 'pos_x': '-size*3.33', 'pos_y': 'size*3.33', 'pos_z': 'size*5', 'energy': 0}]
+
     def __init__(self):
         super().__init__()
         with document:
@@ -382,10 +384,7 @@ class Blender_ExportOptions(BaseOptions):
             # None
             if self.add_default_light:
                 # Create one
-                light = BlenderLightOptions()
-                light.name = 'kibot_light'
-                light.adjust()
-                self.light = light
+                self.configure_from_default('light')
             else:
                 # The dark ...
                 self.light = []
