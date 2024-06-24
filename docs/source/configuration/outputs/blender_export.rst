@@ -129,7 +129,7 @@ Parameters:
          Use something like '_%03d' for animations.
       -  ``fixed_auto_camera`` :index:`: <pair: output - blender_export - options; fixed_auto_camera>` [:ref:`boolean <boolean>`] (default: ``false``) When using the automatically generated camera and multiple points of view this option computes the camera
          position just once. Suitable for videos.
-      -  ``light`` :index:`: <pair: output - blender_export - options; light>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Options for the light/s.
+      -  ``light`` :index:`: <pair: output - blender_export - options; light>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[{'name': 'kibot_light', 'pos_x': '-size*3.33', 'pos_y': 'size*3.33', 'pos_z': 'size*5', 'energy': 0}]``) Options for the light/s.
 
          -  Valid keys:
 
