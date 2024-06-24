@@ -17,7 +17,7 @@ from .macros import macros, document, pre_class  # noqa: F401
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kiplot import load_board
-from .misc import BOM_ERROR, NETLIST_DIFF, W_PARITY, MISSING_TOOL, KICAD_VERSION_7_0_1, W_NOTINBOM, MOD_BOARD_ONLY, W_DEPR
+from .misc import BOM_ERROR, KICAD_VERSION_7_0_1, MISSING_TOOL, MOD_BOARD_ONLY, NETLIST_DIFF, W_NOTINBOM, W_PARITY
 from .log import get_logger
 from .optionable import Optionable
 import pcbnew
@@ -36,7 +36,7 @@ class Update_XMLOptions(Optionable):
             self.check_pcb_parity = False
             """ *Check if the PCB and Schematic are synchronized.
                 This is equivalent to the *Test for parity between PCB and schematic* of the DRC dialog.
-                Not available for KiCad 5. **Important**: when using KiCad 6 and the *Exclude from BoM* attribute
+                Only for KiCad 6 and 7. **Important**: when using KiCad 6 and the *Exclude from BoM* attribute
                 these components won't be included in the generated XML, so we can't check its parity """
             self.as_warnings = False
             """ Inform the problems as warnings and don't stop """
@@ -160,7 +160,7 @@ class Update_XML(BasePreFlight):  # noqa: F821
             GS.exit_with_error("Connectivity API is broken on KiCad 7.0.0\n"
                                "Please upgrade KiCad to 7.0.1 or newer", MISSING_TOOL)
         if GS.ki8:
-            logger.warning(W_DEPR+'For KiCad 8 use the `drc` preflight, it supports parity checks from KiCad')
+            GS.exit_with_error('For KiCad 8 use the `drc` preflight, it supports parity checks from KiCad', MISSING_TOOL)
         fname = GS.sch_no_ext+'.xml'
         logger.debug('Loading XML: '+fname)
         try:
@@ -218,6 +218,5 @@ class Update_XML(BasePreFlight):  # noqa: F821
             self._files_to_remove.append(side_effect_file)
         logger.info('- Updating BoM in XML format')
         self.exec_with_retry(cmd, BOM_ERROR)
-        logger.error(self._check_pcb_parity)
         if self._check_pcb_parity:
             self.check_pcb_parity()

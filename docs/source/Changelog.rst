@@ -66,6 +66,9 @@ Fixed:
    -  Dimension always drawn on User.Drawings layer (#629)
    -  Problems when the PCB wasn’t loaded by another preflight
 
+-  Update XML: ``check_pcb_parity`` not usable for KiCad 8, must use the
+   ``drc`` preflight (#633)
+
 Changed:
 ~~~~~~~~
 

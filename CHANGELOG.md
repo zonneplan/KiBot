@@ -37,6 +37,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Draw Stackup:
   - Dimension always drawn on User.Drawings layer (#629)
   - Problems when the PCB wasn't loaded by another preflight
+- Update XML: `check_pcb_parity` not usable for KiCad 8, must use the `drc`
+  preflight (#633)
 
 ### Changed:
 - KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it is
