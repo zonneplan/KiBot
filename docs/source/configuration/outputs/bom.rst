@@ -73,7 +73,7 @@ Parameters:
       -  **format** :index:`: <pair: output - bom - options; format>` [:ref:`string <string>`] (default: ``''``) (choices: "HTML", "CSV", "TXT", "TSV", "XML", "XLSX", "HRTXT") format for the BoM.
          Defaults to CSV or a guess according to the options.
          HRTXT stands for Human Readable TeXT.
-      -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [:ref:`list(string) <list(string)>`] List of fields used for sorting individual components into groups.
+      -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [:ref:`list(string) <list(string)>`] (default: ``['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']``) List of fields used for sorting individual components into groups.
          Components which match (comparing *all* fields) will be grouped together.
          Field names are case-insensitive.
          For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
@@ -242,7 +242,7 @@ Parameters:
 
       -  ``angle_positive`` :index:`: <pair: output - bom - options; angle_positive>` [:ref:`boolean <boolean>`] (default: ``true``) Always use positive values for the footprint rotation.
       -  ``bottom_negative_x`` :index:`: <pair: output - bom - options; bottom_negative_x>` [:ref:`boolean <boolean>`] (default: ``false``) Use negative X coordinates for footprints on bottom layer (for XYRS).
-      -  ``component_aliases`` :index:`: <pair: output - bom - options; component_aliases>` [:ref:`list(list(string)) <list(list(string))>`] A series of values which are considered to be equivalent for the part name.
+      -  ``component_aliases`` :index:`: <pair: output - bom - options; component_aliases>` [:ref:`list(list(string)) <list(list(string))>`] (default: ``[['r', 'r_small', 'res', 'resistor'], ['l', 'l_small', 'inductor'], ['c', 'c_small', 'cap', 'capacitor'], ['sw', 'switch'], ['zener', 'zenersmall'], ['d', 'diode', 'd_small']]``) A series of values which are considered to be equivalent for the part name.
          Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
          will ensure the equivalent capacitor symbols can be grouped together.
          If empty the following aliases are used:
@@ -316,7 +316,7 @@ Parameters:
       -  ``int_qtys`` :index:`: <pair: output - bom - options; int_qtys>` [:ref:`boolean <boolean>`] (default: ``true``) Component quantities are always expressed as integers. Using the ceil() function.
       -  ``merge_blank_fields`` :index:`: <pair: output - bom - options; merge_blank_fields>` [:ref:`boolean <boolean>`] (default: ``true``) Component groups with blank fields will be merged into the most compatible group, where possible.
       -  ``merge_both_blank`` :index:`: <pair: output - bom - options; merge_both_blank>` [:ref:`boolean <boolean>`] (default: ``true``) When creating groups two components with empty/missing field will be interpreted as with the same value.
-      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [:ref:`list(string) <list(string)>`] List of fields where we tolerate conflicts.
+      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [:ref:`list(string) <list(string)>`] (default: ``['Config', 'Part']``) List of fields where we tolerate conflicts.
          Use it to avoid undesired warnings.
          By default the field indicated in `fit_field`, the field used for variants and
          the field `part` are excluded.

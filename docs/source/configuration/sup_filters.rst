@@ -234,7 +234,7 @@ Supported filters
       -  ``name`` :index:`: <pair: filter - subparts; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
       -  ``ref_sep`` :index:`: <pair: filter - subparts; ref_sep>` [:ref:`string <string>`] (default: ``'#'``) Separator used in the reference (i.e. R10#1).
       -  ``separators`` :index:`: <pair: filter - subparts; separators>` [:ref:`string <string>`] (default: ``';,'``) Separators used between subparts. Each character in this string is a valid separator.
-      -  ``split_fields`` :index:`: <pair: filter - subparts; split_fields>` [:ref:`list(string) <list(string)>`] List of fields to split, usually the distributors part numbers.
+      -  ``split_fields`` :index:`: <pair: filter - subparts; split_fields>` [:ref:`list(string) <list(string)>`] (default: ``['arrow#', 'digikey#', 'farnell#', 'lcsc#', 'mouser#', 'newark#', 'rs#', 'tme#']``) List of fields to split, usually the distributors part numbers.
 
       -  ``split_fields_expand`` :index:`: <pair: filter - subparts; split_fields_expand>` [:ref:`boolean <boolean>`] (default: ``false``) When `true` the fields in `split_fields` are added to the internal names.
       -  ``use_ref_sep_for_first`` :index:`: <pair: filter - subparts; use_ref_sep_for_first>` [:ref:`boolean <boolean>`] (default: ``true``) Force the reference separator use even for the first component in the list (KiCost behavior).
