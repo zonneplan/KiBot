@@ -98,12 +98,15 @@ class Optionable(object):
         except AttributeError:
             return None, name, False
         if doc[0] == '{':
-            alias = doc[1:-1]
-            return getattr(self, '_help_'+alias).strip(), alias, True
+            is_alias = True
+            name = doc[1:-1]
+            doc = getattr(self, '_help_'+name).strip()
+        else:
+            is_alias = False
         if no_basic and doc[0] == '*':
             # Remove the 'basic' indicator
             doc = doc[1:]
-        return doc, name, False
+        return doc, name, is_alias
 
     def is_basic_option(self, name):
         help, _, _ = self.get_doc(name)
