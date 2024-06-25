@@ -474,11 +474,11 @@ class VariantOptions(BaseOptions):
                     if found:
                         logger.debugl(3, '- Removed mask from '+ref)
         # Store the data to undo the above actions
-        self.old_layers = old_layers
-        self.old_fadhes = old_fadhes
-        self.old_badhes = old_badhes
-        self.old_fmask = old_fmask
-        self.old_bmask = old_bmask
+        self._old_layers = old_layers
+        self._old_fadhes = old_fadhes
+        self._old_badhes = old_badhes
+        self._old_fmask = old_fmask
+        self._old_bmask = old_bmask
         self._fadhes = fadhes
         self._badhes = badhes
         self._fmask = fmask
@@ -495,21 +495,21 @@ class VariantOptions(BaseOptions):
                 c = comps_hash.get(ref, None)
                 if c and c.included and not c.fitted:
                     logger.debugl(3, '- Restoring paste/mask for '+ref)
-                    restore = self.old_layers.pop(0)
+                    restore = self._old_layers.pop(0)
                     for p in m.Pads():
                         pad_layers = p.GetLayerSet()
                         res = restore.pop(0)
                         pad_layers.ParseHex(res, len(res))
                         p.SetLayerSet(pad_layers)
         if GS.global_remove_adhesive_for_dnp:
-            for gi in self.old_fadhes:
+            for gi in self._old_fadhes:
                 gi.SetLayer(self._fadhes)
-            for gi in self.old_badhes:
+            for gi in self._old_badhes:
                 gi.SetLayer(self._badhes)
         if GS.global_remove_solder_mask_for_dnp:
-            for gi in self.old_fmask:
+            for gi in self._old_fmask:
                 gi.SetLayer(self._fmask)
-            for gi in self.old_bmask:
+            for gi in self._old_bmask:
                 gi.SetLayer(self._bmask)
 
     def remove_fab(self, board, comps_hash):

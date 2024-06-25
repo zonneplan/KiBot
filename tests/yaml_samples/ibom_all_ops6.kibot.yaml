@@ -2,12 +2,19 @@
 kibot:
   version: 1
 
+filters:
+  - name: remove_R2
+    comment: Removes R2
+    type: generic
+    exclude_refs: [R2]
+
 outputs:
   - name: 'interactive_bom'
     comment: "Interactive Bill of Materials (HTML)"
     type: ibom
     dir: BoM
     options:
+      dnf_filter: remove_R2
       dark_mode: true
       hide_pads: true
       show_fabrication: true
