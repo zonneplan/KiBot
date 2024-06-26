@@ -295,6 +295,9 @@ class Optionable(object):
             elif def_val == 'null':
                 # Explicit None
                 new_val = None
+            elif def_val[0] == "'":
+                # String
+                new_val = def_val[1:-1]
             else:
                 assert new_val is not None, f'{self} {k} {def_val}'
             logger.debugl(3, f'Configuring from default: {k} -> {new_val}')
