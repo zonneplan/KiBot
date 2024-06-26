@@ -331,11 +331,11 @@ class Blender_ExportOptions(BaseOptions):
     def __init__(self):
         with document:
             self.pcb3d = PCB3DExportOptions
-            """ *[string|dict] Options to export the PCB to Blender.
+            """ *[string|dict={}] Options to export the PCB to Blender.
                 You can also specify the name of the output that generates the PCB3D file.
                 See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates """
             self.pcb_import = PCB2BlenderOptions
-            """ [dict] Options to configure how Blender imports the PCB.
+            """ [dict={}] Options to configure how Blender imports the PCB.
                 The default values are good for most cases """
             self.outputs = BlenderOutputOptions
             """ [dict|list(dict)] Outputs to generate in the same run """
@@ -345,7 +345,7 @@ class Blender_ExportOptions(BaseOptions):
             """ Add a default light when none specified.
                 The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB """
             self.camera = BlenderCameraOptions
-            """ [dict] Options for the camera.
+            """ [dict={}] Options for the camera.
                 If none specified KiBot will create a suitable camera.
                 If no position is specified for the camera KiBot will look for a suitable position """
             self.fixed_auto_camera = False
@@ -358,12 +358,13 @@ class Blender_ExportOptions(BaseOptions):
             """ Default value for the `file_id` in the `point_of_view` options.
                 Use something like '_%03d' for animations """
             self.render_options = BlenderRenderOptions
-            """ *[dict] Controls how the render is done for the `render` output type """
+            """ *[dict={}] Controls how the render is done for the `render` output type """
             self.point_of_view = BlenderPointOfViewOptions
             """ *[dict|list(dict)] How the object is viewed by the camera """
         super().__init__()
         self._expand_id = '3D_blender'
         self._unknown_is_error = True
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -371,24 +372,10 @@ class Blender_ExportOptions(BaseOptions):
         if isinstance(self.pcb3d, str) and not self.pcb3d:
             raise KiPlotConfigurationError('You must specify the name of the output that'
                                            ' generates the PCB3D file or its options')
-        if isinstance(self.pcb3d, type):
-            self.pcb3d = PCB3DExportOptions()
-            self.pcb3d.config(self)
-        # Do we have outputs?
-        if isinstance(self.outputs, type):
-            self.configure_from_default('outputs')
-        # Ensure we have import options
-        if isinstance(self.pcb_import, type):
-            self.pcb_import = PCB2BlenderOptions()
-        # Ensure we have a light
-        if isinstance(self.light, type):
-            # None
-            if self.add_default_light:
-                # Create one
-                self.configure_from_default('light')
-            else:
-                # The dark ...
-                self.light = []
+        # Check if the user doesn't want a light
+        if not self.get_user_defined('light') and not self.add_default_light:
+            # Remove the default light
+            self.light = []
         # Check light names
         light_names = set()
         for li in force_list(self.light):
@@ -399,17 +386,9 @@ class Blender_ExportOptions(BaseOptions):
                     id += 1
                 name = name+'_'+str(id)
             li.name = name
-        # If no camera let the script create one
-        if isinstance(self.camera, type):
-            self.camera = None
-        elif not self.camera.name:
-            self.camera.name = 'kibot_camera'
-        # Ensure we have some render options
-        if isinstance(self.render_options, type):
-            self.render_options = BlenderRenderOptions()
-        # Point of View, make sure we have a list and at least 1 element
-        if isinstance(self.point_of_view, type):
-            self.configure_from_default('point_of_view')
+        # Check the camera name
+        if not self.camera.name:
+            self.camera.name = 'kibot_camera' if self.get_user_defined('camera') else 'kibot_auto_camera'
 
     def get_output_filename(self, o, output_dir, pov, order):
         if o.type == 'render':
@@ -589,7 +568,8 @@ class Blender_ExportOptions(BaseOptions):
                            'type': light.type,
                            'energy': light.energy} for light in force_list(self.light)]
                 scene['lights'] = lights
-            if self.camera:
+            if self.get_user_defined('camera'):
+                # Only when the user defined a camera, otherwise let the script create a suitable one
                 ca = self.camera
                 scene['camera'] = {'name': ca.name,
                                    'type': ca._type}
