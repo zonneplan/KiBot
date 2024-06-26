@@ -31,7 +31,7 @@ Parameters:
 
    -  Valid keys:
 
-      -  **pcb3d** :index:`: <pair: output - blender_export - options; pcb3d>` [:ref:`string <string>` | :ref:`dict <dict>`] Options to export the PCB to Blender.
+      -  **pcb3d** :index:`: <pair: output - blender_export - options; pcb3d>` [:ref:`string <string>` | :ref:`dict <dict>`] (default: empty dict, default values used) Options to export the PCB to Blender.
          You can also specify the name of the output that generates the PCB3D file.
          See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates.
 
@@ -86,7 +86,7 @@ Parameters:
                Used for animations. You should define the `default_file_id` to something like
                '_%03d' to get the animation frames.
 
-      -  **render_options** :index:`: <pair: output - blender_export - options; render_options>` [:ref:`dict <dict>`] Controls how the render is done for the `render` output type.
+      -  **render_options** :index:`: <pair: output - blender_export - options; render_options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Controls how the render is done for the `render` output type.
 
          -  Valid keys:
 
@@ -108,7 +108,7 @@ Parameters:
          The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB.
       -  ``auto_camera_z_axis_factor`` :index:`: <pair: output - blender_export - options; auto_camera_z_axis_factor>` [:ref:`number <number>`] (default: ``1.1``) Value to multiply the Z axis coordinate after computing the automatically generated camera.
          Used to avoid collision of the camera and the object.
-      -  ``camera`` :index:`: <pair: output - blender_export - options; camera>` [:ref:`dict <dict>`] Options for the camera.
+      -  ``camera`` :index:`: <pair: output - blender_export - options; camera>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the camera.
          If none specified KiBot will create a suitable camera.
          If no position is specified for the camera KiBot will look for a suitable position.
 
@@ -155,7 +155,7 @@ Parameters:
             -  ``output`` :index:`: <pair: output - blender_export - options - outputs; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated file (%i='3D_blender_$VIEW' %x=VARIABLE).
                The extension is selected from the type. Affected by global options.
 
-      -  ``pcb_import`` :index:`: <pair: output - blender_export - options; pcb_import>` [:ref:`dict <dict>`] Options to configure how Blender imports the PCB.
+      -  ``pcb_import`` :index:`: <pair: output - blender_export - options; pcb_import>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options to configure how Blender imports the PCB.
          The default values are good for most cases.
 
          -  Valid keys:

@@ -152,7 +152,7 @@ outputs:
       # [number=1.1] Value to multiply the Z axis coordinate after computing the automatically generated camera.
       # Used to avoid collision of the camera and the object
       auto_camera_z_axis_factor: 1.1
-      # [dict] Options for the camera.
+      # [dict={}] Options for the camera.
       # If none specified KiBot will create a suitable camera.
       # If no position is specified for the camera KiBot will look for a suitable position
       camera:
@@ -207,7 +207,7 @@ outputs:
           # Note that some formats includes the light and camera and others are just the 3D model
           # (i.e. STL and PLY)
           type: 'render'
-      # [string|dict] Options to export the PCB to Blender.
+      # [string|dict={}] Options to export the PCB to Blender.
       # You can also specify the name of the output that generates the PCB3D file.
       # See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates
       pcb3d:
@@ -254,7 +254,7 @@ outputs:
         variant: ''
         # [string='2.7'] [2.1,2.1_haschtl,2.7] Variant of the format used
         version: '2.7'
-      # [dict] Options to configure how Blender imports the PCB.
+      # [dict={}] Options to configure how Blender imports the PCB.
       # The default values are good for most cases
       pcb_import:
         # [boolean=true] Center the PCB at the coordinates origin
@@ -293,7 +293,7 @@ outputs:
           # [string='top'] [top,bottom,front,rear,right,left,z,Z,y,Y,x,X] Point of view.
           # Compatible with `render_3d`
           view: 'top'
-      # [dict] Controls how the render is done for the `render` output type
+      # [dict={}] Controls how the render is done for the `render` output type
       render_options:
         # [boolean=false] When enabled the image will be post-processed to remove the empty space around the image.
         # In this mode the `background2` is changed to be the same as `background1`
