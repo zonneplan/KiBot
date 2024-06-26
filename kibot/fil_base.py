@@ -96,7 +96,7 @@ SIMP_FIL = {'_only_smd': {'comment': 'Internal filter for only SMD parts',
 
 class DummyFilter(Registrable):
     """ A filter that allows all """
-    def __init__(self, is_transform):
+    def __init__(self, is_transform=False):
         super().__init__()
         self.name = 'Dummy'
         self.type = 'dummy'
