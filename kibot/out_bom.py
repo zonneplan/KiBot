@@ -383,13 +383,12 @@ class BoMXLSX(BoMLinkable):
             """ [list(dict)|list(string)=[]] Which columns are included in the Specs worksheet. Use `References` for the
                 references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                 Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
-                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size' """
+                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
+                Note that an empty list means all available specs, use `specs` options to disable it """
             self.logo_scale = 2
             """ Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software """
 
     def process_columns_config(self, cols):
-        if isinstance(cols, type):
-            return (None, None, None, None, None)
         columns = []
         column_levels = []
         column_comments = []
@@ -439,8 +438,11 @@ class BoMXLSX(BoMLinkable):
         self.kicost_api_enable = Optionable.force_list(self.kicost_api_enable)
         self.kicost_api_disable = Optionable.force_list(self.kicost_api_disable)
         # Specs columns
-        (self.s_columns, self.s_levels, self.s_comments, self.s_rename,
-         self.s_join) = self.process_columns_config(self.specs_columns)
+        if self.specs_columns:
+            (self.s_columns, self.s_levels, self.s_comments, self.s_rename,
+             self.s_join) = self.process_columns_config(self.specs_columns)
+        else:
+            self.s_columns = self.s_levels = self.s_comments = self.s_rename = self.s_join = None
 
 
 class ComponentAliases(Optionable):
