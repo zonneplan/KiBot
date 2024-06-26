@@ -249,8 +249,9 @@ class BoMLinkable(Optionable):
             self.extra_info = Optionable
             """ [string|list(string)=''] Information to put after the title and before the pcb and stats info """
             self.row_colors = RowColors
-            """ [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+            """ [list(dict)=[]] Used to highlight rows using filters. Rows that match a filter can be colored.
                 Note that these rows won't have colored columns """
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -274,9 +275,6 @@ class BoMLinkable(Optionable):
         self.extra_info = Optionable.force_list(self.extra_info, comma_sep=False)
         # Datasheet as link
         self.datasheet_as_link = self.datasheet_as_link.lower()
-        # Row colors
-        if isinstance(self.row_colors, type):
-            self.row_colors = []
 
 
 class BoMHTML(BoMLinkable):
@@ -382,7 +380,7 @@ class BoMXLSX(BoMLinkable):
             """ *Enable Specs worksheet creation. Contains specifications for the components.
                 Works with only some KiCost APIs """
             self.specs_columns = BoMColumns
-            """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+            """ [list(dict)|list(string)=[]] Which columns are included in the Specs worksheet. Use `References` for the
                 references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                 Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
                 '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size' """
@@ -448,22 +446,9 @@ class BoMXLSX(BoMLinkable):
 class ComponentAliases(Optionable):
     _default = DEFAULT_ALIASES
 
-    def __init__(self):
-        super().__init__()
-
 
 class GroupFields(Optionable):
     _default = ColumnList.DEFAULT_GROUPING + ['voltage', 'tolerance', 'current', 'power']
-
-    def __init__(self):
-        super().__init__()
-
-
-class NoConflict(Optionable):
-    _default = "['Config', 'Part']"
-
-    def __init__(self):
-        super().__init__()
 
 
 class Aggregate(Optionable):
@@ -503,9 +488,9 @@ class BoMOptions(BaseOptions):
                 are output to the BoM. """
             self.output = GS.def_global_output
             """ *filename for the output (%i=bom)"""
-            self.format = ''
-            """ *[HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
-                Defaults to CSV or a guess according to the options.
+            self.format = 'Auto'
+            """ *[HTML,CSV,TXT,TSV,XML,XLSX,HRTXT,Auto] format for the BoM.
+                `Auto` defaults to CSV or a guess according to the options.
                 HRTXT stands for Human Readable TeXT """
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
@@ -519,7 +504,7 @@ class BoMOptions(BaseOptions):
                 Can be just the name of the field.
                 In addition to all user defined fields you have various special columns, consult :ref:`bom_columns` """
             self.cost_extra_columns = BoMColumns
-            """ [list(dict)|list(string)] List of columns to add to the global section of the cost.
+            """ [list(dict)|list(string)=[]] List of columns to add to the global section of the cost.
                 Can be just the name of the field """
             self.normalize_values = False
             """ *Try to normalize the R, L and C values, producing uniform units and prefixes """
@@ -528,13 +513,13 @@ class BoMOptions(BaseOptions):
             self.ref_separator = ' '
             """ Separator used for the list of references """
             self.html = BoMHTML
-            """ *[dict] Options for the HTML format """
+            """ *[dict={}] Options for the HTML format """
             self.xlsx = BoMXLSX
-            """ *[dict] Options for the XLSX format """
+            """ *[dict={}] Options for the XLSX format """
             self.csv = BoMCSV
-            """ *[dict] Options for the CSV, TXT and TSV formats """
+            """ *[dict={}] Options for the CSV, TXT and TSV formats """
             self.hrtxt = BoMTXT
-            """ *[dict] Options for the HRTXT formats """
+            """ *[dict={}] Options for the HRTXT formats """
             # * Filters
             self.pre_transform = Optionable
             """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
@@ -571,7 +556,7 @@ class BoMOptions(BaseOptions):
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
                 .          'Voltage', 'Tolerance', 'Current', 'Power'] is used """
             self.group_fields_fallbacks = Optionable
-            """ [list(string)] List of fields to be used when the fields in `group_fields` are empty.
+            """ [list(string)=[]] List of fields to be used when the fields in `group_fields` are empty.
                 The first field in this list is the fallback for the first in `group_fields`, and so on """
             self.component_aliases = ComponentAliases
             """ [list(list(string))] A series of values which are considered to be equivalent for the part name.
@@ -589,13 +574,13 @@ class BoMOptions(BaseOptions):
                 Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
                 extra information split it in separated fields, add the fields to `group_fields` and disable
                 `merge_blank_fields` """
-            self.no_conflict = NoConflict
-            """ [list(string)] List of fields where we tolerate conflicts.
+            self.no_conflict = Optionable
+            """ [list(string)=?] List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.
                 By default the field indicated in `fit_field`, the field used for variants and
                 the field `part` are excluded """
             self.aggregate = Aggregate
-            """ [list(dict)] Add components from other projects.
+            """ [list(dict)=[]] Add components from other projects.
                 You can use CSV files, the first row must contain the names of the fields.
                 The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
                 The `Part` column should contain the name/type of the component. This is important for
@@ -608,9 +593,9 @@ class BoMOptions(BaseOptions):
             self.int_qtys = True
             """ Component quantities are always expressed as integers. Using the ceil() function """
             self.distributors = Optionable
-            """ [string|list(string)] Include this distributors list. Default is all the available """
+            """ [string|list(string)=[]] Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
-            """ [string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
+            """ [string|list(string)=[]] Exclude this distributors list. They are removed after computing `distributors` """
             self.count_smd_tht = False
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
             self.units = 'millimeters'
@@ -639,10 +624,9 @@ class BoMOptions(BaseOptions):
             self.exclude_marked_in_pcb = False
             """ Exclude components marked with *Exclude from BOM* in the PCB.
                 This is a KiCad 6 option """
-        self._format_example = 'CSV'
-        self._footprint_populate_values_example = 'no,yes'
-        self._footprint_type_values_example = 'SMD,THT,VIRTUAL'
         super().__init__()
+        self._no_conflict_example = ['Config', 'Part']
+        self._init_from_defaults = True
 
     @staticmethod
     def _get_columns():
@@ -654,15 +638,15 @@ class BoMOptions(BaseOptions):
 
     def _guess_format(self):
         """ Figure out the format """
-        if not self.format:
+        if self.format == 'Auto':
             # If we have HTML options generate an HTML
-            if not isinstance(self.html, type):
+            if self.get_user_defined('html'):
                 return 'html'
             # Same for XLSX
-            if not isinstance(self.xlsx, type):
+            if self.get_user_defined('xlsx'):
                 return 'xlsx'
             # Same for HRTXT
-            if not isinstance(self.hrtxt, type):
+            if self.get_user_defined('hrtxt'):
                 return 'hrtxt'
             # Default to a simple and common format: CSV
             return 'csv'
@@ -686,8 +670,6 @@ class BoMOptions(BaseOptions):
     def process_columns_config(self, cols, valid_columns, extra_columns):
         column_rename = {}
         join = []
-        if isinstance(cols, type):
-            return ([], [], [], column_rename, join)
         columns = []
         column_levels = []
         column_comments = []
@@ -729,55 +711,24 @@ class BoMOptions(BaseOptions):
 
     def config(self, parent):
         super().config(parent)
-        self.format = self._guess_format()
+        self._format = self._guess_format()
         self._expand_id = 'bom'
-        self._expand_ext = 'txt' if self.format.lower() == 'hrtxt' else self.format.lower()
-        # HTML options
-        if self.format == 'html' and isinstance(self.html, type):
-            # If no options get the defaults
-            self.html = BoMHTML()
-            self.html.config(self)
-        # CSV options
-        if self.format in ['csv', 'tsv', 'txt'] and isinstance(self.csv, type):
-            # If no options get the defaults
-            self.csv = BoMCSV()
-            self.csv.config(self)
-        # HRTXT options
-        if self.format == 'hrtxt' and isinstance(self.hrtxt, type):
-            # If no options get the defaults
-            self.hrtxt = BoMTXT()
-            self.hrtxt.config(self)
-        # XLSX options
-        if self.format == 'xlsx' and isinstance(self.xlsx, type):
-            # If no options get the defaults
-            self.xlsx = BoMXLSX()
-            self.xlsx.config(self)
+        self._expand_ext = 'txt' if self._format == 'hrtxt' else self._format
         # Do title %X and ${var} expansions on the BoMLinkable titles
         # Here because some variables needs our parent
-        if self.format == 'html' and self.html.title:
+        if self._format == 'html' and self.html.title:
             self.html.title = self.expand_filename_both(self.html.title, make_safe=False)
             self.html.extra_info = [self.expand_filename_both(t, make_safe=False) for t in self.html.extra_info]
-        if self.format == 'xlsx' and self.xlsx.title:
+        if self._format == 'xlsx' and self.xlsx.title:
             self.xlsx.title = self.expand_filename_both(self.xlsx.title, make_safe=False)
             self.xlsx.extra_info = [self.expand_filename_both(t, make_safe=False) for t in self.xlsx.extra_info]
-        # group_fields
-        if isinstance(self.group_fields, type):
-            self.group_fields = GroupFields.get_default()
-        else:
-            # Make the grouping fields lowercase
-            self.group_fields = [f.lower() for f in self.group_fields]
-        # group_fields_fallbacks
-        if isinstance(self.group_fields_fallbacks, type):
-            self.group_fields_fallbacks = []
-        else:
-            # Make the grouping fields lowercase
-            self.group_fields_fallbacks = [f.lower() for f in self.group_fields_fallbacks]
+        # Make the grouping fields lowercase
+        self.group_fields = [f.lower() for f in self.group_fields]
+        # Make the grouping fields lowercase
+        self.group_fields_fallbacks = [f.lower() for f in self.group_fields_fallbacks]
         # Fill with empty if needed
         if len(self.group_fields_fallbacks) < len(self.group_fields):
             self.group_fields_fallbacks.extend(['']*(len(self.group_fields)-len(self.group_fields_fallbacks)))
-        # component_aliases
-        if isinstance(self.component_aliases, type):
-            self.component_aliases = DEFAULT_ALIASES
         # Filters
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
@@ -799,22 +750,15 @@ class BoMOptions(BaseOptions):
             for field in self.no_conflict:
                 no_conflict.add(field.lower())
         self._no_conflict = no_conflict
-        # Make sure aggregate is a list
-        if isinstance(self.aggregate, type):
-            self.aggregate = []
         # List of distributors
         self.distributors = Optionable.force_list(self.distributors)
         self.no_distributors = Optionable.force_list(self.no_distributors)
         # Column values
         self.footprint_populate_values = Optionable.force_list(self.footprint_populate_values)
-        if not self.footprint_populate_values:
-            self.footprint_populate_values = ['no', 'yes']
         if len(self.footprint_populate_values) != 2:
             raise KiPlotConfigurationError("The `footprint_populate_values` must contain two values ({})".
                                            format(self.footprint_populate_values))
         self.footprint_type_values = Optionable.force_list(self.footprint_type_values)
-        if not self.footprint_type_values:
-            self.footprint_type_values = ['SMD', 'THT', 'VIRTUAL']
         if len(self.footprint_type_values) != 3:
             raise KiPlotConfigurationError("The `footprint_type_values` must contain three values ({})".
                                            format(self.footprint_type_values))
@@ -956,10 +900,10 @@ class BoMOptions(BaseOptions):
             prj.source = os.path.basename(prj.file)
 
     def solve_logo(self):
-        if self.format == 'html':
+        if self._format == 'html':
             logo = self.html.logo
             w = self.html.logo_width
-        elif self.format == 'xlsx':
+        elif self._format == 'xlsx':
             logo = self.xlsx.logo
             w = self.xlsx.logo_width
         else:
@@ -973,14 +917,14 @@ class BoMOptions(BaseOptions):
         cmd = [self.ensure_tool('RSVG'), '-w', str(w), '-f', 'png', '-o', png, logo]
         run_command(cmd)
         self._old_logo = logo
-        if self.format == 'html':
+        if self._format == 'html':
             self.html.logo = png
-        elif self.format == 'xlsx':
+        elif self._format == 'xlsx':
             self.xlsx.logo = png
         return png
 
     def run(self, output):
-        format = self.format.lower()
+        format = self._format
         if format == 'xlsx':
             if self.xlsx.kicost:
                 self.ensure_tool('KiCost')
@@ -1046,9 +990,9 @@ class BoMOptions(BaseOptions):
         finally:
             if tmp_png:
                 os.remove(tmp_png)
-                if self.format == 'html':
+                if self._format == 'html':
                     self.html.logo = self._old_logo
-                elif self.format == 'xlsx':
+                elif self._format == 'xlsx':
                     self.xlsx.logo = self._old_logo
         # Undo the reference prefix
         if self.ref_id:
