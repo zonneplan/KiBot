@@ -802,6 +802,8 @@ def process_help_data_type(obj, help, v):
     if def_val:
         if def_val == '?':
             new_data_type += ' (default: computed for your project)'
+        elif def_val == '{}':
+            new_data_type += ' (default: empty dict, default values used)'
         else:
             new_data_type += f' (default: ``{def_val}``)'
     elif isinstance(v, type):

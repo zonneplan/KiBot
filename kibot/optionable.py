@@ -43,6 +43,8 @@ class Optionable(object):
         self._error_context = ''
         self._tree = {}
         self._configured = False
+        # TODO: Should be removed and all outputs should support it
+        self._init_from_defaults = False
         # File/directory pattern expansion
         self._expand_id = ''
         self._expand_ext = ''
@@ -119,7 +121,7 @@ class Optionable(object):
     def set_doc(self, name, text):
         setattr(self, '_help_'+name, text)
 
-    def get_valid_types(self, doc):
+    def get_valid_types(self, doc, skip_extra=False):
         assert doc[0] == '[', doc[0]+'\n'+str(self.__dict__)
         # Separate the valid types for this key
         sections = doc[1:].split('] ')
@@ -132,28 +134,29 @@ class Optionable(object):
             valid[-1] = res[0]
             def_val = '='.join(res[1:])
         validation = []
-        for v in valid:
-            if v == 'number' or v == 'list(number)':
-                m = Optionable._num_range_re.search(doc)
-                if m:
-                    min = float(m.group(1))
-                    if int(min) == min:
-                        min = int(min)
-                    max = float(m.group(2))
-                    if int(max) == max:
-                        max = int(max)
-                    validation.append((min, max))
-                    continue
-                m = Optionable._num_values_re.search(doc)
-                if m:
-                    validation.append(('C', m.group(1).split(';')))
-                    continue
-            if v == 'string' or v == 'list(string)':
-                m = Optionable._str_values_re.search(doc)
-                if m:
-                    validation.append(m.group(1).split(','))
-                    continue
-            validation.append(None)
+        if not skip_extra:
+            for v in valid:
+                if v == 'number' or v == 'list(number)':
+                    m = Optionable._num_range_re.search(doc)
+                    if m:
+                        min = float(m.group(1))
+                        if int(min) == min:
+                            min = int(min)
+                        max = float(m.group(2))
+                        if int(max) == max:
+                            max = int(max)
+                        validation.append((min, max))
+                        continue
+                    m = Optionable._num_values_re.search(doc)
+                    if m:
+                        validation.append(('C', m.group(1).split(';')))
+                        continue
+                if v == 'string' or v == 'list(string)':
+                    m = Optionable._str_values_re.search(doc)
+                    if m:
+                        validation.append(m.group(1).split(','))
+                        continue
+                validation.append(None)
         return valid, validation, def_val, real_help
 
     def check_string_dict(self, v_type, valid, k, v):
@@ -188,7 +191,7 @@ class Optionable(object):
             cur_doc, alias, is_alias = self.get_doc(k, no_basic=True)
             assert cur_doc[0] == '[', cur_doc[0]
             # Separate the valid types for this key
-            valid, extra, def_val, real_help = self.get_valid_types(cur_doc)
+            valid, _, def_val, real_help = self.get_valid_types(cur_doc, skip_extra=True)
             if isinstance(v, type):
                 # An optionable
                 v.set_default(def_val)
@@ -260,11 +263,51 @@ class Optionable(object):
     def set_tree(self, tree):
         self._tree = tree
 
+    def do_defaults(self):
+        """ Assign the defaults to complex data types """
+        for k, v in self.get_attrs_gen():
+            if not isinstance(v, type):
+                # We only process things that points to its class (Optionable)
+                continue
+            if self.get_user_defined(k):
+                # If the user assigned a value skip it
+                continue
+            cur_doc, alias, is_alias = self.get_doc(k, no_basic=True)
+            if is_alias:
+                # Aliases ignored
+                continue
+            valid, _, def_val, real_help = self.get_valid_types(cur_doc, skip_extra=True)
+            if def_val is None:
+                # Use the class default, used for complex cases
+                self.configure_from_default(k)
+                continue
+            new_val = None
+            if def_val == '?':
+                # The local config will creat something useful
+                continue
+            elif def_val == '{}':
+                # The default initialization for the class
+                new_val = v()
+                new_val.config(self)
+            elif def_val == '[]':
+                # An empty list
+                new_val = []
+            elif def_val == 'null':
+                # Explicit None
+                new_val = None
+            else:
+                assert new_val is not None, f'{self} {k} {def_val}'
+            logger.debugl(3, f'Configuring from default: {k} -> {new_val}')
+            setattr(self, k, new_val)
+
     def config(self, parent):
         self._parent = parent
+        old_configured = self._configured
         if self._tree and not self._configured:
             self._perform_config_mapping()
             self._configured = True
+        if not old_configured and self._init_from_defaults:
+            self.do_defaults()
         if self._output_multiple_files and ('%i' not in self.output or '%x' not in self.output):
             raise KiPlotConfigurationError('The output pattern must contain %i and %x, otherwise file names will collide')
 
@@ -486,6 +529,7 @@ class Optionable(object):
             The `member` should be assigned with the class used for it """
         v = getattr(self, member)
         default = v.get_default()
+        assert default is not None, f'Missing default for {member} in {self}'
         if isinstance(default, dict):
             o = v()
             o.set_tree(default)
@@ -499,6 +543,7 @@ class Optionable(object):
                 o.config(self)
                 res.append(o)
             default = res
+        logger.debugl(3, f'Configuring from default: {member} -> {default}')
         setattr(self, member, default)
 
     def validate_color_str(self, color):
