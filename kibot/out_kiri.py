@@ -21,7 +21,11 @@ Dependencies:
 """
 import datetime
 import glob
-import pwd
+try:
+    # Not available on Windows?!
+    import pwd
+except Exception:
+    pass
 import os
 from shutil import copy2, rmtree
 from subprocess import CalledProcessError
