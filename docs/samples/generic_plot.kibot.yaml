@@ -348,7 +348,7 @@ outputs:
     type: 'bom'
     dir: 'Example/bom_dir'
     options:
-      # [list(dict)] Add components from other projects.
+      # [list(dict)=[]] Add components from other projects.
       # You can use CSV files, the first row must contain the names of the fields.
       # The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
       # The `Part` column should contain the name/type of the component. This is important for
@@ -409,7 +409,7 @@ outputs:
       # - ['zener', 'zenersmall']
       # - ['d', 'diode', 'd_small']
       component_aliases: [['r', 'r_small', 'res', 'resistor'], ['l', 'l_small', 'inductor'], ['c', 'c_small', 'cap', 'capacitor'], ['sw', 'switch'], ['zener', 'zenersmall'], ['d', 'diode', 'd_small']]
-      # [list(dict)|list(string)] List of columns to add to the global section of the cost.
+      # [list(dict)|list(string)=[]] List of columns to add to the global section of the cost.
       # Can be just the name of the field
       cost_extra_columns:
         # [string=''] Used as explanation for this column. The XLSX output uses it
@@ -439,7 +439,7 @@ outputs:
           name: 'Line'
       # [boolean=false] Show the stats about how many of the components are SMD/THT. You must provide the PCB
       count_smd_tht: false
-      # [dict] Options for the CSV, TXT and TSV formats
+      # [dict={}] Options for the CSV, TXT and TSV formats
       csv:
         # [boolean=false] Hide the header line (names of the columns)
         hide_header: false
@@ -452,8 +452,8 @@ outputs:
         # [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
         # Only one character can be specified
         separator: ','
-      # [string|list(string)] Include this distributors list. Default is all the available
-      distributors:
+      # [string|list(string)=[]] Include this distributors list. Default is all the available
+      distributors: []
       # [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
       # The default filter marks components with a DNC value or DNC in the Config field.
       # This option is for simple cases, consider using a full variant for complex cases
@@ -484,10 +484,10 @@ outputs:
       footprint_populate_values: 'no,yes'
       # [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column
       footprint_type_values: 'SMD,THT,VIRTUAL'
-      # [string=''] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
-      # Defaults to CSV or a guess according to the options.
+      # [string='Auto'] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT,Auto] format for the BoM.
+      # `Auto` defaults to CSV or a guess according to the options.
       # HRTXT stands for Human Readable TeXT
-      format: 'CSV'
+      format: 'Auto'
       # [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector
       group_connectors: true
       # [list(string)] List of fields used for sorting individual components into groups.
@@ -501,10 +501,10 @@ outputs:
       # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
       #            'Voltage', 'Tolerance', 'Current', 'Power'] is used
       group_fields: ['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']
-      # [list(string)] List of fields to be used when the fields in `group_fields` are empty.
+      # [list(string)=[]] List of fields to be used when the fields in `group_fields` are empty.
       # The first field in this list is the fallback for the first in `group_fields`, and so on
-      group_fields_fallbacks:
-      # [dict] Options for the HRTXT formats
+      group_fields_fallbacks: []
+      # [dict={}] Options for the HRTXT formats
       hrtxt:
         # [string='-'] Separator between the header and the data
         header_sep: '-'
@@ -518,7 +518,7 @@ outputs:
         justify: 'left'
         # [string='I'] Column Separator
         separator: 'I'
-      # [dict] Options for the HTML format
+      # [dict={}] Options for the HTML format
       html:
         # [boolean=true] Use colors to show the field type
         col_colors: true
@@ -546,7 +546,7 @@ outputs:
         logo_width: 370
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
-        # [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+        # [list(dict)=[]] Used to highlight rows using filters. Rows that match a filter can be colored.
         # Note that these rows won't have colored columns
         row_colors:
           # [string='#FF8080'] Color used for this category
@@ -571,13 +571,13 @@ outputs:
       merge_blank_fields: true
       # [boolean=true] When creating groups two components with empty/missing field will be interpreted as with the same value
       merge_both_blank: true
-      # [list(string)] List of fields where we tolerate conflicts.
+      # [list(string)=computed for your project] List of fields where we tolerate conflicts.
       # Use it to avoid undesired warnings.
       # By default the field indicated in `fit_field`, the field used for variants and
       # the field `part` are excluded
       no_conflict: ['Config', 'Part']
-      # [string|list(string)] Exclude this distributors list. They are removed after computing `distributors`
-      no_distributors:
+      # [string|list(string)=[]] Exclude this distributors list. They are removed after computing `distributors`
+      no_distributors: []
       # [boolean=false] When normalizing values use the locale decimal point
       normalize_locale: false
       # [boolean=false] Try to normalize the R, L and C values, producing uniform units and prefixes
@@ -612,7 +612,7 @@ outputs:
       # [string=''] Board variant, used to determine which components
       # are output to the BoM.
       variant: ''
-      # [dict] Options for the XLSX format
+      # [dict={}] Options for the XLSX format
       xlsx:
         # [boolean=true] Use colors to show the field type
         col_colors: true
@@ -659,7 +659,7 @@ outputs:
         max_col_width: 60
         # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
-        # [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+        # [list(dict)=[]] Used to highlight rows using filters. Rows that match a filter can be colored.
         # Note that these rows won't have colored columns
         row_colors:
           # [string='#FF8080'] Color used for this category
@@ -674,7 +674,7 @@ outputs:
         # [boolean=false] Enable Specs worksheet creation. Contains specifications for the components.
         # Works with only some KiCost APIs
         specs: false
-        # [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+        # [list(dict)|list(string)=[]] Which columns are included in the Specs worksheet. Use `References` for the
         # references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
         # Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
         # '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'

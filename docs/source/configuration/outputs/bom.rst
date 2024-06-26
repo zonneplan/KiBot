@@ -59,7 +59,7 @@ Parameters:
 
             -  ``level`` :index:`: <pair: output - bom - options - columns; level>` [:ref:`number <number>`] (default: ``0``) Used to group columns. The XLSX output uses it to collapse columns.
 
-      -  **csv** :index:`: <pair: output - bom - options; csv>` [:ref:`dict <dict>`] Options for the CSV, TXT and TSV formats.
+      -  **csv** :index:`: <pair: output - bom - options; csv>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the CSV, TXT and TSV formats.
 
          -  Valid keys:
 
@@ -70,8 +70,8 @@ Parameters:
             -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - csv; hide_pcb_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide project information.
             -  ``hide_stats_info`` :index:`: <pair: output - bom - options - csv; hide_stats_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide statistics information.
 
-      -  **format** :index:`: <pair: output - bom - options; format>` [:ref:`string <string>`] (default: ``''``) (choices: "HTML", "CSV", "TXT", "TSV", "XML", "XLSX", "HRTXT") format for the BoM.
-         Defaults to CSV or a guess according to the options.
+      -  **format** :index:`: <pair: output - bom - options; format>` [:ref:`string <string>`] (default: ``'Auto'``) (choices: "HTML", "CSV", "TXT", "TSV", "XML", "XLSX", "HRTXT", "Auto") format for the BoM.
+         `Auto` defaults to CSV or a guess according to the options.
          HRTXT stands for Human Readable TeXT.
       -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [:ref:`list(string) <list(string)>`] (default: ``['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']``) List of fields used for sorting individual components into groups.
          Components which match (comparing *all* fields) will be grouped together.
@@ -84,7 +84,7 @@ Parameters:
          If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
          'Voltage', 'Tolerance', 'Current', 'Power'] is used.
 
-      -  **hrtxt** :index:`: <pair: output - bom - options; hrtxt>` [:ref:`dict <dict>`] Options for the HRTXT formats.
+      -  **hrtxt** :index:`: <pair: output - bom - options; hrtxt>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the HRTXT formats.
 
          -  Valid keys:
 
@@ -95,7 +95,7 @@ Parameters:
             -  ``hide_stats_info`` :index:`: <pair: output - bom - options - hrtxt; hide_stats_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide statistics information.
             -  ``justify`` :index:`: <pair: output - bom - options - hrtxt; justify>` [:ref:`string <string>`] (default: ``'left'``) (choices: "left", "right", "center") Text justification.
 
-      -  **html** :index:`: <pair: output - bom - options; html>` [:ref:`dict <dict>`] Options for the HTML format.
+      -  **html** :index:`: <pair: output - bom - options; html>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the HTML format.
 
          -  Valid keys:
 
@@ -119,7 +119,7 @@ Parameters:
             -  ``logo_width`` :index:`: <pair: output - bom - options - html; logo_width>` [:ref:`number <number>`] (default: ``370``) Used when the logo is an SVG image. This width is used to render the SVG image.
             -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Mouser part numbers, will be linked to web page.
 
-            -  ``row_colors`` :index:`: <pair: output - bom - options - html; row_colors>` [:ref:`list(dict) <list(dict)>`] Used to highlight rows using filters. Rows that match a filter can be colored.
+            -  ``row_colors`` :index:`: <pair: output - bom - options - html; row_colors>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Used to highlight rows using filters. Rows that match a filter can be colored.
                Note that these rows won't have colored columns.
 
                -  Valid keys:
@@ -142,7 +142,7 @@ Parameters:
       -  **sort_style** :index:`: <pair: output - bom - options; sort_style>` [:ref:`string <string>`] (default: ``'type_value'``) (choices: "type_value", "type_value_ref", "ref") Sorting criteria.
       -  **units** :index:`: <pair: output - bom - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions ('Footprint X' and 'Footprint Y' columns).
          Affected by global options.
-      -  **xlsx** :index:`: <pair: output - bom - options; xlsx>` [:ref:`dict <dict>`] Options for the XLSX format.
+      -  **xlsx** :index:`: <pair: output - bom - options; xlsx>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the XLSX format.
 
          -  Valid keys:
 
@@ -182,7 +182,7 @@ Parameters:
             -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [:ref:`number <number>`] (default: ``60``) (range: 20 to 999) Maximum column width (characters).
             -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Mouser part numbers, will be linked to web page.
 
-            -  ``row_colors`` :index:`: <pair: output - bom - options - xlsx; row_colors>` [:ref:`list(dict) <list(dict)>`] Used to highlight rows using filters. Rows that match a filter can be colored.
+            -  ``row_colors`` :index:`: <pair: output - bom - options - xlsx; row_colors>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Used to highlight rows using filters. Rows that match a filter can be colored.
                Note that these rows won't have colored columns.
 
                -  Valid keys:
@@ -195,7 +195,7 @@ Parameters:
                      return the same value when applying this filter.
 
 
-            -  ``specs_columns`` :index:`: <pair: output - bom - options - xlsx; specs_columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] Which columns are included in the Specs worksheet. Use `References` for the
+            -  ``specs_columns`` :index:`: <pair: output - bom - options - xlsx; specs_columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Which columns are included in the Specs worksheet. Use `References` for the
                references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
@@ -225,7 +225,7 @@ Parameters:
 
             -  ``style`` :index:`: <pair: output - bom - options - xlsx; style>` [:ref:`string <string>`] (default: ``'modern-blue'``) Head style: modern-blue, modern-green, modern-red and classic.
 
-      -  ``aggregate`` :index:`: <pair: output - bom - options; aggregate>` [:ref:`list(dict) <list(dict)>`] Add components from other projects.
+      -  ``aggregate`` :index:`: <pair: output - bom - options; aggregate>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Add components from other projects.
          You can use CSV files, the first row must contain the names of the fields.
          The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
          The `Part` column should contain the name/type of the component. This is important for
@@ -254,7 +254,7 @@ Parameters:
          - ['zener', 'zenersmall']
          - ['d', 'diode', 'd_small'].
 
-      -  ``cost_extra_columns`` :index:`: <pair: output - bom - options; cost_extra_columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] List of columns to add to the global section of the cost.
+      -  ``cost_extra_columns`` :index:`: <pair: output - bom - options; cost_extra_columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of columns to add to the global section of the cost.
          Can be just the name of the field.
 
          -  Valid keys:
@@ -281,7 +281,7 @@ Parameters:
             -  ``level`` :index:`: <pair: output - bom - options - cost_extra_columns; level>` [:ref:`number <number>`] (default: ``0``) Used to group columns. The XLSX output uses it to collapse columns.
 
       -  ``count_smd_tht`` :index:`: <pair: output - bom - options; count_smd_tht>` [:ref:`boolean <boolean>`] (default: ``false``) Show the stats about how many of the components are SMD/THT. You must provide the PCB.
-      -  ``distributors`` :index:`: <pair: output - bom - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Include this distributors list. Default is all the available.
+      -  ``distributors`` :index:`: <pair: output - bom - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Include this distributors list. Default is all the available.
 
       -  ``dnc_filter`` :index:`: <pair: output - bom - options; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnc'``) Name of the filter to mark components as 'Do Not Change'.
          The default filter marks components with a DNC value or DNC in the Config field.
@@ -310,18 +310,18 @@ Parameters:
       -  ``footprint_type_values`` :index:`: <pair: output - bom - options; footprint_type_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'SMD,THT,VIRTUAL'``) Values for the `Footprint Type` column.
 
       -  ``group_connectors`` :index:`: <pair: output - bom - options; group_connectors>` [:ref:`boolean <boolean>`] (default: ``true``) Connectors with the same footprints will be grouped together, independent of the name of the connector.
-      -  ``group_fields_fallbacks`` :index:`: <pair: output - bom - options; group_fields_fallbacks>` [:ref:`list(string) <list(string)>`] List of fields to be used when the fields in `group_fields` are empty.
+      -  ``group_fields_fallbacks`` :index:`: <pair: output - bom - options; group_fields_fallbacks>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of fields to be used when the fields in `group_fields` are empty.
          The first field in this list is the fallback for the first in `group_fields`, and so on.
 
       -  ``int_qtys`` :index:`: <pair: output - bom - options; int_qtys>` [:ref:`boolean <boolean>`] (default: ``true``) Component quantities are always expressed as integers. Using the ceil() function.
       -  ``merge_blank_fields`` :index:`: <pair: output - bom - options; merge_blank_fields>` [:ref:`boolean <boolean>`] (default: ``true``) Component groups with blank fields will be merged into the most compatible group, where possible.
       -  ``merge_both_blank`` :index:`: <pair: output - bom - options; merge_both_blank>` [:ref:`boolean <boolean>`] (default: ``true``) When creating groups two components with empty/missing field will be interpreted as with the same value.
-      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [:ref:`list(string) <list(string)>`] (default: ``['Config', 'Part']``) List of fields where we tolerate conflicts.
+      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [:ref:`list(string) <list(string)>`] (default: computed for your project) List of fields where we tolerate conflicts.
          Use it to avoid undesired warnings.
          By default the field indicated in `fit_field`, the field used for variants and
          the field `part` are excluded.
 
-      -  ``no_distributors`` :index:`: <pair: output - bom - options; no_distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Exclude this distributors list. They are removed after computing `distributors`.
+      -  ``no_distributors`` :index:`: <pair: output - bom - options; no_distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Exclude this distributors list. They are removed after computing `distributors`.
 
       -  ``normalize_locale`` :index:`: <pair: output - bom - options; normalize_locale>` [:ref:`boolean <boolean>`] (default: ``false``) When normalizing values use the locale decimal point.
       -  ``parse_value`` :index:`: <pair: output - bom - options; parse_value>` [:ref:`boolean <boolean>`] (default: ``true``) Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
