@@ -32,7 +32,7 @@ def write_bom(filename, ext, groups, headings, cfg):
     cfg = configuration data
     """
     # Allow renaming the columns
-    head_names = [h if h.lower() not in cfg.column_rename else cfg.column_rename[h.lower()] for h in headings]
+    head_names = [h if h.lower() not in cfg._column_rename else cfg._column_rename[h.lower()] for h in headings]
     headings = [h.lower() for h in headings]
     result = False
     # CSV file writing
