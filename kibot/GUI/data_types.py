@@ -957,6 +957,9 @@ def adapt_default(val, name):
     elif val == '?':
         # Means we don't know because this is filled by the config()
         return None
+    elif val == 'null':
+        # Explicit None
+        return None
     else:
         logger.error(f'Unknown default data type `{val}` for `{name}`')
     return val
@@ -1005,7 +1008,6 @@ def get_data_type_tree(template, obj, level=0, parent=None):
             help = help[1:]
             is_basic = True
         case = f'{k} = `{v}`'
-        assert help[0] == '[', case
         valid, extra, def_val, real_help = template.get_valid_types(help)
         def_val = adapt_default(def_val, k)
         valid, extra = join_lists(valid, extra)
