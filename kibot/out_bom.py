@@ -821,10 +821,10 @@ class BoMOptions(BaseOptions):
         # Columns
         (valid_columns, extra_columns) = self._get_columns()
         self.create_default_columns(valid_columns)
-        (self._columns, self.column_levels, self.column_comments, self.column_rename,
-         self.join) = self.process_columns_config(self.columns, valid_columns, extra_columns)
-        (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
-         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns)
+        (self._columns, self._column_levels, self._column_comments, self._column_rename,
+         self._join) = self.process_columns_config(self.columns, valid_columns, extra_columns)
+        (self.columns_ce, self._column_levels_ce, self._column_comments_ce, self._column_rename_ce,
+         self._join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns)
 
     def create_default_columns(self, valid_columns):
         if not isinstance(self.columns, type):
