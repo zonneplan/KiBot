@@ -36,6 +36,10 @@ Added
 
    -  Support for KiCad 8 bitmaps (#623)
 
+-  Filters:
+
+   -  ``_null`` can be used to skip the filters processing
+
 Fixed:
 ~~~~~~
 
