@@ -565,6 +565,7 @@ class Diff(BaseOutput):  # noqa: F821
             self.layers = Layer
             """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to use. When empty all available layers are used.
+                If the list is empty all layers will be included.
                 Note that if you want to support adding/removing layers you should specify a list here """
         self._init_from_defaults = True
 
