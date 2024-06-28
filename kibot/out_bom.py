@@ -259,7 +259,7 @@ class BoMLinkable(Optionable):
         self.digikey_link = self.force_list(self.digikey_link, comma_sep=False, lower_case=True)
         self.mouser_link = self.force_list(self.mouser_link, comma_sep=False, lower_case=True)
         if isinstance(self.lcsc_link, bool):
-            self.lcsc_link = self.field_lcsc_part if self.lcsc_link else ''
+            self.lcsc_link = self.solve_field_name('_field_lcsc_part') if self.lcsc_link else ''
         self.lcsc_link = self.force_list(self.lcsc_link, comma_sep=False, lower_case=True)
         # Logo
         if isinstance(self.logo, type):
