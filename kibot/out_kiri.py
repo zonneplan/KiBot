@@ -358,11 +358,12 @@ class KiRi(BaseOutput):  # noqa: F821
         self._both_related = True
         with document:
             self.options = KiRiOptions
-            """ *[dict] Options for the `diff` output """
+            """ *[dict={}] Options for the `diff` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*] List
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to use. When empty all available layers are used.
                 Note that if you want to support adding/removing layers you should specify a list here """
+        self._init_from_defaults = True
 
     @staticmethod
     def layer2dict(la):
