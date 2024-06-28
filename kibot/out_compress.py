@@ -82,7 +82,7 @@ class CompressOptions(BaseOptions):
             self.compression = 'auto'
             """ [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one """
             self.files = FilesList
-            """ *[list(dict)] Which files will be included """
+            """ *[list(dict)=[]] Which files will be included """
             self.move_files = False
             """ Move the files to the archive. In other words: remove the files after adding them to the archive """
             self.remove_files = None
@@ -92,11 +92,11 @@ class CompressOptions(BaseOptions):
             self.skip_not_run = False
             """ Skip outputs with `run_by_default: false` """
         super().__init__()
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.files, type):
-            self.files = []
+        if not self.get_user_defined('files'):
             logger.warning(W_EMPTYZIP+'No files provided, creating an empty archive')
         self._expand_id = parent.name
         self._expand_ext = self.solve_extension()
