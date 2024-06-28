@@ -304,6 +304,8 @@ class BaseFilter(RegFilter):
 
     @staticmethod
     def _create_internal_filter(name, is_transform):
+        if name == '_null':
+            raise KiPlotConfigurationError("The `_null` filter can't be used in a filter chain")
         if name == '_none':
             return DummyFilter(is_transform)
         if name == IFILT_MECHANICAL:
@@ -344,6 +346,8 @@ class BaseFilter(RegFilter):
         elif isinstance(names, str):
             # User provided, but only one, make a list
             if names == '_none':
+                return DummyFilter(is_transform)
+            if names == '_null':
                 return None
             names = [names]
         # Here we should have a list of strings
