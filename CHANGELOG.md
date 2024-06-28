@@ -26,6 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - No color reference when using row colors but not column or kicost colors.
     (#619)
   - "0 pico" for "0"
+  - Use of `lcsc_link` as boolean
 - Worksheet: Size of PNGs that specify its PPI resolution.
 - Filters:
   - Problems with filters that change fields for components that are
