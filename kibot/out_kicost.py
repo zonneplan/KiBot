@@ -66,26 +66,26 @@ class KiCostOptions(VariantOptions):
             self.show_cat_url = False
             """ Include the catalogue links in the catalogue code """
             self.distributors = Optionable
-            """ *[string|list(string)] Include this distributors list. Default is all the available """
+            """ *[string|list(string)=[]] Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
-            """ *[string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
+            """ *[string|list(string)=[]] Exclude this distributors list. They are removed after computing `distributors` """
             self.currency = Optionable
             """ *[string|list(string)='USD'] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
             self.group_fields = Optionable
-            """ [string|list(string)] List of fields that can be different for a group.
+            """ [string|list(string)=[]] List of fields that can be different for a group.
                 Parts with differences in these fields are grouped together, but displayed individually """
             self.split_extra_fields = Optionable
-            """ [string|list(string)] Declare part fields to include in multipart split process """
+            """ [string|list(string)=[]] Declare part fields to include in multipart split process """
             self.ignore_fields = Optionable
-            """ [string|list(string)] List of fields to be ignored """
+            """ [string|list(string)=[]] List of fields to be ignored """
             self.fields = Optionable
-            """ [string|list(string)] List of fields to be added to the global data section """
+            """ [string|list(string)=[]] List of fields to be added to the global data section """
             self.translate_fields = FieldRename
-            """ [list(dict)] Fields to rename (KiCost option, not internal filters) """
+            """ [list(dict)=[]] Fields to rename (KiCost option, not internal filters) """
             self.kicost_variant = ''
             """ Regular expression to match the variant field (KiCost option, not internal variants) """
             self.aggregate = Aggregate
-            """ [list(dict)] Add components from other projects """
+            """ [list(dict)=[]] Add components from other projects """
             self.number = 100
             """ *Number of boards to build (components multiplier) """
             self.board_qty = None
@@ -102,6 +102,7 @@ class KiCostOptions(VariantOptions):
         self.add_to_doc('dnf_filter', WARNING_MIX)
         self._expand_id = 'kicost'
         self._expand_ext = 'xlsx'
+        self._init_from_defaults = True
 
     @staticmethod
     def _validate_dis(val):
@@ -131,17 +132,12 @@ class KiCostOptions(VariantOptions):
         self.ignore_fields = Optionable.force_list(self.ignore_fields)
         self.fields = Optionable.force_list(self.fields)
         # Adapt translate_fields to its use
-        if isinstance(self.translate_fields, type):
-            self.translate_fields = []
         if self.translate_fields:
             translate_fields = []
             for f in self.translate_fields:
                 translate_fields.append(f.field)
                 translate_fields.append(f.name)
             self.translate_fields = translate_fields
-        # Make sure aggregate is a list
-        if isinstance(self.aggregate, type):
-            self.aggregate = []
 
     def get_targets(self, out_dir):
         return [self.expand_filename(out_dir, self.output, self._expand_id, self._expand_ext)]
