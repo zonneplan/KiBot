@@ -242,7 +242,7 @@ class KiBoMConfig(Optionable):
         # columns
         # This is tricky
         # Lower case available columns
-        valid_columns = self._get_columns()
+        valid_columns = self._get_columns() if self.columns else []
         valid_columns_l = {c.lower(): c for c in valid_columns}
         logger.debug("Valid columns: "+str(valid_columns))
         # Create the different lists
