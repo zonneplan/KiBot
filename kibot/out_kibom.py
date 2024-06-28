@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -9,7 +9,7 @@ Dependencies:
     role: mandatory
     github: INTI-CMNB/KiBoM
     command: KiBOM_CLI.py
-    version: 1.8.0
+    version: 1.9.1
     downloader: pytool
 """
 import os
@@ -106,15 +106,9 @@ class ComponentAliases(Optionable):
                 ['d', 'diode', 'd_small'],
                 ]
 
-    def __init__(self):
-        super().__init__()
-
 
 class GroupFields(Optionable):
     _default = ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']
-
-    def __init__(self):
-        super().__init__()
 
 
 class KiBoMConfig(Optionable):
@@ -150,10 +144,9 @@ class KiBoMConfig(Optionable):
             """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page (HTML only) """
             self.mouser_link = Optionable
             """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page (HTML only) """
-            # Upcoming release
-            #  self.lcsc_link = Optionable
-            #  """ [string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page (HTML only) """
-            #   ???   Use **true** to copy the value indicated by the `field_lcsc_part` global option """
+            self.lcsc_link = Optionable
+            """ [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+                Use **true** to copy the value indicated by the `field_lcsc_part` global option """
             self.group_fields = GroupFields
             """ *[list(string)] List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
@@ -171,15 +164,15 @@ class KiBoMConfig(Optionable):
                 - ['zener', 'zenersmall']
                 - ['d', 'diode', 'd_small'] """
             self.include_only = KiBoMRegex
-            """ [list(dict)] A series of regular expressions used to select included parts.
+            """ [list(dict)=[]] A series of regular expressions used to select included parts.
                 If there are any regex defined here, only components that match against ANY of them will be included.
                 Column names are case-insensitive.
                 If empty all the components are included """
             self.exclude_any = KiBoMRegex
-            """ [list(dict)] A series of regular expressions used to exclude parts.
+            """ [list(dict)=[]] A series of regular expressions used to exclude parts.
                 If a component matches ANY of these, it will be excluded.
                 Column names are case-insensitive.
-                If empty the following list is used:
+                If empty the following list is used by KiBoM:
                 - column: References
                 ..regex: '^TP[0-9]*'
                 - column: References
@@ -197,8 +190,9 @@ class KiBoMConfig(Optionable):
                 - column: Footprint
                 ..regex: 'fiducial' """
             self.columns = KiBoMColumns
-            """ *[list(dict)|list(string)] List of columns to display.
+            """ *[list(dict)|list(string)=[]] List of columns to display.
                 Can be just the name of the field """
+        self._init_from_defaults = True
 
     @staticmethod
     def _create_minimal_ini():
@@ -232,79 +226,54 @@ class KiBoMConfig(Optionable):
     def config(self, parent):
         super().config(parent)
         # digikey_link
-        if isinstance(self.digikey_link, type):
-            self.digikey_link = None
-        elif isinstance(self.digikey_link, list):
-            self.digikey_link = '\t'.join(self.digikey_link)
+        self.digikey_link = '\t'.join(self.force_list(self.digikey_link, comma_sep=False))
         # mouser_link
-        if isinstance(self.mouser_link, type):
-            self.mouser_link = None
-        elif isinstance(self.mouser_link, list):
-            self.mouser_link = '\t'.join(self.mouser_link)
+        self.mouser_link = '\t'.join(self.force_list(self.mouser_link, comma_sep=False))
         # lcsc_link
-        # if isinstance(self.lcsc_link, type):
-        #     self.lcsc_link = None
-        # elif isinstance(self.lcsc_link, list):
-        #     self.lcsc_link = '\t'.join(self.lcsc_link)
-        # group_fields
-        if isinstance(self.group_fields, type):
-            self.group_fields = None
+        if isinstance(self.lcsc_link, bool):
+            self.lcsc_link = self.solve_field_name('_field_lcsc_part') if self.lcsc_link else ''
+        self.lcsc_link = '\t'.join(self.force_list(self.lcsc_link, comma_sep=False))
         # component_aliases
-        if isinstance(self.component_aliases, type):
-            self.component_aliases = None
-        else:
-            self.component_aliases = ['\t'.join(a) for a in self.component_aliases]
+        self.component_aliases = ['\t'.join(a) for a in self.component_aliases]
         # include_only
-        if isinstance(self.include_only, type):
-            self.include_only = None
-        else:
-            self.include_only = [str(r) for r in self.include_only]
+        self.include_only = [str(r) for r in self.include_only]
         # exclude_any
-        if isinstance(self.exclude_any, type):
-            self.exclude_any = None
-        else:
-            self.exclude_any = [str(r) for r in self.exclude_any]
+        self.exclude_any = [str(r) for r in self.exclude_any]
         # columns
-        if isinstance(self.columns, type):
-            self.columns = None
-            self.col_rename = None
-            self.join = None
-            self.ignore = None
-        else:
-            # This is tricky
-            # Lower case available columns
-            valid_columns = self._get_columns()
-            valid_columns_l = {c.lower(): c for c in valid_columns}
-            logger.debug("Valid columns: "+str(valid_columns))
-            # Create the different lists
-            columns = []
-            columns_l = {}
-            self.col_rename = []
-            self.join = []
-            for col in self.columns:
-                if isinstance(col, str):
-                    # Just a string, add to the list of used
-                    new_col = col
-                else:
-                    # A complete entry
-                    new_col = col.field
-                    # A column rename
-                    if col.name:
-                        self.col_rename.append(col.field+'\t'+col.name)
-                    # Attach other columns
-                    if col.join:
-                        self.join.append(col.field+'\t'+col.join)
-                # Check this is a valid column
-                if new_col.lower() not in valid_columns_l:
-                    # Should we relax it? (as in out_bom)
-                    raise KiPlotConfigurationError('Invalid column name `{}`. Valid columns are {}.'.
-                                                   format(new_col, list(valid_columns_l.values())))
-                columns.append(new_col)
-                columns_l[new_col.lower()] = new_col
-            # Create a list of the columns we don't want
-            self.ignore = [c for c in valid_columns_l.keys() if c not in columns_l]
-            # And this is the ordered list with the case style defined by the user
-            self.columns = columns
+        # This is tricky
+        # Lower case available columns
+        valid_columns = self._get_columns()
+        valid_columns_l = {c.lower(): c for c in valid_columns}
+        logger.debug("Valid columns: "+str(valid_columns))
+        # Create the different lists
+        columns = []
+        columns_l = {}
+        self.col_rename = []
+        self.join = []
+        for col in self.columns:
+            if isinstance(col, str):
+                # Just a string, add to the list of used
+                new_col = col
+            else:
+                # A complete entry
+                new_col = col.field
+                # A column rename
+                if col.name:
+                    self.col_rename.append(col.field+'\t'+col.name)
+                # Attach other columns
+                if col.join:
+                    self.join.append(col.field+'\t'+col.join)
+            # Check this is a valid column
+            if new_col.lower() not in valid_columns_l:
+                # Should we relax it? (as in out_bom)
+                raise KiPlotConfigurationError('Invalid column name `{}`. Valid columns are {}.'.
+                                               format(new_col, list(valid_columns_l.values())))
+            columns.append(new_col)
+            columns_l[new_col.lower()] = new_col
+        # Create a list of the columns we don't want
+        self.ignore = [c for c in valid_columns_l.keys() if c not in columns_l] if self.columns else []
+        # And this is the ordered list with the case style defined by the user
+        self.columns = columns
 
     def write_bool(self, attr):
         """ Write a .INI bool option """
