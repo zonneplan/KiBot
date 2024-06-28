@@ -44,7 +44,7 @@ class SVGOptions(DrillMarks):
                 The `kicad_all` method uses the whole size reported by KiCad. Usually includes extra space.
                 See `limit_viewbox` option """
             self.margin = PcbMargin
-            """ [number|dict] Margin around the view box [mm].
+            """ [number|dict=0] Margin around the view box [mm].
                 Using a number the margin is the same in the four directions.
                 See `limit_viewbox` option """
         self._plot_format = PLOT_FORMAT_SVG
@@ -106,5 +106,5 @@ class SVG(AnyLayer):
         super().__init__()
         with document:
             self.options = SVGOptions
-            """ *[dict] Options for the `svg` output """
+            """ *[dict={}] Options for the `svg` output """
         self._category = 'PCB/docs'

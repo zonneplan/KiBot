@@ -1147,6 +1147,7 @@ class PcbMargin(Optionable):
     @staticmethod
     def solve(margin):
         if isinstance(margin, type):
+            # TODO: remove once init_from_defaults is the default
             return (0, 0, 0, 0), PcbMargin()
         if isinstance(margin, PcbMargin):
             return ((GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom)),

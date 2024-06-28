@@ -77,7 +77,7 @@ class AnyLayerOptions(VariantOptions):
             self.edge_cut_extension = ''
             """ Used to configure the edge cuts layer extension for Protel mode. Include the dot """
             self.custom_reports = CustomReport
-            """ [list(dict)] A list of customized reports for the manufacturer """
+            """ [list(dict)=[]] A list of customized reports for the manufacturer """
             self.sketch_pads_on_fab_layers = False
             r""" Draw only the outline of the pads on the \*.Fab layers (KiCad 6+) """
             self.sketch_pad_line_width = 0.1
@@ -89,11 +89,10 @@ class AnyLayerOptions(VariantOptions):
             """ Tell KiCad to apply the scaling for each layer as a separated entity.
                 Disabling it the pages are coherent and can be superposed """
         super().__init__()
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.custom_reports, type):
-            self.custom_reports = []
         self.sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
 
     def _configure_plot_ctrl(self, po, output_dir):

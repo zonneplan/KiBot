@@ -73,5 +73,5 @@ class PS(AnyLayer):
         super().__init__()
         with document:
             self.options = PSOptions
-            """ *[dict] Options for the `ps` output """
+            """ *[dict={}] Options for the `ps` output """
         self._category = 'PCB/docs'
