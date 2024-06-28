@@ -561,7 +561,7 @@ class Diff(BaseOutput):  # noqa: F821
         self._any_related = True
         with document:
             self.options = DiffOptions
-            """ *[dict] Options for the `diff` output """
+            """ *[dict={}] Options for the `diff` output """
             self.layers = Layer
             """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to use. When empty all available layers are used.
