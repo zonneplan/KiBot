@@ -282,6 +282,7 @@ class Optionable(object):
                 self.configure_from_default(k)
                 continue
             new_val = None
+            # TODO: Merge with adapt_default
             if def_val == '?':
                 # The local config will creat something useful
                 continue
@@ -298,6 +299,8 @@ class Optionable(object):
             elif def_val[0] == "'":
                 # String
                 new_val = def_val[1:-1]
+            elif def_val[0] in {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}:
+                new_val = float(def_val)
             else:
                 assert new_val is not None, f'{self} {k} {def_val}'
             logger.debugl(3, f'Configuring from default: {k} -> {new_val}')

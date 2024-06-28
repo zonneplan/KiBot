@@ -102,7 +102,7 @@ class Gerber(AnyLayer):
         super().__init__()
         with document:
             self.options = GerberOptions
-            """ *[dict] Options for the `gerber` output """
+            """ *[dict={}] Options for the `gerber` output """
         self._category = 'PCB/fabrication/gerber'
 
     @staticmethod
