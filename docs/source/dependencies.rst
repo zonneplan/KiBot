@@ -63,7 +63,7 @@
 
 -  Mandatory for `ibom`
 
-`KiBoM <https://github.com/INTI-CMNB/KiBoM>`__ :index:`: <pair: dependency; KiBoM>`  v1.8.0 |image25| |Auto-download|
+`KiBoM <https://github.com/INTI-CMNB/KiBoM>`__ :index:`: <pair: dependency; KiBoM>`  v1.9.1 |image25| |Auto-download|
 
 -  Mandatory for `kibom`
 
