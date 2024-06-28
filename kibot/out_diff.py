@@ -448,7 +448,7 @@ class DiffOptions(AnyDiffOptions):
         return self.cache_output(name)
 
     def create_layers_incl(self, layers):
-        return self.save_layers_incl(Layer.solve(layers)) if self.pcb and not isinstance(layers, type) else None
+        return self.save_layers_incl(Layer.solve(layers)) if self.pcb else None
 
     def do_compare(self, old, old_type, new, new_type, name, name_ori):
         dir_name = os.path.dirname(name)
@@ -561,11 +561,13 @@ class Diff(BaseOutput):  # noqa: F821
         self._any_related = True
         with document:
             self.options = DiffOptions
-            """ *[dict] Options for the `diff` output """
+            """ *[dict={}] Options for the `diff` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*] List
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to use. When empty all available layers are used.
+                If the list is empty all layers will be included.
                 Note that if you want to support adding/removing layers you should specify a list here """
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
