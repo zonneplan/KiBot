@@ -199,6 +199,7 @@ Parameters:
                references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
+               Note that an empty list means all available specs, use `specs` options to disable it.
 
                -  Valid keys:
 

@@ -23,7 +23,7 @@ Parameters:
 
    -  Valid keys:
 
-      -  **files** :index:`: <pair: output - compress - options; files>` [:ref:`list(dict) <list(dict)>`] Which files will be included.
+      -  **files** :index:`: <pair: output - compress - options; files>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
 
          -  Valid keys:
 

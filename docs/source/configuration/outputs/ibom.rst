@@ -41,7 +41,7 @@ Parameters:
          IBoM option, avoid using in conjunction with KiBot variants/filters.
       -  ``checkboxes`` :index:`: <pair: output - ibom - options; checkboxes>` [:ref:`string <string>`] (default: ``'Sourced,Placed'``) Comma separated list of checkbox columns.
       -  ``dark_mode`` :index:`: <pair: output - ibom - options; dark_mode>` [:ref:`boolean <boolean>`] (default: ``false``) Default to dark mode.
-      -  ``dnf_filter`` :index:`: <pair: output - ibom - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - ibom - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
          Avoid using it in conjunction with IBoM native filtering options.
 
@@ -76,7 +76,7 @@ Parameters:
       -  ``no_compression`` :index:`: <pair: output - ibom - options; no_compression>` [:ref:`boolean <boolean>`] (default: ``false``) Disable compression of pcb data.
       -  ``no_redraw_on_drag`` :index:`: <pair: output - ibom - options; no_redraw_on_drag>` [:ref:`boolean <boolean>`] (default: ``false``) Do not redraw pcb on drag by default.
       -  ``offset_back_rotation`` :index:`: <pair: output - ibom - options; offset_back_rotation>` [:ref:`boolean <boolean>`] (default: ``false``) Offset the back of the pcb by 180 degrees.
-      -  ``pre_transform`` :index:`: <pair: output - ibom - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - ibom - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``show_fabrication`` :index:`: <pair: output - ibom - options; show_fabrication>` [:ref:`boolean <boolean>`] (default: ``false``) Show fabrication layer by default.

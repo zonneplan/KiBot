@@ -32,7 +32,7 @@ Parameters:
 
 -  **name** :index:`: <pair: output - gerber; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - gerber; options>` [:ref:`dict <dict>`] Options for the `gerber` output.
+-  **options** :index:`: <pair: output - gerber; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `gerber` output.
 
    -  Valid keys:
 
@@ -49,7 +49,7 @@ Parameters:
       -  **use_gerber_net_attributes** :index:`: <pair: output - gerber - options; use_gerber_net_attributes>` [:ref:`boolean <boolean>`] (default: ``true``) Include netlist metadata.
       -  **use_gerber_x2_attributes** :index:`: <pair: output - gerber - options; use_gerber_x2_attributes>` [:ref:`boolean <boolean>`] (default: ``true``) Use the extended X2 format (otherwise use X1 formerly RS-274X).
       -  **use_protel_extensions** :index:`: <pair: output - gerber - options; use_protel_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use legacy Protel file extensions.
-      -  ``custom_reports`` :index:`: <pair: output - gerber - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] A list of customized reports for the manufacturer.
+      -  ``custom_reports`` :index:`: <pair: output - gerber - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A list of customized reports for the manufacturer.
 
          -  Valid keys:
 
@@ -58,7 +58,7 @@ Parameters:
             -  ``output`` :index:`: <pair: output - gerber - options - custom_reports; output>` [:ref:`string <string>`] (default: ``'Custom_report.txt'``) File name for the custom report.
 
       -  ``disable_aperture_macros`` :index:`: <pair: output - gerber - options; disable_aperture_macros>` [:ref:`boolean <boolean>`] (default: ``false``) Disable aperture macros (workaround for buggy CAM software) (KiCad 6).
-      -  ``dnf_filter`` :index:`: <pair: output - gerber - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - gerber - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``edge_cut_extension`` :index:`: <pair: output - gerber - options; edge_cut_extension>` [:ref:`string <string>`] (default: ``''``) Used to configure the edge cuts layer extension for Protel mode. Include the dot.
@@ -73,7 +73,7 @@ Parameters:
       -  ``line_width`` :index:`: <pair: output - gerber - options; line_width>` [:ref:`number <number>`] (default: ``0.1``) (range: 0.02 to 2) Line_width for objects without width [mm] (KiCad 5).
       -  ``plot_footprint_refs`` :index:`: <pair: output - gerber - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
       -  ``plot_footprint_values`` :index:`: <pair: output - gerber - options; plot_footprint_values>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint values.
-      -  ``pre_transform`` :index:`: <pair: output - gerber - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - gerber - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``sketch_pad_line_width`` :index:`: <pair: output - gerber - options; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``) Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)

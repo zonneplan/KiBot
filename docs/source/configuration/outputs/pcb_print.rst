@@ -120,7 +120,7 @@ Parameters:
       -  ``blind_via_color`` :index:`: <pair: output - pcb_print - options; blind_via_color>` [:ref:`string <string>`] (default: ``''``) Color used for blind/buried `colored_vias`.
       -  ``colored_pads`` :index:`: <pair: output - pcb_print - options; colored_pads>` [:ref:`boolean <boolean>`] (default: ``true``) Plot through-hole in a different color. Like KiCad GUI does.
       -  ``colored_vias`` :index:`: <pair: output - pcb_print - options; colored_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Plot vias in a different color. Like KiCad GUI does.
-      -  ``dnf_filter`` :index:`: <pair: output - pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``dpi`` :index:`: <pair: output - pcb_print - options; dpi>` [:ref:`number <number>`] (default: ``360``) (range: 36 to 1200) Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
@@ -150,7 +150,7 @@ Parameters:
       -  ``page_number_as_extension`` :index:`: <pair: output - pcb_print - options; page_number_as_extension>` [:ref:`boolean <boolean>`] (default: ``false``) When enabled the %i is always `assembly`, the %x will be NN.FORMAT (i.e. 01.png).
          Note: page numbers can be customized using the `page_id` option for each page.
       -  ``png_width`` :index:`: <pair: output - pcb_print - options; png_width>` [:ref:`number <number>`] (default: ``1280``) (range: 0 to 7680) Width of the PNG in pixels. Use 0 to use as many pixels as the DPI needs for the page size.
-      -  ``pre_transform`` :index:`: <pair: output - pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``realistic_solder_mask`` :index:`: <pair: output - pcb_print - options; realistic_solder_mask>` [:ref:`boolean <boolean>`] (default: ``true``) Try to draw the solder mask as a real solder mask, not the negative used for fabrication.

@@ -26,7 +26,7 @@ Parameters:
    -  Valid keys:
 
       -  **output** :index:`: <pair: output - gerb_drill - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
-      -  ``dnf_filter`` :index:`: <pair: output - gerb_drill - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - gerb_drill - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``map`` :index:`: <pair: output - gerb_drill - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``'None'``) (choices: "hpgl", "ps", "gerber", "dxf", "svg", "pdf", "None") Format for a graphical drill map.
@@ -38,7 +38,7 @@ Parameters:
             -  ``type`` :index:`: <pair: output - gerb_drill - options - map; type>` [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
 
       -  ``npth_id`` :index:`: <pair: output - gerb_drill - options; npth_id>` [:ref:`string <string>`] Force this replacement for %i when generating NPTH files.
-      -  ``pre_transform`` :index:`: <pair: output - gerb_drill - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - gerb_drill - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``pth_id`` :index:`: <pair: output - gerb_drill - options; pth_id>` [:ref:`string <string>`] Force this replacement for %i when generating PTH and unified files.

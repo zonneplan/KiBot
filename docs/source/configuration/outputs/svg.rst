@@ -34,7 +34,7 @@ Parameters:
 
 -  **name** :index:`: <pair: output - svg; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - svg; options>` [:ref:`dict <dict>`] Options for the `svg` output.
+-  **options** :index:`: <pair: output - svg; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `svg` output.
 
    -  Valid keys:
 
@@ -46,7 +46,7 @@ Parameters:
          (i.e. always the default worksheet style, also problems expanding text variables).
          The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
       -  **scaling** :index:`: <pair: output - svg - options; scaling>` [:ref:`number <number>`] (default: ``1``) Scale factor (0 means autoscaling).
-      -  ``custom_reports`` :index:`: <pair: output - svg - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] A list of customized reports for the manufacturer.
+      -  ``custom_reports`` :index:`: <pair: output - svg - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A list of customized reports for the manufacturer.
 
          -  Valid keys:
 
@@ -54,7 +54,7 @@ Parameters:
                Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
             -  ``output`` :index:`: <pair: output - svg - options - custom_reports; output>` [:ref:`string <string>`] (default: ``'Custom_report.txt'``) File name for the custom report.
 
-      -  ``dnf_filter`` :index:`: <pair: output - svg - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - svg - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``drill_marks`` :index:`: <pair: output - svg - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
@@ -70,7 +70,7 @@ Parameters:
       -  ``limit_viewbox`` :index:`: <pair: output - svg - options; limit_viewbox>` [:ref:`boolean <boolean>`] (default: ``false``) When enabled the view box is limited to a selected area.
          This option can't be enabled when using a scale.
       -  ``line_width`` :index:`: <pair: output - svg - options; line_width>` [:ref:`number <number>`] (default: ``0.25``) (range: 0.02 to 2) For objects without width [mm] (KiCad 5).
-      -  ``margin`` :index:`: <pair: output - svg - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] Margin around the view box [mm].
+      -  ``margin`` :index:`: <pair: output - svg - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] (default: ``0``) Margin around the view box [mm].
          Using a number the margin is the same in the four directions.
          See `limit_viewbox` option.
 
@@ -85,7 +85,7 @@ Parameters:
       -  ``negative_plot`` :index:`: <pair: output - svg - options; negative_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Invert black and white.
       -  ``plot_footprint_refs`` :index:`: <pair: output - svg - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
       -  ``plot_footprint_values`` :index:`: <pair: output - svg - options; plot_footprint_values>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint values.
-      -  ``pre_transform`` :index:`: <pair: output - svg - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - svg - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``size_detection`` :index:`: <pair: output - svg - options; size_detection>` [:ref:`string <string>`] (default: ``'kicad_edge'``) (choices: "kicad_edge", "kicad_all") Method used to detect the size of the view box.

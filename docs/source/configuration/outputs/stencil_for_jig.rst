@@ -39,13 +39,13 @@ Parameters:
       -  ``cutout`` :index:`: <pair: output - stencil_for_jig - options; cutout>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of components to add a cutout based on the component courtyard.
          This is useful when you have already pre-populated board and you want to populate more
          components.
-      -  ``dnf_filter`` :index:`: <pair: output - stencil_for_jig - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - stencil_for_jig - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``include_scad`` :index:`: <pair: output - stencil_for_jig - options; include_scad>` [:ref:`boolean <boolean>`] (default: ``true``) Include the generated OpenSCAD files.
       -  *pcb_thickness* :index:`: <pair: output - stencil_for_jig - options; pcb_thickness>` Alias for pcbthickness.
       -  ``pcbthickness`` :index:`: <pair: output - stencil_for_jig - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``) PCB thickness [mm]. If 0 we will ask KiCad.
-      -  ``pre_transform`` :index:`: <pair: output - stencil_for_jig - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - stencil_for_jig - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  *register_border_inner* :index:`: <pair: output - stencil_for_jig - options; register_border_inner>` Alias for registerborderinner.

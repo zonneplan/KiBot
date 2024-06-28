@@ -34,7 +34,7 @@ Parameters:
          When empty we use a dummy template, you should provide something better.
       -  **renderer** :index:`: <pair: output - populate - options; renderer>` [:ref:`string <string>`] (default: ``''``) Name of the output used to render the PCB steps.
          Currently this must be a `pcbdraw` or `render_3d` output.
-      -  ``dnf_filter`` :index:`: <pair: output - populate - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - populate - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``imgname`` :index:`: <pair: output - populate - options; imgname>` [:ref:`string <string>`] (default: ``'img/populating_%d.%x'``) Pattern used for the image names. The `%d` is replaced by the image number.
@@ -42,7 +42,7 @@ Parameters:
          `renderer`.
       -  ``initial_components`` :index:`: <pair: output - populate - options; initial_components>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of components soldered before the first step.
 
-      -  ``pre_transform`` :index:`: <pair: output - populate - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - populate - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``template`` :index:`: <pair: output - populate - options; template>` [:ref:`string <string>`] The name of the handlebars template used for the HTML output.

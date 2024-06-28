@@ -18,8 +18,9 @@ Parameters:
 -  **comment** :index:`: <pair: output - diff; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - diff; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - diff; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
+-  **layers** :index:`: <pair: output - diff; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
    of PCB layers to use. When empty all available layers are used.
+   If the list is empty all layers will be included.
    Note that if you want to support adding/removing layers you should specify a list here.
 
    -  Valid keys:
@@ -32,7 +33,7 @@ Parameters:
 
 -  **name** :index:`: <pair: output - diff; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - diff; options>` [:ref:`dict <dict>`] Options for the `diff` output.
+-  **options** :index:`: <pair: output - diff; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `diff` output.
 
    -  Valid keys:
 
@@ -52,7 +53,7 @@ Parameters:
          The `stats` mode is used to measure the amount of difference. In this mode all
          changes are red, but you can abort if the difference is bigger than certain threshold.
          The '2color' mode is like 'red_green', but you can customize the colors.
-      -  ``dnf_filter`` :index:`: <pair: output - diff - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - diff - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``force_checkout`` :index:`: <pair: output - diff - options; force_checkout>` [:ref:`boolean <boolean>`] (default: ``false``) When `old_type` and/or `new_type` are `git` KiBot will checkout the indicated point.
@@ -85,7 +86,7 @@ Parameters:
          Note that when no differences are found we get a page saying *No diff*.
       -  ``only_first_sch_page`` :index:`: <pair: output - diff - options; only_first_sch_page>` [:ref:`boolean <boolean>`] (default: ``false``) Compare only the main schematic page (root page).
       -  ``pcb`` :index:`: <pair: output - diff - options; pcb>` [:ref:`boolean <boolean>`] (default: ``true``) Compare the PCB, otherwise compare the schematic.
-      -  ``pre_transform`` :index:`: <pair: output - diff - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - diff - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``threshold`` :index:`: <pair: output - diff - options; threshold>` [:ref:`number <number>`] (default: ``0``) (range: 0 to 1000000) Error threshold for the `stats` mode, 0 is no error. When specified a

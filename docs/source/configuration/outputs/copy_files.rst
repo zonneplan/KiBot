@@ -57,7 +57,7 @@ Parameters:
                You don't need to specify it for `project` mode.
 
       -  **no_virtual** :index:`: <pair: output - copy_files - options; no_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Used to exclude 3D models for components with 'virtual' attribute.
-      -  ``dnf_filter`` :index:`: <pair: output - copy_files - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - copy_files - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``download_lcsc`` :index:`: <pair: output - copy_files - options; download_lcsc>` [:ref:`boolean <boolean>`] (default: ``true``) In addition to try to download the 3D models from KiCad git also try to get
@@ -69,7 +69,7 @@ Parameters:
       -  ``kicad_3d_url_suffix`` :index:`: <pair: output - copy_files - options; kicad_3d_url_suffix>` [:ref:`string <string>`] (default: ``''``) Text added to the end of the download URL.
          Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
       -  ``link_no_copy`` :index:`: <pair: output - copy_files - options; link_no_copy>` [:ref:`boolean <boolean>`] (default: ``false``) Create symlinks instead of copying files.
-      -  ``pre_transform`` :index:`: <pair: output - copy_files - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - copy_files - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``variant`` :index:`: <pair: output - copy_files - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.

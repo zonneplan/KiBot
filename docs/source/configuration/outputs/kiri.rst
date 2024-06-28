@@ -25,7 +25,7 @@ Parameters:
 -  **comment** :index:`: <pair: output - kiri; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - kiri; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - kiri; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
+-  **layers** :index:`: <pair: output - kiri; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
    of PCB layers to use. When empty all available layers are used.
    Note that if you want to support adding/removing layers you should specify a list here.
 
@@ -39,7 +39,7 @@ Parameters:
 
 -  **name** :index:`: <pair: output - kiri; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - kiri; options>` [:ref:`dict <dict>`] Options for the `diff` output.
+-  **options** :index:`: <pair: output - kiri; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `diff` output.
 
    -  Valid keys:
 
@@ -48,11 +48,11 @@ Parameters:
          Usually user colors are stored as `user`, but you can give it another name.
       -  **keep_generated** :index:`: <pair: output - kiri - options; keep_generated>` [:ref:`boolean <boolean>`] (default: ``false``) Avoid PCB and SCH images regeneration. Useful for incremental usage.
       -  ``background_color`` :index:`: <pair: output - kiri - options; background_color>` [:ref:`string <string>`] (default: ``'#FFFFFF'``) Color used for the background of the diff canvas.
-      -  ``dnf_filter`` :index:`: <pair: output - kiri - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - kiri - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``max_commits`` :index:`: <pair: output - kiri - options; max_commits>` [:ref:`number <number>`] (default: ``0``) Maximum number of commits to include. Use 0 for all available commits.
-      -  ``pre_transform`` :index:`: <pair: output - kiri - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - kiri - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``revision`` :index:`: <pair: output - kiri - options; revision>` [:ref:`string <string>`] (default: ``'HEAD'``) Starting point for the commits, can be a branch, a hash, etc.

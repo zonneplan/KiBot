@@ -36,7 +36,7 @@ Parameters:
       -  ``cutout`` :index:`: <pair: output - stencil_3d - options; cutout>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of components to add a cutout based on the component courtyard.
          This is useful when you have already pre-populated board and you want to populate more
          components.
-      -  ``dnf_filter`` :index:`: <pair: output - stencil_3d - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - stencil_3d - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  *enlarge_holes* :index:`: <pair: output - stencil_3d - options; enlarge_holes>` Alias for enlarge_holes.
@@ -49,7 +49,7 @@ Parameters:
          Note that this also includes the DXF files.
       -  *pcb_thickness* :index:`: <pair: output - stencil_3d - options; pcb_thickness>` Alias for pcbthickness.
       -  ``pcbthickness`` :index:`: <pair: output - stencil_3d - options; pcbthickness>` [:ref:`number <number>`] (default: ``0``) PCB thickness [mm]. If 0 we will ask KiCad.
-      -  ``pre_transform`` :index:`: <pair: output - stencil_3d - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - stencil_3d - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``side`` :index:`: <pair: output - stencil_3d - options; side>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "top", "bottom", "auto", "both") Which side of the PCB we want. Using `auto` will detect which

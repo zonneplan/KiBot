@@ -34,7 +34,7 @@ Parameters:
 
 -  **name** :index:`: <pair: output - pdf; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pdf; options>` [:ref:`dict <dict>`] Options for the `pdf` output.
+-  **options** :index:`: <pair: output - pdf; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pdf` output.
 
    -  Valid keys:
 
@@ -46,7 +46,7 @@ Parameters:
          (i.e. always the default worksheet style, also problems expanding text variables).
          The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
       -  **scaling** :index:`: <pair: output - pdf - options; scaling>` [:ref:`number <number>`] (default: ``1``) Scale factor (0 means autoscaling).
-      -  ``custom_reports`` :index:`: <pair: output - pdf - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] A list of customized reports for the manufacturer.
+      -  ``custom_reports`` :index:`: <pair: output - pdf - options; custom_reports>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A list of customized reports for the manufacturer.
 
          -  Valid keys:
 
@@ -54,7 +54,7 @@ Parameters:
                Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
             -  ``output`` :index:`: <pair: output - pdf - options - custom_reports; output>` [:ref:`string <string>`] (default: ``'Custom_report.txt'``) File name for the custom report.
 
-      -  ``dnf_filter`` :index:`: <pair: output - pdf - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - pdf - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``drill_marks`` :index:`: <pair: output - pdf - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
@@ -72,7 +72,7 @@ Parameters:
       -  ``negative_plot`` :index:`: <pair: output - pdf - options; negative_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Invert black and white.
       -  ``plot_footprint_refs`` :index:`: <pair: output - pdf - options; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
       -  ``plot_footprint_values`` :index:`: <pair: output - pdf - options; plot_footprint_values>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint values.
-      -  ``pre_transform`` :index:`: <pair: output - pdf - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - pdf - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``sketch_pad_line_width`` :index:`: <pair: output - pdf - options; sketch_pad_line_width>` [:ref:`number <number>`] (default: ``0.1``) Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
@@ -95,7 +95,7 @@ Parameters:
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``custom_reports`` :index:`: <pair: output - pdf; custom_reports>` [:ref:`list(dict) <list(dict)>`] A list of customized reports for the manufacturer.
+-  ``custom_reports`` :index:`: <pair: output - pdf; custom_reports>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A list of customized reports for the manufacturer.
 
    -  Valid keys:
 
@@ -106,7 +106,7 @@ Parameters:
 -  ``disable_run_by_default`` :index:`: <pair: output - pdf; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``dnf_filter`` :index:`: <pair: output - pdf; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+-  ``dnf_filter`` :index:`: <pair: output - pdf; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
    A short-cut to use for simple cases where a variant is an overkill.
 
 -  ``drill_marks`` :index:`: <pair: output - pdf; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
@@ -128,7 +128,7 @@ Parameters:
 -  ``output_id`` :index:`: <pair: output - pdf; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
 -  ``plot_footprint_refs`` :index:`: <pair: output - pdf; plot_footprint_refs>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint references.
 -  ``plot_footprint_values`` :index:`: <pair: output - pdf; plot_footprint_values>` [:ref:`boolean <boolean>`] (default: ``true``) Include the footprint values.
--  ``pre_transform`` :index:`: <pair: output - pdf; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+-  ``pre_transform`` :index:`: <pair: output - pdf; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
    A short-cut to use for simple cases where a variant is an overkill.
 
 -  ``priority`` :index:`: <pair: output - pdf; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.

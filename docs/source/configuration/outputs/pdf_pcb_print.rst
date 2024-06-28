@@ -44,7 +44,7 @@ Parameters:
       -  ``color_theme`` :index:`: <pair: output - pdf_pcb_print - options; color_theme>` [:ref:`string <string>`] (default: ``'_builtin_classic'``) Selects the color theme. Onlyu applies to KiCad 6.
          To use the KiCad 6 default colors select `_builtin_default`.
          Usually user colors are stored as `user`, but you can give it another name.
-      -  ``dnf_filter`` :index:`: <pair: output - pdf_pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - pdf_pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``drill_marks`` :index:`: <pair: output - pdf_pcb_print - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
@@ -57,7 +57,7 @@ Parameters:
       -  ``monochrome`` :index:`: <pair: output - pdf_pcb_print - options; monochrome>` [:ref:`boolean <boolean>`] (default: ``false``) Print in black and white.
       -  ``output`` :index:`: <pair: output - pdf_pcb_print - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
       -  *output_name* :index:`: <pair: output - pdf_pcb_print - options; output_name>` Alias for output.
-      -  ``pre_transform`` :index:`: <pair: output - pdf_pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - pdf_pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``title`` :index:`: <pair: output - pdf_pcb_print - options; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.

@@ -29,7 +29,7 @@ Parameters:
       -  **mirror_y_axis** :index:`: <pair: output - excellon - options; mirror_y_axis>` [:ref:`boolean <boolean>`] (default: ``false``) Invert the Y axis.
       -  **output** :index:`: <pair: output - excellon - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
       -  **pth_and_npth_single_file** :index:`: <pair: output - excellon - options; pth_and_npth_single_file>` [:ref:`boolean <boolean>`] (default: ``true``) Generate one file for both, plated holes and non-plated holes, instead of two separated files.
-      -  ``dnf_filter`` :index:`: <pair: output - excellon - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - excellon - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``left_digits`` :index:`: <pair: output - excellon - options; left_digits>` [:ref:`number <number>`] (default: ``0``) number of digits for integer part of coordinates (0 is auto).
@@ -43,7 +43,7 @@ Parameters:
 
       -  ``minimal_header`` :index:`: <pair: output - excellon - options; minimal_header>` [:ref:`boolean <boolean>`] (default: ``false``) Use a minimal header in the file.
       -  ``npth_id`` :index:`: <pair: output - excellon - options; npth_id>` [:ref:`string <string>`] Force this replacement for %i when generating NPTH files.
-      -  ``pre_transform`` :index:`: <pair: output - excellon - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - excellon - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``pth_id`` :index:`: <pair: output - excellon - options; pth_id>` [:ref:`string <string>`] Force this replacement for %i when generating PTH and unified files.

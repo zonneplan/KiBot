@@ -35,7 +35,7 @@ Parameters:
 
          -  Valid keys:
 
-            -  **columns** :index:`: <pair: output - kibom - options - conf; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] List of columns to display.
+            -  **columns** :index:`: <pair: output - kibom - options - conf; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of columns to display.
                Can be just the name of the field.
 
                -  Valid keys:
@@ -69,10 +69,10 @@ Parameters:
             -  ``datasheet_as_link`` :index:`: <pair: output - kibom - options - conf; datasheet_as_link>` [:ref:`string <string>`] (default: ``''``) Column with links to the datasheet (HTML only).
             -  ``digikey_link`` :index:`: <pair: output - kibom - options - conf; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Digi-Key part numbers, will be linked to web page (HTML only).
 
-            -  ``exclude_any`` :index:`: <pair: output - kibom - options - conf; exclude_any>` [:ref:`list(dict) <list(dict)>`] A series of regular expressions used to exclude parts.
+            -  ``exclude_any`` :index:`: <pair: output - kibom - options - conf; exclude_any>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A series of regular expressions used to exclude parts.
                If a component matches ANY of these, it will be excluded.
                Column names are case-insensitive.
-               If empty the following list is used:
+               If empty the following list is used by KiBoM:
 
                - column: References |br|
                  regex: '^TP[0-9]*'
@@ -103,7 +103,7 @@ Parameters:
             -  ``hide_headers`` :index:`: <pair: output - kibom - options - conf; hide_headers>` [:ref:`boolean <boolean>`] (default: ``false``) Hide column headers.
             -  ``hide_pcb_info`` :index:`: <pair: output - kibom - options - conf; hide_pcb_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide project information.
             -  ``html_generate_dnf`` :index:`: <pair: output - kibom - options - conf; html_generate_dnf>` [:ref:`boolean <boolean>`] (default: ``true``) Generate a separated section for DNF (Do Not Fit) components (HTML only).
-            -  ``include_only`` :index:`: <pair: output - kibom - options - conf; include_only>` [:ref:`list(dict) <list(dict)>`] A series of regular expressions used to select included parts.
+            -  ``include_only`` :index:`: <pair: output - kibom - options - conf; include_only>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A series of regular expressions used to select included parts.
                If there are any regex defined here, only components that match against ANY of them will be included.
                Column names are case-insensitive.
                If empty all the components are included.
@@ -115,6 +115,9 @@ Parameters:
                   -  *field* :index:`: <pair: output - kibom - options - conf - include_only; field>` Alias for column.
                   -  ``regex`` :index:`: <pair: output - kibom - options - conf - include_only; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match.
                   -  *regexp* :index:`: <pair: output - kibom - options - conf - include_only; regexp>` Alias for regex.
+
+            -  ``lcsc_link`` :index:`: <pair: output - kibom - options - conf; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing LCSC part numbers, will be linked to web page.
+               Use **true** to copy the value indicated by the `field_lcsc_part` global option.
 
             -  ``merge_blank_fields`` :index:`: <pair: output - kibom - options - conf; merge_blank_fields>` [:ref:`boolean <boolean>`] (default: ``true``) Component groups with blank fields will be merged into the most compatible group, where possible.
             -  ``mouser_link`` :index:`: <pair: output - kibom - options - conf; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Mouser part numbers, will be linked to web page (HTML only).

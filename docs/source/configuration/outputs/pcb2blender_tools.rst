@@ -37,12 +37,12 @@ Parameters:
          This is the bounding box reported by KiCad for the PCB edge with 1 mm of margin.
       -  ``board_bounds_dir`` :index:`: <pair: output - pcb2blender_tools - options; board_bounds_dir>` [:ref:`string <string>`] (default: ``'layers'``) Sub-directory where the bounds file is stored.
       -  ``board_bounds_file`` :index:`: <pair: output - pcb2blender_tools - options; board_bounds_file>` [:ref:`string <string>`] (default: ``'bounds'``) Name of the bounds file.
-      -  ``dnf_filter`` :index:`: <pair: output - pcb2blender_tools - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - pcb2blender_tools - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``pads_info_create`` :index:`: <pair: output - pcb2blender_tools - options; pads_info_create>` [:ref:`boolean <boolean>`] (default: ``true``) Create the files containing the PCB pads information.
       -  ``pads_info_dir`` :index:`: <pair: output - pcb2blender_tools - options; pads_info_dir>` [:ref:`string <string>`] (default: ``'pads'``) Sub-directory where the pads info files are stored.
-      -  ``pre_transform`` :index:`: <pair: output - pcb2blender_tools - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - pcb2blender_tools - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``stackup_create`` :index:`: <pair: output - pcb2blender_tools - options; stackup_create>` [:ref:`boolean <boolean>`] (default: ``false``) Create a file containing the board stackup.

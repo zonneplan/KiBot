@@ -60,7 +60,7 @@ Parameters:
          is used. In this mode you should avoid using `show_components` and variants.
          To get a more coherent behavior disable this option, and `none` will always be `none`.
          Also `all` will be what the variant says.
-      -  ``dnf_filter`` :index:`: <pair: output - pcbdraw - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - pcbdraw - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``dpi`` :index:`: <pair: output - pcbdraw - options; dpi>` [:ref:`number <number>`] (default: ``300``) (range: 10 to 1200) Dots per inch (resolution) of the generated image.
@@ -83,7 +83,7 @@ Parameters:
       -  ``outline_width`` :index:`: <pair: output - pcbdraw - options; outline_width>` [:ref:`number <number>`] (default: ``0.15``) (range: 0 to 10) Width of the trace to draw the PCB border [mm].
          Note this also affects the drill holes.
       -  ``placeholder`` :index:`: <pair: output - pcbdraw - options; placeholder>` [:ref:`boolean <boolean>`] (default: ``false``) Show placeholder for missing components.
-      -  ``pre_transform`` :index:`: <pair: output - pcbdraw - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - pcbdraw - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``'None'``) (DEPRECATED) Replacements for PCB references using specified components (lib:component).

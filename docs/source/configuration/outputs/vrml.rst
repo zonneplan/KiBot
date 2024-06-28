@@ -39,7 +39,7 @@ Parameters:
       -  ``dir_models`` :index:`: <pair: output - vrml - options; dir_models>` [:ref:`string <string>`] (default: ``'shapes3D'``) Subdirectory used to store the 3D models for the components.
          If you want to create a monolithic file just use '' here.
          Note that the WRL file will contain relative paths to the models.
-      -  ``dnf_filter`` :index:`: <pair: output - vrml - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to mark components as not fitted.
+      -  ``dnf_filter`` :index:`: <pair: output - vrml - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``download_lcsc`` :index:`: <pair: output - vrml - options; download_lcsc>` [:ref:`boolean <boolean>`] (default: ``true``) In addition to try to download the 3D models from KiCad git also try to get
@@ -54,7 +54,7 @@ Parameters:
       -  ``kicad_3d_url_suffix`` :index:`: <pair: output - vrml - options; kicad_3d_url_suffix>` [:ref:`string <string>`] (default: ``''``) Text added to the end of the download URL.
          Can be used to pass variables to the GET request, i.e. ?VAR1=VAL1&VAR2=VAL2.
       -  ``model_units`` :index:`: <pair: output - vrml - options; model_units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "meters", "deciinches", "inches") Units used for the VRML (1 deciinch = 0.1 inches).
-      -  ``pre_transform`` :index:`: <pair: output - vrml - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - vrml - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``ref_units`` :index:`: <pair: output - vrml - options; ref_units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches'") Units for `ref_x` and `ref_y`.
