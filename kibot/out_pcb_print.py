@@ -219,7 +219,7 @@ class PagesOptions(Optionable):
                 This can be used to generate a page for each copper layer, here you put `F.Cu`.
                 See `repeat_layers` """
             self.repeat_layers = LayerOptions
-            """ [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+            """ [list(dict)|list(string)|string='inners'] [all,selected,copper,technical,user,inners,outers,*]
                 List of layers to replace `repeat_for_layer`.
                 This can be used to generate a page for each copper layer, here you put `copper` """
             self.repeat_inherit = True
@@ -229,6 +229,7 @@ class PagesOptions(Optionable):
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
         self._layers = None
+        self._init_from_defaults = True
 
     def __str__(self):
         txt = self.sheet
@@ -277,9 +278,9 @@ class PagesOptions(Optionable):
             if self._repeat_for_layer is None:
                 raise KiPlotConfigurationError("Layer `{}` specified in `repeat_for_layer` isn't valid".format(layer))
             self._repeat_for_layer_index = self._layers.index(self._repeat_for_layer)
-            if isinstance(self.repeat_layers, type):
-                raise KiPlotConfigurationError('`repeat_for_layer` specified, but nothing to repeat')
             self._repeat_layers = LayerOptions.solve(self.repeat_layers)
+            if not self._repeat_layers:
+                raise KiPlotConfigurationError('`repeat_for_layer` specified, but nothing to repeat')
 
 
 class PCB_PrintOptions(VariantOptions):
