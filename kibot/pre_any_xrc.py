@@ -52,7 +52,7 @@ class ERCOptions(FiltersOptions):
             """ [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
                 You can specify multiple formats """
             self.warnings_as_errors = False
-            """ Warnings are considered errors, they still reported as errors, but consider it an error """
+            """ Warnings are considered errors, they still reported as warnings """
             self.dont_stop = False
             """ Continue even if we detect errors """
             self.units = 'millimeters'

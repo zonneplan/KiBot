@@ -116,7 +116,7 @@ Supported preflights
          -  ``ignore_unconnected`` :index:`: <pair: preflight - drc - drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
          -  ``schematic_parity`` :index:`: <pair: preflight - drc - drc; schematic_parity>` [:ref:`boolean <boolean>`] (default: ``true``) Check if the PCB and the schematic are coincident.
          -  ``units`` :index:`: <pair: preflight - drc - drc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
-         -  ``warnings_as_errors`` :index:`: <pair: preflight - drc - drc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as errors, but consider it an error.
+         -  ``warnings_as_errors`` :index:`: <pair: preflight - drc - drc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as warnings.
 
 
    -  **erc** :index:`: <pair: preflight - erc; erc>` [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
@@ -147,7 +147,7 @@ Supported preflights
             You can specify multiple formats.
 
          -  ``units`` :index:`: <pair: preflight - erc - erc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
-         -  ``warnings_as_errors`` :index:`: <pair: preflight - erc - erc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as errors, but consider it an error.
+         -  ``warnings_as_errors`` :index:`: <pair: preflight - erc - erc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Warnings are considered errors, they still reported as warnings.
 
 
    -  **erc_warnings** :index:`: <pair: preflight - erc_warnings; erc_warnings>` [:ref:`boolean <boolean>`] (default: ``false``) **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.
