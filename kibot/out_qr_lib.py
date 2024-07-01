@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -100,15 +100,16 @@ class QR_LibOptions(BaseOptions):
             self.use_sch_dir = True
             """ Generate the libs relative to the schematic/PCB dir """
             self.qrs = QRCodeOptions
-            """ *[list(dict)] QR codes to include in the library """
+            """ *[dict|list(dict)={}] QR codes to include in the library """
         super().__init__()
         self._expand_id = 'qr'
         self._expand_ext = 'lib'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.qrs, type):
-            self.qrs = [QRCodeOptions()]
+        if not isinstance(self.qrs, list):
+            self.qrs = [self.qrs]
         names = set()
         for qr in self.qrs:
             if qr.name in names:
