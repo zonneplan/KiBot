@@ -407,8 +407,9 @@ class PCB_PrintOptions(VariantOptions):
                     if page.repeat_inherit:
                         la.copy_extra_from(page._repeat_for_layer)
                     new_page._layers[page._repeat_for_layer_index] = la
-                    page.sheet = new_page.expand_sheet_patterns(parent, page.sheet, la.layer+'+'+layers_for_page, la)
-                    page.layer_var = new_page.expand_sheet_patterns(parent, page.layer_var, la.layer+'+'+layers_for_page, la)
+                    new_page.sheet = new_page.expand_sheet_patterns(parent, page.sheet, la.layer+'+'+layers_for_page, la)
+                    new_page.layer_var = new_page.expand_sheet_patterns(parent, page.layer_var, la.layer+'+'+layers_for_page,
+                                                                        la)
                     pages.append(new_page)
             else:
                 page.sheet = page.expand_sheet_patterns(parent, page.sheet, layers_for_page)

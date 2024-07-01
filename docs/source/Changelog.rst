@@ -73,6 +73,8 @@ Fixed:
 
 -  Update XML: ``check_pcb_parity`` not usable for KiCad 8, must use the
    ``drc`` preflight (#633)
+-  PCB Print: %ln and %ll substitution when using ``repeat_for_layer``
+   option
 
 Changed:
 ~~~~~~~~
