@@ -101,6 +101,8 @@ Changed:
    -  Blender Options outputs: Make a render when no outputs are
       specified
    -  PCB Print: repeat_layers defaults to inners
+   -  Spec to Field: some simple defaults for the specs (voltage,
+      current, power and tolerance)
 
 [1.7.0] - 2024-04-23
 --------------------

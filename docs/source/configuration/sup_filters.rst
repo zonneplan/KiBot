@@ -40,7 +40,7 @@ Supported filters
 
       -  ``comment`` :index:`: <pair: filter - field_rename; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
       -  ``name`` :index:`: <pair: filter - field_rename; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
-      -  ``rename`` :index:`: <pair: filter - field_rename; rename>` [:ref:`list(dict) <list(dict)>`] Fields to rename.
+      -  ``rename`` :index:`: <pair: filter - field_rename; rename>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Fields to rename.
 
          -  Valid keys:
 
@@ -61,7 +61,7 @@ Supported filters
       -  ``config_field`` :index:`: <pair: filter - generic; config_field>` [:ref:`string <string>`] (default: ``'Config'``) Name of the field used to classify components.
       -  ``config_separators`` :index:`: <pair: filter - generic; config_separators>` [:ref:`string <string>`] (default: ``' ,'``) Characters used to separate options inside the config field.
       -  ``exclude_all_hash_ref`` :index:`: <pair: filter - generic; exclude_all_hash_ref>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude all components with a reference starting with #.
-      -  ``exclude_any`` :index:`: <pair: filter - generic; exclude_any>` [:ref:`list(dict) <list(dict)>`] A series of regular expressions used to exclude parts.
+      -  ``exclude_any`` :index:`: <pair: filter - generic; exclude_any>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A series of regular expressions used to exclude parts.
          If a component matches ANY of these, it will be excluded.
          Column names are case-insensitive.
 
@@ -84,7 +84,7 @@ Supported filters
       -  ``exclude_field`` :index:`: <pair: filter - generic; exclude_field>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude components if a field is named as any of the keys.
       -  ``exclude_not_in_bom`` :index:`: <pair: filter - generic; exclude_not_in_bom>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude components marked *Exclude from bill of materials* (KiCad 6+).
       -  ``exclude_not_on_board`` :index:`: <pair: filter - generic; exclude_not_on_board>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude components marked *Exclude from board* (KiCad 6+).
-      -  ``exclude_refs`` :index:`: <pair: filter - generic; exclude_refs>` [:ref:`list(string) <list(string)>`] List of references to be excluded.
+      -  ``exclude_refs`` :index:`: <pair: filter - generic; exclude_refs>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of references to be excluded.
          Use R* for all references with R prefix.
 
       -  ``exclude_smd`` :index:`: <pair: filter - generic; exclude_smd>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude components marked as smd in the PCB.
@@ -92,7 +92,7 @@ Supported filters
       -  ``exclude_top`` :index:`: <pair: filter - generic; exclude_top>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude components on the top side of the PCB.
       -  ``exclude_value`` :index:`: <pair: filter - generic; exclude_value>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude components if their 'Value' is any of the keys.
       -  ``exclude_virtual`` :index:`: <pair: filter - generic; exclude_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude components marked as virtual in the PCB.
-      -  ``include_only`` :index:`: <pair: filter - generic; include_only>` [:ref:`list(dict) <list(dict)>`] A series of regular expressions used to include parts.
+      -  ``include_only`` :index:`: <pair: filter - generic; include_only>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A series of regular expressions used to include parts.
          If there are any regex defined here, only components that match against ANY of them will be included.
          Column/field names are case-insensitive.
          If empty this rule is ignored.
@@ -146,7 +146,7 @@ Supported filters
          The optional fields can contain a comma separated x,y position offset.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
-      -  ``offsets`` :index:`: <pair: filter - rot_footprint; offsets>` [:ref:`list(list(string)) <list(list(string))>`] A list of pairs regular expression/offset.
+      -  ``offsets`` :index:`: <pair: filter - rot_footprint; offsets>` [:ref:`list(list(string)) <list(list(string))>`] (default: ``[]``) A list of pairs regular expression/offset.
          Footprints matching the regular expression will be moved the specified offset.
          The offset must be two numbers separated by a comma. The first is the X offset.
          The signs matches the matthewlai/JLCKicadTools plugin specs.
@@ -155,11 +155,11 @@ Supported filters
          The optional fields can contain a counter-clockwise orientation offset in degrees.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
-      -  ``rotations`` :index:`: <pair: filter - rot_footprint; rotations>` [:ref:`list(list(string)) <list(list(string))>`] A list of pairs regular expression/rotation.
+      -  ``rotations`` :index:`: <pair: filter - rot_footprint; rotations>` [:ref:`list(list(string)) <list(list(string))>`] (default: ``[]``) A list of pairs regular expression/rotation.
          Footprints matching the regular expression will be rotated the indicated angle.
          The angle matches the matthewlai/JLCKicadTools plugin specs.
 
-      -  ``rotations_and_offsets`` :index:`: <pair: filter - rot_footprint; rotations_and_offsets>` [:ref:`list(dict) <list(dict)>`] A list of rules to match components and specify the rotation and offsets.
+      -  ``rotations_and_offsets`` :index:`: <pair: filter - rot_footprint; rotations_and_offsets>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A list of rules to match components and specify the rotation and offsets.
          This is a more flexible version of the `rotations` and `offsets` options.
          Note that this list has more precedence.
 
@@ -192,7 +192,7 @@ Supported filters
 
       -  **from_output** :index:`: <pair: filter - spec_to_field; from_output>` [:ref:`string <string>`] (default: ``''``) Name of the output used to collect the specs.
          Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs.
-      -  **specs** :index:`: <pair: filter - spec_to_field; specs>` [:ref:`list(dict) <list(dict)>` | :ref:`dict <dict>`] One or more specs to be copied.
+      -  **specs** :index:`: <pair: filter - spec_to_field; specs>` [:ref:`list(dict) <list(dict)>` | :ref:`dict <dict>`] (default: ``[{'spec': '_voltage', 'field': 'Voltage'}, {'spec': '_tolerance', 'field': 'Tolerance'}, {'spec': '_power', 'field': 'Power'}, {'spec': '_current', 'field': 'Current'}]``) One or more specs to be copied.
 
          -  Valid keys:
 
@@ -210,7 +210,7 @@ Supported filters
                `value` is the component value i.e. resistance for R*.
 
       -  ``check_dist_coherence`` :index:`: <pair: filter - spec_to_field; check_dist_coherence>` [:ref:`boolean <boolean>`] (default: ``true``) Check that the data we got from different distributors is equivalent.
-      -  ``check_dist_fields`` :index:`: <pair: filter - spec_to_field; check_dist_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of fields to include in the check.
+      -  ``check_dist_fields`` :index:`: <pair: filter - spec_to_field; check_dist_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['_value', '_tolerance', '_power', '_current', '_voltage', '_temp_coeff']``) List of fields to include in the check.
          For a full list of fields consult the `specs` option.
 
       -  ``comment`` :index:`: <pair: filter - spec_to_field; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.

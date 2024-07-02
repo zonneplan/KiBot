@@ -65,6 +65,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - QR Lib: Missing QR definition is no longer fatal (%p %r used)
   - Blender Options outputs: Make a render when no outputs are specified
   - PCB Print: repeat_layers defaults to inners
+  - Spec to Field: some simple defaults for the specs (voltage, current, power
+    and tolerance)
 
 
 ## [1.7.0] - 2024-04-23
