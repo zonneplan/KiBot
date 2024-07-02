@@ -19,7 +19,7 @@ from . import log
 
 logger = log.get_logger()
 ref_re = compile(r'([^\d]+)([\?\d]+)')
-DEFAULT_COLUMNS = ('Ref', 'Val', 'Package', 'PosX', 'PosY', 'Rot', 'Side')
+DEFAULT_COLUMNS = ['Ref', 'Val', 'Package', 'PosX', 'PosY', 'Rot', 'Side']
 
 
 def _ref_key(ref_str):
@@ -40,6 +40,8 @@ def check_names(top, bot):
 
 class PosColumns(Optionable):
     """ Which columns we want and its names """
+    _default = DEFAULT_COLUMNS
+
     def __init__(self, id=None, name=None):
         super().__init__()
         self._unknown_is_error = True
@@ -98,23 +100,20 @@ class PositionOptions(VariantOptions):
             """ Include the board edge in the gerber output """
         super().__init__()
         self._expand_id = 'position'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.columns, type):
-            # Default list of columns
-            self.columns = [PosColumns(col, col) for col in DEFAULT_COLUMNS]
-        else:
-            new_columns = []
-            for col in self.columns:
-                if isinstance(col, str):
-                    # Just a string, add to the list of used
-                    new_name = new_col = col
-                else:
-                    new_col = col.id
-                    new_name = col.name if col.name else new_col
-                new_columns.append(PosColumns(new_col, new_name))
-            self.columns = new_columns
+        new_columns = []
+        for col in self.columns:
+            if isinstance(col, str):
+                # Just a string, add to the list of used
+                new_name = new_col = col
+            else:
+                new_col = col.id
+                new_name = col.name if col.name else new_col
+            new_columns.append(PosColumns(new_col, new_name))
+        self.columns = new_columns
         self._expand_ext = 'pos' if self.format == 'ASCII' else self.format.lower()
 
     def _do_position_plot_ascii(self, output_dir, columns, modulesStr, maxSizes, modules_side):
@@ -362,7 +361,7 @@ class Position(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PositionOptions
-            """ *[dict] Options for the `position` output """
+            """ *[dict={}] Options for the `position` output """
         self._category = 'PCB/fabrication/assembly'
 
     @staticmethod

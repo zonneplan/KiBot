@@ -117,10 +117,6 @@ class PresentBoards(Optionable):
                 raise KiPlotConfigurationError('Unknown output `{}` selected in board {}'.
                                                format(self.pcb_from_output, self.name))
 
-    def fill_empty_values(self, parent):
-        # The defaults are good enough, but we need to attach to a parent
-        self._parent = parent
-
     def solve_file(self):
         return self.name, self.comment, self.pcb_file, self.front_image, self.back_image, self.gerbers
 
@@ -287,7 +283,7 @@ class KiKit_PresentOptions(BaseOptions):
                 more than one line KiBot will assume this is the markdown.
                 If empty KiBot will generate a silly text and a warning """
             self.boards = PresentBoards
-            """ [dict|list(dict)] One or more boards that compose your project.
+            """ [dict|list(dict)={}] One or more boards that compose your project.
                 When empty we will use only the main PCB for the current project """
             self.resources = Optionable
             """ [string|list(string)='']  A list of file name patterns for additional resources to be included.
@@ -306,6 +302,7 @@ class KiKit_PresentOptions(BaseOptions):
                 The default template uses it for things like the page title """
         super().__init__()
         self._git_solved = False
+        self._init_from_defaults = True
 
     def get_git_command(self):
         if not self._git_solved:
@@ -326,13 +323,8 @@ class KiKit_PresentOptions(BaseOptions):
             if len(self._description) == 1:
                 raise KiPlotConfigurationError('Missing description file `{}`'.format(self._description))
         # List of boards
-        if isinstance(self.boards, type):
-            a_board = PresentBoards()
-            a_board.fill_empty_values(self)
-            self.boards = [a_board]
-        elif isinstance(self.boards, PresentBoards):
+        if isinstance(self.boards, PresentBoards):
             self.boards = [self.boards]
-        # else ... we have a list of boards
         self.resources = self.force_list(self.resources, comma_sep=False)
         if not self.name:
             self.name = GS.pcb_basename
