@@ -1084,7 +1084,7 @@ outputs:
       pth_and_npth_single_file: true
       # [string] Force this replacement for %i when generating PTH and unified files
       pth_id: null
-      # [dict|string] Name of the drill report. Not generated unless a name is specified
+      # [dict|string=''] Name of the drill report. Not generated unless a name is specified
       report:
         # [string=''] Name of the drill report. Not generated unless a name is specified.
         # (%i='drill_report' %x='txt')
@@ -1156,7 +1156,7 @@ outputs:
       pre_transform: '_null'
       # [string] Force this replacement for %i when generating PTH and unified files
       pth_id: null
-      # [dict|string] Name of the drill report. Not generated unless a name is specified
+      # [dict|string=''] Name of the drill report. Not generated unless a name is specified
       report:
         # [string=''] Name of the drill report. Not generated unless a name is specified.
         # (%i='drill_report' %x='txt')
@@ -1489,7 +1489,7 @@ outputs:
     type: 'kibom'
     dir: 'Example/kibom_dir'
     options:
-      # [string|dict] BoM configuration file, relative to PCB. Environment variables and ~ allowed.
+      # [string|dict='bom.ini'] BoM configuration file, relative to PCB. Environment variables and ~ allowed.
       # You can also define the configuration here, will be stored in `config.kibom.ini`
       conf:
         # [list(dict)|list(string)=[]] List of columns to display.
@@ -1900,7 +1900,7 @@ outputs:
       # You can also include a preset using `:name`, i.e. `:vcuts`.
       # Use a dict to specify the options using the KiBot YAML file
       configs:
-        # [dict] Fill non-board areas of the panel with copper
+        # [dict=null] Fill non-board areas of the panel with copper
         - copperfill:
             # [number|string=0.5] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
             # copper
@@ -1923,7 +1923,7 @@ outputs:
             type: 'none'
             # [number|string=1] The width of the hatched strokes
             width: 1
-          # [dict] Specify how to perform the cuts on the tabs separating the board
+          # [dict=null] Specify how to perform the cuts on the tabs separating the board
           cuts:
             # [string=''] Argument to pass to the plugin. Used for *plugin*
             arg: ''
@@ -1970,7 +1970,7 @@ outputs:
             # [string='none'] [none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
             # into a layer with this option to understand what's going on. Shouldn't be used for the final design
             type: 'none'
-          # [dict] Debug options
+          # [dict=null] Debug options
           debug:
             # [boolean=false] Deterministic
             deterministic: false
@@ -1988,7 +1988,7 @@ outputs:
           expand_text: true
           # [string=''] A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`
           extends: ''
-          # [dict] Used to add fiducial marks to the (rail/frame of) the panel
+          # [dict=null] Used to add fiducial marks to the (rail/frame of) the panel
           fiducials:
             # `copper_size` is an alias for `coppersize`
             # [number|string=1] Diameter of the copper spot
@@ -2003,7 +2003,7 @@ outputs:
             type: 'none'
             # [number|string=0] Vertical offset from panel edges
             voffset: 0
-          # [dict] Specify the frame around the boards
+          # [dict=null] Specify the frame around the boards
           framing:
             # [string=''] Argument to pass to the plugin. Used for *plugin*
             arg: ''
@@ -2055,7 +2055,7 @@ outputs:
             vspace: 2
             # [number|string=5] Specify with of the rails or frame
             width: 5
-          # [dict] Layout used for the panel
+          # [dict=null] Layout used for the panel
           layout:
             # [string='none'] [none,rows,cols,rowsCols] Specify alternations of board rotation.
             # none: Do not alternate.
@@ -2122,7 +2122,7 @@ outputs:
           # [string=''] A name to identify this configuration. If empty will be the order in the list, starting with 1.
           # Don't use just a number or it will be confused as an index
           name: ''
-          # [dict] Sets page size on the resulting panel and position the panel in the page
+          # [dict=null] Sets page size on the resulting panel and position the panel in the page
           page:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
             # (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline
@@ -2144,7 +2144,7 @@ outputs:
             type: 'inherit'
             # [number|string=297] Width for the `custom` paper size
             width: 297
-          # [dict] Finishing touches to the panel
+          # [dict=null] Finishing touches to the panel
           post:
             # [boolean=false] Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels)
             copperfill: false
@@ -2185,7 +2185,7 @@ outputs:
             scriptarg: ''
             # [string='auto'] [auto] Currently fixed
             type: 'auto'
-          # [dict] Used to adjust details of which part of the PCB is panelized
+          # [dict=null] Used to adjust details of which part of the PCB is panelized
           source:
             # [number|string=0] Bottom right X coordinate of the rectangle used. Used for *rectangle*
             brx: 0
@@ -2205,7 +2205,7 @@ outputs:
             # *auto* uses all the area reported by KiCad, *rectangle* a specified rectangle and
             # *annotation* selects a contour marked by a kikit:Board footprint
             type: 'auto'
-          # [dict] Style of the tabs used to join the PCB copies
+          # [dict=null] Style of the tabs used to join the PCB copies
           tabs:
             # [string=''] Argument to pass to the plugin. Used for *plugin*
             arg: ''
@@ -2246,7 +2246,7 @@ outputs:
             # [number|string=3] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
             # Used for *fixed*, *spacing*, *corner* and *annotation*
             width: 3
-          # [dict] Used to add text to the panel
+          # [dict=null] Used to add text to the panel
           text:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
@@ -2282,7 +2282,7 @@ outputs:
             voffset: 0
             # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
-          # [dict] Used to add text to the panel
+          # [dict=null] Used to add text to the panel
           text2:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
@@ -2318,7 +2318,7 @@ outputs:
             voffset: 0
             # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
-          # [dict] Used to add text to the panel
+          # [dict=null] Used to add text to the panel
           text3:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
@@ -2354,7 +2354,7 @@ outputs:
             voffset: 0
             # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
-          # [dict] Used to add text to the panel
+          # [dict=null] Used to add text to the panel
           text4:
             # [string='mt'] [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
             # (middle of sides), c (center). The anchors refer to the panel outline
@@ -2390,7 +2390,7 @@ outputs:
             voffset: 0
             # [number|string=1.5] Width of the characters (the same parameters as KiCAD uses)
             width: 1.5
-          # [dict] Used to add tooling holes to the (rail/frame of) the panel
+          # [dict=null] Used to add tooling holes to the (rail/frame of) the panel
           tooling:
             # [string=''] Argument to pass to the plugin. Used for *plugin*
             arg: ''

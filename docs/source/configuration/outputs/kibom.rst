@@ -30,7 +30,7 @@ Parameters:
       -  **format** :index:`: <pair: output - kibom - options; format>` [:ref:`string <string>`] (default: ``'HTML'``) (choices: "HTML", "CSV", "XML", "XLSX") Format for the BoM.
       -  **number** :index:`: <pair: output - kibom - options; number>` [:ref:`number <number>`] (default: ``1``) Number of boards to build (components multiplier).
       -  **output** :index:`: <pair: output - kibom - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=bom). Affected by global options.
-      -  ``conf`` :index:`: <pair: output - kibom - options; conf>` [:ref:`string <string>` | :ref:`dict <dict>`] BoM configuration file, relative to PCB. Environment variables and ~ allowed.
+      -  ``conf`` :index:`: <pair: output - kibom - options; conf>` [:ref:`string <string>` | :ref:`dict <dict>`] (default: ``'bom.ini'``) BoM configuration file, relative to PCB. Environment variables and ~ allowed.
          You can also define the configuration here, will be stored in `config.kibom.ini`.
 
          -  Valid keys:

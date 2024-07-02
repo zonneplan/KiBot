@@ -25,7 +25,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - kicanvas; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - kicanvas; options>` [:ref:`dict <dict>`] Options for the KiCanvas output.
+-  **options** :index:`: <pair: output - kicanvas; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the KiCanvas output.
 
    -  Valid keys:
 

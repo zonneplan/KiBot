@@ -42,7 +42,7 @@ Parameters:
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``pth_id`` :index:`: <pair: output - gerb_drill - options; pth_id>` [:ref:`string <string>`] Force this replacement for %i when generating PTH and unified files.
-      -  ``report`` :index:`: <pair: output - gerb_drill - options; report>` [:ref:`dict <dict>` | :ref:`string <string>`] Name of the drill report. Not generated unless a name is specified.
+      -  ``report`` :index:`: <pair: output - gerb_drill - options; report>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``''``) Name of the drill report. Not generated unless a name is specified.
 
          -  Valid keys:
 

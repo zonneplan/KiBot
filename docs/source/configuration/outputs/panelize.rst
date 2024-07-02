@@ -39,7 +39,7 @@ Parameters:
 
          -  Valid keys:
 
-            -  **cuts** :index:`: <pair: output - panelize - options - configs; cuts>` [:ref:`dict <dict>`] Specify how to perform the cuts on the tabs separating the board.
+            -  **cuts** :index:`: <pair: output - panelize - options - configs; cuts>` [:ref:`dict <dict>`] (default: ``null``) Specify how to perform the cuts on the tabs separating the board.
 
                -  Valid keys:
 
@@ -72,7 +72,7 @@ Parameters:
                   -  ``textsize`` :index:`: <pair: output - panelize - options - configs - cuts; textsize>` [:ref:`number <number>` | :ref:`string <string>`] Text size for vcuts.
                   -  ``textthickness`` :index:`: <pair: output - panelize - options - configs - cuts; textthickness>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0.3``) Text thickness for width.
 
-            -  **fiducials** :index:`: <pair: output - panelize - options - configs; fiducials>` [:ref:`dict <dict>`] Used to add fiducial marks to the (rail/frame of) the panel.
+            -  **fiducials** :index:`: <pair: output - panelize - options - configs; fiducials>` [:ref:`dict <dict>`] (default: ``null``) Used to add fiducial marks to the (rail/frame of) the panel.
 
                -  Valid keys:
 
@@ -84,7 +84,7 @@ Parameters:
                   -  ``paste`` :index:`: <pair: output - panelize - options - configs - fiducials; paste>` [:ref:`boolean <boolean>`] (default: ``false``) Include the fiducials in the paste layer (therefore they appear on the stencil).
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - fiducials; voffset>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Vertical offset from panel edges.
 
-            -  **framing** :index:`: <pair: output - panelize - options - configs; framing>` [:ref:`dict <dict>`] Specify the frame around the boards.
+            -  **framing** :index:`: <pair: output - panelize - options - configs; framing>` [:ref:`dict <dict>`] (default: ``null``) Specify the frame around the boards.
 
                -  Valid keys:
 
@@ -122,7 +122,7 @@ Parameters:
                   -  ``vspace`` :index:`: <pair: output - panelize - options - configs - framing; vspace>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``2``) Specify the vertical space between PCB and the frame/rail.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - framing; width>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``5``) Specify with of the rails or frame.
 
-            -  **layout** :index:`: <pair: output - panelize - options - configs; layout>` [:ref:`dict <dict>`] Layout used for the panel.
+            -  **layout** :index:`: <pair: output - panelize - options - configs; layout>` [:ref:`dict <dict>`] (default: ``null``) Layout used for the panel.
 
                -  Valid keys:
 
@@ -168,7 +168,7 @@ Parameters:
                   -  ``vboneskip`` :index:`: <pair: output - panelize - options - configs - layout; vboneskip>` [:ref:`number <number>`] (default: ``0``) Skip every n vertical backbones. I.e., 1 means place only every other backbone.
                   -  ``vspace`` :index:`: <pair: output - panelize - options - configs - layout; vspace>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Specify the vertical gap between the boards.
 
-            -  **page** :index:`: <pair: output - panelize - options - configs; page>` [:ref:`dict <dict>`] Sets page size on the resulting panel and position the panel in the page.
+            -  **page** :index:`: <pair: output - panelize - options - configs; page>` [:ref:`dict <dict>`] (default: ``null``) Sets page size on the resulting panel and position the panel in the page.
 
                -  Valid keys:
 
@@ -187,7 +187,7 @@ Parameters:
                   -  ``posy`` :index:`: <pair: output - panelize - options - configs - page; posy>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``20``) The Y position of the panel on the page. Can be expressed as a page size percentage.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - page; width>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``297``) Width for the `custom` paper size.
 
-            -  **tabs** :index:`: <pair: output - panelize - options - configs; tabs>` [:ref:`dict <dict>`] Style of the tabs used to join the PCB copies.
+            -  **tabs** :index:`: <pair: output - panelize - options - configs; tabs>` [:ref:`dict <dict>`] (default: ``null``) Style of the tabs used to join the PCB copies.
 
                -  Valid keys:
 
@@ -218,7 +218,7 @@ Parameters:
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - tabs; width>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``3``) The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
                      Used for *fixed*, *spacing*, *corner* and *annotation*.
 
-            -  **tooling** :index:`: <pair: output - panelize - options - configs; tooling>` [:ref:`dict <dict>`] Used to add tooling holes to the (rail/frame of) the panel.
+            -  **tooling** :index:`: <pair: output - panelize - options - configs; tooling>` [:ref:`dict <dict>`] (default: ``null``) Used to add tooling holes to the (rail/frame of) the panel.
 
                -  Valid keys:
 
@@ -232,7 +232,7 @@ Parameters:
                   -  ``soldermaskmargin`` :index:`: <pair: output - panelize - options - configs - tooling; soldermaskmargin>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Solder mask expansion/margin. Use 1.3mm for JLCPCB.
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - tooling; voffset>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Vertical offset from panel edges.
 
-            -  ``copperfill`` :index:`: <pair: output - panelize - options - configs; copperfill>` [:ref:`dict <dict>`] Fill non-board areas of the panel with copper.
+            -  ``copperfill`` :index:`: <pair: output - panelize - options - configs; copperfill>` [:ref:`dict <dict>`] (default: ``null``) Fill non-board areas of the panel with copper.
 
                -  Valid keys:
 
@@ -249,7 +249,7 @@ Parameters:
                   -  ``threshold`` :index:`: <pair: output - panelize - options - configs - copperfill; threshold>` [:ref:`number <number>`] (default: ``15``) Remove fragments smaller than threshold. Expressed as a percentage.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - copperfill; width>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``1``) The width of the hatched strokes.
 
-            -  ``debug`` :index:`: <pair: output - panelize - options - configs; debug>` [:ref:`dict <dict>`] Debug options.
+            -  ``debug`` :index:`: <pair: output - panelize - options - configs; debug>` [:ref:`dict <dict>`] (default: ``null``) Debug options.
 
                -  Valid keys:
 
@@ -264,7 +264,7 @@ Parameters:
             -  ``extends`` :index:`: <pair: output - panelize - options - configs; extends>` [:ref:`string <string>`] (default: ``''``) A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]`.
             -  ``name`` :index:`: <pair: output - panelize - options - configs; name>` [:ref:`string <string>`] (default: ``''``) A name to identify this configuration. If empty will be the order in the list, starting with 1.
                Don't use just a number or it will be confused as an index.
-            -  ``post`` :index:`: <pair: output - panelize - options - configs; post>` [:ref:`dict <dict>`] Finishing touches to the panel.
+            -  ``post`` :index:`: <pair: output - panelize - options - configs; post>` [:ref:`dict <dict>`] (default: ``null``) Finishing touches to the panel.
 
                -  Valid keys:
 
@@ -297,7 +297,7 @@ Parameters:
                   -  ``scriptarg`` :index:`: <pair: output - panelize - options - configs - post; scriptarg>` [:ref:`string <string>`] (default: ``''``) An arbitrary string passed to the user post-processing script specified in script.
                   -  ``type`` :index:`: <pair: output - panelize - options - configs - post; type>` [string='auto'] [auto] Currently fixed.
 
-            -  ``source`` :index:`: <pair: output - panelize - options - configs; source>` [:ref:`dict <dict>`] Used to adjust details of which part of the PCB is panelized.
+            -  ``source`` :index:`: <pair: output - panelize - options - configs; source>` [:ref:`dict <dict>`] (default: ``null``) Used to adjust details of which part of the PCB is panelized.
 
                -  Valid keys:
 
@@ -312,7 +312,7 @@ Parameters:
                   -  ``tly`` :index:`: <pair: output - panelize - options - configs - source; tly>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Top left Y coordinate of the rectangle used. Used for *rectangle*.
                   -  ``tolerance`` :index:`: <pair: output - panelize - options - configs - source; tolerance>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``1``) Extra space around the PCB reported size to be included. Used for *auto* and *annotation*.
 
-            -  ``text`` :index:`: <pair: output - panelize - options - configs; text>` [:ref:`dict <dict>`] Used to add text to the panel.
+            -  ``text`` :index:`: <pair: output - panelize - options - configs; text>` [:ref:`dict <dict>`] (default: ``null``) Used to add text to the panel.
 
                -  Valid keys:
 
@@ -338,7 +338,7 @@ Parameters:
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text; voffset>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text; width>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``1.5``) Width of the characters (the same parameters as KiCAD uses).
 
-            -  ``text2`` :index:`: <pair: output - panelize - options - configs; text2>` [:ref:`dict <dict>`] Used to add text to the panel.
+            -  ``text2`` :index:`: <pair: output - panelize - options - configs; text2>` [:ref:`dict <dict>`] (default: ``null``) Used to add text to the panel.
 
                -  Valid keys:
 
@@ -364,7 +364,7 @@ Parameters:
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text2; voffset>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text2; width>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``1.5``) Width of the characters (the same parameters as KiCAD uses).
 
-            -  ``text3`` :index:`: <pair: output - panelize - options - configs; text3>` [:ref:`dict <dict>`] Used to add text to the panel.
+            -  ``text3`` :index:`: <pair: output - panelize - options - configs; text3>` [:ref:`dict <dict>`] (default: ``null``) Used to add text to the panel.
 
                -  Valid keys:
 
@@ -390,7 +390,7 @@ Parameters:
                   -  ``voffset`` :index:`: <pair: output - panelize - options - configs - text3; voffset>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0``) Specify the vertical offset from anchor. Respects KiCAD coordinate system.
                   -  ``width`` :index:`: <pair: output - panelize - options - configs - text3; width>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``1.5``) Width of the characters (the same parameters as KiCAD uses).
 
-            -  ``text4`` :index:`: <pair: output - panelize - options - configs; text4>` [:ref:`dict <dict>`] Used to add text to the panel.
+            -  ``text4`` :index:`: <pair: output - panelize - options - configs; text4>` [:ref:`dict <dict>`] (default: ``null``) Used to add text to the panel.
 
                -  Valid keys:
 
