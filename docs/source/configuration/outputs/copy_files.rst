@@ -21,7 +21,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - copy_files; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - copy_files; options>` [:ref:`dict <dict>`] Options for the `copy_files` output.
+-  **options** :index:`: <pair: output - copy_files; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `copy_files` output.
 
    -  Valid keys:
 

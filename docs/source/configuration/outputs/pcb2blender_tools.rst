@@ -25,7 +25,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - pcb2blender_tools; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pcb2blender_tools; options>` [:ref:`dict <dict>`] Options for the `pcb2blender_tools` output.
+-  **options** :index:`: <pair: output - pcb2blender_tools; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pcb2blender_tools` output.
 
    -  Valid keys:
 

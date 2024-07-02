@@ -34,7 +34,7 @@ Parameters:
 
 -  **name** :index:`: <pair: output - pdf_pcb_print; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pdf_pcb_print; options>` [:ref:`dict <dict>`] Options for the `pdf_pcb_print` output.
+-  **options** :index:`: <pair: output - pdf_pcb_print; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pdf_pcb_print` output.
 
    -  Valid keys:
 

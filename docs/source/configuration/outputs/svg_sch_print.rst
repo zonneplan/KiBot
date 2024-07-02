@@ -22,7 +22,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - svg_sch_print; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - svg_sch_print; options>` [:ref:`dict <dict>`] Options for the `svg_sch_print` output.
+-  **options** :index:`: <pair: output - svg_sch_print; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `svg_sch_print` output.
 
    -  Valid keys:
 
