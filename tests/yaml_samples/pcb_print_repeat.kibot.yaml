@@ -29,7 +29,6 @@ outputs:
         - scaling: 2.0
           sheet: '%ln'
           repeat_for_layer: 'F.Cu'
-          repeat_layers: inners
           layers:
             - layer: Edge.Cuts
             - layer: F.Cu
