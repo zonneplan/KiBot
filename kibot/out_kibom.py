@@ -337,7 +337,7 @@ class KiBoMOptions(BaseOptions):
                 variants with the ';' (semicolon) character.
                 This isn't related to the KiBot concept of variants """
             self.conf = KiBoMConfig
-            """ [string|dict] BoM configuration file, relative to PCB. Environment variables and ~ allowed.
+            """ [string|dict='bom.ini'] BoM configuration file, relative to PCB. Environment variables and ~ allowed.
                 You can also define the configuration here, will be stored in `config.kibom.ini` """
             self.separator = ','
             """ CSV Separator """
@@ -349,12 +349,11 @@ class KiBoMOptions(BaseOptions):
         self._expand_id = 'bom'
         # Variant isn't related to Kibot
         self._variant_is_real = False
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.conf, type):
-            self.conf = 'bom.ini'
-        elif isinstance(self.conf, str):
+        if isinstance(self.conf, str):
             if not self.conf:
                 self.conf = 'bom.ini'
         else:
