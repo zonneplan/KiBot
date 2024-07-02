@@ -116,9 +116,6 @@ class PcbDrawStyle(Optionable):
 class PcbDrawRemap(Optionable):
     """ This class accepts a free form dict.
         No validation is done. """
-    def __init__(self):
-        super().__init__()
-
     def config(self, parent):
         pass
 
@@ -178,20 +175,24 @@ class PcbDrawRemapComponents(Optionable):
         return f'{self.ref} -> {self.lib}:{self.comp}'
 
 
+class PcbDrawLibs(Optionable):
+    _default = ['KiCAD-base']
+
+
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
             self.style = PcbDrawStyle
-            """ *[string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options """
-            self.libs = Optionable
-            """ [list(string)=[]] List of libraries """
+            """ *[string|dict={}] PCB style (colors). An internal name, the name of a JSON file or the style options """
+            self.libs = PcbDrawLibs
+            """ [list(string)] List of libraries """
             self.placeholder = False
             """ Show placeholder for missing components """
             self.remap = PcbDrawRemap
             """ [dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
                 Use `remap_components` instead """
             self.remap_components = PcbDrawRemapComponents
-            """ [list(dict)] Replacements for PCB references using specified components.
+            """ [list(dict)=[]] Replacements for PCB references using specified components.
                 Replaces `remap` with type check """
             self.no_drillholes = False
             """ Do not make holes transparent """
@@ -237,7 +238,7 @@ class PcbDrawOptions(VariantOptions):
             self.show_solderpaste = True
             """ Show the solder paste layers """
             self.resistor_remap = PcbDrawResistorRemap
-            """ [list(dict)] List of resistors to be remapped. You can change the value of the resistors here """
+            """ [list(dict)=[]] List of resistors to be remapped. You can change the value of the resistors here """
             self.resistor_flip = Optionable
             """ [string|list(string)=''] List of resistors to flip its bands """
             self.size_detection = 'kicad_edge'
@@ -253,6 +254,7 @@ class PcbDrawOptions(VariantOptions):
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
         super().__init__()
+        self._init_from_defaults = True
 
     def config(self, parent):
         self._filters_to_expand = False
@@ -262,25 +264,14 @@ class PcbDrawOptions(VariantOptions):
             if isinstance(bot, bool):
                 self.bottom = bot
         super().config(parent)
-        # Libs
-        if isinstance(self.libs, type):
-            self.libs = ['KiCAD-base']
-        # else:
-        #    self.libs = ','.join(self.libs)
         # V-CUTS layer
         self._vcuts_layer = Layer.solve(self.vcuts_layer)[0]._id if self.vcuts else 41
         # Highlight
-        if isinstance(self.highlight, type):
-            self.highlight = None
-        else:
-            self.highlight = self.solve_kf_filters(self.highlight)
+        self._highlight = self.solve_kf_filters(self.highlight)
         # Margin
         self._margin, self.margin = PcbMargin.solve(self.margin)
         # Filter
-        if isinstance(self.show_components, type):
-            # Default option is 'none'
-            self.show_components = None
-        elif isinstance(self.show_components, str):
+        if isinstance(self.show_components, str):
             if self.show_components == 'none':
                 self.show_components = None
             elif self.show_components == 'all':
@@ -291,8 +282,6 @@ class PcbDrawOptions(VariantOptions):
         else:  # A list
             self.show_components = self.solve_kf_filters(self.show_components)
         # Resistors remap/flip
-        if isinstance(self.resistor_remap, type):
-            self.resistor_remap = []
         self.resistor_flip = Optionable.force_list(self.resistor_flip)
         # Remap
         self._remap = {}
@@ -307,16 +296,10 @@ class PcbDrawOptions(VariantOptions):
                     raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))
         elif isinstance(self.remap, str) and self.remap != 'None':
             raise KiPlotConfigurationError(f"Unknown `{self.remap}` option")
-        if isinstance(self.remap_components, list):
-            for mapping in self.remap_components:
-                self._remap[mapping.ref] = (mapping.lib, mapping.comp)
+        for mapping in self.remap_components:
+            self._remap[mapping.ref] = (mapping.lib, mapping.comp)
         # Style
-        if isinstance(self.style, type):
-            # Apply the global defaults
-            self.style = PcbDrawStyle()
-            self.style.config(self)
-            self._style = self.style.to_dict()
-        elif isinstance(self.style, PcbDrawStyle):
+        if isinstance(self.style, PcbDrawStyle):
             self._style = self.style.to_dict()
         else:
             self._style = self.style
@@ -429,8 +412,8 @@ class PcbDrawOptions(VariantOptions):
         else:
             logger.debug('Using all components')
 
-        if self.highlight is not None:
-            highlight_set = set(self.expand_filtered_components(self.highlight))
+        if self._highlight:
+            highlight_set = set(self.expand_filtered_components(self._highlight))
             plot_components.highlight = lambda ref: ref in highlight_set
         return plot_components
 

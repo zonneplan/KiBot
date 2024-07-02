@@ -47,15 +47,16 @@ class PDFUniteOptions(BaseOptions):
             self.output = GS.def_global_output
             """ *Name for the generated PDF (%i=name of the output %x=pdf) """
             self.outputs = FilesList
-            """ *[list(dict)] Which files will be included """
+            """ *[list(dict)=[]] Which files will be included """
             self.use_external_command = False
             """ Use the `pdfunite` tool instead of PyPDF2 Python module """
         super().__init__()
         self._expand_ext = 'pdf'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.outputs, type):
+        if not self.outputs:
             KiPlotConfigurationError('Nothing to join')
         self._expand_id = parent.name
 

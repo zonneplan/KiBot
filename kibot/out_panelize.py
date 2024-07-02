@@ -655,7 +655,7 @@ class PanelizeOptions(VariantOptions):
             self.output = GS.def_global_output
             """ *Filename for the output (%i=panel, %x=kicad_pcb) """
             self.configs = PanelizeConfig
-            """ *[list(dict)|list(string)|string] One or more configurations used to create the panel.
+            """ *[list(dict)|list(string)|string=[]] One or more configurations used to create the panel.
                 Use a string to include an external configuration, i.e. `myDefault.json`.
                 You can also include a preset using `:name`, i.e. `:vcuts`.
                 Use a dict to specify the options using the KiBot YAML file """
@@ -671,6 +671,7 @@ class PanelizeOptions(VariantOptions):
         super().__init__()
         self._expand_id = 'panel'
         self._expand_ext = 'kicad_pcb'
+        self._init_from_defaults = True
 
     def solve_cfg_name(self, cfg):
         """ Find the name of a configuration that isn't yet configured """
@@ -753,10 +754,7 @@ class PanelizeOptions(VariantOptions):
             list(map(self.solve_extends, filter(lambda x: 'extends' in x, configs)))
         super().config(parent)
         self.units = KIKIT_UNIT_ALIASES.get(self.units, self.units)
-        if isinstance(self.configs, type):
-            logger.warning(W_PANELEMPTY+'Generating a panel with default options, not very useful')
-            self.configs = []
-        elif isinstance(self.configs, str):
+        if isinstance(self.configs, str):
             self.configs = [self.configs]
         for c, cfg in enumerate(self.configs):
             if isinstance(cfg, str):
@@ -797,6 +795,8 @@ class PanelizeOptions(VariantOptions):
         cmd_kikit, version = self.ensure_tool_get_ver('KiKit')
         if GS.ki5 and version >= (1, 1, 0):
             raise KiPlotConfigurationError("Installed KiKit doesn't support KiCad 5")
+        if not self.get_user_defined('configs'):
+            logger.warning(W_PANELEMPTY+'Generating a panel with default options, not very useful')
         super().run(output)
         fname = self.save_tmp_board_if_variant(new_title=self.title, do_3D=True)
         # Create the command
