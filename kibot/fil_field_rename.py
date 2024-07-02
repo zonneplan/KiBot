@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021 Salvador E. Tropea
-# Copyright (c) 2021 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements a field renamer
 from .gs import GS
@@ -23,18 +23,18 @@ class Field_Rename(BaseFilter):  # noqa: F821
         self._is_transform = True
         with document:
             self.rename = FieldRename
-            """ [list(dict)] Fields to rename """
+            """ [list(dict)=[]] Fields to rename """
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.rename, type):
-            self.rename = []
-        if not self.rename:
-            logger.warning(W_EMPTYREN+'Nothing to rename in filter `{}`'.format(self.name))
         self.rename = {f.field: f.name for f in self.rename}
 
     def filter(self, comp):
         """ Change the names of the specified fields """
+        if not self.rename:
+            logger.warning(W_EMPTYREN+'Nothing to rename in filter `{}`'.format(self.name))
+            return
         for f in set(comp.get_field_names()).intersection(self.rename):
             new_name = self.rename[f]
             if GS.debug_level > 2:
