@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from copy import deepcopy
 import math
 import os
 import re
 from shutil import rmtree
+from .bom.columnlist import ColumnList
 from .gs import GS
 from .kicad.pcb import replace_footprints
 from .kiplot import load_sch, get_board_comps_data
@@ -237,6 +238,7 @@ class BoMRegex(Optionable):
             """ Match if the field doesn't exists, no regex applied. Not affected by `invert` """
             self.invert = False
             """ Invert the regex match result """
+        self._column_example = ColumnList.COL_REFERENCE
 
     def config(self, parent):
         super().config(parent)

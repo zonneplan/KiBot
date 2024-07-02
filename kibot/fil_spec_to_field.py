@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2023 Salvador E. Tropea
-# Copyright (c) 2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2023-2024 Salvador E. Tropea
+# Copyright (c) 2023-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Extracts information from the distributor spec and fills fields
 import re
@@ -9,7 +9,7 @@ from .bom.units import comp_match, get_prefix, ParsedValue
 from .bom.xlsx_writer import get_spec
 from .error import KiPlotConfigurationError
 from .kiplot import look_for_output, run_output
-from .misc import W_FLDCOLLISION
+from .misc import W_FLDCOLLISION, pretty_list
 # from .gs import GS
 from .optionable import Optionable
 from .macros import macros, document, filter_class  # noqa: F401
@@ -24,6 +24,9 @@ DEF_CHECK = ['_value', '_tolerance', '_power', '_current', '_voltage', '_temp_co
 
 class SpecOptions(Optionable):
     """ A spec to copy """
+    _default = [{'spec': '_voltage', 'field': 'Voltage'}, {'spec': '_tolerance', 'field': 'Tolerance'},
+                {'spec': '_power', 'field': 'Power'}, {'spec': '_current', 'field': 'Current'}]
+
     def __init__(self):
         super().__init__()
         self._unknown_is_error = True
@@ -55,6 +58,13 @@ class SpecOptions(Optionable):
             raise KiPlotConfigurationError("Missing or empty `spec` in spec_to_field filter ({})".format(str(self._tree)))
         self.spec = self.force_list(self.spec)
 
+    def __str__(self):
+        return pretty_list(self.spec)+' -> '+self.field
+
+
+class CheckDistFields(Optionable):
+    _default = DEF_CHECK
+
 
 @filter_class
 class Spec_to_Field(BaseFilter):  # noqa: F821
@@ -76,11 +86,13 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
             """ *[list(dict)|dict] One or more specs to be copied """
             self.check_dist_coherence = True
             """ Check that the data we got from different distributors is equivalent """
-            self.check_dist_fields = Optionable
-            """ [string|list(string)=''] List of fields to include in the check.
+            self.check_dist_fields = CheckDistFields
+            """ [string|list(string)] List of fields to include in the check.
                 For a full list of fields consult the `specs` option """
         self._from = None
         self._check_dist_fields_example = DEF_CHECK
+        self._from_output_example = 'bom_output_name'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -90,10 +102,7 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
             raise KiPlotConfigurationError("At least one spec must be provided ({})".format(str(self._tree)))
         if isinstance(self.specs, SpecOptions):
             self.specs = [self.specs]
-        if isinstance(self.check_dist_fields, type):
-            self.check_dist_fields = DEF_CHECK
-        else:
-            self.check_dist_fields = self.force_list(self.check_dist_fields)
+        self.check_dist_fields = self.force_list(self.check_dist_fields)
 
     def _normalize(self, val, kind, comp):
         val = val.strip()

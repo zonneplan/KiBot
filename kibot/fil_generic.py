@@ -30,12 +30,12 @@ class Generic(BaseFilter):  # noqa: F821
             self.invert = False
             """ Invert the result of the filter """
             self.include_only = BoMRegex
-            """ [list(dict)] A series of regular expressions used to include parts.
+            """ [list(dict)=[]] A series of regular expressions used to include parts.
                 If there are any regex defined here, only components that match against ANY of them will be included.
                 Column/field names are case-insensitive.
                 If empty this rule is ignored """
             self.exclude_any = BoMRegex
-            """ [list(dict)] A series of regular expressions used to exclude parts.
+            """ [list(dict)=[]] A series of regular expressions used to exclude parts.
                 If a component matches ANY of these, it will be excluded.
                 Column names are case-insensitive  """
             self.keys = Optionable
@@ -55,7 +55,7 @@ class Generic(BaseFilter):  # noqa: F821
             self.exclude_empty_val = False
             """ Exclude components with empty 'Value' """
             self.exclude_refs = Optionable
-            """ [list(string)] List of references to be excluded.
+            """ [list(string)=[]] List of references to be excluded.
                 Use R* for all references with R prefix """
             self.exclude_all_hash_ref = False
             """ Exclude all components with a reference starting with # """
@@ -75,6 +75,7 @@ class Generic(BaseFilter):  # noqa: F821
             """ Exclude components marked *Exclude from board* (KiCad 6+)  """
         self.add_to_doc('keys', 'Use `dnf_list` for '+str(sorted(DNF)))
         self.add_to_doc('keys', 'Use `dnc_list` for '+str(sorted(DNC)))
+        self._init_from_defaults = True
 
     @staticmethod
     def _fix_field(field):
@@ -87,22 +88,14 @@ class Generic(BaseFilter):  # noqa: F821
     def config(self, parent):
         super().config(parent)
         # include_only
-        if isinstance(self.include_only, type):
-            self.include_only = None
-        else:
-            for r in self.include_only:
-                r.column = self._fix_field(r.column)
-                r.regex = compile(r.regex, flags=IGNORECASE)
+        for r in self.include_only:
+            r.column = self._fix_field(r.column)
+            r.regex = compile(r.regex, flags=IGNORECASE)
         # exclude_any
-        if isinstance(self.exclude_any, type):
-            self.exclude_any = None
-        else:
-            for r in self.exclude_any:
-                r.column = self._fix_field(r.column)
-                r.regex = compile(r.regex, flags=IGNORECASE)
+        for r in self.exclude_any:
+            r.column = self._fix_field(r.column)
+            r.regex = compile(r.regex, flags=IGNORECASE)
         # keys
-        if isinstance(self.keys, type):
-            self.keys = 'dnf_list'
         if isinstance(self.keys, str):
             self._keys = DNF if self.keys == 'dnf_list' else DNC
         else:
@@ -110,9 +103,6 @@ class Generic(BaseFilter):  # noqa: F821
             self._keys = [v.lower() for v in self.keys]
         # Config field must be lowercase
         self.config_field = self.config_field.lower()
-        # exclude_refs
-        if isinstance(self.exclude_refs, type):
-            self.exclude_refs = None
 
     def test_reg_include(self, c):
         """ Reject components that doesn't match the provided regex.
