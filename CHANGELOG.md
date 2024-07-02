@@ -64,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Populate: Missing input file is no longer fatal
   - QR Lib: Missing QR definition is no longer fatal (%p %r used)
   - Blender Options outputs: Make a render when no outputs are specified
+  - PCB Print: repeat_layers defaults to inners
 
 
 ## [1.7.0] - 2024-04-23
