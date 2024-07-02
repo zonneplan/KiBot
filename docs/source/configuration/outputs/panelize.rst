@@ -32,7 +32,7 @@ Parameters:
 
    -  Valid keys:
 
-      -  **configs** :index:`: <pair: output - panelize - options; configs>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] One or more configurations used to create the panel.
+      -  **configs** :index:`: <pair: output - panelize - options; configs>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``[]``) One or more configurations used to create the panel.
          Use a string to include an external configuration, i.e. `myDefault.json`.
          You can also include a preset using `:name`, i.e. `:vcuts`.
          Use a dict to specify the options using the KiBot YAML file.

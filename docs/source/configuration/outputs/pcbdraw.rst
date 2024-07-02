@@ -39,7 +39,7 @@ Parameters:
          You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
          You can even use `_kf(FILTER1;FILTER2)` to concatenate filters.
 
-      -  **style** :index:`: <pair: output - pcbdraw - options; style>` [:ref:`string <string>` | :ref:`dict <dict>`] PCB style (colors). An internal name, the name of a JSON file or the style options.
+      -  **style** :index:`: <pair: output - pcbdraw - options; style>` [:ref:`string <string>` | :ref:`dict <dict>`] (default: empty dict, default values used) PCB style (colors). An internal name, the name of a JSON file or the style options.
 
          -  Valid keys:
 
@@ -67,7 +67,7 @@ Parameters:
       -  ``highlight`` :index:`: <pair: output - pcbdraw - options; highlight>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of components to highlight. Filter expansion is also allowed here,
          see `show_components`.
 
-      -  ``libs`` :index:`: <pair: output - pcbdraw - options; libs>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of libraries.
+      -  ``libs`` :index:`: <pair: output - pcbdraw - options; libs>` [:ref:`list(string) <list(string)>`] (default: ``['KiCAD-base']``) List of libraries.
 
       -  ``margin`` :index:`: <pair: output - pcbdraw - options; margin>` [:ref:`number <number>` | :ref:`dict <dict>`] (default: ``0``) Margin around the generated image [mm].
          Using a number the margin is the same in the four directions.
@@ -89,7 +89,7 @@ Parameters:
       -  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``'None'``) (DEPRECATED) Replacements for PCB references using specified components (lib:component).
          Use `remap_components` instead.
 
-      -  ``remap_components`` :index:`: <pair: output - pcbdraw - options; remap_components>` [:ref:`list(dict) <list(dict)>`] Replacements for PCB references using specified components.
+      -  ``remap_components`` :index:`: <pair: output - pcbdraw - options; remap_components>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Replacements for PCB references using specified components.
          Replaces `remap` with type check.
 
          -  Valid keys:
@@ -103,7 +103,7 @@ Parameters:
 
       -  ``resistor_flip`` :index:`: <pair: output - pcbdraw - options; resistor_flip>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of resistors to flip its bands.
 
-      -  ``resistor_remap`` :index:`: <pair: output - pcbdraw - options; resistor_remap>` [:ref:`list(dict) <list(dict)>`] List of resistors to be remapped. You can change the value of the resistors here.
+      -  ``resistor_remap`` :index:`: <pair: output - pcbdraw - options; resistor_remap>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) List of resistors to be remapped. You can change the value of the resistors here.
 
          -  Valid keys:
 

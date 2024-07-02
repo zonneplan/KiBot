@@ -80,7 +80,7 @@ Parameters:
                See `repeat_layers`.
             -  ``repeat_inherit`` :index:`: <pair: output - pcb_print - options - pages; repeat_inherit>` [:ref:`boolean <boolean>`] (default: ``true``) If we will inherit the options of the layer we are replacing.
                Disable it if you specify the options in `repeat_layers`, which is unlikely.
-            -  ``repeat_layers`` :index:`: <pair: output - pcb_print - options - pages; repeat_layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string).
+            -  ``repeat_layers`` :index:`: <pair: output - pcb_print - options - pages; repeat_layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'inners'``) (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string).
 
                -  Valid keys:
 

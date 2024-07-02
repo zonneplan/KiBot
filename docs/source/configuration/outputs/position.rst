@@ -21,7 +21,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - position; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - position; options>` [:ref:`dict <dict>`] Options for the `position` output.
+-  **options** :index:`: <pair: output - position; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `position` output.
 
    -  Valid keys:
 
@@ -34,7 +34,7 @@ Parameters:
       -  **separate_files_for_front_and_back** :index:`: <pair: output - position - options; separate_files_for_front_and_back>` [:ref:`boolean <boolean>`] (default: ``true``) Generate two separated files, one for the top and another for the bottom.
       -  **units** :index:`: <pair: output - position - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
       -  ``bottom_negative_x`` :index:`: <pair: output - position - options; bottom_negative_x>` [:ref:`boolean <boolean>`] (default: ``false``) Use negative X coordinates for footprints on bottom layer.
-      -  ``columns`` :index:`: <pair: output - position - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] Which columns are included in the output.
+      -  ``columns`` :index:`: <pair: output - position - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``['Ref', 'Val', 'Package', 'PosX', 'PosY', 'Rot', 'Side']``) Which columns are included in the output.
 
          -  Valid keys:
 

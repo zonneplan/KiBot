@@ -24,7 +24,7 @@ Parameters:
    -  Valid keys:
 
       -  **output** :index:`: <pair: output - pdfunite - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated PDF (%i=name of the output %x=pdf). Affected by global options.
-      -  **outputs** :index:`: <pair: output - pdfunite - options; outputs>` [:ref:`list(dict) <list(dict)>`] Which files will be included.
+      -  **outputs** :index:`: <pair: output - pdfunite - options; outputs>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
 
          -  Valid keys:
 

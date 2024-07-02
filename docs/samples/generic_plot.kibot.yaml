@@ -1715,7 +1715,7 @@ outputs:
     type: 'kikit_present'
     dir: 'Example/kikit_present_dir'
     options:
-      # [dict|list(dict)] One or more boards that compose your project.
+      # [dict|list(dict)={}] One or more boards that compose your project.
       # When empty we will use only the main PCB for the current project
       boards:
         # [string=''] How to obtain the back view of the PCB.
@@ -1895,7 +1895,7 @@ outputs:
     type: 'panelize'
     dir: 'Example/panelize_dir'
     options:
-      # [list(dict)|list(string)|string] One or more configurations used to create the panel.
+      # [list(dict)|list(string)|string=[]] One or more configurations used to create the panel.
       # Use a string to include an external configuration, i.e. `myDefault.json`.
       # You can also include a preset using `:name`, i.e. `:vcuts`.
       # Use a dict to specify the options using the KiBot YAML file
@@ -2623,7 +2623,7 @@ outputs:
           # [boolean=true] If we will inherit the options of the layer we are replacing.
           # Disable it if you specify the options in `repeat_layers`, which is unlikely
           repeat_inherit: true
-          # [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers,*]
+          # [list(dict)|list(string)|string='inners'] [all,selected,copper,technical,user,inners,outers,*]
           # List of layers to replace `repeat_for_layer`.
           # This can be used to generate a page for each copper layer, here you put `copper`
           repeat_layers:
@@ -2752,8 +2752,8 @@ outputs:
       # [list(string)=[]] List of components to highlight. Filter expansion is also allowed here,
       # see `show_components`
       highlight: []
-      # [list(string)=[]] List of libraries
-      libs: []
+      # [list(string)] List of libraries
+      libs: ['KiCAD-base']
       # [number|dict=0] Margin around the generated image [mm].
       # Using a number the margin is the same in the four directions
       margin:
@@ -2782,7 +2782,7 @@ outputs:
       # [dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
       # Use `remap_components` instead
       remap:
-      # [list(dict)] Replacements for PCB references using specified components.
+      # [list(dict)=[]] Replacements for PCB references using specified components.
       # Replaces `remap` with type check
       remap_components:
         # [string=''] Component to use (from `lib`)
@@ -2796,7 +2796,7 @@ outputs:
           # `reference` is an alias for `ref`
       # [string|list(string)=''] List of resistors to flip its bands
       resistor_flip: ''
-      # [list(dict)] List of resistors to be remapped. You can change the value of the resistors here
+      # [list(dict)=[]] List of resistors to be remapped. You can change the value of the resistors here
       resistor_remap:
         # [string=''] Reference for the resistor to change
         - ref: 'R1'
@@ -2820,7 +2820,7 @@ outputs:
       # The `svg_paths` uses all visible drawings in the image. To use this method you
       # must install the `numpy` Python module (may not be available in docker images)
       size_detection: 'kicad_edge'
-      # [string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options
+      # [string|dict={}] PCB style (colors). An internal name, the name of a JSON file or the style options
       style:
         # [string='#208b47'] Color for the board without copper (covered by solder mask)
         board: '#208b47'
@@ -3022,7 +3022,7 @@ outputs:
     options:
       # [string='%f-%i%I%v.%x'] Name for the generated PDF (%i=name of the output %x=pdf). Affected by global options
       output: '%f-%i%I%v.%x'
-      # [list(dict)] Which files will be included
+      # [list(dict)=[]] Which files will be included
       outputs:
         # [string='.*\.pdf'] A regular expression that source files must match
         - filter: '.*\.pdf'
@@ -3086,11 +3086,7 @@ outputs:
       # [boolean=false] Use negative X coordinates for footprints on bottom layer
       bottom_negative_x: false
       # [list(dict)|list(string)] Which columns are included in the output
-      columns:
-        # [string=''] [Ref,Val,Package,PosX,PosY,Rot,Side] Internal name
-        - id: 'Ref'
-          # [string=''] Name to use in the output file. The id is used when empty
-          name: 'Reference'
+      columns: ['Ref', 'Val', 'Package', 'PosX', 'PosY', 'Rot', 'Side']
       # [string|list(string)='_null'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_null'
@@ -3261,7 +3257,7 @@ outputs:
       # [string='%f-%i%I%v.%x'] Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
       # You must use %x in the name to get a symbols lib and a footprints lib. Affected by global options
       output: '%f-%i%I%v.%x'
-      # [list(dict)] QR codes to include in the library
+      # [dict|list(dict)={}] QR codes to include in the library
       qrs:
         # [string='low'] [low,medium,quartile,high] Error correction level
         - correction_level: 'low'

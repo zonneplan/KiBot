@@ -30,7 +30,7 @@ Parameters:
          You can embed the markdown code. If the text doesn't map to a file and contains
          more than one line KiBot will assume this is the markdown.
          If empty KiBot will generate a silly text and a warning.
-      -  ``boards`` :index:`: <pair: output - kikit_present - options; boards>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] One or more boards that compose your project.
+      -  ``boards`` :index:`: <pair: output - kikit_present - options; boards>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: empty dict, default values used) One or more boards that compose your project.
          When empty we will use only the main PCB for the current project.
 
          -  Valid keys:
