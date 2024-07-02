@@ -591,38 +591,39 @@ class PanelizeConfig(PanelOptions):
             self.extends = ''
             """ A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]` """
             self.page = PanelizePage
-            """ *[dict] Sets page size on the resulting panel and position the panel in the page """
+            """ *[dict=null] Sets page size on the resulting panel and position the panel in the page """
             self.layout = PanelizeLayout
-            """ *[dict] Layout used for the panel """
+            """ *[dict=null] Layout used for the panel """
             self.tabs = PanelizeTabs
-            """ *[dict] Style of the tabs used to join the PCB copies """
+            """ *[dict=null] Style of the tabs used to join the PCB copies """
             self.cuts = PanelizeCuts
-            """ *[dict] Specify how to perform the cuts on the tabs separating the board """
+            """ *[dict=null] Specify how to perform the cuts on the tabs separating the board """
             self.framing = PanelizeFraming
-            """ *[dict] Specify the frame around the boards """
+            """ *[dict=null] Specify the frame around the boards """
             self.tooling = PanelizeTooling
-            """ *[dict] Used to add tooling holes to the (rail/frame of) the panel """
+            """ *[dict=null] Used to add tooling holes to the (rail/frame of) the panel """
             self.fiducials = PanelizeFiducials
-            """ *[dict] Used to add fiducial marks to the (rail/frame of) the panel """
+            """ *[dict=null] Used to add fiducial marks to the (rail/frame of) the panel """
             self.text = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.text2 = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.text3 = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.text4 = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.copperfill = PanelizeCopperfill
-            """ [dict] Fill non-board areas of the panel with copper """
+            """ [dict=null] Fill non-board areas of the panel with copper """
             self.post = PanelizePost
-            """ [dict] Finishing touches to the panel """
+            """ [dict=null] Finishing touches to the panel """
             self.debug = PanelizeDebug
-            """ [dict] Debug options """
+            """ [dict=null] Debug options """
             self.source = PanelizeSource
-            """ [dict] Used to adjust details of which part of the PCB is panelized """
+            """ [dict=null] Used to adjust details of which part of the PCB is panelized """
             self.expand_text = True
             """ Expand text variables and KiBot %X markers in text objects """
         super().__init__()
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -635,10 +636,6 @@ class PanelizeConfig(PanelOptions):
         if name_is_number:
             raise KiPlotConfigurationError("Don't use a number as name, this can be confused with an index ({})".
                                            format(self.name))
-        # Make None all things not specified
-        for k, v in self.get_attrs_gen():
-            if isinstance(v, type):
-                setattr(self, k, None)
 
     def __str__(self):
         txt = f'`{self.name}`'
