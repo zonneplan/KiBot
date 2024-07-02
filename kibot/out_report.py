@@ -986,7 +986,7 @@ class Report(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = ReportOptions
-            """ *[dict] Options for the `report` output """
+            """ *[dict={}] Options for the `report` output """
         self._category = 'PCB/docs'
 
     @staticmethod

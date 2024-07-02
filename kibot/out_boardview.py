@@ -180,7 +180,7 @@ class BoardView(BaseOutput):  # noqa: F821
         self._category = ['PCB/repair', 'PCB/fabrication/assembly']
         with document:
             self.options = BoardViewOptions
-            """ *[dict] Options for the `boardview` output """
+            """ *[dict={}] Options for the `boardview` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

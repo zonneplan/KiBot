@@ -178,7 +178,7 @@ class Download_Datasheets(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = Download_Datasheets_Options
-            """ *[dict] Options for the `download_datasheets` output """
+            """ *[dict={}] Options for the `download_datasheets` output """
         self._sch_related = True
         self._category = 'Schematic/docs'
 

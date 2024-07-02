@@ -852,7 +852,7 @@ class Panelize(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PanelizeOptions
-            """ *[dict] Options for the `Panelize` output """
+            """ *[dict={}] Options for the `Panelize` output """
         self._category = 'PCB/fabrication'
 
     @staticmethod

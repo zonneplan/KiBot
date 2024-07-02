@@ -69,7 +69,7 @@ class Info(BaseOutput):  # noqa: F821
         self._category = ['PCB/docs', 'Schematic/docs']
         with document:
             self.options = InfoOptions
-            """ *[dict] Options for the `info` output """
+            """ *[dict={}] Options for the `info` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

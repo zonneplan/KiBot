@@ -1343,7 +1343,7 @@ class PCB_Print(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PCB_PrintOptions
-            """ *[dict] Options for the `pcb_print` output """
+            """ *[dict={}] Options for the `pcb_print` output """
         self._category = 'PCB/docs'
 
     @staticmethod

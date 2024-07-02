@@ -342,7 +342,7 @@ class Render_3D(Base3D):  # noqa: F821
         super().__init__()
         with document:
             self.options = Render3DOptions
-            """ *[dict] Options for the `render_3d` output """
+            """ *[dict={}] Options for the `render_3d` output """
         self._category = 'PCB/3D'
 
     def get_renderer_options(self):

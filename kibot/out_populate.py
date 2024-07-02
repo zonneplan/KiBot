@@ -173,5 +173,5 @@ class Populate(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PopulateOptions
-            """ *[dict] Options for the `populate` output """
+            """ *[dict={}] Options for the `populate` output """
         self._category = 'PCB/docs'

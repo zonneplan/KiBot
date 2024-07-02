@@ -406,7 +406,7 @@ class KiKit_Present(BaseOutput):
         super().__init__()
         with document:
             self.options = KiKit_PresentOptions
-            """ *[dict] Options for the `kikit_present` output """
+            """ *[dict={}] Options for the `kikit_present` output """
         self._category = 'PCB/docs'
 
     def get_navigate_targets(self, out_dir):

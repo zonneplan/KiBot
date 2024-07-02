@@ -680,7 +680,7 @@ class Blender_Export(Base3D):
         super().__init__()
         with document:
             self.options = Blender_ExportOptions
-            """ *[dict] Options for the `blender_export` output """
+            """ *[dict={}] Options for the `blender_export` output """
         self._category = 'PCB/3D'
 
     def get_dependencies(self):

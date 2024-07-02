@@ -290,7 +290,7 @@ class Compress(BaseOutput):  # noqa: F821
         self.priority = 10
         with document:
             self.options = CompressOptions
-            """ *[dict] Options for the `compress` output """
+            """ *[dict={}] Options for the `compress` output """
         self._none_related = True
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()

@@ -40,7 +40,7 @@ class DXF_SCH_Print(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = DXF_SCH_PrintOptions
-            """ *[dict] Options for the `dxf_sch_print` output """
+            """ *[dict={}] Options for the `dxf_sch_print` output """
         self._sch_related = True
         self._category = 'Schematic/docs'
 

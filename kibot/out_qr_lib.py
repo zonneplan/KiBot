@@ -534,7 +534,7 @@ class QR_Lib(BaseOutput):  # noqa: F821
         self.priority = 90
         with document:
             self.options = QR_LibOptions
-            """ *[dict] Options for the `boardview` output """
+            """ *[dict={}] Options for the `boardview` output """
         self._both_related = True
         self._update_mode = False
         # The help is inherited and already mentions the default priority
