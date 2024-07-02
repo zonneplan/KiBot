@@ -50,12 +50,13 @@ class AnyDrill(VariantOptions):
             self.output = GS.def_global_output
             """ *name for the drill file, KiCad defaults if empty (%i='PTH_drill') """
             self.report = DrillReport
-            """ [dict|string] Name of the drill report. Not generated unless a name is specified """
+            """ [dict|string=''] Name of the drill report. Not generated unless a name is specified """
             self.pth_id = None
             """ [string] Force this replacement for %i when generating PTH and unified files """
             self.npth_id = None
             """ [string] Force this replacement for %i when generating NPTH files """
         super().__init__()
+        self._init_from_defaults = True
         # Mappings to KiCad values
         self._map_map = {
                          'hpgl': PLOT_FORMAT_HPGL,
@@ -63,9 +64,10 @@ class AnyDrill(VariantOptions):
                          'gerber': PLOT_FORMAT_GERBER,
                          'dxf': PLOT_FORMAT_DXF,
                          'svg': PLOT_FORMAT_SVG,
-                         'pdf': PLOT_FORMAT_PDF
+                         'pdf': PLOT_FORMAT_PDF,
+                         'None': None
                         }
-        self._map_ext = {'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf'}
+        self._map_ext = {'hpgl': 'plt', 'ps': 'ps', 'gerber': 'gbr', 'dxf': 'dxf', 'svg': 'svg', 'pdf': 'pdf', 'None': None}
         self._unified_output = False
         self.help_only_sub_pcbs()
 
@@ -73,23 +75,15 @@ class AnyDrill(VariantOptions):
         super().config(parent)
         # Solve the map for both cases
         if isinstance(self.map, str):
-            if self.map == 'None':
-                self.map = None
-            else:
-                self.map_ext = self._map_ext[self.map]
-                self.map_output = GS.global_output if GS.global_output is not None else GS.def_global_output
-                self.map = self._map_map[self.map]
-        elif isinstance(self.map, DrillMap):
-            self.map_ext = self._map_ext[self.map.type]
-            self.map_output = self.map.output
-            self.map = self._map_map[self.map.type]
+            map = self.map
+            self._map_output = GS.global_output if GS.global_output is not None else GS.def_global_output
         else:
-            self.map = None
+            map = self.map.type
+            self._map_output = self.map.output
+        self._map_ext = self._map_ext[map]
+        self._map = self._map_map[map]
         # Solve the report for both cases
-        if isinstance(self.report, DrillReport):
-            self.report = self.report.filename
-        elif not isinstance(self.report, str):
-            self.report = None
+        self._report = self.report.filename if isinstance(self.report, DrillReport) else self.report
         self._expand_id = 'drill'
         self._expand_ext = self._ext
 
@@ -155,11 +149,11 @@ class AnyDrill(VariantOptions):
             if self.output:
                 file = self.expand_filename(output_dir, self.output, kibot_id, self._ext)
             filenames[k_file] = file
-            if self.map is not None:
-                k_file = self.expand_filename(output_dir, '%f'+kicad_id_map+'-drl_map.%x', '', self.map_ext)
+            if self._map is not None:
+                k_file = self.expand_filename(output_dir, '%f'+kicad_id_map+'-drl_map.%x', '', self._map_ext)
                 file = ''
-                if self.map_output:
-                    file = self.expand_filename(output_dir, self.map_output, kibot_id+'_map', self.map_ext)
+                if self._map_output:
+                    file = self.expand_filename(output_dir, self._map_output, kibot_id+'_map', self._map_ext)
                 filenames[k_file] = file
         return filenames
 
@@ -176,10 +170,10 @@ class AnyDrill(VariantOptions):
         drill_writer = self._configure_writer(GS.board, offset)
 
         logger.debug("Generating drill files in "+output_dir)
-        gen_map = self.map is not None
+        gen_map = self._map is not None
         if gen_map:
-            drill_writer.SetMapFileFormat(self.map)
-            logger.debug("Generating drill map type {} in {}".format(self.map, output_dir))
+            drill_writer.SetMapFileFormat(self._map)
+            logger.debug("Generating drill map type {} in {}".format(self._map, output_dir))
         # We always generate the drill file
         drill_writer.CreateDrillandMapFilesSet(output_dir, True, gen_map)
         # Rename the files
@@ -189,8 +183,8 @@ class AnyDrill(VariantOptions):
                 logger.debug("Renaming {} -> {}".format(k_f, f))
                 os.replace(k_f, f)
         # Generate the report
-        if self.report:
-            drill_report_file = self.expand_filename(output_dir, self.report, 'drill_report', 'txt')
+        if self._report:
+            drill_report_file = self.expand_filename(output_dir, self._report, 'drill_report', 'txt')
             logger.debug("Generating drill report: "+drill_report_file)
             drill_writer.GenDrillReportFile(drill_report_file)
         self.unfilter_pcb_components()
@@ -200,6 +194,6 @@ class AnyDrill(VariantOptions):
         files = self.get_file_names(out_dir)
         for k_f, f in files.items():
             targets.append(f if f else k_f)
-        if self.report:
-            targets.append(self.expand_filename(out_dir, self.report, 'drill_report', 'txt'))
+        if self._report:
+            targets.append(self.expand_filename(out_dir, self._report, 'drill_report', 'txt'))
         return targets
