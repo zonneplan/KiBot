@@ -215,7 +215,7 @@ class KiCanvas(BaseOutput):  # noqa: F821
             self.output = GS.def_global_output
             """ *Filename for the output (%i=kicanvas, %x=html) """
             self.options = KiCanvasOptions
-            """ *[dict] Options for the KiCanvas output """
+            """ *[dict={}] Options for the KiCanvas output """
 
     def config(self, parent):
         super().config(parent)
