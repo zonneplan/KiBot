@@ -1081,7 +1081,7 @@ class VariantOptions(BaseOptions):
         """ Setup the options to use it as a renderer """
         self._show_all_components = False
         self._filters_to_expand = False
-        self.highlight = self.solve_kf_filters([c for c in active_components if c])
+        self._highlight = self.solve_kf_filters([c for c in active_components if c])
         self.show_components = [c for c in components if c]
         if self.show_components:
             self._show_components_raw = self.show_components
@@ -1091,7 +1091,7 @@ class VariantOptions(BaseOptions):
         """ Save the current renderer settings """
         self.old_filters_to_expand = self._filters_to_expand
         self.old_show_components = self.show_components
-        self.old_highlight = self.highlight
+        self.old_highlight = self._highlight
         self.old_dir = self._parent.dir
         self.old_done = self._parent._done
 
@@ -1099,7 +1099,7 @@ class VariantOptions(BaseOptions):
         """ Restore the renderer settings """
         self._filters_to_expand = self.old_filters_to_expand
         self.show_components = self.old_show_components
-        self.highlight = self.old_highlight
+        self._highlight = self.old_highlight
         self._parent.dir = self.old_dir
         self._parent._done = self.old_done
 

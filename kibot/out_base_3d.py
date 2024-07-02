@@ -596,6 +596,7 @@ class Base3DOptionsWithHL(Base3DOptions):
             self.highlight_on_top = False
             """ Highlight over the component (not under) """
         super().__init__()
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -610,22 +611,16 @@ class Base3DOptionsWithHL(Base3DOptions):
                 self.show_components = []
             else:
                 self.show_components = self.solve_kf_filters([self.show_components])
-        elif isinstance(self.show_components, type):
-            # Default is all
-            self._show_all_components = True
         else:  # a list
             self.show_components = self.solve_kf_filters(self.show_components)
         # Highlight
-        if isinstance(self.highlight, type):
-            self.highlight = None
-        else:
-            self.highlight = self.solve_kf_filters(self.highlight)
+        self._highlight = self.solve_kf_filters(self.highlight)
 
     def copy_options(self, ref):
         """ Copy its options from another similar object """
         super().copy_options(ref)
         self.show_components = ref.show_components
-        self.highlight = ref.highlight
+        self._highlight = ref._highlight
         self.highlight_padding = ref.highlight_padding
         self.highlight_on_top = ref.highlight_on_top
         self._filters_to_expand = ref._filters_to_expand

@@ -320,7 +320,7 @@ class Render3DOptions(Base3DOptionsWithHL):
         self.add_options(cmd)
         # The board
         self.apply_show_components()
-        board_name = self.filter_components(highlight=set(self.expand_kf_components(self.highlight)))
+        board_name = self.filter_components(highlight=set(self.expand_kf_components(self._highlight)))
         self.undo_show_components()
         cmd.extend([board_name, os.path.dirname(output)])
         # Execute it
