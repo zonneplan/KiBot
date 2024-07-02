@@ -421,7 +421,7 @@ class KiBoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = KiBoMOptions
-            """ *[dict] Options for the `kibom` output """
+            """ *[dict={}] Options for the `kibom` output """
         self._sch_related = True
 
     def get_dependencies(self):

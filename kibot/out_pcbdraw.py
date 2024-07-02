@@ -535,7 +535,7 @@ class PcbDraw(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PcbDrawOptions
-            """ *[dict] Options for the `pcbdraw` output """
+            """ *[dict={}] Options for the `pcbdraw` output """
         self._category = 'PCB/docs'
 
     def get_dependencies(self):

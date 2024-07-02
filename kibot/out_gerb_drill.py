@@ -33,7 +33,7 @@ class Gerb_Drill(BaseOutput):  # noqa: F821
         self._category = 'PCB/fabrication/drill'
         with document:
             self.options = Gerb_DrillOptions
-            """ *[dict] Options for the `gerb_drill` output """
+            """ *[dict={}] Options for the `gerb_drill` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

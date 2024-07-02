@@ -94,7 +94,7 @@ class STEP(Base3D):
         super().__init__()
         with document:
             self.options = STEPOptions
-            """ *[dict] Options for the `step` output """
+            """ *[dict={}] Options for the `step` output """
         self._category = 'PCB/3D'
 
     @staticmethod

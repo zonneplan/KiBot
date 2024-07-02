@@ -75,7 +75,7 @@ class GenCAD(BaseOutput):  # noqa: F821
         self._category = 'PCB/export'
         with document:
             self.options = GenCADOptions
-            """ *[dict] Options for the `gencad` output """
+            """ *[dict={}] Options for the `gencad` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

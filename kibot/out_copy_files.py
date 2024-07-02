@@ -410,7 +410,7 @@ class Copy_Files(BaseOutput):  # noqa: F821
         self.priority = 11
         with document:
             self.options = Copy_FilesOptions
-            """ *[dict] Options for the `copy_files` output """
+            """ *[dict={}] Options for the `copy_files` output """
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
         # Mostly oriented to the project copy

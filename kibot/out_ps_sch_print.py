@@ -40,7 +40,7 @@ class PS_SCH_Print(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PS_SCH_PrintOptions
-            """ *[dict] Options for the `ps_sch_print` output """
+            """ *[dict={}] Options for the `ps_sch_print` output """
         self._sch_related = True
         self._category = 'Schematic/docs'
 

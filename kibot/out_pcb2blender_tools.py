@@ -380,4 +380,4 @@ class PCB2Blender_Tools(BaseOutput):  # noqa: F821
         self._category = 'PCB/3D/Auxiliar'
         with document:
             self.options = PCB2Blender_ToolsOptions
-            """ *[dict] Options for the `pcb2blender_tools` output """
+            """ *[dict={}] Options for the `pcb2blender_tools` output """

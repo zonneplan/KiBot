@@ -783,7 +783,7 @@ class Navigate_Results(BaseOutput):  # noqa: F821
         self.priority = 10
         with document:
             self.options = Navigate_ResultsOptions
-            """ *[dict] Options for the `navigate_results` output """
+            """ *[dict={}] Options for the `navigate_results` output """
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
         self._any_related = True

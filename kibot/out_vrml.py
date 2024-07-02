@@ -109,7 +109,7 @@ class VRML(BaseOutput):  # noqa: F821
         self._category = 'PCB/3D'
         with document:
             self.options = VRMLOptions
-            """ *[dict] Options for the `vrml` output """
+            """ *[dict={}] Options for the `vrml` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

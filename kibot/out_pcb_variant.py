@@ -56,4 +56,4 @@ class PCB_Variant(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PCB_Variant_Options
-            """ *[dict] Options for the `pcb_variant` output """
+            """ *[dict={}] Options for the `pcb_variant` output """

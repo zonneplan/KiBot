@@ -130,7 +130,7 @@ class Stencil_For_Jig(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = Stencil_For_Jig_Options
-            """ *[dict] Options for the `stencil_for_jig` output """
+            """ *[dict={}] Options for the `stencil_for_jig` output """
         self._category = 'PCB/fabrication/assembly'
 
     @staticmethod

@@ -247,4 +247,4 @@ class KiCost(BaseOutput):  # noqa: F821
         self._sch_related = True
         with document:
             self.options = KiCostOptions
-            """ *[dict] Options for the `kicost` output """
+            """ *[dict={}] Options for the `kicost` output """

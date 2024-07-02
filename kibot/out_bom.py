@@ -1022,7 +1022,7 @@ class BoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = BoMOptions
-            """ *[dict] Options for the `bom` output """
+            """ *[dict={}] Options for the `bom` output """
         self._sch_related = True
         self._category = 'Schematic/BoM'
 
