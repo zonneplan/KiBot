@@ -311,7 +311,7 @@ class Optionable(object):
         old_configured = self._configured
         if self._tree and not self._configured:
             self._perform_config_mapping()
-            self._configured = True
+        self._configured = True
         if not old_configured and self._init_from_defaults:
             self.do_defaults()
         if self._output_multiple_files and ('%i' not in self.output or '%x' not in self.output):
