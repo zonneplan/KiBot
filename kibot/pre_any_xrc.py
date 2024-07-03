@@ -17,8 +17,8 @@ from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .pre_filters import FilterOptions, FiltersOptions
 from .macros import macros, document  # noqa: F401
-from .log import get_logger
-logger = get_logger(__name__)
+from . import log
+logger = log.get_logger(__name__)
 UNITS_2_KICAD = {'millimeters': 'mm', 'inches': 'in', 'mils': 'mils'}
 
 
@@ -315,6 +315,9 @@ class XRC(BasePreFlight):
             # Write it to the output file
             with open(output, 'wt') as f:
                 f.write(res)
+        # Sanity check
+        if self._dont_stop and self.c_warn and log.stop_on_warnings:
+            logger.error("Inconsistent options, asked to don't stop, but also to stop on warnings")
         # Report the result
         self.report('error', self.c_err, data)
         self.report('warning', self.c_warn, data)
