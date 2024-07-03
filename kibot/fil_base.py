@@ -188,6 +188,8 @@ def apply_exclude_filter(comps, filter):
         for c in comps:
             if c.included:
                 c.included = filter.filter(c)
+                if not c.included:
+                    logger.debugl(3, f'- {c.ref} excluded')
 
 
 def reset_filters(comps):

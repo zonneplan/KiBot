@@ -1,0 +1,31 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+globals:
+  hide_excluded: true
+
+filters:
+  - name: no_R1
+    type: generic
+    exclude_refs: [R1]
+
+variants:
+  - name: 't1_v1'
+    comment: 'Test 1 Variant V1'
+    type: kibom
+    file_id: '_(V1)'
+    variant: V1
+    exclude_filter: no_R1
+
+outputs:
+  - name: 'print_front'
+    comment: "Experiment"
+    type: pcb_print
+    options:
+      format: 'PNG'
+      scaling: 2
+      pages:
+        - layers: [F.Fab, Edge.Cuts]
+
+

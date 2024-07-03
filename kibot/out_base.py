@@ -518,6 +518,7 @@ class VariantOptions(BaseOptions):
         """ Remove from Fab the excluded components. """
         if comps_hash is None:
             return
+        logger.debug('Removing from Fab')
         ffab = board.GetLayerID('F.Fab')
         bfab = board.GetLayerID('B.Fab')
         old_ffab = []
@@ -527,6 +528,7 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c is not None and not c.included:
+                logger.debugl(3, '- Removed Fab drawings from '+ref)
                 # Remove any graphical item in the *.Fab layers
                 for gi in m.GraphicalItems():
                     l_gi = gi.GetLayer()
