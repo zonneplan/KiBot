@@ -287,9 +287,12 @@ class Optionable(object):
                 # The local config will creat something useful
                 continue
             elif def_val == '{}':
-                # The default initialization for the class
-                new_val = v()
-                new_val.config(self)
+                if 'string_dict' in valid:
+                    new_val = {}
+                else:
+                    # The default initialization for the class
+                    new_val = v()
+                    new_val.config(self)
             elif def_val == '[]':
                 # An empty list
                 new_val = []
