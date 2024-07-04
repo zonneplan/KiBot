@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the IBoM variants mechanism.
 from .optionable import Optionable
@@ -26,9 +26,11 @@ class IBoM(BaseVariant):  # noqa: F821
             self.variant_field = 'Config'
             """ Name of the field that stores board variant for component """
             self.variants_blacklist = Optionable
-            """ [string|list(string)=''] List of board variants to exclude from the BOM """
+            """ [string|list(string)=[]] List of board variants to exclude from the BOM """
             self.variants_whitelist = Optionable
-            """ [string|list(string)=''] List of board variants to include in the BOM """
+            """ [string|list(string)=[]] List of board variants to include in the BOM """
+        self.fix_doc('exclude_filter', IFILT_MECHANICAL)
+        self._init_from_defaults = True
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """
