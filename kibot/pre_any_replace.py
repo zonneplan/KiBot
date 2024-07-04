@@ -60,13 +60,12 @@ class Base_ReplaceOptions(Optionable):
                 Important: on KiCad 6 the title block data is optional.
                 This command will work only if you have a date in the PCB/Schematic """
             self.replace_tags = TagReplaceBase
-            """ [dict|list(dict)] Tag or tags to replace """
+            """ [dict|list(dict)=[]] Tag or tags to replace """
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.replace_tags, type):
-            self.replace_tags = []
-        elif isinstance(self.replace_tags, TagReplaceBase):
+        if isinstance(self.replace_tags, TagReplaceBase):
             self.replace_tags = [self.replace_tags]
 
 

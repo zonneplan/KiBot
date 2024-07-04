@@ -52,33 +52,31 @@ class FiltersOptions(Optionable):
         super().__init__()
         with document:
             self.filters = FilterOptions
-            """ [list(dict)] DRC/ERC errors to be ignored """
+            """ [list(dict)=[]] DRC/ERC errors to be ignored """
         self._filter_what = 'DRC/ERC errors'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
         parsed = None
-        if not isinstance(self.filters, type):
-            for f in self.filters:
-                where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
-                error = f.error
-                if not error:
-                    if not hasattr(f, 'number') or not f.number:
-                        raise KiPlotConfigurationError('Missing `error`'+where)
-                    error = str(f.number)
-                regex = f.regex
-                if regex == 'None':
-                    raise KiPlotConfigurationError('Missing `regex`'+where)
-                comment = f.filter
-                logger.debug("Adding {} filter '{}','{}','{}'".format(self._filter_what, comment, error, regex))
-                if parsed is None:
-                    parsed = ''
-                if comment:
-                    parsed += '# '+comment+'\n'
-                parsed += '{},{}\n'.format(error, regex)
-                f.regex = re.compile(regex)
-        else:
-            self.filters = []
+        for f in self.filters:
+            where = ' (in `{}` filter)'.format(f.filter) if f.filter else ''
+            error = f.error
+            if not error:
+                if not hasattr(f, 'number') or not f.number:
+                    raise KiPlotConfigurationError('Missing `error`'+where)
+                error = str(f.number)
+            regex = f.regex
+            if regex == 'None':
+                raise KiPlotConfigurationError('Missing `regex`'+where)
+            comment = f.filter
+            logger.debug("Adding {} filter '{}','{}','{}'".format(self._filter_what, comment, error, regex))
+            if parsed is None:
+                parsed = ''
+            if comment:
+                parsed += '# '+comment+'\n'
+            parsed += '{},{}\n'.format(error, regex)
+            f.regex = re.compile(regex)
         self._parsed = parsed
 
 

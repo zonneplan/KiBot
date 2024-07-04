@@ -63,17 +63,16 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         super().__init__()
         with document:
             self.set_text_variables = KiCadVariable
-            """ [dict|list(dict)] Defines KiCad 6+ variables.
+            """ [dict|list(dict)=[]] Defines KiCad 6+ variables.
                 They are expanded using `${VARIABLE}`, and stored in the project file.
                 This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
                 The KiCad project file is modified.
                 Warning: don't use `-s all` or this preflight will be skipped """
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.set_text_variables, type):
-            self.set_text_variables = []
-        elif isinstance(self.set_text_variables, KiCadVariable):
+        if isinstance(self.set_text_variables, KiCadVariable):
             self.set_text_variables = [self.set_text_variables]
 
     @classmethod
