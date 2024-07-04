@@ -251,8 +251,6 @@ class PagesOptions(Optionable):
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.layers, type):
-            self.layers = 'all'
         # Fill the ID member for all the layers
         self._layers = LayerOptions.solve(self.layers)
         if self.sort_layers:
@@ -385,6 +383,7 @@ class PCB_PrintOptions(VariantOptions):
         add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
+        self._init_from_defaults = True
 
     def get_layers_for_page(self, page):
         layer = ''
@@ -396,8 +395,6 @@ class PCB_PrintOptions(VariantOptions):
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.pages, type):
-            self.pages = []
         # Expand any repeat_for_layer
         pages = []
         for page in self.pages:

@@ -105,7 +105,7 @@ class KiRiOptions(AnyDiffOptions):
 
     def create_layers_incl(self, layers):
         self.incl_file = None
-        if isinstance(layers, type):
+        if not layers:
             self._solved_layers = None
             return False
         self.save_layers_incl(Layer.solve(layers))

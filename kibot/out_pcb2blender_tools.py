@@ -109,6 +109,7 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         super().__init__()
         self._expand_id = 'pcb2blender'
         self._expand_ext = 'pcb3d'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -122,9 +123,6 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                 self.show_components = []
             else:
                 self.show_components = self.solve_kf_filters([self.show_components])
-        elif isinstance(self.show_components, type):
-            # Default is all
-            self._show_all_components = True
         else:  # a list
             self.show_components = self.solve_kf_filters(self.show_components)
 

@@ -168,6 +168,7 @@ class BaseOutput(RegOutput):
                 raise KiPlotConfigurationError('Unknown output `{}` in `disable_run_by_default`'.format(to_dis))
         if self.dir[0] == '+':
             self.dir = (GS.global_dir if GS.global_dir is not None else './') + self.dir[1:]
+        # TODO: not needed when self._init_from_defaults becomes the default
         if getattr(self, 'options', None) and isinstance(self.options, type):
             # No options, get the defaults
             self.options = self.options()

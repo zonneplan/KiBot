@@ -79,15 +79,14 @@ class KiBoMColumns(Optionable):
             """ [list(string)|string=''] List of fields to join to this column """
         self._field_example = 'Row'
         self._name_example = 'Line'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
         self.field = Optionable.solve_field_name(self.field)
-        if isinstance(self.join, type):
-            self.join = None
-        elif isinstance(self.join, list):
+        if isinstance(self.join, list):
             self.join = '\t'.join(self.join)
 
     def __str__(self):

@@ -302,12 +302,7 @@ class AnyLayer(BaseOutput):
             self.layers = Layer
             """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to plot """
-
-    def config(self, parent):
-        super().config(parent)
-        # We need layers
-        if isinstance(self.layers, type):
-            self.layers = 'all'
+        self._init_from_defaults = True
 
     def get_targets(self, out_dir):
         return self.options.get_targets(out_dir, self.layers)
