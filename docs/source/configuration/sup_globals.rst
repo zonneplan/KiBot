@@ -4,7 +4,7 @@
 
    -  Valid keys:
 
-      -  ``aliases_for_3d_models`` :index:`: <pair: global options; aliases_for_3d_models>` [:ref:`list(dict) <list(dict)>`] List of aliases for the 3D models (KiCad 6).
+      -  ``aliases_for_3d_models`` :index:`: <pair: global options; aliases_for_3d_models>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) List of aliases for the 3D models (KiCad 6).
          KiCad stores 3D aliases with the user settings, not locally.
          This makes impossible to create self contained projects.
          You can define aliases here to workaround this problem.
@@ -58,7 +58,7 @@
          KiCad 6: you should set this in the Board Setup -> Board Finish -> Edge card connectors.
       -  ``edge_plating`` :index:`: <pair: global options; edge_plating>` [:ref:`boolean <boolean>`] (default: ``false``) Has the PCB a plated board edge?
          KiCad 6: you should set this in the Board Setup -> Board Finish -> Plated board edge.
-      -  ``environment`` :index:`: <pair: global options; environment>` [:ref:`dict <dict>`] Used to define environment variables used by KiCad.
+      -  ``environment`` :index:`: <pair: global options; environment>` [:ref:`dict <dict>`] (default: empty dict, default values used) Used to define environment variables used by KiCad.
          The values defined here are exported as environment variables and has
          more precedence than KiCad paths defined in the GUI.
          You can make reference to any OS environment variable using `${VARIABLE}`.
@@ -68,7 +68,7 @@
 
             -  ``define_old`` :index:`: <pair: global options - environment; define_old>` [:ref:`boolean <boolean>`] (default: ``false``) Also define legacy versions of the variables.
                Useful when using KiCad 6+ and some libs uses old KiCad 5 names.
-            -  ``extra_os`` :index:`: <pair: global options - environment; extra_os>` [:ref:`list(dict) <list(dict)>`] Extra variables to export as OS environment variables.
+            -  ``extra_os`` :index:`: <pair: global options - environment; extra_os>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Extra variables to export as OS environment variables.
                Note that you can also define them using `- NAME: VALUE`.
 
                -  Valid keys:
@@ -93,27 +93,22 @@
       -  ``field_3D_model`` :index:`: <pair: global options; field_3D_model>` [:ref:`string <string>`] (default: ``'_3D_model'``) Name for the field controlling the 3D models used for a component.
       -  ``field_lcsc_part`` :index:`: <pair: global options; field_lcsc_part>` [:ref:`string <string>`] (default: ``''``) The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
          When empty KiBot will try to discover it.
-      -  ``field_package`` :index:`: <pair: global options; field_package>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name/s of the field/s used for the package, not footprint.
+      -  ``field_package`` :index:`: <pair: global options; field_package>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['package', 'pkg']``) Name/s of the field/s used for the package, not footprint.
          I.e. 0805, SOT-23, etc. Used for the value split filter.
-         The default is ['package', 'pkg'].
 
-      -  ``field_power`` :index:`: <pair: global options; field_power>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name/s of the field/s used for the power raiting.
+      -  ``field_power`` :index:`: <pair: global options; field_power>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['power', 'pow']``) Name/s of the field/s used for the power raiting.
          Used for the value split filter.
-         The default is ['power', 'pow'].
 
-      -  ``field_temp_coef`` :index:`: <pair: global options; field_temp_coef>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name/s of the field/s used for the temperature coefficient.
+      -  ``field_temp_coef`` :index:`: <pair: global options; field_temp_coef>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['temp_coef', 'tmp_coef']``) Name/s of the field/s used for the temperature coefficient.
          I.e. X7R, NP0, etc. Used for the value split filter.
-         The default is ['temp_coef', 'tmp_coef'].
 
-      -  ``field_tolerance`` :index:`: <pair: global options; field_tolerance>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name/s of the field/s used for the tolerance.
+      -  ``field_tolerance`` :index:`: <pair: global options; field_tolerance>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['tolerance', 'tol']``) Name/s of the field/s used for the tolerance.
          Used while creating colored resistors and for the value split filter.
-         The default is ['tolerance', 'tol'].
 
-      -  ``field_voltage`` :index:`: <pair: global options; field_voltage>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] Name/s of the field/s used for the voltage raiting.
+      -  ``field_voltage`` :index:`: <pair: global options; field_voltage>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['voltage', 'v']``) Name/s of the field/s used for the voltage raiting.
          Used for the value split filter.
-         The default is ['voltage', 'v'].
 
-      -  ``filters`` :index:`: <pair: global options; filters>` [:ref:`list(dict) <list(dict)>`] KiBot warnings to be ignored.
+      -  ``filters`` :index:`: <pair: global options; filters>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) KiBot warnings to be ignored.
 
          -  Valid keys:
 
@@ -144,7 +139,7 @@
       -  ``kicad_dnp_applies_to_3D`` :index:`: <pair: global options; kicad_dnp_applies_to_3D>` [:ref:`boolean <boolean>`] (default: ``true``) The KiCad v7 PCB flag *Do Not Populate* is applied to our fitted flag for 3D models,
          even when no filter/variant is specified. Disabling `kicad_dnp_applied` also disables
          this flag.
-      -  ``layer_defaults`` :index:`: <pair: global options; layer_defaults>` [:ref:`list(dict) <list(dict)>`] Used to indicate the default suffix and description for the layers.
+      -  ``layer_defaults`` :index:`: <pair: global options; layer_defaults>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Used to indicate the default suffix and description for the layers.
          Note that the name for the layer must match exactly, no aliases.
 
          -  Valid keys:

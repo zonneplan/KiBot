@@ -190,7 +190,7 @@ Supported preflights
             Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
             Important: on KiCad 6 the title block data is optional.
             This command will work only if you have a date in the PCB/Schematic.
-         -  ``replace_tags`` :index:`: <pair: preflight - pcb_replace - pcb_replace; replace_tags>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Tag or tags to replace.
+         -  ``replace_tags`` :index:`: <pair: preflight - pcb_replace - pcb_replace; replace_tags>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) Tag or tags to replace.
 
             -  Valid keys:
 
@@ -245,7 +245,7 @@ Supported preflights
             Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
             Important: on KiCad 6 the title block data is optional.
             This command will work only if you have a date in the SCH/Schematic.
-         -  ``replace_tags`` :index:`: <pair: preflight - sch_replace - sch_replace; replace_tags>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Tag or tags to replace.
+         -  ``replace_tags`` :index:`: <pair: preflight - sch_replace - sch_replace; replace_tags>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) Tag or tags to replace.
 
             -  Valid keys:
 
@@ -261,7 +261,7 @@ Supported preflights
 
 
 
-   -  **set_text_variables** :index:`: <pair: preflight - set_text_variables; set_text_variables>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] Defines KiCad 6+ variables.
+   -  **set_text_variables** :index:`: <pair: preflight - set_text_variables; set_text_variables>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) Defines KiCad 6+ variables.
       They are expanded using `${VARIABLE}`, and stored in the project file.
       This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
       The KiCad project file is modified.

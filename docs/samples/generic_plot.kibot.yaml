@@ -96,7 +96,7 @@ preflight:
         command: 'git log -1 --format="%h" "$KIBOT_SCH_NAME"'
         before: 'Git hash: <'
         after: '>'
-  # [dict|list(dict)] Defines KiCad 6+ variables.
+  # [dict|list(dict)=[]] Defines KiCad 6+ variables.
   # They are expanded using `${VARIABLE}`, and stored in the project file.
   # This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
   # The KiCad project file is modified.
@@ -454,14 +454,14 @@ outputs:
         separator: ','
       # [string|list(string)=[]] Include this distributors list. Default is all the available
       distributors: []
-      # [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
+      # [string|list(string)='_kibom_dnc_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Change'.
       # The default filter marks components with a DNC value or DNC in the Config field.
       # This option is for simple cases, consider using a full variant for complex cases
-      dnc_filter: '_kibom_dnc'
-      # [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
+      dnc_filter: '_kibom_dnc_CONFIG_FIELD'
+      # [string|list(string)='_kibom_dnf_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Fit'.
       # The default filter marks components with a DNF value or DNF in the Config field.
       # This option is for simple cases, consider using a full variant for complex cases
-      dnf_filter: '_kibom_dnf'
+      dnf_filter: '_kibom_dnf_CONFIG_FIELD'
       # [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
       # The default filter (built-in filter '_mechanical') excludes test points, fiducial marks, mounting holes, etc.
       # Please consult the built-in filters explanation to fully understand what is excluded by default.
@@ -591,9 +591,9 @@ outputs:
       # extra information split it in separated fields, add the fields to `group_fields` and disable
       # `merge_blank_fields`
       parse_value: true
-      # [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+      # [string|list(string)='_null'] Name of the filter to transform fields before applying other filters.
       # This option is for simple cases, consider using a full variant for complex cases
-      pre_transform: '_none'
+      pre_transform: '_null'
       # [string=''] A prefix to add to all the references from this project. Used for multiple projects
       ref_id: ''
       # [string=' '] Separator used for the list of references
@@ -609,8 +609,7 @@ outputs:
       use_alt: false
       # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS)
       use_aux_axis_as_origin: true
-      # [string=''] Board variant, used to determine which components
-      # are output to the BoM.
+      # [string=''] Board variant, used to determine which components are output to the BoM.
       variant: ''
       # [dict={}] Options for the XLSX format
       xlsx:

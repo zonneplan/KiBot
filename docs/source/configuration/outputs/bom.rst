@@ -284,11 +284,11 @@ Parameters:
       -  ``count_smd_tht`` :index:`: <pair: output - bom - options; count_smd_tht>` [:ref:`boolean <boolean>`] (default: ``false``) Show the stats about how many of the components are SMD/THT. You must provide the PCB.
       -  ``distributors`` :index:`: <pair: output - bom - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Include this distributors list. Default is all the available.
 
-      -  ``dnc_filter`` :index:`: <pair: output - bom - options; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnc'``) Name of the filter to mark components as 'Do Not Change'.
+      -  ``dnc_filter`` :index:`: <pair: output - bom - options; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnc_CONFIG_FIELD'``) Name of the filter to mark components as 'Do Not Change'.
          The default filter marks components with a DNC value or DNC in the Config field.
          This option is for simple cases, consider using a full variant for complex cases.
 
-      -  ``dnf_filter`` :index:`: <pair: output - bom - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnf'``) Name of the filter to mark components as 'Do Not Fit'.
+      -  ``dnf_filter`` :index:`: <pair: output - bom - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnf_CONFIG_FIELD'``) Name of the filter to mark components as 'Do Not Fit'.
          The default filter marks components with a DNF value or DNF in the Config field.
          This option is for simple cases, consider using a full variant for complex cases.
 
@@ -329,7 +329,7 @@ Parameters:
          Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
          extra information split it in separated fields, add the fields to `group_fields` and disable
          `merge_blank_fields`.
-      -  ``pre_transform`` :index:`: <pair: output - bom - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_none'``) Name of the filter to transform fields before applying other filters.
+      -  ``pre_transform`` :index:`: <pair: output - bom - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          This option is for simple cases, consider using a full variant for complex cases.
 
       -  ``ref_id`` :index:`: <pair: output - bom - options; ref_id>` [:ref:`string <string>`] (default: ``''``) A prefix to add to all the references from this project. Used for multiple projects.
@@ -337,8 +337,11 @@ Parameters:
       -  ``source_by_id`` :index:`: <pair: output - bom - options; source_by_id>` [:ref:`boolean <boolean>`] (default: ``false``) Generate the `Source BoM` column using the reference ID instead of the project name.
       -  ``use_alt`` :index:`: <pair: output - bom - options; use_alt>` [:ref:`boolean <boolean>`] (default: ``false``) Print grouped references in the alternate compressed style eg: R1-R7,R18.
       -  ``use_aux_axis_as_origin`` :index:`: <pair: output - bom - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``true``) Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS).
-      -  ``variant`` :index:`: <pair: output - bom - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant, used to determine which components
-         are output to the BoM..
+      -  ``variant`` :index:`: <pair: output - bom - options; variant>` [:ref:`string <string>`] (default: ``'_kibom_simple'``) Board variant, used to determine which components are output to the BoM.
+         The `_kibom_simple` variant is a KiBoM variant without any filters and it provides some basic
+         compatibility with KiBoM. Note that this output has default filters that behaves like KiBoM.
+         The combination between the default for this option and the defaults for the filters provides
+         a behavior that mimics KiBoM default behavior.
 
 -  **type** :index:`: <pair: output - bom; type>` 'bom'
 -  ``category`` :index:`: <pair: output - bom; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.

@@ -221,7 +221,7 @@ Supported filters
 
    -  Valid keys:
 
-      -  ``check_multiplier`` :index:`: <pair: filter - subparts; check_multiplier>` [:ref:`list(string) <list(string)>`] List of fields to include for multiplier computation.
+      -  ``check_multiplier`` :index:`: <pair: filter - subparts; check_multiplier>` [:ref:`list(string) <list(string)>`] (default: computed for your project) List of fields to include for multiplier computation.
          If empty all fields in `split_fields` and `manf_pn_field` are used.
 
       -  ``comment`` :index:`: <pair: filter - subparts; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
