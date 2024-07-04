@@ -239,7 +239,7 @@ def write_stats(html, cfg):
         if not cfg.html.hide_pcb_info:
             prj = cfg.aggregate[0]
             html.write("   <b>Schematic</b>: {}<br>\n".format(prj.name))
-            html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name))
+            html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name if cfg.variant else 'default'))
             html.write("   <b>Revision</b>: {}<br>\n".format(prj.sch.revision))
             html.write("   <b>Date</b>: {}<br>\n".format(prj.sch.date))
             html.write("   <b>KiCad Version</b>: {}<br>\n".format(cfg.kicad_version))
@@ -259,7 +259,7 @@ def write_stats(html, cfg):
         html.write('<tr>\n')
         html.write(' <td class="cell-info">\n')
         if not cfg.html.hide_pcb_info:
-            html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name))
+            html.write("   <b>Variant</b>: {}<br>\n".format(cfg.variant.name if cfg.variant else 'default'))
             html.write("   <b>KiCad Version</b>: {}<br>\n".format(cfg.kicad_version))
         html.write(' </td>\n')
         html.write(' <td class="cell-stats">\n')

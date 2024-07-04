@@ -372,13 +372,14 @@ def adjust_heights(worksheet, rows, max_width, head_size):
 
 
 def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle, compact=False):
+    vname = cfg.variant.name if cfg.variant else 'default'
     if len(cfg.aggregate) == 1:
         # Only one project
         rc = r_info_start
         if not cfg.xlsx.hide_pcb_info:
             prj = cfg.aggregate[0]
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", prj.name)
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", vname)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", prj.sch.revision)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", prj.sch.date)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
@@ -396,7 +397,7 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
         old_col1 = col1
         rc = r_info_start
         if not cfg.xlsx.hide_pcb_info:
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", vname)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
             col1 += 2
         rc = r_info_start
