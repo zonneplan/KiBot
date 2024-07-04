@@ -23,7 +23,7 @@ def write_xml(filename, groups, headings, head_names, cfg):
     cfg = BoMOptions object with all the configuration
     """
     attrib = {}
-    attrib['PCB_Variant'] = cfg.variant.name
+    attrib['PCB_Variant'] = cfg.variant.name if cfg.variant else 'default'
     attrib['KiCad_Version'] = cfg.kicad_version
     attrib['Component_Groups'] = str(cfg.n_groups)
     attrib['Component_Count'] = str(cfg.total_str)
