@@ -31,7 +31,7 @@ class Subparts(BaseFilter):  # noqa: F821
         self._is_transform = True
         with document:
             self.check_multiplier = Optionable
-            """ [list(string)] List of fields to include for multiplier computation.
+            """ [list(string)=?] List of fields to include for multiplier computation.
                 If empty all fields in `split_fields` and `manf_pn_field` are used """
             self.manf_field = 'manf'
             """ Field for the manufacturer name """
@@ -57,6 +57,7 @@ class Subparts(BaseFilter):  # noqa: F821
             """ Force the reference separator use even for the first component in the list (KiCost behavior) """
             self.value_alt_field = 'value_subparts'
             """ Field containing replacements for the `Value` field. So we get real values for split parts """
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -66,11 +67,9 @@ class Subparts(BaseFilter):  # noqa: F821
             self.mult_separators = ':'
         if not self.ref_sep:
             self.ref_sep = '#'
-        if isinstance(self.split_fields, type):
-            self.split_fields = DISTRIBUTORS_F
-        else:
-            if self.split_fields_expand:
-                self.split_fields.extend(DISTRIBUTORS_F)
+        self._split_fields = self.split_fields
+        if self.split_fields_expand:
+            self._split_fields += DISTRIBUTORS_F
         # (?<!\\) is used to skip \;
         self._part_sep = re.compile(r'(?<!\\)\s*['+self.separators+r']\s*')
         self._qty_sep = re.compile(r'(?<!\\)\s*['+self.mult_separators+r']\s*')
@@ -79,7 +78,7 @@ class Subparts(BaseFilter):  # noqa: F821
         self._num_format = re.compile(r"^\s*[\-\+]?\s*[0-9]*\s*[\.\/]*\s*?[0-9]*\s*$")
         self._remove_sep = re.compile(r'[\.\/]')
         # The list of all fields that controls the process
-        self._fields = self.split_fields
+        self._fields = self._split_fields
         if self.manf_pn_field:
             self._fields.append(self.manf_pn_field)
         # List of fields that needs qty computation
