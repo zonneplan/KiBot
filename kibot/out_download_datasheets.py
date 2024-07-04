@@ -51,6 +51,7 @@ class Download_Datasheets_Options(VariantOptions):
         # Used to collect the targets
         self._dry = False
         self._unknown_is_error = True
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -59,8 +60,6 @@ class Download_Datasheets_Options(VariantOptions):
         if not self.output:
             raise KiPlotConfigurationError("Empty `output` ({})".format(str(self._tree)))
         self.field = self.field.lower()
-        if isinstance(self.classify_extra, type):
-            self.classify_extra = {}
 
     def do_warning(self, msg, ds, c):
         logger.warning(W_FAILDL+'{} during download of `{}` [{}]'.format(msg, ds, c.ref))

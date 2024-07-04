@@ -291,13 +291,12 @@ class Navigate_ResultsOptions(BaseOptions):
         super().__init__()
         self._expand_id = 'navigate'
         self._expand_ext = 'html'
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
         # Logo
-        if isinstance(self.logo, type):
-            self.logo = ''
-        elif isinstance(self.logo, bool):
+        if isinstance(self.logo, bool):
             self.logo = '' if self.logo else None
         elif self.logo:
             self.logo = os.path.abspath(self.logo)
@@ -315,9 +314,7 @@ class Navigate_ResultsOptions(BaseOptions):
             self._logo_w = self._logo_h = 0
             self._logo_data = ''
         # Title URL
-        if isinstance(self.title_url, type):
-            self.title_url = ''
-        elif isinstance(self.title_url, bool):
+        if isinstance(self.title_url, bool):
             self.title_url = '' if self.title_url else None
 
     def add_to_tree(self, cat, out, o_tree):

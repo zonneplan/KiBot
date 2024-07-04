@@ -94,6 +94,9 @@ class Optionable(object):
         if not isinstance(val, bool):
             raise KiPlotConfigurationError("Option `{}` must be true/false".format(key))
 
+    def get_doc_simple(self, name):
+        return getattr(self, '_help_'+name)
+
     def get_doc(self, name, no_basic=False):
         try:
             doc = getattr(self, '_help_'+name).strip()

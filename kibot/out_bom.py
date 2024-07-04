@@ -152,6 +152,7 @@ class BoMColumns(Optionable):
             """ Used as explanation for this column. The XLSX output uses it """
         self._field_example = 'Row'
         self._name_example = 'Line'
+        self._init_from_defaults = True
 
     def __str__(self):
         txt = f'{self.name} ({self.field})' if self.name else self.field
@@ -167,9 +168,7 @@ class BoMColumns(Optionable):
         field = self.field.lower()
         # Ensure this is None or a list
         # Also arrange it as field, cols...
-        if isinstance(self.join, type):
-            self.join = None
-        elif isinstance(self.join, str):
+        if isinstance(self.join, str):
             if self.join:
                 self.join = [field, BoMJoinField(self.join)]
             else:
@@ -200,14 +199,13 @@ class RowColors(Optionable):
                 KiBot will assume that all the components grouped in the same group will
                 return the same value when applying this filter """
         self._description_example = "Components that can't be replaced"
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
         self.validate_colors(['color'])
         if not self.description:
             raise KiPlotConfigurationError('You must add a description for a colored row')
-        if isinstance(self.filter, type):
-            self.filter = '_none'
         self.filter = BaseFilter.solve_filter(self.filter, 'colored rows')
 
     def __str__(self):
@@ -262,9 +260,7 @@ class BoMLinkable(Optionable):
             self.lcsc_link = self.solve_field_name('_field_lcsc_part') if self.lcsc_link else ''
         self.lcsc_link = self.force_list(self.lcsc_link, comma_sep=False, lower_case=True)
         # Logo
-        if isinstance(self.logo, type):
-            self.logo = ''
-        elif isinstance(self.logo, bool):
+        if isinstance(self.logo, bool):
             self.logo = '' if self.logo else None
         elif self.logo:
             if not os.path.isabs(self.logo):
@@ -485,9 +481,12 @@ class BoMOptions(BaseOptions):
         with document:
             self.number = 1
             """ *Number of boards to build (components multiplier) """
-            self.variant = ''
-            """ Board variant, used to determine which components
-                are output to the BoM. """
+            self.variant = '_kibom_simple'
+            """ Board variant, used to determine which components are output to the BoM.
+                The `_kibom_simple` variant is a KiBoM variant without any filters and it provides some basic
+                compatibility with KiBoM. Note that this output has default filters that behaves like KiBoM.
+                The combination between the default for this option and the defaults for the filters provides
+                a behavior that mimics KiBoM default behavior """
             self.output = GS.def_global_output
             """ *filename for the output (%i=bom)"""
             self.format = 'Auto'
@@ -524,7 +523,7 @@ class BoMOptions(BaseOptions):
             """ *[dict={}] Options for the HRTXT formats """
             # * Filters
             self.pre_transform = Optionable
-            """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+            """ [string|list(string)='_null'] Name of the filter to transform fields before applying other filters.
                 This option is for simple cases, consider using a full variant for complex cases """
             self.exclude_filter = Optionable
             """ [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
@@ -532,11 +531,11 @@ class BoMOptions(BaseOptions):
                 Please consult the built-in filters explanation to fully understand what is excluded by default.
                 This option is for simple cases, consider using a full variant for complex cases """
             self.dnf_filter = Optionable
-            """ [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
+            """ [string|list(string)='_kibom_dnf_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Fit'.
                 The default filter marks components with a DNF value or DNF in the Config field.
                 This option is for simple cases, consider using a full variant for complex cases """
             self.dnc_filter = Optionable
-            """ [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
+            """ [string|list(string)='_kibom_dnc_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Change'.
                 The default filter marks components with a DNC value or DNC in the Config field.
                 This option is for simple cases, consider using a full variant for complex cases """
             # * Grouping criteria
@@ -657,17 +656,19 @@ class BoMOptions(BaseOptions):
 
     def _normalize_variant(self):
         """ Replaces the name of the variant by an object handling it. """
-        self.variant = RegOutput.check_variant(self.variant)
-        if self.variant is None:
-            # If no variant is specified use the KiBoM variant class with basic functionality
+        if self.variant == '_kibom_simple':
+            # This is the default variant to get a basic KiBoM compatibility
+            # In particular: components that should go only to a particular variant will be excluded in this way
             self.variant = KiBoM()
             self.variant.config_field = self.fit_field
             self.variant.variant = []
             self.variant.name = 'default'
-            # Delegate any filter to the variant
-            self.variant.set_def_filters(self.exclude_filter, self.dnf_filter, self.dnc_filter, self.pre_transform)
-            self.exclude_filter = self.dnf_filter = self.dnc_filter = self.pre_transform = None
-            self.variant.config(self)  # Fill or adjust any detail
+            self.variant.config(self)
+            # Use our filters instead.
+            # If the user didn't specify them they have equivalent defaults to the ones we are removing
+            self.variant.clear_filters()
+            return
+        self.variant = RegOutput.check_variant(self.variant)
 
     def process_columns_config(self, cols, valid_columns, extra_columns):
         column_rename = {}
@@ -716,6 +717,8 @@ class BoMOptions(BaseOptions):
         self._format = self._guess_format()
         self._expand_id = 'bom'
         self._expand_ext = 'txt' if self._format == 'hrtxt' else self._format
+        # Variants, make it an object. Do it early because is needed by other initializations (i.e. title)
+        self._normalize_variant()
         # Do title %X and ${var} expansions on the BoMLinkable titles
         # Here because some variables needs our parent
         if self._format == 'html' and self.html.title:
@@ -734,10 +737,8 @@ class BoMOptions(BaseOptions):
         # Filters
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
-        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
-        # Variants, make it an object
-        self._normalize_variant()
+        self.dnf_filter = BaseFilter.solve_filter(KiBoM.fix_dnx_filter(self.dnf_filter, self.fit_field), 'dnf_filter')
+        self.dnc_filter = BaseFilter.solve_filter(KiBoM.fix_dnx_filter(self.dnc_filter, self.fit_field), 'dnc_filter')
         # Field names are handled in lowercase
         self.fit_field = self.fit_field.lower()
         # Fields excluded from conflict warnings
@@ -745,7 +746,7 @@ class BoMOptions(BaseOptions):
         if isinstance(self.no_conflict, type):
             no_conflict.add(self.fit_field)
             no_conflict.add('part')
-            var_field = self.variant.get_variant_field()
+            var_field = self.variant.get_variant_field() if self.variant else None
             if var_field is not None:
                 no_conflict.add(var_field)
         else:
@@ -967,7 +968,8 @@ class BoMOptions(BaseOptions):
         apply_fitted_filter(comps, self.dnf_filter)
         apply_fixed_filter(comps, self.dnc_filter)
         # Apply the variant
-        comps = self.variant.filter(comps)
+        if self.variant:
+            comps = self.variant.filter(comps)
         # Now expand the text variables, the user can disable it and insert a customized filter
         # in the variant or even before.
         if self.expand_text_vars:

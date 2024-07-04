@@ -95,12 +95,7 @@ class Copy_FilesOptions(Base3DOptions):
         super().__init__()
         self._expand_id = 'copy'
         self._expand_ext = 'files'
-
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.files, type):
-            # raise KiPlotConfigurationError('No files provided')
-            self.files = []
+        self._init_from_defaults = True
 
     def get_from_output(self, f, no_out_run):
         from_output = f.source

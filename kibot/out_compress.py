@@ -297,7 +297,7 @@ class Compress(BaseOutput):  # noqa: F821
 
     def config(self, parent):
         super().config(parent)
-        if self.category is None and not isinstance(self.options, type):
+        if self.category is None and self.get_user_defined('options'):
             self.category = self.options.get_categories()
 
     def get_dependencies(self):
