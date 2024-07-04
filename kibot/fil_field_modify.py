@@ -36,13 +36,11 @@ class Field_Modify(BaseFilter):  # noqa: F821
             self.include = Optionable
             """ [string|list(string)=''] Name of the filter to select which components will be affected.
                 Applied to all if nothing specified here """
-        self._fields_example = 'Datasheet'
         self._include_solved = False
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.fields, type):
-            self.fields = ['Datasheet']
         self.fields = Optionable.force_list(self.fields)
         try:
             self._regex = re.compile(self.regex)
