@@ -11,7 +11,7 @@ Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--warn-ci-cd]
-         [--banner N] [--gui] [TARGET...]
+         [--banner N] [--gui | --internal-check] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
@@ -53,6 +53,7 @@ Options:
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
   --gui                            Open a graphic dialog
+  --internal-check                 Run some outputs internal checks
   -i, --invert-sel                 Generate the outputs not listed as targets
   -l, --list                       List available outputs, preflights and
                                    groups (in the config file).
@@ -548,6 +549,9 @@ def main():
     elif args.gui:
         from .GUI.gui import do_gui
         do_gui(plot_config)
+    elif args.internal_check:
+        from .GUI.analyze import analyze
+        analyze()
     else:
         # Do all the job (preflight + outputs)
         generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,
