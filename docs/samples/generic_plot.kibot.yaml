@@ -2,6 +2,7 @@
 # You should take portions of this example and edit the options to make
 # them suitable for your use.
 # This file is useful to know all the available options.
+# Try using `--quick-start` for a functional example.
 kibot:
   version: 1
 
@@ -38,7 +39,7 @@ preflight:
   # to *kibot_stackup*. After running this preflight the rectangle will contain the
   # stackup.
   draw_stackup: true
-  # [boolean|dict=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # [boolean|dict=false] Runs the DRC (Distance Rules Check) to ensure we have a valid PCB.
   # You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
   # This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
   # GUI exclusions and schematic parity are supported.
@@ -74,7 +75,8 @@ preflight:
         command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
         before: 'Git hash: <'
         after: '>'
-  # [boolean|dict=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+  # [boolean|dict=false] (Deprecated for KiCad 8, use *drc*) Runs the DRC (Distance Rules Check)
+  # to ensure we have a valid PCB.
   # The report file name is controlled by the global output pattern (%i=drc %x=txt).
   # Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
   # If you need to check the parity use the `update_xml` preflight.
@@ -609,8 +611,12 @@ outputs:
       use_alt: false
       # [boolean=true] Use the auxiliary axis as origin for coordinates (KiCad default) (for XYRS)
       use_aux_axis_as_origin: true
-      # [string=''] Board variant, used to determine which components are output to the BoM.
-      variant: ''
+      # [string='_kibom_simple'] Board variant, used to determine which components are output to the BoM.
+      # The `_kibom_simple` variant is a KiBoM variant without any filters and it provides some basic
+      # compatibility with KiBoM. Note that this output has default filters that behaves like KiBoM.
+      # The combination between the default for this option and the defaults for the filters provides
+      # a behavior that mimics KiBoM default behavior
+      variant: '_kibom_simple'
       # [dict={}] Options for the XLSX format
       xlsx:
         # [boolean=true] Use colors to show the field type

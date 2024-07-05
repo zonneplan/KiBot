@@ -45,7 +45,8 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         self._expand_ext = 'txt'
         with document:
             self.run_drc = Run_DRCOptions
-            """ [boolean|dict=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+            """ [boolean|dict=false] (Deprecated for KiCad 8, use *drc*) Runs the DRC (Distance Rules Check)
+                to ensure we have a valid PCB.
                 The report file name is controlled by the global output pattern (%i=drc %x=txt).
                 Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
                 If you need to check the parity use the `update_xml` preflight.

@@ -84,7 +84,7 @@ Supported preflights
             Only used when the group can't be found.
 
 
-   -  **drc** :index:`: <pair: preflight - drc; drc>` [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+   -  **drc** :index:`: <pair: preflight - drc; drc>` [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Runs the DRC (Distance Rules Check) to ensure we have a valid PCB.
       You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
       This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
       GUI exclusions and schematic parity are supported.
@@ -205,7 +205,8 @@ Supported preflights
 
 
 
-   -  **run_drc** :index:`: <pair: preflight - run_drc; run_drc>` [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+   -  **run_drc** :index:`: <pair: preflight - run_drc; run_drc>` [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) (Deprecated for KiCad 8, use *drc*) Runs the DRC (Distance Rules Check)
+      to ensure we have a valid PCB.
       The report file name is controlled by the global output pattern (%i=drc %x=txt).
       Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
       If you need to check the parity use the `update_xml` preflight.

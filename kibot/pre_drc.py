@@ -27,7 +27,7 @@ class DRC(XRC):  # noqa: F821
         self._category = 'PCB/docs'
         with document:
             self.drc = DRCOptions
-            """ [boolean|dict=false] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
+            """ [boolean|dict=false] Runs the DRC (Distance Rules Check) to ensure we have a valid PCB.
                 You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template.
                 This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer.
                 GUI exclusions and schematic parity are supported """
