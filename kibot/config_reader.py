@@ -1218,6 +1218,7 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         f.write("# You should take portions of this example and edit the options to make\n")
         f.write("# them suitable for your use.\n")
         f.write("# This file is useful to know all the available options.\n")
+        f.write("# Try using `--quick-start` for a functional example.\n")
         f.write('kibot:\n  version: 1\n')
         # Preflights
         f.write('\npreflight:\n')
