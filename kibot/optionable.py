@@ -299,6 +299,10 @@ class Optionable(object):
             elif def_val == '[]':
                 # An empty list
                 new_val = []
+            elif def_val == 'true':
+                new_val = True
+            elif def_val == 'false':
+                new_val = False
             elif def_val == 'null':
                 # Explicit None
                 new_val = None
