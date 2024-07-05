@@ -9,8 +9,10 @@ import math
 import re
 from .data_types import get_data_type_tree, create_new_optionable
 from ..error import KiPlotConfigurationError
+from ..gs import GS
 from ..kiplot import config_output
 from .. import log
+from ..misc import INTERNAL_ERROR
 from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, RegFilter, RegVariant
 logger = log.get_logger()
@@ -91,10 +93,10 @@ def analyze_data_type_tree(tree, stats, pref='', level=0, parent=None):
         stats.add_param(de, level, name)
         if de.def_val == '{}':
             logger.error(f'{name}')
-        if de.is_dict or de.is_list_dict:
+        if de.cls is not None:
             # Check the dict can be represented as a string in the list
             if de.is_list_dict and 'slot' in str(de.cls.__str__):
-                logger.error(f'{de.cls} without defined __str__ ({name})')
+                GS.exit_with_error(f'{de.cls} without defined __str__ ({name})', INTERNAL_ERROR)
             # Check we can create an empty entry (for "add")
             try:
                 # PcbDraw needs _parent._parent.units ... all the chain must be configured
@@ -105,11 +107,12 @@ def analyze_data_type_tree(tree, stats, pref='', level=0, parent=None):
             try:
                 obj = create_new_optionable(de.cls, de.obj)
             except KiPlotConfigurationError as e:
-                logger.error(f"{de.cls} can't be created empty ({name}) [{e}]")
+                GS.exit_with_error(f"{de.cls} can't be created empty ({name}) [{e}]", INTERNAL_ERROR)
             if de.def_val is None and de.ori_def_val is None and obj.get_default() is None:
-                logger.error(f'No default for {name} `{de.def_val}` ({de.valids})')
+                GS.exit_with_error(f'No default for {name} `{de.def_val}` ({de.valids})', INTERNAL_ERROR)
             # Go deeper
-            analyze_data_type_tree(de.sub, stats, name+'.', level+1, de.obj)
+            if de.is_dict or de.is_list_dict:
+                analyze_data_type_tree(de.sub, stats, name+'.', level+1, de.obj)
 
 
 def report(all, kind):

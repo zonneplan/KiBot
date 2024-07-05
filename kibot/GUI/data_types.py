@@ -1030,6 +1030,7 @@ def get_data_type_tree(template, obj, level=0, parent=None):
             else:
                 obj_ref = obj[0]
         entry = DataEntry(k, valids, def_val, real_help, is_basic, obj_ref, level, ori_def_val=ori_def_val)
+        entry.cls = v if isinstance(v, type) else None
         if entry.is_dict:
             value = getattr(obj, k)
             reference = v()
@@ -1040,9 +1041,7 @@ def get_data_type_tree(template, obj, level=0, parent=None):
                 value = reference
                 logger.debug(f'{" "*level*2}- Using new object for {k}')
             entry.sub = get_data_type_tree(reference, value, level+1, entry)
-            entry.cls = v
         elif entry.is_list_dict:
-            entry.cls = v
             o = v()
             entry.sub = get_data_type_tree(o, o, level+1)
         entries.append(entry)
