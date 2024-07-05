@@ -50,6 +50,15 @@ class KiCadVariable(Optionable):
             """ Text to add after the output of `command` """
             self.expand_kibot_patterns = True
             """ Expand %X patterns. The context is `schematic` """
+        self._name_example = 'version'
+
+    def __str__(self):
+        txt = '${'+self.name+'}'
+        if self.text:
+            txt += f' -> `{self.text}`'
+        else:
+            txt += f' -> command(`{self.command}`)'
+        return txt
 
     def config(self, parent):
         super().config(parent)

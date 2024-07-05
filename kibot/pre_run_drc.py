@@ -53,6 +53,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
                 KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
                 This will change in the future.
                 If you use DRC exclusions please consult the `drc_exclusions_workaround` global option """
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

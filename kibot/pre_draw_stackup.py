@@ -22,7 +22,7 @@ class SUColumns(Optionable):
         super().__init__()
         self._unknown_is_error = True
         with document:
-            self.type = ''
+            self.type = 'drawing'
             """ *[gerber,drawing,description,thickness] The gerber column contains the
                 file names for the gerber files. Is usable only when a gerber output is
                 provided.
@@ -38,7 +38,9 @@ class SUColumns(Optionable):
             self.side = 'auto'
             """ [auto,right,left] Side for the dimension used for the *thickness* type.
                 When using *auto* the side is detected looking for a *drawing* column """
-        self._type_example = 'drawing'
+
+    def __str__(self):
+        return f'{self.type} {self.width} {self.side}'
 
 
 class DrawStackupOptions(Optionable):
@@ -71,7 +73,7 @@ class DrawStackupOptions(Optionable):
             """ *Name of the output used to generate the gerbers. This is needed only when you
                 want to include the *gerber* column, containing the gerber file names """
             self.columns = SUColumns
-            """ *[list(dict)|list(string)] List of columns to display.
+            """ *[list(dict)|list(string)=[]] List of columns to display.
                 Can be just the name of the column.
                 Available columns are *gerber*, *drawing* and *description*.
                 When empty KiBot will add them in the above order, skipping the *gerber* if not available """

@@ -125,7 +125,7 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
         self._pcb_related = True
         with document:
             self.annotate_pcb = Annotate_PCBOptions
-            """ [dict] Annotates the PCB according to physical coordinates.
+            """ [dict={}] Annotates the PCB according to physical coordinates.
                 This preflight modifies the PCB and schematic, use it only in revision control environments.
                 Used to assign references according to footprint coordinates.
                 The project must be fully annotated first """

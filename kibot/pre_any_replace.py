@@ -38,12 +38,21 @@ class TagReplaceBase(Optionable):
             self.after = ''
             """ Text to add after the output of `command` """
         self._relax_check = False
+        self._tag_example = 'version'
 
     def config(self, parent):
         super().config(parent)
         if not self.tag:
             raise KiPlotConfigurationError("No tag to replace specified ({})".format(str(self._tree)))
         self.tag = self.tag_delimiter + re.escape(self.tag) + self.tag_delimiter
+
+    def __str__(self):
+        txt = self.tag_delimiter+self.tag+self.tag_delimiter
+        if self.text:
+            txt += f' -> `{self.text}`'
+        else:
+            txt += f' -> command(`{self.command}`)'
+        return txt
 
 
 class Base_ReplaceOptions(Optionable):

@@ -49,7 +49,7 @@ class ERCOptions(FiltersOptions):
             self.output = GS.def_global_output
             """ *Name for the generated archive (%i=erc %x=according to format) """
             self.format = Optionable
-            """ [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
+            """ [string|list(string)='HTML'] [RPT,HTML,CSV,JSON] Format/s used for the report.
                 You can specify multiple formats """
             self.warnings_as_errors = False
             """ Warnings are considered errors, they still reported as warnings """
@@ -59,18 +59,16 @@ class ERCOptions(FiltersOptions):
             """ [millimeters,inches,mils] Units used for the positions. Affected by global options """
         super().__init__()
         self.filters = FilterOptionsXRC
-        self.set_doc('filters', " [list(dict)] Used to manipulate the violations. Avoid using the *filters* preflight")
+        self.set_doc('filters', " [list(dict)=[]] Used to manipulate the violations. Avoid using the *filters* preflight")
         self._unknown_is_error = True
-        self._format_example = 'HTML,RPT'
+        self._format_example = ['HTML', 'RPT']
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
         self.format = Optionable.force_list(self.format)
         if not self.format:
             self.format = ['HTML']
-        for f in self.format:
-            if f not in {'RPT', 'HTML', 'CSV', 'JSON'}:
-                raise KiPlotConfigurationError(f'unkwnown format `{f}`')
 
 
 class DRCOptions(ERCOptions):
@@ -91,15 +89,17 @@ class XRC(BasePreFlight):
     def __init__(self, cls):
         super().__init__()
         self._opts_cls = cls
+        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
         ops = self.erc if self._sch_related else self.drc
         if isinstance(ops, bool):
-            ops = self._opts_cls()
-            ops.enabled = self._value
-            ops.format = ['HTML']
-            ops.filters = []
+            new_ops = self._opts_cls()
+            new_ops.enabled = ops
+            new_ops.format = ['HTML']
+            new_ops.filters = []
+            ops = new_ops
         # Transfer the options to this class
         for k, v in dict(ops.get_attrs_gen()).items():
             setattr(self, '_'+k, v)
