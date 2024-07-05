@@ -274,7 +274,10 @@ class DataTypeDict(DataTypeBase):
         return e_sizer
 
     def OnEdit(self, event):
-        if edit_dict(self.window.Parent, self.sub_obj, self.sub_entries, self.entry_name):
+        window = self.window.Parent
+        if isinstance(window, wx.ScrolledWindow):
+            window = window.Parent
+        if edit_dict(window, self.sub_obj, self.sub_entries, self.entry_name):
             self.entry.set_edited(True)
 
     def reset(self, get_focus=True):
