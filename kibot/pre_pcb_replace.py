@@ -40,7 +40,7 @@ class PCB_Replace(Base_Replace):  # noqa: F821
         super().__init__()
         with document:
             self.pcb_replace = PCB_ReplaceOptions
-            """ [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
+            """ [dict={}] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
                 This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
                 This preflight modifies the PCB. Even when a back-up is done use it carefully """
 
