@@ -61,7 +61,7 @@ class Optionable(object):
                     logger.debug('Using global `{}`=`{}`'.format(var, glb))
 
     @staticmethod
-    def _check_str(key, val, doc):
+    def _check_str(key, val, doc, valid):
         if not isinstance(val, str):
             raise KiPlotConfigurationError("Option `{}` must be a string".format(key))
         # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
@@ -69,7 +69,19 @@ class Optionable(object):
         if m:
             vals = m.group(1).split(',')
             if val not in vals and '*' not in vals:
-                raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
+                wrong = True
+                if ',' in val and 'list(string)' in valid:
+                    # Might be a list inside a string
+                    # TODO: Not all support comma_separated
+                    for v in val.split(','):
+                        if v not in vals:
+                            wrong = True
+                            val = v
+                            break
+                    else:
+                        wrong = False
+                if wrong:
+                    raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
 
     @staticmethod
     def _check_num(key, val, doc):
@@ -214,7 +226,7 @@ class Optionable(object):
             elif v_type == 'number':
                 Optionable._check_num(k, v, cur_doc)
             elif v_type == 'string':
-                Optionable._check_str(k, v, cur_doc)
+                Optionable._check_str(k, v, cur_doc, valid)
             elif isinstance(cur_val, type):
                 # A class, so we need more information i.e. "[dict|string]"
                 if valid is not None:
