@@ -1,3 +1,9 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2024 Salvador E. Tropea
+# Copyright (c) 2024 Instituto Nacional de Tecnologïa Industrial
+# License: AGPL-3.0
+# Project: KiBot (formerly KiPlot)
+#
 # Classes to edit the different data types used for the YAML config
 # Each class should provide a suitable widget
 
@@ -755,10 +761,11 @@ def add_widgets(obj, entries, window, sizer, level=0):
 
 class DataEntry(object):
     """ Class to represent one data value to be edited """
-    def __init__(self, name, valids, def_val, help, is_basic, obj, level, parent=None):
+    def __init__(self, name, valids, def_val, help, is_basic, obj, level, parent=None, ori_def_val=None):
         self.name = name
         self.valids = valids
         self.def_val = def_val
+        self.ori_def_val = ori_def_val
         self.help = '\n'.join((ln.strip() for ln in help.splitlines(True)))
         self.is_dict = any((x.is_dict for x in valids))
         self.is_list_dict = any((x.is_list_dict for x in valids))
@@ -1008,8 +1015,8 @@ def get_data_type_tree(template, obj, level=0, parent=None):
             help = help[1:]
             is_basic = True
         case = f'{k} = `{v}`'
-        valid, extra, def_val, real_help = template.get_valid_types(help)
-        def_val = adapt_default(def_val, k)
+        valid, extra, ori_def_val, real_help = template.get_valid_types(help)
+        def_val = adapt_default(ori_def_val, k)
         valid, extra = join_lists(valid, extra)
         valids = [get_class_for(v, e)(v, e, def_val, k) for v, e in zip(valid, extra)]
         case += f' {extra} """ {help} """'
@@ -1022,7 +1029,7 @@ def get_data_type_tree(template, obj, level=0, parent=None):
                 obj_ref = template
             else:
                 obj_ref = obj[0]
-        entry = DataEntry(k, valids, def_val, real_help, is_basic, obj_ref, level)
+        entry = DataEntry(k, valids, def_val, real_help, is_basic, obj_ref, level, ori_def_val=ori_def_val)
         if entry.is_dict:
             value = getattr(obj, k)
             reference = v()
