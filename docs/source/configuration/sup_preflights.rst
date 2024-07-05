@@ -3,7 +3,7 @@
 Supported preflights
 ^^^^^^^^^^^^^^^^^^^^
 
-   -  **annotate_pcb** :index:`: <pair: preflight - annotate_pcb; annotate_pcb>` [:ref:`dict <dict>`] Annotates the PCB according to physical coordinates.
+   -  **annotate_pcb** :index:`: <pair: preflight - annotate_pcb; annotate_pcb>` [:ref:`dict <dict>`] (default: empty dict, default values used) Annotates the PCB according to physical coordinates.
       This preflight modifies the PCB and schematic, use it only in revision control environments.
       Used to assign references according to footprint coordinates.
       The project must be fully annotated first.
@@ -46,7 +46,7 @@ Supported preflights
 
       -  Valid keys:
 
-         -  **columns** :index:`: <pair: preflight - draw_stackup - draw_stackup; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] List of columns to display.
+         -  **columns** :index:`: <pair: preflight - draw_stackup - draw_stackup; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of columns to display.
             Can be just the name of the column.
             Available columns are *gerber*, *drawing* and *description*.
             When empty KiBot will add them in the above order, skipping the *gerber* if not available.
@@ -54,7 +54,7 @@ Supported preflights
             -  Valid keys:
 
                -  **separator** :index:`: <pair: preflight - draw_stackup - draw_stackup - columns; separator>` [:ref:`string <string>`] (default: ``' '``) Text used as separator, usually one or more spaces.
-               -  **type** :index:`: <pair: preflight - draw_stackup - draw_stackup - columns; type>` [string=''] [gerber,drawing,description,thickness] The gerber column contains the
+               -  **type** :index:`: <pair: preflight - draw_stackup - draw_stackup - columns; type>` [string='drawing'] [gerber,drawing,description,thickness] The gerber column contains the
                   file names for the gerber files. Is usable only when a gerber output is
                   provided.
                   The drawing column contains the drawings for each layer.
@@ -96,7 +96,7 @@ Supported preflights
          -  ``dir`` :index:`: <pair: preflight - drc - drc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
          -  ``dont_stop`` :index:`: <pair: preflight - drc - drc; dont_stop>` [:ref:`boolean <boolean>`] (default: ``false``) Continue even if we detect errors.
          -  ``enabled`` :index:`: <pair: preflight - drc - drc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the check. This is the replacement for the boolean value.
-         -  ``filters`` :index:`: <pair: preflight - drc - drc; filters>` [:ref:`list(dict) <list(dict)>`] Used to manipulate the violations. Avoid using the *filters* preflight.
+         -  ``filters`` :index:`: <pair: preflight - drc - drc; filters>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Used to manipulate the violations. Avoid using the *filters* preflight.
 
             -  Valid keys:
 
@@ -110,7 +110,7 @@ Supported preflights
                -  ``regex`` :index:`: <pair: preflight - drc - drc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
                -  *regexp* :index:`: <pair: preflight - drc - drc - filters; regexp>` Alias for regex.
 
-         -  ``format`` :index:`: <pair: preflight - drc - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``) Format/s used for the report.
+         -  ``format`` :index:`: <pair: preflight - drc - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) (choices: "RPT", "HTML", "CSV", "JSON") Format/s used for the report.
             You can specify multiple formats.
 
          -  ``ignore_unconnected`` :index:`: <pair: preflight - drc - drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
@@ -129,7 +129,7 @@ Supported preflights
          -  ``dir`` :index:`: <pair: preflight - erc - erc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
          -  ``dont_stop`` :index:`: <pair: preflight - erc - erc; dont_stop>` [:ref:`boolean <boolean>`] (default: ``false``) Continue even if we detect errors.
          -  ``enabled`` :index:`: <pair: preflight - erc - erc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the check. This is the replacement for the boolean value.
-         -  ``filters`` :index:`: <pair: preflight - erc - erc; filters>` [:ref:`list(dict) <list(dict)>`] Used to manipulate the violations. Avoid using the *filters* preflight.
+         -  ``filters`` :index:`: <pair: preflight - erc - erc; filters>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Used to manipulate the violations. Avoid using the *filters* preflight.
 
             -  Valid keys:
 
@@ -143,7 +143,7 @@ Supported preflights
                -  ``regex`` :index:`: <pair: preflight - erc - erc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
                -  *regexp* :index:`: <pair: preflight - erc - erc - filters; regexp>` Alias for regex.
 
-         -  ``format`` :index:`: <pair: preflight - erc - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'][RPT,HTML,CSV,JSON``) Format/s used for the report.
+         -  ``format`` :index:`: <pair: preflight - erc - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) (choices: "RPT", "HTML", "CSV", "JSON") Format/s used for the report.
             You can specify multiple formats.
 
          -  ``units`` :index:`: <pair: preflight - erc - erc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
@@ -155,7 +155,7 @@ Supported preflights
 
    -  **fill_zones** :index:`: <pair: preflight - fill_zones; fill_zones>` [:ref:`boolean <boolean>`] (default: ``false``) Fill all zones again and save the PCB.
 
-   -  **filters** :index:`: <pair: preflight - filters; filters>` [:ref:`list(dict) <list(dict)>`] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
+   -  **filters** :index:`: <pair: preflight - filters; filters>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
       Avoid using it with the new *erc* and *drc* preflights.
       Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
       To farther ignore these warnings use the `filters` option in the `global` section.
@@ -177,7 +177,7 @@ Supported preflights
       Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
       It will also ignore KiCad 6 warnings when using `run_drc`.
 
-   -  **pcb_replace** :index:`: <pair: preflight - pcb_replace; pcb_replace>` [:ref:`dict <dict>`] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
+   -  **pcb_replace** :index:`: <pair: preflight - pcb_replace; pcb_replace>` [:ref:`dict <dict>`] (default: empty dict, default values used) Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
       This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
       This preflight modifies the PCB. Even when a back-up is done use it carefully.
 
@@ -233,7 +233,7 @@ Supported preflights
          -  ``warnings_as_errors`` :index:`: <pair: preflight - run_erc - run_erc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) ERC warnings are considered errors.
 
 
-   -  **sch_replace** :index:`: <pair: preflight - sch_replace; sch_replace>` [:ref:`dict <dict>`] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+   -  **sch_replace** :index:`: <pair: preflight - sch_replace; sch_replace>` [:ref:`dict <dict>`] (default: empty dict, default values used) Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
       This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
       This preflight modifies the schematics. Even when a back-up is done use it carefully.
 
