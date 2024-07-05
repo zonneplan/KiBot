@@ -1,3 +1,11 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2024 Salvador E. Tropea
+# Copyright (c) 2024 Instituto Nacional de Tecnologïa Industrial
+# License: AGPL-3.0
+# Project: KiBot (formerly KiPlot)
+#
+# Helper functions to make the GUI code simpler
+
 import difflib
 import wx
 from . import gui_config

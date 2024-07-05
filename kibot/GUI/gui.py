@@ -1,3 +1,10 @@
+# -*- coding: utf-8 -*-
+# Copyright (c) 2024 Salvador E. Tropea
+# Copyright (c) 2024 Instituto Nacional de Tecnologïa Industrial
+# License: AGPL-3.0
+# Project: KiBot (formerly KiPlot)
+#
+# Graphic User Interface
 from copy import deepcopy
 import os
 import yaml
