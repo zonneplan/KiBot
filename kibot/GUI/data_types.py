@@ -226,6 +226,9 @@ class DataTypeDict(DataTypeBase):
         # Use the current value only when "init", otherwise use an empty object
         if init:
             self.sub_obj = getattr(obj, entry.name)
+            if self.sub_obj is None:
+                # This is used by panelize, the sub-options are all "null"
+                self.sub_obj = create_new_optionable(entry.cls, obj)
         else:
             self.sub_obj = create_new_optionable(entry.cls, obj)
         # self.ori_value = deepcopy(self.sub_obj._tree)
