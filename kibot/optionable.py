@@ -67,7 +67,7 @@ class Optionable(object):
         # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
         m = Optionable._str_values_re.search(doc)
         if m:
-            vals = m.group(1).split(',')
+            vals = [v.strip() for v in m.group(1).split(',')]
             if val not in vals and '*' not in vals:
                 wrong = True
                 if ',' in val and 'list(string)' in valid:
@@ -169,7 +169,7 @@ class Optionable(object):
                 if v == 'string' or v == 'list(string)':
                     m = Optionable._str_values_re.search(doc)
                     if m:
-                        validation.append(m.group(1).split(','))
+                        validation.append([v.strip() for v in m.group(1).split(',')])
                         continue
                 validation.append(None)
         return valid, validation, def_val, real_help
