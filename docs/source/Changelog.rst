@@ -88,6 +88,7 @@ Changed:
    slightly different now. Currently they are Optionable and share more
    in common with outputs. If you need assistance to migrate a preflight
    just open a GitHub issue.
+-  Outputs: Now all options must declare its default.
 -  In many cases now we allow empty lists and use some sort of default.
    A warning is issued, but we continue.
 
