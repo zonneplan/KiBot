@@ -40,7 +40,7 @@ Parameters:
       -  ``imgname`` :index:`: <pair: output - populate - options; imgname>` [:ref:`string <string>`] (default: ``'img/populating_%d.%x'``) Pattern used for the image names. The `%d` is replaced by the image number.
          The `%x` is replaced by the extension. Note that the format is selected by the
          `renderer`.
-      -  ``initial_components`` :index:`: <pair: output - populate - options; initial_components>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of components soldered before the first step.
+      -  ``initial_components`` :index:`: <pair: output - populate - options; initial_components>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] List of components soldered before the first step.
 
       -  ``pre_transform`` :index:`: <pair: output - populate - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
          A short-cut to use for simple cases where a variant is an overkill.
@@ -51,7 +51,8 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - populate - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - populate; type>` 'populate'
--  ``category`` :index:`: <pair: output - populate; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - populate; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

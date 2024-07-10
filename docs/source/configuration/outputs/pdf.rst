@@ -91,7 +91,8 @@ Parameters:
    The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
 -  **scaling** :index:`: <pair: output - pdf; scaling>` [:ref:`number <number>`] (default: ``1``) Scale factor (0 means autoscaling).
 -  **type** :index:`: <pair: output - pdf; type>` 'pdf'
--  ``category`` :index:`: <pair: output - pdf; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - pdf; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

@@ -48,7 +48,8 @@ Parameters:
       -  ``skip_not_run`` :index:`: <pair: output - compress - options; skip_not_run>` [:ref:`boolean <boolean>`] (default: ``false``) Skip outputs with `run_by_default: false`.
 
 -  **type** :index:`: <pair: output - compress; type>` 'compress'
--  ``category`` :index:`: <pair: output - compress; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - compress; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

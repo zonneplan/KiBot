@@ -110,7 +110,7 @@ Supported preflights
                -  ``regex`` :index:`: <pair: preflight - drc - drc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
                -  *regexp* :index:`: <pair: preflight - drc - drc - filters; regexp>` Alias for regex.
 
-         -  ``format`` :index:`: <pair: preflight - drc - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) (choices: "RPT", "HTML", "CSV", "JSON") Format/s used for the report.
+         -  ``format`` :index:`: <pair: preflight - drc - drc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) (choices: "RPT", "HTML", "CSV", "JSON") [:ref:`comma separated <comma_sep>`] Format/s used for the report.
             You can specify multiple formats.
 
          -  ``ignore_unconnected`` :index:`: <pair: preflight - drc - drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
@@ -143,7 +143,7 @@ Supported preflights
                -  ``regex`` :index:`: <pair: preflight - erc - erc - filters; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the text for the error we want to exclude.
                -  *regexp* :index:`: <pair: preflight - erc - erc - filters; regexp>` Alias for regex.
 
-         -  ``format`` :index:`: <pair: preflight - erc - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) (choices: "RPT", "HTML", "CSV", "JSON") Format/s used for the report.
+         -  ``format`` :index:`: <pair: preflight - erc - erc; format>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'HTML'``) (choices: "RPT", "HTML", "CSV", "JSON") [:ref:`comma separated <comma_sep>`] Format/s used for the report.
             You can specify multiple formats.
 
          -  ``units`` :index:`: <pair: preflight - erc - erc; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
@@ -283,8 +283,9 @@ Supported preflights
          -  *variable* :index:`: <pair: preflight - set_text_variables - set_text_variables; variable>` Alias for name.
 
 
-   -  **update_footprint** :index:`: <pair: preflight - update_footprint; update_footprint>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Updates footprints from the libs, you must provide one or more references to be
-      updated. This is useful to replace logos using freshly created versions.
+   -  **update_footprint** :index:`: <pair: preflight - update_footprint; update_footprint>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] Updates footprints from the libs, you must provide one or more
+      references to be updated. This is useful to replace logos using freshly created versions.
+
 
    -  **update_pcb_characteristics** :index:`: <pair: preflight - update_pcb_characteristics; update_pcb_characteristics>` [:ref:`boolean <boolean>`] (default: ``false``) Update the information in the Board Characteristics.
       Starting with KiCad 7 you can paste a block containing board information using

@@ -64,9 +64,9 @@ Supported variants
             -  ``units`` :index:`: <pair: variant - ibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) (choices: "millimeters", "inches", "mils", "mm", "cm", "dm", "m", "mil", "inch", "in") Units used when omitted.
 
       -  ``variant_field`` :index:`: <pair: variant - ibom; variant_field>` [:ref:`string <string>`] (default: ``'Config'``) Name of the field that stores board variant for component.
-      -  ``variants_blacklist`` :index:`: <pair: variant - ibom; variants_blacklist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of board variants to exclude from the BOM.
+      -  ``variants_blacklist`` :index:`: <pair: variant - ibom; variants_blacklist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] List of board variants to exclude from the BOM.
 
-      -  ``variants_whitelist`` :index:`: <pair: variant - ibom; variants_whitelist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of board variants to include in the BOM.
+      -  ``variants_whitelist`` :index:`: <pair: variant - ibom; variants_whitelist>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] List of board variants to include in the BOM.
 
 
 -  **kibom**: (**KiBoM variant style**) :index:`. <pair: variant; kibom>`
@@ -130,7 +130,7 @@ Supported variants
             -  *top_left_y* :index:`: <pair: variant - kibom - sub_pcbs; top_left_y>` Alias for tly.
             -  ``units`` :index:`: <pair: variant - kibom - sub_pcbs; units>` [:ref:`string <string>`] (default: ``'mm'``) (choices: "millimeters", "inches", "mils", "mm", "cm", "dm", "m", "mil", "inch", "in") Units used when omitted.
 
-      -  ``variant`` :index:`: <pair: variant - kibom; variant>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Board variant(s).
+      -  ``variant`` :index:`: <pair: variant - kibom; variant>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] Board variant(s).
 
 
 -  **kicost**: (**KiCost variant style**) :index:`. <pair: variant; kicost>`

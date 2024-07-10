@@ -49,7 +49,8 @@ Parameters:
       -  ``use_sch_dir`` :index:`: <pair: output - qr_lib - options; use_sch_dir>` [:ref:`boolean <boolean>`] (default: ``true``) Generate the libs relative to the schematic/PCB dir.
 
 -  **type** :index:`: <pair: output - qr_lib; type>` 'qr_lib'
--  ``category`` :index:`: <pair: output - qr_lib; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - qr_lib; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

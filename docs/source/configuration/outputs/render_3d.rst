@@ -123,7 +123,8 @@ Parameters:
       -  ``width`` :index:`: <pair: output - render_3d - options; width>` [:ref:`number <number>`] (default: ``1280``) Image width (aprox.).
 
 -  **type** :index:`: <pair: output - render_3d; type>` 'render_3d'
--  ``category`` :index:`: <pair: output - render_3d; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - render_3d; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

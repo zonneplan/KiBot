@@ -36,7 +36,7 @@ Parameters:
       -  **output** :index:`: <pair: output - stencil_for_jig - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i='stencil_for_jig_top'|'stencil_for_jig_bottom',
          %x='stl'|'scad'|'gbp'|'gtp'|'gbrjob'|'png'). Affected by global options.
       -  ``create_preview`` :index:`: <pair: output - stencil_for_jig - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``true``) Creates a PNG showing the generated 3D model.
-      -  ``cutout`` :index:`: <pair: output - stencil_for_jig - options; cutout>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] List of components to add a cutout based on the component courtyard.
+      -  ``cutout`` :index:`: <pair: output - stencil_for_jig - options; cutout>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] [:ref:`comma separated <comma_sep>`] List of components to add a cutout based on the component courtyard.
          This is useful when you have already pre-populated board and you want to populate more
          components.
       -  ``dnf_filter`` :index:`: <pair: output - stencil_for_jig - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
@@ -58,7 +58,8 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - stencil_for_jig - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - stencil_for_jig; type>` 'stencil_for_jig'
--  ``category`` :index:`: <pair: output - stencil_for_jig; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - stencil_for_jig; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

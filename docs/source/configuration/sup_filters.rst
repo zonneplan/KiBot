@@ -19,7 +19,7 @@ Supported filters
    -  Valid keys:
 
       -  ``comment`` :index:`: <pair: filter - field_modify; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
-      -  ``fields`` :index:`: <pair: filter - field_modify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'Datasheet'``) Fields to convert.
+      -  ``fields`` :index:`: <pair: filter - field_modify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'Datasheet'``) [:ref:`comma separated <comma_sep>`] Fields to convert.
 
       -  ``include`` :index:`: <pair: filter - field_modify; include>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to select which components will be affected.
          Applied to all if nothing specified here.
@@ -142,7 +142,7 @@ Supported filters
          the adjust so you get `(180 - component rot + angle)`. This is used by JLCPCB.
       -  ``name`` :index:`: <pair: filter - rot_footprint; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
       -  ``negative_bottom`` :index:`: <pair: filter - rot_footprint; negative_bottom>` [:ref:`boolean <boolean>`] (default: ``true``) Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
-      -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'JLCPCB Position Offset,JLCPosOffset'``) List of fields that can contain a position offset.
+      -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'JLCPCB Position Offset,JLCPosOffset'``) [:ref:`comma separated <comma_sep>`] List of fields that can contain a position offset.
          The optional fields can contain a comma separated x,y position offset.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
@@ -151,7 +151,7 @@ Supported filters
          The offset must be two numbers separated by a comma. The first is the X offset.
          The signs matches the matthewlai/JLCKicadTools plugin specs.
 
-      -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'JLCPCB Rotation Offset,JLCRotOffset'``) List of fields that can contain a rotation offset.
+      -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'JLCPCB Rotation Offset,JLCRotOffset'``) [:ref:`comma separated <comma_sep>`] List of fields that can contain a rotation offset.
          The optional fields can contain a counter-clockwise orientation offset in degrees.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
@@ -197,7 +197,7 @@ Supported filters
          -  Valid keys:
 
             -  **field** :index:`: <pair: filter - spec_to_field - specs; field>` [:ref:`string <string>`] (default: ``''``) Name of the destination field.
-            -  **spec** :index:`: <pair: filter - spec_to_field - specs; spec>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name/s of the source spec/s.
+            -  **spec** :index:`: <pair: filter - spec_to_field - specs; spec>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] Name/s of the source spec/s.
                The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size'.
 
@@ -210,7 +210,7 @@ Supported filters
                `value` is the component value i.e. resistance for R*.
 
       -  ``check_dist_coherence`` :index:`: <pair: filter - spec_to_field; check_dist_coherence>` [:ref:`boolean <boolean>`] (default: ``true``) Check that the data we got from different distributors is equivalent.
-      -  ``check_dist_fields`` :index:`: <pair: filter - spec_to_field; check_dist_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['_value', '_tolerance', '_power', '_current', '_voltage', '_temp_coeff']``) List of fields to include in the check.
+      -  ``check_dist_fields`` :index:`: <pair: filter - spec_to_field; check_dist_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['_value', '_tolerance', '_power', '_current', '_voltage', '_temp_coeff']``) [:ref:`comma separated <comma_sep>`] List of fields to include in the check.
          For a full list of fields consult the `specs` option.
 
       -  ``comment`` :index:`: <pair: filter - spec_to_field; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
@@ -246,7 +246,7 @@ Supported filters
    -  Valid keys:
 
       -  ``comment`` :index:`: <pair: filter - urlify; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
-      -  ``fields`` :index:`: <pair: filter - urlify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'Datasheet'``) Fields to convert.
+      -  ``fields`` :index:`: <pair: filter - urlify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'Datasheet'``) [:ref:`comma separated <comma_sep>`] Fields to convert.
 
       -  ``name`` :index:`: <pair: filter - urlify; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
 

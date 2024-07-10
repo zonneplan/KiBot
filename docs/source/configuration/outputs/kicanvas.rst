@@ -47,7 +47,8 @@ Parameters:
 
 -  **output** :index:`: <pair: output - kicanvas; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=kicanvas, %x=html). Affected by global options.
 -  **type** :index:`: <pair: output - kicanvas; type>` 'kicanvas'
--  ``category`` :index:`: <pair: output - kicanvas; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - kicanvas; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

@@ -166,7 +166,8 @@ Parameters:
       -  ``via_color`` :index:`: <pair: output - pcb_print - options; via_color>` [:ref:`string <string>`] (default: ``''``) Color used for through-hole `colored_vias`.
 
 -  **type** :index:`: <pair: output - pcb_print; type>` 'pcb_print'
--  ``category`` :index:`: <pair: output - pcb_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - pcb_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

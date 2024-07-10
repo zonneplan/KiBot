@@ -83,7 +83,8 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - hpgl - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - hpgl; type>` 'hpgl'
--  ``category`` :index:`: <pair: output - hpgl; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - hpgl; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

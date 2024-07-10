@@ -242,7 +242,7 @@ Parameters:
                   -  ``diameter`` :index:`: <pair: output - panelize - options - configs - copperfill; diameter>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``7``) Diameter of hexagons.
                   -  *edge_clearance* :index:`: <pair: output - panelize - options - configs - copperfill; edge_clearance>` Alias for edgeclearance.
                   -  ``edgeclearance`` :index:`: <pair: output - panelize - options - configs - copperfill; edgeclearance>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0.5``) Specifies clearance between the fill and panel perimeter.
-                  -  ``layers`` :index:`: <pair: output - panelize - options - configs - copperfill; layers>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'F.Cu,B.Cu'``) List of layers to fill. Can be a comma-separated string.
+                  -  ``layers`` :index:`: <pair: output - panelize - options - configs - copperfill; layers>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'F.Cu,B.Cu'``) [:ref:`comma separated <comma_sep>`] List of layers to fill. Can be a comma-separated string.
                      Using *all* means all external copper layers.
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - copperfill; orientation>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``45``) The orientation of the hatched strokes.
                   -  ``spacing`` :index:`: <pair: output - panelize - options - configs - copperfill; spacing>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``1``) The space between the hatched strokes or hexagons.
@@ -432,7 +432,8 @@ Parameters:
       -  ``variant`` :index:`: <pair: output - panelize - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
 -  **type** :index:`: <pair: output - panelize; type>` 'panelize'
--  ``category`` :index:`: <pair: output - panelize; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - panelize; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

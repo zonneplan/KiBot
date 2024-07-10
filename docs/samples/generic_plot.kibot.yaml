@@ -108,9 +108,9 @@ preflight:
       command: 'git log -1 --format="%h" "$KIBOT_PCB_NAME"'
       before: 'Git hash: <'
       after: '>'
-  # [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be
-  # updated. This is useful to replace logos using freshly created versions.
-  update_footprint: QR1, QR2
+  # [string|list(string)=''] {comma_sep} Updates footprints from the libs, you must provide one or more
+  # references to be updated. This is useful to replace logos using freshly created versions.
+  update_footprint: QR1,QR2
   # [boolean=false] Update the information in the Board Characteristics.
   # Starting with KiCad 7 you can paste a block containing board information using
   # *Place* -> *Add Board Characteristics*. But this information is static, so if
@@ -454,7 +454,7 @@ outputs:
         # [string=','] CSV Separator. TXT and TSV always use tab as delimiter.
         # Only one character can be specified
         separator: ','
-      # [string|list(string)=[]] Include this distributors list. Default is all the available
+      # [string|list(string)=[]] {comma_sep} Include this distributors list. Default is all the available
       distributors: []
       # [string|list(string)='_kibom_dnc_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Change'.
       # The default filter marks components with a DNC value or DNC in the Config field.
@@ -482,9 +482,9 @@ outputs:
       expand_text_vars: true
       # [string='Config'] Field name used for internal filters (not for variants)
       fit_field: 'Config'
-      # [string|list(string)='no,yes'] Values for the `Footprint Populate` column
+      # [string|list(string)='no,yes'] {comma_sep} Values for the `Footprint Populate` column
       footprint_populate_values: 'no,yes'
-      # [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column
+      # [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} Values for the `Footprint Type` column
       footprint_type_values: 'SMD,THT,VIRTUAL'
       # [string='Auto'] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT,Auto] format for the BoM.
       # `Auto` defaults to CSV or a guess according to the options.
@@ -578,7 +578,8 @@ outputs:
       # By default the field indicated in `fit_field`, the field used for variants and
       # the field `part` are excluded
       no_conflict: ['Config', 'Part']
-      # [string|list(string)=[]] Exclude this distributors list. They are removed after computing `distributors`
+      # [string|list(string)=[]] {comma_sep} Exclude this distributors list.
+      # They are removed after computing `distributors`
       no_distributors: []
       # [boolean=false] When normalizing values use the locale decimal point
       normalize_locale: false
@@ -638,9 +639,9 @@ outputs:
         # [boolean=false] Enable KiCost worksheet creation.
         # Note: an example of how to use it on CI/CD can be found [here](https://github.com/set-soft/kicost_ci_test)
         kicost: false
-        # [string|list(string)=''] List of KiCost APIs to disable
+        # [string|list(string)=''] {comma_sep} List of KiCost APIs to disable
         kicost_api_disable: ''
-        # [string|list(string)=''] List of KiCost APIs to enable
+        # [string|list(string)=''] {comma_sep} List of KiCost APIs to enable
         kicost_api_enable: ''
         # [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
         # The regular KiCost config is used when empty.
@@ -1671,12 +1672,12 @@ outputs:
       # A short-cut to use for simple cases where a variant is an overkill.
       # Don't use the `kicost_variant` when using internal variants/filters
       dnf_filter: '_null'
-      # [string|list(string)=[]] List of fields to be added to the global data section
+      # [string|list(string)=[]] {comma_sep} List of fields to be added to the global data section
       fields: []
-      # [string|list(string)=[]] List of fields that can be different for a group.
+      # [string|list(string)=[]] {comma_sep} List of fields that can be different for a group.
       # Parts with differences in these fields are grouped together, but displayed individually
       group_fields: []
-      # [string|list(string)=[]] List of fields to be ignored
+      # [string|list(string)=[]] {comma_sep} List of fields to be ignored
       ignore_fields: []
       # [string=''] KiCost configuration file. It contains the keys for the different distributors APIs.
       # The regular KiCost config is used when empty.
@@ -1701,7 +1702,7 @@ outputs:
       pre_transform: '_null'
       # [boolean=false] Include the catalogue links in the catalogue code
       show_cat_url: false
-      # [string|list(string)=[]] Declare part fields to include in multipart split process
+      # [string|list(string)=[]] {comma_sep} Declare part fields to include in multipart split process
       split_extra_fields: []
       # [list(dict)=[]] Fields to rename (KiCost option, not internal filters)
       translate_fields:
@@ -1915,7 +1916,7 @@ outputs:
             # `edge_clearance` is an alias for `edgeclearance`
             # [number|string=0.5] Specifies clearance between the fill and panel perimeter
             edgeclearance: 0.5
-            # [string|list(string)='F.Cu,B.Cu'] List of layers to fill. Can be a comma-separated string.
+            # [string|list(string)='F.Cu,B.Cu'] {comma_sep} List of layers to fill. Can be a comma-separated string.
             # Using *all* means all external copper layers
             layers: 'F.Cu,B.Cu'
             # [number|string=45] The orientation of the hatched strokes
@@ -2799,7 +2800,7 @@ outputs:
           # [string=''] Reference for the component to change
           ref: 'D1'
           # `reference` is an alias for `ref`
-      # [string|list(string)=''] List of resistors to flip its bands
+      # [string|list(string)=''] {comma_sep} List of resistors to flip its bands
       resistor_flip: ''
       # [list(dict)=[]] List of resistors to be remapped. You can change the value of the resistors here
       resistor_remap:
@@ -3061,7 +3062,7 @@ outputs:
       # The `%x` is replaced by the extension. Note that the format is selected by the
       # `renderer`
       imgname: 'img/populating_%d.%x'
-      # [string|list(string)=''] List of components soldered before the first step
+      # [string|list(string)=''] {comma_sep} List of components soldered before the first step
       initial_components: ''
       # [string=''] Name of the input file describing the assembly. Must be a markdown file.
       # Note that the YAML section of the file will be skipped, all the needed information
@@ -3524,7 +3525,7 @@ outputs:
     options:
       # [boolean=true] Creates a PNG showing the generated 3D model
       create_preview: true
-      # [string|list(string)] List of components to add a cutout based on the component courtyard.
+      # [string|list(string)] {comma_sep} List of components to add a cutout based on the component courtyard.
       # This is useful when you have already pre-populated board and you want to populate more
       # components
       cutout: ''
@@ -3571,7 +3572,7 @@ outputs:
     options:
       # [boolean=true] Creates a PNG showing the generated 3D model
       create_preview: true
-      # [string|list(string)] List of components to add a cutout based on the component courtyard.
+      # [string|list(string)] {comma_sep} List of components to add a cutout based on the component courtyard.
       # This is useful when you have already pre-populated board and you want to populate more
       # components
       cutout: ''

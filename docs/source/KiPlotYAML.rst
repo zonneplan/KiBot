@@ -223,6 +223,27 @@ Can be defined as:
      - Luca
      - Laura
 
+.. _comma_sep:
+
+Also note that some options supports comma separated strings. This is common
+for options that can be a single string, or a list of strings. In this case
+the following are equivalent:
+
+.. code:: yaml
+
+   people: John,Cindy,Luca,Laura
+
+And:
+
+.. code:: yaml
+
+   people:
+     - John
+     - Cindy
+     - Luca
+     - Laura
+
+
 Putting all together
 --------------------
 

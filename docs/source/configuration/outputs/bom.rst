@@ -164,9 +164,9 @@ Parameters:
             -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - xlsx; hide_pcb_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide project information.
             -  ``hide_stats_info`` :index:`: <pair: output - bom - options - xlsx; hide_stats_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide statistics information.
             -  ``highlight_empty`` :index:`: <pair: output - bom - options - xlsx; highlight_empty>` [:ref:`boolean <boolean>`] (default: ``true``) Use a color for empty cells. Applies only when `col_colors` is `true`.
-            -  ``kicost_api_disable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_disable>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of KiCost APIs to disable.
+            -  ``kicost_api_disable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_disable>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] List of KiCost APIs to disable.
 
-            -  ``kicost_api_enable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_enable>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of KiCost APIs to enable.
+            -  ``kicost_api_enable`` :index:`: <pair: output - bom - options - xlsx; kicost_api_enable>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] List of KiCost APIs to enable.
 
             -  ``kicost_config`` :index:`: <pair: output - bom - options - xlsx; kicost_config>` [:ref:`string <string>`] (default: ``''``) KiCost configuration file. It contains the keys for the different distributors APIs.
                The regular KiCost config is used when empty.
@@ -282,7 +282,7 @@ Parameters:
             -  ``level`` :index:`: <pair: output - bom - options - cost_extra_columns; level>` [:ref:`number <number>`] (default: ``0``) Used to group columns. The XLSX output uses it to collapse columns.
 
       -  ``count_smd_tht`` :index:`: <pair: output - bom - options; count_smd_tht>` [:ref:`boolean <boolean>`] (default: ``false``) Show the stats about how many of the components are SMD/THT. You must provide the PCB.
-      -  ``distributors`` :index:`: <pair: output - bom - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Include this distributors list. Default is all the available.
+      -  ``distributors`` :index:`: <pair: output - bom - options; distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] Include this distributors list. Default is all the available.
 
       -  ``dnc_filter`` :index:`: <pair: output - bom - options; dnc_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_kibom_dnc_CONFIG_FIELD'``) Name of the filter to mark components as 'Do Not Change'.
          The default filter marks components with a DNC value or DNC in the Config field.
@@ -306,9 +306,9 @@ Parameters:
          If you need to customize the filter, or apply it before, you can disable this option and
          add a custom filter to the filter chain.
       -  ``fit_field`` :index:`: <pair: output - bom - options; fit_field>` [:ref:`string <string>`] (default: ``'Config'``) Field name used for internal filters (not for variants).
-      -  ``footprint_populate_values`` :index:`: <pair: output - bom - options; footprint_populate_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'no,yes'``) Values for the `Footprint Populate` column.
+      -  ``footprint_populate_values`` :index:`: <pair: output - bom - options; footprint_populate_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'no,yes'``) [:ref:`comma separated <comma_sep>`] Values for the `Footprint Populate` column.
 
-      -  ``footprint_type_values`` :index:`: <pair: output - bom - options; footprint_type_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'SMD,THT,VIRTUAL'``) Values for the `Footprint Type` column.
+      -  ``footprint_type_values`` :index:`: <pair: output - bom - options; footprint_type_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'SMD,THT,VIRTUAL'``) [:ref:`comma separated <comma_sep>`] Values for the `Footprint Type` column.
 
       -  ``group_connectors`` :index:`: <pair: output - bom - options; group_connectors>` [:ref:`boolean <boolean>`] (default: ``true``) Connectors with the same footprints will be grouped together, independent of the name of the connector.
       -  ``group_fields_fallbacks`` :index:`: <pair: output - bom - options; group_fields_fallbacks>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of fields to be used when the fields in `group_fields` are empty.
@@ -322,7 +322,8 @@ Parameters:
          By default the field indicated in `fit_field`, the field used for variants and
          the field `part` are excluded.
 
-      -  ``no_distributors`` :index:`: <pair: output - bom - options; no_distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Exclude this distributors list. They are removed after computing `distributors`.
+      -  ``no_distributors`` :index:`: <pair: output - bom - options; no_distributors>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] Exclude this distributors list.
+         They are removed after computing `distributors`.
 
       -  ``normalize_locale`` :index:`: <pair: output - bom - options; normalize_locale>` [:ref:`boolean <boolean>`] (default: ``false``) When normalizing values use the locale decimal point.
       -  ``parse_value`` :index:`: <pair: output - bom - options; parse_value>` [:ref:`boolean <boolean>`] (default: ``true``) Parse the `Value` field so things like *1k* and *1000* are interpreted as equal.
@@ -344,7 +345,8 @@ Parameters:
          a behavior that mimics KiBoM default behavior.
 
 -  **type** :index:`: <pair: output - bom; type>` 'bom'
--  ``category`` :index:`: <pair: output - bom; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - bom; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

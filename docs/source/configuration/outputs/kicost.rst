@@ -48,12 +48,12 @@ Parameters:
          A short-cut to use for simple cases where a variant is an overkill.
          Don't use the `kicost_variant` when using internal variants/filters.
 
-      -  ``fields`` :index:`: <pair: output - kicost - options; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of fields to be added to the global data section.
+      -  ``fields`` :index:`: <pair: output - kicost - options; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] List of fields to be added to the global data section.
 
-      -  ``group_fields`` :index:`: <pair: output - kicost - options; group_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of fields that can be different for a group.
+      -  ``group_fields`` :index:`: <pair: output - kicost - options; group_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] List of fields that can be different for a group.
          Parts with differences in these fields are grouped together, but displayed individually.
 
-      -  ``ignore_fields`` :index:`: <pair: output - kicost - options; ignore_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of fields to be ignored.
+      -  ``ignore_fields`` :index:`: <pair: output - kicost - options; ignore_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] List of fields to be ignored.
 
       -  ``kicost_config`` :index:`: <pair: output - kicost - options; kicost_config>` [:ref:`string <string>`] (default: ``''``) KiCost configuration file. It contains the keys for the different distributors APIs.
          The regular KiCost config is used when empty.
@@ -66,7 +66,7 @@ Parameters:
          A short-cut to use for simple cases where a variant is an overkill.
 
       -  ``show_cat_url`` :index:`: <pair: output - kicost - options; show_cat_url>` [:ref:`boolean <boolean>`] (default: ``false``) Include the catalogue links in the catalogue code.
-      -  ``split_extra_fields`` :index:`: <pair: output - kicost - options; split_extra_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) Declare part fields to include in multipart split process.
+      -  ``split_extra_fields`` :index:`: <pair: output - kicost - options; split_extra_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`comma separated <comma_sep>`] Declare part fields to include in multipart split process.
 
       -  ``translate_fields`` :index:`: <pair: output - kicost - options; translate_fields>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Fields to rename (KiCost option, not internal filters).
 
@@ -79,7 +79,8 @@ Parameters:
          Don't use the `kicost_variant` when using internal variants/filters.
 
 -  **type** :index:`: <pair: output - kicost; type>` 'kicost'
--  ``category`` :index:`: <pair: output - kicost; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - kicost; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

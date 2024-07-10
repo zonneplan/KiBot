@@ -46,7 +46,8 @@ Parameters:
          Not fitted components are crossed.
 
 -  **type** :index:`: <pair: output - ps_sch_print; type>` 'ps_sch_print'
--  ``category`` :index:`: <pair: output - ps_sch_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - ps_sch_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 

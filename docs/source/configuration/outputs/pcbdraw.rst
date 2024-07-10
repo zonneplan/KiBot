@@ -101,7 +101,7 @@ Parameters:
             -  **ref** :index:`: <pair: output - pcbdraw - options - remap_components; ref>` [:ref:`string <string>`] (default: ``''``) Reference for the component to change.
             -  *reference* :index:`: <pair: output - pcbdraw - options - remap_components; reference>` Alias for ref.
 
-      -  ``resistor_flip`` :index:`: <pair: output - pcbdraw - options; resistor_flip>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) List of resistors to flip its bands.
+      -  ``resistor_flip`` :index:`: <pair: output - pcbdraw - options; resistor_flip>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] List of resistors to flip its bands.
 
       -  ``resistor_remap`` :index:`: <pair: output - pcbdraw - options; resistor_remap>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) List of resistors to be remapped. You can change the value of the resistors here.
 
@@ -130,7 +130,8 @@ Parameters:
       -  ``warnings`` :index:`: <pair: output - pcbdraw - options; warnings>` [:ref:`string <string>`] (default: ``'visible'``) (choices: "visible", "all", "none") Using visible only the warnings about components in the visible side are generated.
 
 -  **type** :index:`: <pair: output - pcbdraw; type>` 'pcbdraw'
--  ``category`` :index:`: <pair: output - pcbdraw; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - pcbdraw; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
