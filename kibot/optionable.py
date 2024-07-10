@@ -248,11 +248,12 @@ class Optionable(object):
                             v.config(self)
                     elif isinstance(v, list):
                         new_val = []
+                        filtered_valid = [t[5:-1] for t in valid if t.startswith('list(')]
                         for element in v:
-                            e_type = 'list('+typeof(element, Optionable)+')'
-                            if e_type not in valid:
+                            e_type = typeof(element, Optionable)
+                            if e_type not in filtered_valid:
                                 raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".
-                                                               format(element, valid, e_type))
+                                                               format(element, filtered_valid, e_type))
                             if isinstance(element, dict):
                                 nv = cur_val()
                                 nv.set_tree(element)
