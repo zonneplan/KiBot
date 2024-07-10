@@ -85,8 +85,7 @@ class KiBoMColumns(Optionable):
         if not self.field:
             raise KiPlotConfigurationError("Missing or empty `field` in columns list ({})".format(str(self._tree)))
         self.field = Optionable.solve_field_name(self.field)
-        if isinstance(self.join, list):
-            self.join = '\t'.join(self.join)
+        self.join = '\t'.join(self.join)
 
     def __str__(self):
         txt = f'{self.name} ({self.field})'
@@ -223,13 +222,14 @@ class KiBoMConfig(Optionable):
     def config(self, parent):
         super().config(parent)
         # digikey_link
-        self.digikey_link = '\t'.join(self.force_list(self.digikey_link, comma_sep=False))
+        self.digikey_link = '\t'.join(self.digikey_link)
         # mouser_link
-        self.mouser_link = '\t'.join(self.force_list(self.mouser_link, comma_sep=False))
+        self.mouser_link = '\t'.join(self.mouser_link)
         # lcsc_link
         if isinstance(self.lcsc_link, bool):
-            self.lcsc_link = self.solve_field_name('_field_lcsc_part') if self.lcsc_link else ''
-        self.lcsc_link = '\t'.join(self.force_list(self.lcsc_link, comma_sep=False))
+            self.lcsc_link = self.force_list(self.solve_field_name('_field_lcsc_part'), comma_sep=False) \
+                             if self.lcsc_link else []
+        self.lcsc_link = '\t'.join(self.lcsc_link)
         # component_aliases
         self.component_aliases = ['\t'.join(a) for a in self.component_aliases]
         # include_only

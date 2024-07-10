@@ -26,9 +26,9 @@ class IBoM(BaseVariant):  # noqa: F821
             self.variant_field = 'Config'
             """ Name of the field that stores board variant for component """
             self.variants_blacklist = Optionable
-            """ [string|list(string)=[]] List of board variants to exclude from the BOM """
+            """ [string|list(string)=[]] {comma_sep} List of board variants to exclude from the BOM """
             self.variants_whitelist = Optionable
-            """ [string|list(string)=[]] List of board variants to include in the BOM """
+            """ [string|list(string)=[]] {comma_sep} List of board variants to include in the BOM """
         self.fix_doc('exclude_filter', IFILT_MECHANICAL)
 
     def get_variant_field(self):
@@ -41,8 +41,6 @@ class IBoM(BaseVariant):  # noqa: F821
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILT_MECHANICAL)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
-        self.variants_blacklist = self.force_list(self.variants_blacklist)
-        self.variants_whitelist = self.force_list(self.variants_whitelist)
 
     def skip_component(self, c):
         """ Skip components that doesn't belong to this variant. """

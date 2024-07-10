@@ -81,7 +81,8 @@ class BaseOutput(RegOutput):
             self.output_id = ''
             """ Text to use for the %I expansion content. To differentiate variations of this output """
             self.category = Optionable
-            """ [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+            """ [string|list(string)=''] {comma_sep} The category for this output. If not specified an internally defined
+                category is used.
                 Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                 The categories are currently used for `navigate_results` """
             self.priority = 50
@@ -168,10 +169,8 @@ class BaseOutput(RegOutput):
                 raise KiPlotConfigurationError('Unknown output `{}` in `disable_run_by_default`'.format(to_dis))
         if self.dir[0] == '+':
             self.dir = (GS.global_dir if GS.global_dir is not None else './') + self.dir[1:]
-        self.category = self.force_list(self.category)
         if not self.category:
             self.category = self.force_list(self._category)
-        self.groups = self.force_list(self.groups, comma_sep=False)
 
     def expand_dirname(self, out_dir):
         return self.options.expand_filename_both(out_dir, is_sch=self._sch_related)

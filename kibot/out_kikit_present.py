@@ -324,7 +324,6 @@ class KiKit_PresentOptions(BaseOptions):
         # List of boards
         if isinstance(self.boards, PresentBoards):
             self.boards = [self.boards]
-        self.resources = self.force_list(self.resources, comma_sep=False)
         if not self.name:
             self.name = GS.pcb_basename
         # Make sure the template exists

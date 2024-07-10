@@ -240,7 +240,7 @@ class PcbDrawOptions(VariantOptions):
             self.resistor_remap = PcbDrawResistorRemap
             """ [list(dict)=[]] List of resistors to be remapped. You can change the value of the resistors here """
             self.resistor_flip = Optionable
-            """ [string|list(string)=''] List of resistors to flip its bands """
+            """ [string|list(string)=''] {comma_sep} List of resistors to flip its bands """
             self.size_detection = 'kicad_edge'
             """ [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.
                 The `kicad_edge` method uses the size of the board as reported by KiCad,
@@ -280,9 +280,7 @@ class PcbDrawOptions(VariantOptions):
                 self.show_components = self.solve_kf_filters([self.show_components])
         else:  # A list
             self.show_components = self.solve_kf_filters(self.show_components)
-        # Resistors remap/flip
-        self.resistor_flip = Optionable.force_list(self.resistor_flip)
-        # Remap
+        # Resistors Remap
         self._remap = {}
         if isinstance(self.remap, PcbDrawRemap):
             for ref, v in self.remap._tree.items():

@@ -251,11 +251,11 @@ class BoMLinkable(Optionable):
     def config(self, parent):
         super().config(parent)
         # *_link
-        self.digikey_link = self.force_list(self.digikey_link, comma_sep=False, lower_case=True)
-        self.mouser_link = self.force_list(self.mouser_link, comma_sep=False, lower_case=True)
+        self.digikey_link = [v.lower() for v in self.digikey_link]
+        self.mouser_link = [v.lower() for v in self.mouser_link]
         if isinstance(self.lcsc_link, bool):
             self.lcsc_link = self.solve_field_name('_field_lcsc_part') if self.lcsc_link else ''
-        self.lcsc_link = self.force_list(self.lcsc_link, comma_sep=False, lower_case=True)
+        self.lcsc_link = [v.lower() for v in self.lcsc_link]
         # Logo
         if isinstance(self.logo, bool):
             self.logo = '' if self.logo else None
@@ -264,8 +264,6 @@ class BoMLinkable(Optionable):
                 self.logo = os.path.abspath(os.path.expandvars(os.path.expanduser(self.logo)))
             if not os.path.isfile(self.logo):
                 raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
-        # Extra info lines
-        self.extra_info = Optionable.force_list(self.extra_info, comma_sep=False)
         # Datasheet as link
         self.datasheet_as_link = self.datasheet_as_link.lower()
 
@@ -358,9 +356,9 @@ class BoMXLSX(BoMLinkable):
             """ *Enable KiCost worksheet creation.
                 Note: an example of how to use it on CI/CD can be found [here](https://github.com/set-soft/kicost_ci_test) """
             self.kicost_api_enable = Optionable
-            """ [string|list(string)=''] List of KiCost APIs to enable """
+            """ [string|list(string)=''] {comma_sep} List of KiCost APIs to enable """
             self.kicost_api_disable = Optionable
-            """ [string|list(string)=''] List of KiCost APIs to disable """
+            """ [string|list(string)=''] {comma_sep} List of KiCost APIs to disable """
             self.kicost_dist_desc = False
             """ Used to add a column with the distributor's description. So you can check this is the right component """
             self.kicost_config = ''
@@ -427,9 +425,6 @@ class BoMXLSX(BoMLinkable):
             raise KiPlotConfigurationError('Missing KiCost configuration file `{}`'.format(self.kicost_config))
         if not self.kicost_config:
             self.kicost_config = None
-        # KiCost APIs
-        self.kicost_api_enable = Optionable.force_list(self.kicost_api_enable)
-        self.kicost_api_disable = Optionable.force_list(self.kicost_api_disable)
         # Specs columns
         if self.specs_columns:
             (self.s_columns, self.s_levels, self.s_comments, self.s_rename,
@@ -591,9 +586,10 @@ class BoMOptions(BaseOptions):
             self.int_qtys = True
             """ Component quantities are always expressed as integers. Using the ceil() function """
             self.distributors = Optionable
-            """ [string|list(string)=[]] Include this distributors list. Default is all the available """
+            """ [string|list(string)=[]] {comma_sep} Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
-            """ [string|list(string)=[]] Exclude this distributors list. They are removed after computing `distributors` """
+            """ [string|list(string)=[]] {comma_sep} Exclude this distributors list.
+                They are removed after computing `distributors` """
             self.count_smd_tht = False
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
             self.units = 'millimeters'
@@ -608,9 +604,9 @@ class BoMOptions(BaseOptions):
             self.sort_style = 'type_value'
             """ *[type_value,type_value_ref,ref] Sorting criteria """
             self.footprint_populate_values = Optionable
-            """ [string|list(string)='no,yes'] Values for the `Footprint Populate` column """
+            """ [string|list(string)='no,yes'] {comma_sep} Values for the `Footprint Populate` column """
             self.footprint_type_values = Optionable
-            """ [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column """
+            """ [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} Values for the `Footprint Type` column """
             self.expand_text_vars = True
             """ Expand KiCad 6 text variables after applying all filters and variants.
                 This is done using a **_expand_text_vars** filter.
@@ -749,15 +745,10 @@ class BoMOptions(BaseOptions):
             for field in self.no_conflict:
                 no_conflict.add(field.lower())
         self._no_conflict = no_conflict
-        # List of distributors
-        self.distributors = Optionable.force_list(self.distributors)
-        self.no_distributors = Optionable.force_list(self.no_distributors)
         # Column values
-        self.footprint_populate_values = Optionable.force_list(self.footprint_populate_values)
         if len(self.footprint_populate_values) != 2:
             raise KiPlotConfigurationError("The `footprint_populate_values` must contain two values ({})".
                                            format(self.footprint_populate_values))
-        self.footprint_type_values = Optionable.force_list(self.footprint_type_values)
         if len(self.footprint_type_values) != 3:
             raise KiPlotConfigurationError("The `footprint_type_values` must contain three values ({})".
                                            format(self.footprint_type_values))

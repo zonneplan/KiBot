@@ -53,7 +53,7 @@ class PopulateOptions(VariantOptions):
             self.format = 'html'
             """ *[html,md] Format for the generated output """
             self.initial_components = Optionable
-            """ [string|list(string)=''] List of components soldered before the first step """
+            """ [string|list(string)=''] {comma_sep} List of components soldered before the first step """
             self.input = ''
             """ *Name of the input file describing the assembly. Must be a markdown file.
                 Note that the YAML section of the file will be skipped, all the needed information
@@ -70,8 +70,6 @@ class PopulateOptions(VariantOptions):
         # Validate the input file name
         if self.input and not os.path.isfile(self.input):
             raise KiPlotConfigurationError('Missing input file `{}`'.format(self.input))
-        # Initial components
-        self.initial_components = Optionable.force_list(self.initial_components)
         # Validate the image pattern name
         if '%d' not in self.imgname:
             raise KiPlotConfigurationError('The image pattern must contain `%d` `{}`'.format(self.imgname))
