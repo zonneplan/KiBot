@@ -32,7 +32,7 @@ class SpecOptions(Optionable):
         self._unknown_is_error = True
         with document:
             self.spec = Optionable
-            """ *[string|list(string)=''] Name/s of the source spec/s.
+            """ *[string|list(string)=''] {comma_sep} Name/s of the source spec/s.
                 The following names are uniform across distributors: '_desc', '_value', '_tolerance', '_footprint',
                 '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf' and '_size' """
             self.field = ''
@@ -56,7 +56,6 @@ class SpecOptions(Optionable):
             raise KiPlotConfigurationError("Missing or empty `field` in spec_to_field filter ({})".format(str(self._tree)))
         if not self.spec:
             raise KiPlotConfigurationError("Missing or empty `spec` in spec_to_field filter ({})".format(str(self._tree)))
-        self.spec = self.force_list(self.spec)
 
     def __str__(self):
         return pretty_list(self.spec)+' -> '+self.field
@@ -87,7 +86,7 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
             self.check_dist_coherence = True
             """ Check that the data we got from different distributors is equivalent """
             self.check_dist_fields = CheckDistFields
-            """ [string|list(string)] List of fields to include in the check.
+            """ [string|list(string)] {comma_sep} List of fields to include in the check.
                 For a full list of fields consult the `specs` option """
         self._from = None
         self._check_dist_fields_example = DEF_CHECK
@@ -102,7 +101,6 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
             raise KiPlotConfigurationError("At least one spec must be provided ({})".format(str(self._tree)))
         if isinstance(self.specs, SpecOptions):
             self.specs = [self.specs]
-        self.check_dist_fields = self.force_list(self.check_dist_fields)
 
     def _normalize(self, val, kind, comp):
         val = val.strip()

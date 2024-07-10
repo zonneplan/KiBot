@@ -23,13 +23,9 @@ class URLify(BaseFilter):  # noqa: F821
         self._is_transform = True
         with document:
             self.fields = Optionable
-            """ [string|list(string)='Datasheet'] Fields to convert """
+            """ [string|list(string)='Datasheet'] {comma_sep} Fields to convert """
         self._fields_example = 'Datasheet'
         self._init_from_defaults = True
-
-    def config(self, parent):
-        super().config(parent)
-        self.fields = Optionable.force_list(self.fields)
 
     def filter(self, comp):
         """ Look for URLs and convert them """

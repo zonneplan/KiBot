@@ -61,19 +61,30 @@ class Optionable(object):
                     logger.debug('Using global `{}`=`{}`'.format(var, glb))
 
     @staticmethod
+    def _promote_str_to_list(val, doc, valid):
+        if 'list(string)' not in valid or val == '_null':
+            return val
+        # Promote strings to list of strings
+        if not val:
+            return []
+        if ',' in val and '{comma_sep}' in doc:
+            return val.split(',')
+        return [val]
+
+    @staticmethod
     def _check_str(key, val, doc, valid):
         if not isinstance(val, str):
             raise KiPlotConfigurationError("Option `{}` must be a string".format(key))
+        new_val = Optionable._promote_str_to_list(val, doc, valid)
         # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
         m = Optionable._str_values_re.search(doc)
         if m:
             vals = [v.strip() for v in m.group(1).split(',')]
-            if val not in vals and '*' not in vals:
-                wrong = True
-                if ',' in val and 'list(string)' in valid:
-                    # Might be a list inside a string
-                    # TODO: Not all support comma_separated
-                    for v in val.split(','):
+            if '*' not in vals:
+                if isinstance(new_val, str):
+                    wrong = val not in vals
+                else:
+                    for v in new_val:
                         if v not in vals:
                             wrong = True
                             val = v
@@ -82,6 +93,7 @@ class Optionable(object):
                         wrong = False
                 if wrong:
                     raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
+        return new_val
 
     @staticmethod
     def _check_num(key, val, doc):
@@ -226,7 +238,7 @@ class Optionable(object):
             elif v_type == 'number':
                 Optionable._check_num(k, v, cur_doc)
             elif v_type == 'string':
-                Optionable._check_str(k, v, cur_doc, valid)
+                v = Optionable._check_str(k, v, cur_doc, valid)
             elif isinstance(cur_val, type):
                 # A class, so we need more information i.e. "[dict|string]"
                 if valid is not None:
@@ -321,7 +333,7 @@ class Optionable(object):
                 new_val = None
             elif def_val[0] == "'":
                 # String
-                new_val = def_val[1:-1]
+                new_val = self._promote_str_to_list(def_val[1:-1], real_help, valid)
             elif def_val[0] in {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}:
                 new_val = float(def_val)
             else:

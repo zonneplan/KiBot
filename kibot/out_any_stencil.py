@@ -26,7 +26,7 @@ class Stencil_Options(VariantOptions):
             self.include_scad = True
             """ Include the generated OpenSCAD files """
             self.cutout = ''
-            """ [string|list(string)] List of components to add a cutout based on the component courtyard.
+            """ [string|list(string)] {comma_sep} List of components to add a cutout based on the component courtyard.
                 This is useful when you have already pre-populated board and you want to populate more
                 components """
             self.pcbthickness = 0
@@ -40,7 +40,7 @@ class Stencil_Options(VariantOptions):
 
     def config(self, parent):
         super().config(parent)
-        self.cutout = ','.join(self.force_list(self.cutout))
+        self.cutout = ','.join(self.cutout)
 
     def expand_name(self, id, ext, out_dir):
         self._expand_id = id

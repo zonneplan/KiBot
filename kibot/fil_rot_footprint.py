@@ -86,6 +86,14 @@ class Regex(Optionable):
         self.field = self.solve_field_name(self.field).lower()
 
 
+class RotFields(Optionable):
+    _default = "'"+','.join(DEFAULT_ROT_FIELDS)+"'"
+
+
+class OffsetFields(Optionable):
+    _default = "'"+','.join(DEFAULT_OFFSET_FIELDS)+"'"
+
+
 @filter_class
 class Rot_Footprint(BaseFilter):  # noqa: F821
     """ Footprint Rotator
@@ -126,12 +134,12 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             """ Do not rotate components on the bottom """
             self.skip_top = False
             """ Do not rotate components on the top """
-            self.rot_fields = Optionable
-            """ [string|list(string)='JLCPCB Rotation Offset,JLCRotOffset'] List of fields that can contain a rotation offset.
+            self.rot_fields = RotFields
+            """ [string|list(string)] {comma_sep} List of fields that can contain a rotation offset.
                 The optional fields can contain a counter-clockwise orientation offset in degrees.
                 This concept is from the bennymeg/JLC-Plugin-for-KiCad tool """
-            self.offset_fields = Optionable
-            """ [string|list(string)='JLCPCB Position Offset,JLCPosOffset'] List of fields that can contain a position offset.
+            self.offset_fields = OffsetFields
+            """ [string|list(string)] {comma_sep} List of fields that can contain a position offset.
                 The optional fields can contain a comma separated x,y position offset.
                 This concept is from the bennymeg/JLC-Plugin-for-KiCad tool """
             self.bennymeg_mode = True
@@ -192,8 +200,6 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             logger.debug('Final offsets list:')
             for r in self._offset:
                 logger.debug(r)
-        self.rot_fields = self.force_list(self.rot_fields, default=DEFAULT_ROT_FIELDS)
-        self.offset_fields = self.force_list(self.offset_fields, default=DEFAULT_OFFSET_FIELDS)
 
     def apply_rotation_angle(self, comp, angle, bennymeg_mode=False):
         old_footprint_rot = comp.footprint_rot

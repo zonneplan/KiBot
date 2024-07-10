@@ -24,7 +24,7 @@ class Field_Modify(BaseFilter):  # noqa: F821
         self._is_transform = True
         with document:
             self.fields = Optionable
-            """ [string|list(string)='Datasheet'] Fields to convert """
+            """ [string|list(string)='Datasheet'] {comma_sep} Fields to convert """
             self.regex = r'(https?://\S+)'
             """ Regular expression to match the field content.
                 Only fields that matches will be modified.
@@ -41,7 +41,6 @@ class Field_Modify(BaseFilter):  # noqa: F821
 
     def config(self, parent):
         super().config(parent)
-        self.fields = Optionable.force_list(self.fields)
         try:
             self._regex = re.compile(self.regex)
         except Exception as e:

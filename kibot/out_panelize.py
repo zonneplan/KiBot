@@ -455,7 +455,7 @@ class PanelizeCopperfill(PanelOptions):
             self.edge_clearance = None
             """ {edgeclearance} """
             self.layers = 'F.Cu,B.Cu'
-            """ [string|list(string)='F.Cu,B.Cu'] List of layers to fill. Can be a comma-separated string.
+            """ [string|list(string)='F.Cu,B.Cu'] {comma_sep} List of layers to fill. Can be a comma-separated string.
                 Using *all* means all external copper layers """
             self.width = 1
             """ [number|string=1] The width of the hatched strokes """
@@ -474,9 +474,9 @@ class PanelizeCopperfill(PanelOptions):
         self.add_units(('width', 'spacing', 'clearance', 'edgeclearance', 'diameter'))
         self.add_angle(('orientation', ))
         self.threshold = str(self.threshold)+'%'
-        if not isinstance(self.layers, str) or self.layers != 'all':
-            if isinstance(self.layers, str):
-                self.layers = self.layers.split(',')
+        if len(self.layers) == 1 and self.layers[0] == 'all':
+            self.layers = 'all'
+        else:
             res = Layer.solve(self.layers)
             self.layers = ','.join([la.layer for la in res])
 

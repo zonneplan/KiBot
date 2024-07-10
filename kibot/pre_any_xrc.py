@@ -49,7 +49,7 @@ class ERCOptions(FiltersOptions):
             self.output = GS.def_global_output
             """ *Name for the generated archive (%i=erc %x=according to format) """
             self.format = Optionable
-            """ [string|list(string)='HTML'] [RPT,HTML,CSV,JSON] Format/s used for the report.
+            """ [string|list(string)='HTML'] [RPT,HTML,CSV,JSON] {comma_sep} Format/s used for the report.
                 You can specify multiple formats """
             self.warnings_as_errors = False
             """ Warnings are considered errors, they still reported as errors, but consider it an error """
@@ -66,7 +66,6 @@ class ERCOptions(FiltersOptions):
 
     def config(self, parent):
         super().config(parent)
-        self.format = Optionable.force_list(self.format)
         if not self.format:
             self.format = ['HTML']
 

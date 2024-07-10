@@ -26,7 +26,7 @@ class KiBoM(BaseVariant):  # noqa: F821
             self.config_field = 'Config'
             """ Name of the field used to classify components """
             self.variant = Optionable
-            """ [string|list(string)=[]] Board variant(s) """
+            """ [string|list(string)=[]] {comma_sep} Board variant(s) """
         self.fix_doc('exclude_filter', IFILT_MECHANICAL)
         self.fix_doc('dnf_filter', '_kibom_dnf_CONFIG_FIELD')
         self.fix_doc('dnc_filter', '_kibom_dnc_CONFIG_FIELD')
@@ -42,6 +42,7 @@ class KiBoM(BaseVariant):  # noqa: F821
 
     @staticmethod
     def fix_dnx_filter(name, config_field):
+        name = name[0]
         if name.startswith('_kibom_dn') and name.endswith('_CONFIG_FIELD'):
             return name[:11]+config_field
         return name
@@ -50,7 +51,7 @@ class KiBoM(BaseVariant):  # noqa: F821
         # Now we can let the parent initialize the filters
         super().config(parent)
         # Variants, ensure a lowercase list
-        self.variant = [v.lower() for v in self.force_list(self.variant)]
+        self.variant = [v.lower() for v in self.variant]
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
         self.dnf_filter = BaseFilter.solve_filter(self.fix_dnx_filter(self.dnf_filter, self.config_field), 'dnf_filter')

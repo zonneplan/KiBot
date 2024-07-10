@@ -72,14 +72,14 @@ class KiCostOptions(VariantOptions):
             self.currency = Optionable
             """ *[string|list(string)='USD'] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
             self.group_fields = Optionable
-            """ [string|list(string)=[]] List of fields that can be different for a group.
+            """ [string|list(string)=[]] {comma_sep} List of fields that can be different for a group.
                 Parts with differences in these fields are grouped together, but displayed individually """
             self.split_extra_fields = Optionable
-            """ [string|list(string)=[]] Declare part fields to include in multipart split process """
+            """ [string|list(string)=[]] {comma_sep} Declare part fields to include in multipart split process """
             self.ignore_fields = Optionable
-            """ [string|list(string)=[]] List of fields to be ignored """
+            """ [string|list(string)=[]] {comma_sep} List of fields to be ignored """
             self.fields = Optionable
-            """ [string|list(string)=[]] List of fields to be added to the global data section """
+            """ [string|list(string)=[]] {comma_sep} List of fields to be added to the global data section """
             self.translate_fields = FieldRename
             """ [list(dict)=[]] Fields to rename (KiCost option, not internal filters) """
             self.kicost_variant = ''
@@ -106,7 +106,6 @@ class KiCostOptions(VariantOptions):
 
     @staticmethod
     def _validate_dis(val):
-        val = Optionable.force_list(val)
         for v in val:
             if v not in DISTRIBUTORS:
                 logger.warning(W_UNKDIST+'Unknown distributor `{}`'.format(v))
@@ -114,7 +113,6 @@ class KiCostOptions(VariantOptions):
 
     @staticmethod
     def _validate_cur(val):
-        val = Optionable.force_list(val)
         for v in val:
             if v not in ISO_CURRENCIES:
                 logger.warning(W_UNKCUR+'Unknown currency `{}`'.format(v))
@@ -127,10 +125,6 @@ class KiCostOptions(VariantOptions):
         self.distributors = self._validate_dis(self.distributors)
         self.no_distributors = self._validate_dis(self.no_distributors)
         self.currency = self._validate_cur(self.currency)
-        self.group_fields = Optionable.force_list(self.group_fields)
-        self.split_extra_fields = Optionable.force_list(self.split_extra_fields)
-        self.ignore_fields = Optionable.force_list(self.ignore_fields)
-        self.fields = Optionable.force_list(self.fields)
         # Adapt translate_fields to its use
         if self.translate_fields:
             translate_fields = []
