@@ -102,7 +102,6 @@ class KiCostOptions(VariantOptions):
         self.add_to_doc('dnf_filter', WARNING_MIX)
         self._expand_id = 'kicost'
         self._expand_ext = 'xlsx'
-        self._init_from_defaults = True
 
     @staticmethod
     def _validate_dis(val):

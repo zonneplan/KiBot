@@ -623,7 +623,6 @@ class PanelizeConfig(PanelOptions):
             self.expand_text = True
             """ Expand text variables and KiBot %X markers in text objects """
         super().__init__()
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -668,7 +667,6 @@ class PanelizeOptions(VariantOptions):
         super().__init__()
         self._expand_id = 'panel'
         self._expand_ext = 'kicad_pcb'
-        self._init_from_defaults = True
 
     def solve_cfg_name(self, cfg):
         """ Find the name of a configuration that isn't yet configured """

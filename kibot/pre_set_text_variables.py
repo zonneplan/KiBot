@@ -77,7 +77,6 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
                 The KiCad project file is modified.
                 Warning: don't use `-s all` or this preflight will be skipped """
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

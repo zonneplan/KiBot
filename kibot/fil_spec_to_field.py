@@ -92,7 +92,6 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
         self._from = None
         self._check_dist_fields_example = DEF_CHECK
         self._from_output_example = 'bom_output_name'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

@@ -43,7 +43,6 @@ class KiCost(BaseVariant):  # noqa: F821
         self.fix_doc('pre_transform')
         self.pre_transform = KiCostPreTransform
         self.fix_doc('dnf_filter', IFILT_KICOST_DNP)
-        self._init_from_defaults = True
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """

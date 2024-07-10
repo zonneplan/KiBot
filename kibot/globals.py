@@ -70,7 +70,6 @@ class Environment(Optionable):
             self.extra_os = OSVariables
             """ [list(dict)=[]] Extra variables to export as OS environment variables.
                 Note that you can also define them using `- NAME: VALUE` """
-        self._init_from_defaults = True
 
     def define_k5_vars(self, defs):
         if self.symbols:

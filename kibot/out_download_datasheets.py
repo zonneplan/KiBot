@@ -51,7 +51,6 @@ class Download_Datasheets_Options(VariantOptions):
         # Used to collect the targets
         self._dry = False
         self._unknown_is_error = True
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

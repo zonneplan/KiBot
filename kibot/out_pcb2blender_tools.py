@@ -109,7 +109,6 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         super().__init__()
         self._expand_id = 'pcb2blender'
         self._expand_ext = 'pcb3d'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

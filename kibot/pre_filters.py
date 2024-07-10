@@ -64,7 +64,6 @@ class FiltersOptions(Optionable):
             self.filters = FilterOptions
             """ [list(dict)=[]] DRC/ERC errors to be ignored """
         self._filter_what = 'DRC/ERC errors'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

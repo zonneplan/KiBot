@@ -254,7 +254,6 @@ class PcbDrawOptions(VariantOptions):
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
         super().__init__()
-        self._init_from_defaults = True
 
     def config(self, parent):
         self._filters_to_expand = False

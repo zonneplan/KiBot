@@ -48,7 +48,6 @@ class Run_ERC(BasePreFlight):  # noqa: F821
             """ [boolean|dict=false] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
                 To ensure the schematic is electrically correct.
                 The report file name is controlled by the global output pattern (%i=erc %x=txt) """
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

@@ -43,8 +43,6 @@ class Optionable(object):
         self._error_context = ''
         self._tree = {}
         self._configured = False
-        # TODO: Should be removed and all outputs should support it
-        self._init_from_defaults = False
         # File/directory pattern expansion
         self._expand_id = ''
         self._expand_ext = ''
@@ -334,7 +332,7 @@ class Optionable(object):
         if self._tree and not self._configured:
             self._perform_config_mapping()
         self._configured = True
-        if not old_configured and self._init_from_defaults:
+        if not old_configured:
             self.do_defaults()
         if self._output_multiple_files and ('%i' not in self.output or '%x' not in self.output):
             raise KiPlotConfigurationError('The output pattern must contain %i and %x, otherwise file names will collide')

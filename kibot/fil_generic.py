@@ -75,7 +75,6 @@ class Generic(BaseFilter):  # noqa: F821
             """ Exclude components marked *Exclude from board* (KiCad 6+)  """
         self.add_to_doc('keys', 'Use `dnf_list` for '+str(sorted(DNF)))
         self.add_to_doc('keys', 'Use `dnc_list` for '+str(sorted(DNC)))
-        self._init_from_defaults = True
 
     @staticmethod
     def _fix_field(field):

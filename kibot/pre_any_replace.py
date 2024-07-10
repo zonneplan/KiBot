@@ -70,7 +70,6 @@ class Base_ReplaceOptions(Optionable):
                 This command will work only if you have a date in the PCB/Schematic """
             self.replace_tags = TagReplaceBase
             """ [dict|list(dict)=[]] Tag or tags to replace """
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

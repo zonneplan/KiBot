@@ -142,7 +142,6 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
                 This option also controls the way offset signs are interpreted. When enabled the offsets matches this plugin,
                 when disabled matches the interpretation used by the matthewlai/JLCKicadTools plugin.
                 Disabling this option you'll get better algorithms, but loose compatibility with this plugin """
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

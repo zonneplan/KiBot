@@ -30,7 +30,6 @@ class KiBoM(BaseVariant):  # noqa: F821
         self.fix_doc('exclude_filter', IFILT_MECHANICAL)
         self.fix_doc('dnf_filter', '_kibom_dnf_CONFIG_FIELD')
         self.fix_doc('dnc_filter', '_kibom_dnc_CONFIG_FIELD')
-        self._init_from_defaults = True
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """

@@ -62,7 +62,6 @@ class ERCOptions(FiltersOptions):
         self.set_doc('filters', " [list(dict)=[]] Used to manipulate the violations. Avoid using the *filters* preflight")
         self._unknown_is_error = True
         self._format_example = 'HTML,RPT'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -89,7 +88,6 @@ class XRC(BasePreFlight):
     def __init__(self, cls):
         super().__init__()
         self._opts_cls = cls
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

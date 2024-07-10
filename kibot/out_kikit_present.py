@@ -302,7 +302,6 @@ class KiKit_PresentOptions(BaseOptions):
                 The default template uses it for things like the page title """
         super().__init__()
         self._git_solved = False
-        self._init_from_defaults = True
 
     def get_git_command(self):
         if not self._git_solved:

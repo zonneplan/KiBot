@@ -62,7 +62,6 @@ class SVG_PCB_Print(BaseOutput):  # noqa: F821
             """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to include in the PDF """
         self._category = 'PCB/docs'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

@@ -596,7 +596,6 @@ class Base3DOptionsWithHL(Base3DOptions):
             self.highlight_on_top = False
             """ Highlight over the component (not under) """
         super().__init__()
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

@@ -168,12 +168,6 @@ class BaseOutput(RegOutput):
                 raise KiPlotConfigurationError('Unknown output `{}` in `disable_run_by_default`'.format(to_dis))
         if self.dir[0] == '+':
             self.dir = (GS.global_dir if GS.global_dir is not None else './') + self.dir[1:]
-        # TODO: not needed when self._init_from_defaults becomes the default
-        if getattr(self, 'options', None) and isinstance(self.options, type):
-            # No options, get the defaults
-            self.options = self.options()
-            # Configure them using an empty tree
-            self.options.config(self)
         self.category = self.force_list(self.category)
         if not self.category:
             self.category = self.force_list(self._category)
@@ -1154,9 +1148,6 @@ class PcbMargin(Optionable):
 
     @staticmethod
     def solve(margin):
-        if isinstance(margin, type):
-            # TODO: remove once init_from_defaults is the default
-            return (0, 0, 0, 0), PcbMargin()
         if isinstance(margin, PcbMargin):
             return ((GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom)),
                     margin)

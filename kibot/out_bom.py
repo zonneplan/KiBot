@@ -152,7 +152,6 @@ class BoMColumns(Optionable):
             """ Used as explanation for this column. The XLSX output uses it """
         self._field_example = 'Row'
         self._name_example = 'Line'
-        self._init_from_defaults = True
 
     def __str__(self):
         txt = f'{self.name} ({self.field})' if self.name else self.field
@@ -199,7 +198,6 @@ class RowColors(Optionable):
                 KiBot will assume that all the components grouped in the same group will
                 return the same value when applying this filter """
         self._description_example = "Components that can't be replaced"
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -249,7 +247,6 @@ class BoMLinkable(Optionable):
             self.row_colors = RowColors
             """ [list(dict)=[]] Used to highlight rows using filters. Rows that match a filter can be colored.
                 Note that these rows won't have colored columns """
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -627,7 +624,6 @@ class BoMOptions(BaseOptions):
                 This is a KiCad 6 option """
         super().__init__()
         self._no_conflict_example = ['Config', 'Part']
-        self._init_from_defaults = True
 
     @staticmethod
     def _get_columns():

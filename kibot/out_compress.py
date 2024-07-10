@@ -92,7 +92,6 @@ class CompressOptions(BaseOptions):
             self.skip_not_run = False
             """ Skip outputs with `run_by_default: false` """
         super().__init__()
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

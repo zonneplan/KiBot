@@ -30,7 +30,6 @@ class IBoM(BaseVariant):  # noqa: F821
             self.variants_whitelist = Optionable
             """ [string|list(string)=[]] List of board variants to include in the BOM """
         self.fix_doc('exclude_filter', IFILT_MECHANICAL)
-        self._init_from_defaults = True
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """

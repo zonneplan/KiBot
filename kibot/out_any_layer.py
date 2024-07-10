@@ -89,7 +89,6 @@ class AnyLayerOptions(VariantOptions):
             """ Tell KiCad to apply the scaling for each layer as a separated entity.
                 Disabling it the pages are coherent and can be superposed """
         super().__init__()
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -302,7 +301,6 @@ class AnyLayer(BaseOutput):
             self.layers = Layer
             """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
                 of PCB layers to plot """
-        self._init_from_defaults = True
 
     def get_targets(self, out_dir):
         return self.options.get_targets(out_dir, self.layers)

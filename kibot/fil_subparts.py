@@ -57,7 +57,6 @@ class Subparts(BaseFilter):  # noqa: F821
             """ Force the reference separator use even for the first component in the list (KiCost behavior) """
             self.value_alt_field = 'value_subparts'
             """ Field containing replacements for the `Value` field. So we get real values for split parts """
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

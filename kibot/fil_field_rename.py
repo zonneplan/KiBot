@@ -24,7 +24,6 @@ class Field_Rename(BaseFilter):  # noqa: F821
         with document:
             self.rename = FieldRename
             """ [list(dict)=[]] Fields to rename """
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

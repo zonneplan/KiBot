@@ -37,7 +37,6 @@ class Field_Modify(BaseFilter):  # noqa: F821
             """ [string|list(string)=''] Name of the filter to select which components will be affected.
                 Applied to all if nothing specified here """
         self._include_solved = False
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

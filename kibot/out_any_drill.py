@@ -56,7 +56,6 @@ class AnyDrill(VariantOptions):
             self.npth_id = None
             """ [string] Force this replacement for %i when generating NPTH files """
         super().__init__()
-        self._init_from_defaults = True
         # Mappings to KiCad values
         self._map_map = {
                          'hpgl': PLOT_FORMAT_HPGL,

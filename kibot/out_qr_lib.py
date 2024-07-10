@@ -104,7 +104,6 @@ class QR_LibOptions(BaseOptions):
         super().__init__()
         self._expand_id = 'qr'
         self._expand_ext = 'lib'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

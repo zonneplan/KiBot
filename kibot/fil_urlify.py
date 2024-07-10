@@ -25,7 +25,6 @@ class URLify(BaseFilter):  # noqa: F821
             self.fields = Optionable
             """ [string|list(string)='Datasheet'] Fields to convert """
         self._fields_example = 'Datasheet'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

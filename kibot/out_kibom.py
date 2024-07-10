@@ -79,7 +79,6 @@ class KiBoMColumns(Optionable):
             """ [list(string)|string=''] List of fields to join to this column """
         self._field_example = 'Row'
         self._name_example = 'Line'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
@@ -191,7 +190,6 @@ class KiBoMConfig(Optionable):
             self.columns = KiBoMColumns
             """ *[list(dict)|list(string)=[]] List of columns to display.
                 Can be just the name of the field """
-        self._init_from_defaults = True
 
     @staticmethod
     def _create_minimal_ini():
@@ -348,7 +346,6 @@ class KiBoMOptions(BaseOptions):
         self._expand_id = 'bom'
         # Variant isn't related to Kibot
         self._variant_is_real = False
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

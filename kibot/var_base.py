@@ -391,7 +391,6 @@ class BaseVariant(RegVariant):
                 But if you really need it you can define the sub-PCBs here.
                 Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT* """
         self._sub_pcb = None
-        self._init_from_defaults = True
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """

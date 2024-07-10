@@ -229,7 +229,6 @@ class PagesOptions(Optionable):
         self._autoscale_margin_x_example = 0
         self._autoscale_margin_y_example = 0
         self._layers = None
-        self._init_from_defaults = True
 
     def __str__(self):
         txt = self.sheet
@@ -383,7 +382,6 @@ class PCB_PrintOptions(VariantOptions):
         add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
-        self._init_from_defaults = True
 
     def get_layers_for_page(self, page):
         layer = ''

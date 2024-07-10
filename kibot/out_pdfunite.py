@@ -52,7 +52,6 @@ class PDFUniteOptions(BaseOptions):
             """ Use the `pdfunite` tool instead of PyPDF2 Python module """
         super().__init__()
         self._expand_ext = 'pdf'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

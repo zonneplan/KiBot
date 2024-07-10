@@ -291,7 +291,6 @@ class Navigate_ResultsOptions(BaseOptions):
         super().__init__()
         self._expand_id = 'navigate'
         self._expand_ext = 'html'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)
