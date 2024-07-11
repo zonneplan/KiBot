@@ -271,14 +271,12 @@ class PcbDrawOptions(VariantOptions):
         # Margin
         self._margin, self.margin = PcbMargin.solve(self.margin)
         # Filter
-        if isinstance(self.show_components, str):
-            if self.show_components == 'none':
+        if len(self.show_components) == 1 and self.show_components[0] in {'all', 'none'}:
+            if self.show_components[0] == 'none':
                 self.show_components = None
-            elif self.show_components == 'all':
+            else:  # if self.show_components[0] == 'all':
                 # Empty list: means we don't filter
                 self.show_components = []
-            else:
-                self.show_components = self.solve_kf_filters([self.show_components])
         else:  # A list
             self.show_components = self.solve_kf_filters(self.show_components)
         # Resistors Remap

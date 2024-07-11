@@ -116,13 +116,11 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         self._filters_to_expand = False
         # List of components
         self._show_all_components = False
-        if isinstance(self.show_components, str):
-            if self.show_components == 'all':
+        if len(self.show_components) == 1 and self.show_components[0] in {'all', 'none'}:
+            if self.show_components[0] == 'all':
                 self._show_all_components = True
-            elif self.show_components == 'none':
+            else:  # if self.show_components[0] == 'none':
                 self.show_components = []
-            else:
-                self.show_components = self.solve_kf_filters([self.show_components])
         else:  # a list
             self.show_components = self.solve_kf_filters(self.show_components)
 
