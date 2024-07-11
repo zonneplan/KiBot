@@ -39,7 +39,7 @@ class Generic(BaseFilter):  # noqa: F821
                 If a component matches ANY of these, it will be excluded.
                 Column names are case-insensitive  """
             self.keys = Optionable
-            """ [string|list(string)='dnf_list'] [dnc_list,dnf_list] List of keys to match.
+            """ [string|list(string)='dnf_list'] [dnc_list,dnf_list,*] List of keys to match.
                 The `dnf_list` and `dnc_list` internal lists can be specified as strings """
             self.exclude_value = False
             """ Exclude components if their 'Value' is any of the keys """
