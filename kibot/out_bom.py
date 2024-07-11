@@ -254,7 +254,7 @@ class BoMLinkable(Optionable):
         self.digikey_link = [v.lower() for v in self.digikey_link]
         self.mouser_link = [v.lower() for v in self.mouser_link]
         if isinstance(self.lcsc_link, bool):
-            self.lcsc_link = self.solve_field_name('_field_lcsc_part') if self.lcsc_link else ''
+            self.lcsc_link = [self.solve_field_name('_field_lcsc_part')] if self.lcsc_link else []
         self.lcsc_link = [v.lower() for v in self.lcsc_link]
         # Logo
         if isinstance(self.logo, bool):
