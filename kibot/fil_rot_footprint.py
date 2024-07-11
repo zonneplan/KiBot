@@ -87,11 +87,11 @@ class Regex(Optionable):
 
 
 class RotFields(Optionable):
-    _default = "'"+','.join(DEFAULT_ROT_FIELDS)+"'"
+    _default = DEFAULT_ROT_FIELDS
 
 
 class OffsetFields(Optionable):
-    _default = "'"+','.join(DEFAULT_OFFSET_FIELDS)+"'"
+    _default = DEFAULT_OFFSET_FIELDS
 
 
 @filter_class
