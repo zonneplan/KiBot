@@ -66,7 +66,7 @@ class Optionable(object):
         if not val:
             return []
         if ',' in val and '{comma_sep}' in doc:
-            return val.split(',')
+            return [v.strip() for v in val.split(',')]
         return [val]
 
     @staticmethod
