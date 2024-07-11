@@ -70,7 +70,7 @@ class Any_PCB_PrintOptions(VariantOptions):
     def run(self, output, svg=False):
         super().run(self._layers)
         logger.warning(W_DEPR+'The `pdf_pcb_print` and `svg_pcb_print` outputs are deprecated, use `pcb_print` instead')
-        if self._parent.layers == 'all' and not self._parent.get_user_defined('layers'):
+        if self._parent.layers == ['all'] and not self._parent.get_user_defined('layers'):
             logger.warning(W_NOLAYERS+f'No layers specified for `{self._parent.name}`, including `all`')
         if GS.ki7 and GS.kicad_version_n < KICAD_VERSION_7_0_1 and self.scaling != 0 and self.scaling != 1.0:
             GS.exit_with_error("Scaled printing is broken in KiCad 7.0.0\n"
