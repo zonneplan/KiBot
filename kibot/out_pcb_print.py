@@ -1240,7 +1240,7 @@ class PCB_PrintOptions(VariantOptions):
             if self.force_edge_cuts and next(filter(lambda x: x._id == edge_id, p._layers), None) is None:
                 p._layers.append(edge_layer)
             user_layer_ids = set(Layer._get_user().values())
-            if p.layers == 'all' and not p.get_user_defined('layers'):
+            if p.layers == ['all'] and not p.get_user_defined('layers'):
                 logger.warning(W_NOLAYERS+f'No layers specified for `{p}` (`{self._parent.name}`), including `all`')
             for la in p._layers:
                 id = la._id
