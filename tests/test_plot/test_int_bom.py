@@ -574,7 +574,7 @@ def test_int_bom_datasheet_link(test_dir):
     ctx.clean_up()
 
 
-def test_int_bom_digikey_link(test_dir):
+def test_int_bom_digikey_link_1(test_dir):
     prj = 'links'
     ext = 'html'
     ctx = context.TestContextSCH(test_dir, prj, 'int_bom_digikey_link', BOM_DIR)
@@ -609,7 +609,7 @@ def test_int_bom_digikey_link(test_dir):
         logging.debug(c + ' OK')
     parts = get_column(rows[0]+rows[1], lcsc_column, False)
     for c in parts:
-        assert c.strip().startswith('<a href')
+        assert c.strip().startswith('<a href'), c
         assert 'lcsc.com' in c
         logging.debug(c + ' OK')
     ctx.clean_up()
