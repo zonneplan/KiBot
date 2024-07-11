@@ -168,12 +168,7 @@ class BoMColumns(Optionable):
         field = self.field.lower()
         # Ensure this is None or a list
         # Also arrange it as field, cols...
-        if isinstance(self.join, str):
-            if self.join:
-                self.join = [field, BoMJoinField(self.join)]
-            else:
-                self.join = None
-        else:
+        if self.join:
             join = [field]
             for c in self.join:
                 if isinstance(c, str):
