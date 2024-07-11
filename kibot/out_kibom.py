@@ -229,8 +229,7 @@ class KiBoMConfig(Optionable):
         self.mouser_link = '\t'.join(self.mouser_link)
         # lcsc_link
         if isinstance(self.lcsc_link, bool):
-            self.lcsc_link = self.force_list(self.solve_field_name('_field_lcsc_part'), comma_sep=False) \
-                             if self.lcsc_link else []
+            self.lcsc_link = [self.solve_field_name('_field_lcsc_part')] if self.lcsc_link else []
         self.lcsc_link = '\t'.join(self.lcsc_link)
         # component_aliases
         self.component_aliases = ['\t'.join(a) for a in self.component_aliases]
