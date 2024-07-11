@@ -63,11 +63,11 @@ class IBoM(BaseVariant):  # noqa: F821
         self.variants_blacklist = [v.lower() for v in self.variants_blacklist]
         # Apply to all the components
         for c in comps:
-            logger.debug("{} {} {}".format(c.ref, c.fitted, c.included))
+            logger.debug("- Check {} fitted {} included {}".format(c.ref, c.fitted, c.included))
             if not (c.fitted and c.included):
                 # Don't check if we already discarded it
                 continue
             c.fitted = not self.skip_component(c)
             if not c.fitted and GS.debug_level > 2:
-                logger.debug('ref: {} value: {} -> False'.format(c.ref, c.value))
+                logger.debug(f'  fitted -> False (value: {c.value})')
         return comps
