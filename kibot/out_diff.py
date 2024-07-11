@@ -122,9 +122,9 @@ class DiffOptions(AnyDiffOptions):
             if len(self.new) < 2:
                 raise KiPlotConfigurationError('`new` must contain at least two variants when using the `multivar` type')
         else:
-            if len(self.new) != 1:
+            if len(self.new) > 1:
                 raise KiPlotConfigurationError('`new` must be a single string for `{}` type'.format(self.new_type))
-            self.new = self.new[0]
+            self.new = self.new[0] if len(self.new) else ''
         if self.old_type == 'multivar' and self.new_type != 'multivar':
             raise KiPlotConfigurationError("`old_type` can't be `multivar` when `new_type` isn't (`{}`)".format(self.new_type))
         self.validate_colors(['color_added', 'color_removed'])
