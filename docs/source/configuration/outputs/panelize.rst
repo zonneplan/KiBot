@@ -244,6 +244,7 @@ Parameters:
                   -  ``edgeclearance`` :index:`: <pair: output - panelize - options - configs - copperfill; edgeclearance>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``0.5``) Specifies clearance between the fill and panel perimeter.
                   -  ``layers`` :index:`: <pair: output - panelize - options - configs - copperfill; layers>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'F.Cu,B.Cu'``) [:ref:`comma separated <comma_sep>`] List of layers to fill. Can be a comma-separated string.
                      Using *all* means all external copper layers.
+
                   -  ``orientation`` :index:`: <pair: output - panelize - options - configs - copperfill; orientation>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``45``) The orientation of the hatched strokes.
                   -  ``spacing`` :index:`: <pair: output - panelize - options - configs - copperfill; spacing>` [:ref:`number <number>` | :ref:`string <string>`] (default: ``1``) The space between the hatched strokes or hexagons.
                   -  ``threshold`` :index:`: <pair: output - panelize - options - configs - copperfill; threshold>` [:ref:`number <number>`] (default: ``15``) Remove fragments smaller than threshold. Expressed as a percentage.

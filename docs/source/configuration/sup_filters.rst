@@ -110,7 +110,7 @@ Supported filters
             -  ``skip_if_no_field`` :index:`: <pair: filter - generic - include_only; skip_if_no_field>` [:ref:`boolean <boolean>`] (default: ``false``) Skip this test if the field doesn't exist.
 
       -  ``invert`` :index:`: <pair: filter - generic; invert>` [:ref:`boolean <boolean>`] (default: ``false``) Invert the result of the filter.
-      -  ``keys`` :index:`: <pair: filter - generic; keys>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'dnf_list'``) (choices: "dnc_list", "dnf_list") List of keys to match.
+      -  ``keys`` :index:`: <pair: filter - generic; keys>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'dnf_list'``) (choices: "dnc_list", "dnf_list") (also accepts any string) List of keys to match.
          The `dnf_list` and `dnc_list` internal lists can be specified as strings.
          Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
          Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
@@ -142,7 +142,7 @@ Supported filters
          the adjust so you get `(180 - component rot + angle)`. This is used by JLCPCB.
       -  ``name`` :index:`: <pair: filter - rot_footprint; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
       -  ``negative_bottom`` :index:`: <pair: filter - rot_footprint; negative_bottom>` [:ref:`boolean <boolean>`] (default: ``true``) Rotation for bottom components is computed via subtraction as `(component rot - angle)`.
-      -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'JLCPCB Position Offset,JLCPosOffset'``) [:ref:`comma separated <comma_sep>`] List of fields that can contain a position offset.
+      -  ``offset_fields`` :index:`: <pair: filter - rot_footprint; offset_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['JLCPCB Position Offset', 'JLCPosOffset']``) [:ref:`comma separated <comma_sep>`] List of fields that can contain a position offset.
          The optional fields can contain a comma separated x,y position offset.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
@@ -151,7 +151,7 @@ Supported filters
          The offset must be two numbers separated by a comma. The first is the X offset.
          The signs matches the matthewlai/JLCKicadTools plugin specs.
 
-      -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'JLCPCB Rotation Offset,JLCRotOffset'``) [:ref:`comma separated <comma_sep>`] List of fields that can contain a rotation offset.
+      -  ``rot_fields`` :index:`: <pair: filter - rot_footprint; rot_fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['JLCPCB Rotation Offset', 'JLCRotOffset']``) [:ref:`comma separated <comma_sep>`] List of fields that can contain a rotation offset.
          The optional fields can contain a counter-clockwise orientation offset in degrees.
          This concept is from the bennymeg/JLC-Plugin-for-KiCad tool.
 
