@@ -19,7 +19,7 @@ from .gs import GS
 from .kiplot import run_command, config_output, register_xmp_import
 from .layer import Layer
 from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES, W_KEEPTMP
-from .optionable import PanelOptions
+from .optionable import PanelOptions, Optionable
 from .out_base import VariantOptions
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
@@ -454,7 +454,7 @@ class PanelizeCopperfill(PanelOptions):
             """ [number|string=0.5] Specifies clearance between the fill and panel perimeter """
             self.edge_clearance = None
             """ {edgeclearance} """
-            self.layers = 'F.Cu,B.Cu'
+            self.layers = Optionable
             """ [string|list(string)='F.Cu,B.Cu'] {comma_sep} List of layers to fill. Can be a comma-separated string.
                 Using *all* means all external copper layers """
             self.width = 1
