@@ -95,8 +95,8 @@ class Generic(BaseFilter):  # noqa: F821
             r.column = self._fix_field(r.column)
             r.regex = compile(r.regex, flags=IGNORECASE)
         # keys
-        if isinstance(self.keys, str):
-            self._keys = DNF if self.keys == 'dnf_list' else DNC
+        if len(self.keys) == 1 and self.keys[0] in {'dnf_list', 'dnc_list'}:
+            self._keys = DNF if self.keys[0] == 'dnf_list' else DNC
         else:
             # Ensure lowercase
             self._keys = [v.lower() for v in self.keys]
