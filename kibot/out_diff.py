@@ -119,15 +119,12 @@ class DiffOptions(AnyDiffOptions):
         super().config(parent)
         self._expand_id = 'diff'+('_pcb' if self.pcb else '_sch')
         if self.new_type == 'multivar':
-            if isinstance(self.new, str):
-                raise KiPlotConfigurationError('`new` must be a list when using the `multivar` type')
             if len(self.new) < 2:
                 raise KiPlotConfigurationError('`new` must contain at least two variants when using the `multivar` type')
         else:
-            if isinstance(self.new, list):
-                if len(self.new) != 1:
-                    raise KiPlotConfigurationError('`new` must be a single string for `{}` type'.format(self.new_type))
-                self.new = self.new[0]
+            if len(self.new) != 1:
+                raise KiPlotConfigurationError('`new` must be a single string for `{}` type'.format(self.new_type))
+            self.new = self.new[0]
         if self.old_type == 'multivar' and self.new_type != 'multivar':
             raise KiPlotConfigurationError("`old_type` can't be `multivar` when `new_type` isn't (`{}`)".format(self.new_type))
         self.validate_colors(['color_added', 'color_removed'])
