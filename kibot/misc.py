@@ -49,6 +49,7 @@ HPGL_SCH_PRINT = 33
 CORRUPTED_PRO = 34
 BLENDER_ERROR = 35
 WARN_AS_ERROR = 36
+CHECK_FIELD = 37
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -85,7 +86,8 @@ error_level_to_name = ['NONE',
                        'HPGL_SCH_PRINT',
                        'CORRUPTED_PRO',
                        'BLENDER_ERROR',
-                       'WARN_AS_ERROR'
+                       'WARN_AS_ERROR',
+                       'CHECK_FIELD'
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
@@ -318,6 +320,7 @@ W_NOLAYERS = '(W158) '
 W_NOPOPMD = '(W159) '
 W_NOQR = '(W160) '
 W_NOFOOTP = '(W161) '
+W_CHKFLD = '(W162) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
