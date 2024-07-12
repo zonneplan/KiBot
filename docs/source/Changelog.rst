@@ -20,6 +20,10 @@ Added
 ~~~~~
 
 -  Experimental Altium PCB conversion (#625)
+-  Preflights:
+
+   -  check_fields: used to ensure conditions on desired fields (#643)
+
 -  BoM: logo file name can contain env vars and/or ~ (#620)
 -  Datasheet: option to classify the datasheets by reference.
 -  KiCost: option to specify a configuration file (#615)

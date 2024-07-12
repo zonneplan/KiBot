@@ -31,6 +31,24 @@ Supported preflights
       This preflight modifies the schematic, use it only in revision control environments.
       Used to solve ERC problems when using filters that remove power reference numbers.
 
+   -  **check_fields** :index:`: <pair: preflight - check_fields; check_fields>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) Checks to apply to the schematic fields.
+      You can define conditions that must be met by the fields.
+      One use is to check that all components are suitable for a temperature range.
+      In this case a field must declare the temperature range.
+
+      -  Valid keys:
+
+         -  **field** :index:`: <pair: preflight - check_fields - check_fields; field>` [:ref:`string <string>`] (default: ``''``) Name of field to check.
+         -  **regex** :index:`: <pair: preflight - check_fields - check_fields; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match the field content.
+         -  *regexp* :index:`: <pair: preflight - check_fields - check_fields; regexp>` Alias for regex.
+         -  ``numeric_condition`` :index:`: <pair: preflight - check_fields - check_fields; numeric_condition>` [:ref:`string <string>`] (default: ``'none'``) (choices: ">", ">=", "<", "<=", "=", "none") Convert the group 1 of the regular expression to a number and apply this operation
+            to the *numeric_reference* value.
+         -  ``numeric_reference`` :index:`: <pair: preflight - check_fields - check_fields; numeric_reference>` [:ref:`number <number>`] (default: ``0``) Value to compare using *numeric_condition*.
+         -  ``severity`` :index:`: <pair: preflight - check_fields - check_fields; severity>` [:ref:`string <string>`] (default: ``'error'``) (choices: "error", "warning", "info", "skip") If the regex matches what we do.
+            The *error* will stop execution.
+         -  ``skip_if_missing`` :index:`: <pair: preflight - check_fields - check_fields; skip_if_missing>` [:ref:`boolean <boolean>`] (default: ``true``) If the field is missing we just continue. Otherwise we apply the *severity*.
+
+
    -  **check_zone_fills** :index:`: <pair: preflight - check_zone_fills; check_zone_fills>` [:ref:`boolean <boolean>`] Zones are filled before doing any operation involving PCB layers.
       The original PCB remains unchanged. If you need to abort when the zone fill
       creates significant changes to a layer use the CheckZoneFill internal template.

@@ -40,3 +40,4 @@ Supported error levels
 - 34: CORRUPTED_PRO
 - 35: BLENDER_ERROR
 - 36: WARN_AS_ERROR
+- 37: CHECK_FIELD

@@ -26,6 +26,15 @@ preflight:
   # This preflight modifies the schematic, use it only in revision control environments.
   # Used to solve ERC problems when using filters that remove power reference numbers.
   annotate_power: true
+  # [dict|list(dict)=[]] Checks to apply to the schematic fields.
+  # You can define conditions that must be met by the fields.
+  # One use is to check that all components are suitable for a temperature range.
+  # In this case a field must declare the temperature range.
+  check_fields:
+    - field: 'temperature'
+      regex: '(-?\d+).+?(?:-?\d+).*'
+      numeric_condition: '<='
+      numeric_reference: -10
   # [boolean] Zones are filled before doing any operation involving PCB layers.
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template.
