@@ -418,7 +418,7 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out(r'- \*\*`pre_test`\*\*: (.*)Test for preflight')
+    assert ctx.search_out(['- Pre Test', 'A preflight just for testing purposes', r'- \*\*`pre_test`\*\*'])
     ctx.clean_up()
 
 
