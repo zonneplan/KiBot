@@ -66,7 +66,7 @@ Parameters:
          part number. The field containing the LCSC part number is defined by the
          `field_lcsc_part` global variable.
       -  ``enable_crop_workaround`` :index:`: <pair: output - render_3d - options; enable_crop_workaround>` [:ref:`boolean <boolean>`] (default: ``false``) Some versions of Image Magick (i.e. the one in Debian 11) needs two passes to crop.
-         Enable it to force a doble pass. It was the default in KiBot 1.7.0 and older.
+         Enable it to force a double pass. It was the default in KiBot 1.7.0 and older.
       -  ``force_stackup_colors`` :index:`: <pair: output - render_3d - options; force_stackup_colors>` [:ref:`boolean <boolean>`] (default: ``false``) Tell KiCad to use the colors from the stackup. They are better than the unified KiBot colors.
          Needs KiCad 6 or newer.
       -  ``height`` :index:`: <pair: output - render_3d - options; height>` [:ref:`number <number>`] (default: ``720``) Image height (aprox.).
