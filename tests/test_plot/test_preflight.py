@@ -21,7 +21,8 @@ import re
 import shutil
 from subprocess import run, PIPE
 from . import context
-from kibot.misc import DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG, NETLIST_DIFF
+from kibot.misc import (DRC_ERROR, ERC_ERROR, BOM_ERROR, CORRUPTED_PCB, CORRUPTED_SCH, EXIT_BAD_CONFIG, NETLIST_DIFF,
+                        CHECK_FIELD)
 
 
 @pytest.mark.slow
@@ -661,3 +662,24 @@ def test_draw_stackup_1(test_dir):
 #     assert os.path.isfile(file_back), file_back
 #     os.remove(file_back)
 #     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Test for 8 and up")
+def test_check_fields_1(test_dir):
+    """ Simple check for temperature range """
+    prj = 'temp_range'
+    ctx = context.TestContextSCH(test_dir, prj, 'check_fields_temp_1')
+    ctx.run()
+    ctx.search_err([r"WARNING:\(W162\) R2 field `Temp` doesn't match", r"WARNING:\(W162\) R4 field `Temp` fails -5.0 <= -10"])
+    ctx.search_out(['R3 field `Temp` fails 20.0 >= 85', 'R5 field `Temp` fails 60.0 >= 85'])
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Test for 8 and up")
+def test_check_fields_2(test_dir):
+    """ Simple check for temperature range """
+    prj = 'temp_range'
+    ctx = context.TestContextSCH(test_dir, prj, 'check_fields_temp_2')
+    ctx.run(CHECK_FIELD)
+    ctx.search_err([r"WARNING:\(W162\) R1 missing field `Temp`", "ERROR:R2 field `Temp` doesn't match"])
+    ctx.clean_up()

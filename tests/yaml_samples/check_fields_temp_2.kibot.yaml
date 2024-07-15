@@ -8,11 +8,12 @@ preflight:
       regex: '(-?\d+).+?(?:-?\d+).*'
       numeric_condition: '<='
       numeric_reference: -10
-      severity: warning
-      severity_missing: skip
+      severity: error
+      severity_missing: warning
     - field: Temp
       regex: '(?:-?\d+).+?(-?\d+).*'
       numeric_condition: '>='
       numeric_reference: 85
-      severity: info
-      severity_no_match: skip
+      severity: error
+      severity_missing: warning
+
