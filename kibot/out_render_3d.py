@@ -113,6 +113,9 @@ class Render3DOptions(Base3DOptionsWithHL):
             self.auto_crop = False
             """ When enabled the image will be post-processed to remove the empty space around the image.
                 In this mode the `background2` is changed to be the same as `background1` """
+            self.enable_crop_workaround = False
+            """ Some versions of Image Magick (i.e. the one in Debian 11) needs two passes to crop.
+                Enable it to force a double pass. It was the default in KiBot 1.7.0 and older """
             self.transparent_background = False
             """ When enabled the image will be post-processed to make the background transparent.
                 In this mode the `background1` and `background2` colors are ignored """
@@ -326,7 +329,11 @@ class Render3DOptions(Base3DOptionsWithHL):
         # Execute it
         self.exec_with_retry(self.add_extra_options(cmd), RENDER_3D_ERR)
         if self.auto_crop:
-            _run_command([convert_command, output, '-trim', '+repage', '-trim', '+repage', output])
+            cmd = [convert_command, output, '-trim', '+repage']
+            if self.enable_crop_workaround:
+                cmd.extend(['-trim', '+repage'])
+            cmd.append(output)
+            _run_command(cmd)
         if self.transparent_background:
             _run_command([convert_command, output, '-fuzz', str(self.transparent_background_fuzz)+'%', '-transparent',
                           self.color_str_to_rgb(self.transparent_background_color), output])

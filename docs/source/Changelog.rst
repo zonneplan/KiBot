@@ -88,6 +88,9 @@ Changed:
    plotting a layer where we don’t have the hidden text. So currently
    KiBot is experimentally disabling the “hidden text layer”. This is a
    bug in KiCad (https://gitlab.com/kicad/code/kicad/-/issues/17958)
+-  Render 3D: Modern versions of Image Magick no longer needs two trim
+   passes for auto-crop, so now we default to one and an option enables
+   two. (See #644)
 -  Preflights: The definition of preflight plug-ins changed. They are
    slightly different now. Currently they are Optionable and share more
    in common with outputs. If you need assistance to migrate a preflight
