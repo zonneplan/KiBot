@@ -11,12 +11,14 @@ from .macros import macros, document, pre_class  # noqa: F401
 
 @pre_class
 class Fill_Zones(BasePreFlight):  # noqa: F821
+    """ Fill Zones
+        Fill all zones again and save the PCB """
     def __init__(self):
         super().__init__()
         self._pcb_related = True
         with document:
             self.fill_zones = False
-            """ [boolean=false] Fill all zones again and save the PCB """
+            """ [boolean=false] Enable this preflight """
 
     def apply(self):
         load_board()

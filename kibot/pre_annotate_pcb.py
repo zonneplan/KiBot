@@ -119,16 +119,18 @@ def sort_key(ops, obj, top=True):
 
 @pre_class
 class Annotate_PCB(BasePreFlight):  # noqa: F821
+    """ Annotate PCB
+        Annotates the PCB according to physical coordinates.
+        This preflight modifies the PCB and schematic, use it only in revision control environments.
+        Used to assign references according to footprint coordinates.
+        The project must be fully annotated first """
     def __init__(self):
         super().__init__()
         self._sch_related = True
         self._pcb_related = True
         with document:
             self.annotate_pcb = Annotate_PCBOptions
-            """ [dict={}] Annotates the PCB according to physical coordinates.
-                This preflight modifies the PCB and schematic, use it only in revision control environments.
-                Used to assign references according to footprint coordinates.
-                The project must be fully annotated first """
+            """ [dict={}]  Options for the `annotate_pcb` preflight """
 
     def get_example():
         """ Returns a YAML value for the example config """

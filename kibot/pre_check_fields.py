@@ -79,16 +79,18 @@ class FieldCheck(Optionable):
 
 @pre_class
 class Check_Fields(BasePreFlight):  # noqa: F821
+    """ Check Fields
+        Checks to apply to the schematic fields.
+        You can define conditions that must be met by the fields.
+        The checks are applied to every component in the schematic.
+        When an error is hit execution is stopped.
+        One use is to check that all components are suitable for a temperature range.
+        In this case a field must declare the temperature range """
     def __init__(self):
         super().__init__()
         with document:
             self.check_fields = FieldCheck
-            """ [dict|list(dict)=[]] Checks to apply to the schematic fields.
-                You can define conditions that must be met by the fields.
-                The checks are applied to every component in the schematic.
-                When an error is hit execution is stopped.
-                One use is to check that all components are suitable for a temperature range.
-                In this case a field must declare the temperature range """
+            """ [dict|list(dict)=[]] One or more check rules """
 
     def config(self, parent):
         super().config(parent)

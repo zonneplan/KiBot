@@ -51,16 +51,18 @@ def update_table(values):
 
 @pre_class
 class Update_PCB_Characteristics(BasePreFlight):  # noqa: F821
+    """ Update PCB Characteristics
+        Update the information in the Board Characteristics.
+        Starting with KiCad 7 you can paste a block containing board information using
+        Place* -> *Add Board Characteristics*. But this information is static, so if
+        you modify anything related to it the block will be obsolete.
+        This preflight tries to refresh the information """
     def __init__(self):
         super().__init__()
         self._pcb_related = True
         with document:
             self.update_pcb_characteristics = False
-            """ [boolean=false] Update the information in the Board Characteristics.
-                Starting with KiCad 7 you can paste a block containing board information using
-                *Place* -> *Add Board Characteristics*. But this information is static, so if
-                you modify anything related to it the block will be obsolete.
-                This preflight tries to refresh the information """
+            """ [boolean=false] Enable this preflight """
 
     def v2str(self, v):
         return pcbnew.StringFromValue(self.pcb_iu, self.pcb_units, v, True)

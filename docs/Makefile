@@ -33,7 +33,7 @@ source/usage.txt: ../kibot/__main__.py
 	../src/kibot --help > $@
 
 source/configuration/sup_preflights.rst: ../kibot/pre_*.py ../kibot/config_reader.py
-	../src/kibot --rst --help-preflights > $@
+	../src/kibot --rst --help-preflights -d source/configuration/preflights/ > $@
 
 source/configuration/sup_filters.rst: ../kibot/fil_*.py ../kibot/config_reader.py
 	../src/kibot --rst --help-filters > $@

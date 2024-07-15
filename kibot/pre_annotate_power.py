@@ -14,14 +14,16 @@ logger = get_logger(__name__)
 
 @pre_class
 class Annotate_Power(BasePreFlight):  # noqa: F821
+    """ Annotate Power
+        Annotates all power components.
+        This preflight modifies the schematic, use it only in revision control environments.
+        Used to solve ERC problems when using filters that remove power reference numbers """
     def __init__(self):
         super().__init__()
         self._sch_related = True
         with document:
             self.annotate_power = False
-            """ [boolean] Annotates all power components.
-                This preflight modifies the schematic, use it only in revision control environments.
-                Used to solve ERC problems when using filters that remove power reference numbers """
+            """ [boolean] Enable this preflight """
 
     def annotate_ki5(self):
         """ Annotate power components for KiCad 5 """

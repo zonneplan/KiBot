@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
-# License: GPL-3.0
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 """
@@ -1036,9 +1036,44 @@ def make_title(rst, tp, n, sub='^'):
 def print_preflights_help(rst):
     prefs = BasePreFlight.get_registered()
     ind_size, extra = make_title(rst, 'preflights', len(prefs))
+    split = GS.out_dir_in_cmd_line and rst_mode
+    ind = ' '*ind_size
+    if split:
+        print('.. toctree::')
+        print('   :maxdepth: 2\n')
     for n, o in OrderedDict(sorted(prefs.items())).items():
+        lines = trim(o.__doc__)
+        if split:
+            print(f'   preflights/{n}')
+            dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
+            f = open(dest, 'wt')
+            ori = sys.stdout
+            sys.stdout = f
+            print(RST_WARNING)
+            name2 = n.replace('_', ' ').capitalize() if not len(lines) else lines[0]
+            print(f'.. index::\n   pair: {name2}; {n}\n')
+            print(name2)
+            print('~'*len(name2))
+            print()
+            if len(lines):
+                t, r = reformat_text('\n'.join(lines[1:]), 0)
+                print(t)
+                print(r)
+                print()
+        else:
+            print(f'- {lines[0]}')
+            print(f'{ind}- {extra}Description: '+adapt_text(lines[1]))
+            if rst_mode:
+                f, r = reformat_text('\n'.join(lines[1:]), ind_size*2)
+                print(r)
+            else:
+                for ln in range(2, len(lines)):
+                    print('                 '+adapt_text(lines[ln]))
         print_output_options(n, o, ind_size, 'preflight - '+n, skip_options={'comment', 'name'}, skip_keys=True,
                              force_is_basic=True)
+        if split:
+            sys.stdout = ori
+            f.close()
 
 
 def print_variants_help(rst):
@@ -1225,6 +1260,9 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         f.write('\npreflight:\n')
         prefs = BasePreFlight.get_registered()
         for n, o in OrderedDict(sorted(prefs.items())).items():
+            lines = trim(o.__doc__+'.')
+            for ln in lines:
+                f.write('  # '+ln.rstrip()+'\n')
             obj = BasePreFlight.get_object_for(n)
             help, _, _ = obj.get_doc(n)
             if help:

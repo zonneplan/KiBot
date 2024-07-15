@@ -91,13 +91,14 @@ class FiltersOptions(Optionable):
 
 @pre_class
 class Filters(BasePreFlight, FiltersOptions):  # noqa: F821
+    """ Filters
+        A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
+        Avoid using it with the new *erc* and *drc* preflights.
+        Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).
+        To farther ignore these warnings use the `filters` option in the `global` section """
     def __init__(self):
         super().__init__()
-        self.set_doc('filters',
-                     "[list(dict)=[]] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.\n"
-                     "Avoid using it with the new *erc* and *drc* preflights.\n"
-                     "Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`).\n"
-                     "To farther ignore these warnings use the `filters` option in the `global` section")
+        self.set_doc('filters', "[list(dict)=[]] One or more filters")
 
     def get_example():
         """ Returns a YAML value for the example config """

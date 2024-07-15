@@ -38,6 +38,15 @@ class Run_DRCOptions(Optionable):
 
 @pre_class
 class Run_DRC(BasePreFlight):  # noqa: F821
+    """ Run DRC (**Deprecated for KiCad 8**)
+        Runs the DRC (Distance Rules Check) to ensure we have a valid PCB.
+        For KiCad 8 use *drc*
+        The report file name is controlled by the global output pattern (%i=drc %x=txt).
+        Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
+        If you need to check the parity use the `update_xml` preflight.
+        KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
+        This will change in the future.
+        If you use DRC exclusions please consult the `drc_exclusions_workaround` global option """
     def __init__(self):
         super().__init__()
         self._pcb_related = True
@@ -45,14 +54,7 @@ class Run_DRC(BasePreFlight):  # noqa: F821
         self._expand_ext = 'txt'
         with document:
             self.run_drc = Run_DRCOptions
-            """ [boolean|dict=false] (Deprecated for KiCad 8, use *drc*) Runs the DRC (Distance Rules Check)
-                to ensure we have a valid PCB.
-                The report file name is controlled by the global output pattern (%i=drc %x=txt).
-                Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported.
-                If you need to check the parity use the `update_xml` preflight.
-                KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot.
-                This will change in the future.
-                If you use DRC exclusions please consult the `drc_exclusions_workaround` global option """
+            """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
     def config(self, parent):
         super().config(parent)
