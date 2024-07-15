@@ -38,15 +38,17 @@ class SCH_ReplaceOptions(Base_ReplaceOptions):
 
 @pre_class
 class SCH_Replace(Base_Replace):  # noqa: F821
+    """ SCH Replace (**Deprecated**)
+        Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+        This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
+        This preflight modifies the schematics. Even when a back-up is done use it carefully """
     _context = 'SCH'
 
     def __init__(self):
         super().__init__()
         with document:
             self.sch_replace = SCH_ReplaceOptions
-            """ [dict={}] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
-                This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
-                This preflight modifies the schematics. Even when a back-up is done use it carefully """
+            """ [dict={}] Options for the `sch_replace` preflight """
 
     def apply(self):
         o = self.sch_replace

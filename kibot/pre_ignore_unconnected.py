@@ -11,13 +11,15 @@ logger = get_logger(__name__)
 
 @pre_class
 class Ignore_Unconnected(BasePreFlight):  # noqa: F821
+    """ Ignore Unconnected (**Deprecated**)
+        Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
+        It will also ignore KiCad 6 warnings when using `run_drc`.
+        Use the `ignore_unconnected` option from `run_drc`/`drc` instead """
     def __init__(self):
         super().__init__()
         with document:
             self.ignore_unconnected = False
-            """ [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`/`drc`.
-                Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
-                It will also ignore KiCad 6 warnings when using `run_drc` """
+            """ [boolean=false] Enable this preflight """
 
     def config(self, parent):
         super().config(parent)

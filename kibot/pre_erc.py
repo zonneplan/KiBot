@@ -16,6 +16,10 @@ logger = get_logger(__name__)
 
 @pre_class
 class ERC(XRC):  # noqa: F821
+    """ ERC
+        Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
+        You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template.
+        This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer """
     def __init__(self):
         super().__init__(ERCOptions)
         self._sch_related = True
@@ -23,9 +27,7 @@ class ERC(XRC):  # noqa: F821
         self._category = 'Schematic/docs'
         with document:
             self.erc = ERCOptions
-            """ [boolean|dict=false] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
-                You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template.
-                This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer """
+            """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
     def apply_filters(self, data):
         # Create a dict to translate sheets paths to file names

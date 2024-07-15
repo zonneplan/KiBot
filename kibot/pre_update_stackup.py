@@ -230,6 +230,12 @@ def update_table():
 
 @pre_class
 class Update_Stackup(BasePreFlight):  # noqa: F821
+    """ Update Stackup
+        Update the information in the Stackup Table.
+        Starting with KiCad 7 you can paste a block containing board information using
+        *Place* -> *Stackup Table*. But this information is static, so if
+        you modify anything related to it the block will be obsolete.
+        This preflight tries to refresh the information """
     def __init__(self):
         super().__init__()
         self._pcb_related = True

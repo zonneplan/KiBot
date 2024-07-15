@@ -12,6 +12,10 @@ logger = get_logger(__name__)
 
 @pre_class
 class Update_QR(BasePreFlight):  # noqa: F821
+    """ Update QR
+        Update the QR codes.
+        Complements the `qr_lib` output.
+        The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough """
     def __init__(self):
         super().__init__()
         self._sch_related = True

@@ -11,12 +11,14 @@ logger = get_logger(__name__)
 
 @pre_class
 class ERC_Warnings(BasePreFlight):  # noqa: F821
+    """ ERC Warnings (**Deprecated**)
+        Option for `run_erc`. ERC warnings are considered errors.
+        Use the `warnings_as_errors` option from `run_erc`/`erc` instead """
     def __init__(self):
         super().__init__()
         with document:
             self.erc_warnings = False
-            """ [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.
-                Option for `run_erc`. ERC warnings are considered errors """
+            """ [boolean=false] Enable this preflight """
 
     def config(self, parent):
         super().config(parent)

@@ -38,6 +38,11 @@ class Run_ERCOptions(Optionable):
 
 @pre_class
 class Run_ERC(BasePreFlight):  # noqa: F821
+    """ Run ERC (**Deprecated for KiCad 8**)
+        Runs the ERC (Electrical Rules Check).
+        For KiCad 8 use *erc*
+        To ensure the schematic is electrically correct.
+        The report file name is controlled by the global output pattern (%i=erc %x=txt) """
     def __init__(self):
         super().__init__()
         self._sch_related = True
@@ -45,10 +50,7 @@ class Run_ERC(BasePreFlight):  # noqa: F821
         self._expand_ext = 'txt'
         with document:
             self.run_erc = Run_ERCOptions
-            """ [boolean|dict=false] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
-                To ensure the schematic is electrically correct.
-                The report file name is controlled by the global output pattern (%i=erc %x=txt) """
-        self._init_from_defaults = True
+            """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
     def config(self, parent):
         super().config(parent)

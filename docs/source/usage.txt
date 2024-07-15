@@ -21,7 +21,7 @@ Usage:
   kibot [-v...] --help-list-rotations
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] [--rst] [-d OUT_DIR] --help-outputs
-  kibot [-v...] [--rst] --help-preflights
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-preflights
   kibot [-v...] [--rst] --help-variants
   kibot [-v...] --help-banners
   kibot [-v...] [--rst] --help-errors

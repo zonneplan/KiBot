@@ -44,16 +44,18 @@ class Update_XMLOptions(Optionable):
 
 @pre_class
 class Update_XML(BasePreFlight):  # noqa: F821
+    """ Update XML
+        Update the XML version of the BoM (Bill of Materials).
+        To ensure our generated BoM is up to date.
+        Note that this isn't needed when using the internal BoM generator (`bom`).
+        You can compare the PCB and schematic netlists using it (KiCad 6 and 7 only) """
     def __init__(self):
         super().__init__()
         self._check_pcb_parity = False
         self._sch_related = True
         with document:
             self.update_xml = Update_XMLOptions
-            """ [boolean|dict=false] Update the XML version of the BoM (Bill of Materials).
-                To ensure our generated BoM is up to date.
-                Note that this isn't needed when using the internal BoM generator (`bom`).
-                You can compare the PCB and schematic netlists using it """
+            """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
     def config(self, parent):
         super().config(parent)
