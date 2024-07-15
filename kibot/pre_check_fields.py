@@ -29,14 +29,28 @@ class FieldCheck(Optionable):
             self.field = ''
             """ *Name of field to check """
             self.regex = ''
-            """ *Regular expression to match the field content """
+            """ *Regular expression to match the field content. Note that technically we do a search, not a match """
             self.regexp = None
             """ {regex} """
             self.severity = 'error'
-            """ [error,warning,info,skip] If the regex matches what we do.
-                The *error* will stop execution """
-            self.skip_if_missing = True
-            """ If the field is missing we just continue. Otherwise we apply the *severity* """
+            """ [error,warning,info,skip,continue] Default severity applied to various situations.
+                The *error* will stop execution.
+                The *warning* and *info* will generate a message and continue with the rest of the tests.
+                In the *skip* case we jump to the next component.
+                Use *continue* to just skip this test and apply the rest
+                """
+            self.severity_missing = 'continue'
+            """ [error,warning,info,skip,continue,default] What to do if the field isn't defined.
+                Default means to use the *severity* option """
+            self.severity_no_match = 'default'
+            """ [error,warning,info,skip,continue,default] What to do when the regex doesn't match.
+                Default means to use the *severity* option """
+            self.severity_no_number = 'default'
+            """ [error,warning,info,skip,continue,default] What to do if we don't get a number for a *numeric_condition*.
+                Default means to use the *severity* option """
+            self.severity_fail_condition = 'default'
+            """ [error,warning,info,skip,continue,default] What to do when the *numeric_condition* isn't met.
+                Default means to use the *severity* option """
             self.numeric_condition = 'none'
             """ [>,>=,<,<=,=,none] Convert the group 1 of the regular expression to a number and apply this operation
                 to the *numeric_reference* value """
@@ -71,6 +85,8 @@ class Check_Fields(BasePreFlight):  # noqa: F821
             self.check_fields = FieldCheck
             """ [dict|list(dict)=[]] Checks to apply to the schematic fields.
                 You can define conditions that must be met by the fields.
+                The checks are applied to every component in the schematic.
+                When an error is hit execution is stopped.
                 One use is to check that all components are suitable for a temperature range.
                 In this case a field must declare the temperature range """
 
@@ -87,13 +103,16 @@ class Check_Fields(BasePreFlight):  # noqa: F821
                 "\n      numeric_condition: '<='"
                 "\n      numeric_reference: -10")
 
-    def apply_severity(self, check, msg):
-        if check.severity == 'error':
+    def apply_severity(self, check, severity, msg):
+        if severity == 'default':
+            severity = check.severity
+        if severity == 'error':
             GS.exit_with_error(msg, CHECK_FIELD)
-        elif check.severity == 'warning':
+        elif severity == 'warning':
             logger.warning(W_CHKFLD+msg)
-        elif check.severity == 'info':
+        elif severity == 'info':
             logger.info(msg)
+        return severity == 'skip'
 
     def run(self):
         load_sch()
@@ -105,26 +124,26 @@ class Check_Fields(BasePreFlight):  # noqa: F821
                 field = check.field.lower()
                 if not c.is_field(field):
                     # No field with this name
-                    if check.skip_if_missing:
-                        # Skip
-                        continue
-                    self.apply_severity(check, f'{c.ref} missing field `{check.field}`')
-                    break
+                    if self.apply_severity(check, check.severity_missing, f'{c.ref} missing field `{check.field}`'):
+                        break
                 else:
                     v = c.get_field_value(field)
                     match = check._regex.search(v)
                     if not match:
-                        self.apply_severity(check, f"{c.ref} field `{check.field}` doesn't match `{check.regex}` ({v})")
-                        break
+                        if self.apply_severity(check, check.severity_no_match,
+                                               f"{c.ref} field `{check.field}` doesn't match `{check.regex}` ({v})"):
+                            break
                     elif check.numeric_condition != 'none':
                         matched = match.group(1)
                         try:
                             matched = float(matched)
                         except ValueError:
-                            self.apply_severity(check, f"{c.ref} field `{check.field}` matched `{matched}`,"
-                                                " but isn't a number")
-                            break
+                            if self.apply_severity(check, check.severity_no_number,
+                                                   f"{c.ref} field `{check.field}` matched `{matched}`, but isn't a number"):
+                                break
+                            else:
+                                continue
                         if not OPERATIONS[check.numeric_condition](matched, check.numeric_reference):
-                            self.apply_severity(check, f"{c.ref} field `{check.field}` fails {matched} "
-                                                f"{check.numeric_condition} {check.numeric_reference}")
-                            break
+                            if self.apply_severity(check, check.severity_fail_condition, f"{c.ref} field `{check.field}` "
+                                                   f"fails {matched} {check.numeric_condition} {check.numeric_reference}"):
+                                break
