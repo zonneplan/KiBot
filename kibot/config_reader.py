@@ -1018,11 +1018,11 @@ def print_output_help(name):
     print_one_out_help(True, name, RegOutput.get_class_for(name))
 
 
-def make_title(rst, tp, n, sub='^'):
+def make_title(rst, tp, n, sub='^', skip_warning=False):
     global rst_mode
     rst_mode = rst
     logger.debug('{} supported {}'.format(n, tp))
-    if rst:
+    if rst and not skip_warning:
         print(RST_WARNING)
     title = 'Supported '+tp
     print(title)
@@ -1033,15 +1033,23 @@ def make_title(rst, tp, n, sub='^'):
     return 2, ''
 
 
-def print_preflights_help(rst):
-    prefs = BasePreFlight.get_registered()
-    ind_size, extra = make_title(rst, 'preflights', len(prefs))
+def _print_preflights_help(rst, deprecated=False):
+    prefs = list(BasePreFlight.get_registered().keys())
+    name = 'preflights'
+    if deprecated:
+        name = 'deprecated '+name
+    ind_size, extra = make_title(rst, name, len(prefs), skip_warning=deprecated)
     split = GS.out_dir_in_cmd_line and rst_mode
     ind = ' '*ind_size
     if split:
         print('.. toctree::')
         print('   :maxdepth: 2\n')
-    for n, o in OrderedDict(sorted(prefs.items())).items():
+    for n in sorted(prefs):
+        o = BasePreFlight.get_class_for(n)
+        if deprecated and 'Deprecated' not in o.__doc__:
+            continue
+        elif not deprecated and 'Deprecated' in o.__doc__:
+            continue
         lines = trim(o.__doc__)
         if split:
             print(f'   preflights/{n}')
@@ -1074,6 +1082,12 @@ def print_preflights_help(rst):
         if split:
             sys.stdout = ori
             f.close()
+
+
+def print_preflights_help(rst):
+    _print_preflights_help(rst)
+    print()
+    _print_preflights_help(rst, deprecated=True)
 
 
 def print_variants_help(rst):

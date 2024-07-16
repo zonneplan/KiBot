@@ -13,17 +13,24 @@ Supported preflights
    preflights/draw_stackup
    preflights/drc
    preflights/erc
-   preflights/erc_warnings
    preflights/fill_zones
    preflights/filters
-   preflights/ignore_unconnected
-   preflights/pcb_replace
-   preflights/run_drc
-   preflights/run_erc
-   preflights/sch_replace
    preflights/set_text_variables
    preflights/update_footprint
    preflights/update_pcb_characteristics
    preflights/update_qr
    preflights/update_stackup
    preflights/update_xml
+
+Supported deprecated preflights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. toctree::
+   :maxdepth: 2
+
+   preflights/erc_warnings
+   preflights/ignore_unconnected
+   preflights/pcb_replace
+   preflights/run_drc
+   preflights/run_erc
+   preflights/sch_replace
