@@ -41,7 +41,8 @@ class KiBoM(BaseVariant):  # noqa: F821
 
     @staticmethod
     def fix_dnx_filter(name, config_field):
-        name = name[0]
+        if isinstance(name, list):
+            name = name[0]
         if name.startswith('_kibom_dn') and name.endswith('_CONFIG_FIELD'):
             return name[:11]+config_field
         return name
