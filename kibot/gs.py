@@ -86,6 +86,7 @@ class GS(object):
     kibot_version = None
     n = datetime.now()
     on_windows = False
+    on_macos = False
     kicad_version = ''
     kicad_conf_path = None
     kicad_share_path = None

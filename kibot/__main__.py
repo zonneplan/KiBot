@@ -134,7 +134,7 @@ from .banner import get_banner, BANNERS
 from .gs import GS
 from . import dep_downloader
 from .misc import (EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN,
-                   FAILED_EXECUTE)
+                   FAILED_EXECUTE, W_ONMAC)
 from .pre_base import BasePreFlight
 from .error import KiPlotConfigurationError, config_error
 from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
@@ -330,14 +330,17 @@ def detect_kicad():
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting'))
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting', 'plugins'))
     # ~/.kicad_plugins and ~/.kicad
-    if 'HOME' in os.environ:
-        home = os.environ['HOME']
+    home = os.path.expanduser('~')
+    if home:
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad_plugins'))
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting'))
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting', 'plugins'))
         if GS.kicad_version_major >= 6:
             ver_dir = str(GS.kicad_version_major)+'.'+str(GS.kicad_version_minor)
-            local_share = os.path.join(home, '.local', 'share', 'kicad', ver_dir)
+            if GS.on_macos or GS.on_windows:
+                local_share = os.path.join(home, 'Documents', 'KiCad', ver_dir)
+            else:
+                local_share = os.path.join(home, '.local', 'share', 'kicad', ver_dir)
             GS.kicad_plugins_dirs.append(os.path.join(local_share, 'scripting'))
             GS.kicad_plugins_dirs.append(os.path.join(local_share, 'scripting', 'plugins'))
             GS.kicad_plugins_dirs.append(os.path.join(local_share, '3rdparty', 'plugins'))   # KiCad 6.0 PCM
@@ -403,6 +406,14 @@ def detect_windows():  # pragma: no cover (Windows)
     logger.warning(W_ONWIN+'Running on Windows, this is experimental, please report any problem')
 
 
+def detect_macos():  # pragma: no cover (Darwin)
+    if platform.system() != 'Darwin':
+        return
+    # Note: We assume this is the Python from KiCad, but we should check it ...
+    GS.on_macos = True
+    logger.warning(W_ONMAC+'Running on macOS, this is experimental, please report any problem')
+
+
 def check_needs_convert():
     """ Try to convert Altium PCBs to KiCad.
         If successful just use the converted file. """
@@ -442,8 +453,9 @@ def main():
     apply_warning_filter(args)
     log.stop_on_warnings = args.stop_on_warnings
     # Now we have the debug level set we can check (and optionally inform) KiCad info
-    detect_kicad()
     detect_windows()
+    detect_macos()
+    detect_kicad()
     debug_arguments(args)
 
     # Force iBoM to avoid the use of graphical stuff
