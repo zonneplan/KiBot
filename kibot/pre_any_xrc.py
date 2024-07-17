@@ -316,8 +316,15 @@ class XRC(BasePreFlight):
         if self._dont_stop and self.c_warn and log.stop_on_warnings:
             logger.error("Inconsistent options, asked to don't stop, but also to stop on warnings")
         # Report the result
-        self.report('error', self.c_err, data)
+        revert_stop_on_warnings = False
+        if self.c_warn and log.stop_on_warnings:
+            revert_stop_on_warnings = True
+            log.stop_on_warnings = False
         self.report('warning', self.c_warn, data)
+        if revert_stop_on_warnings:
+            log.stop_on_warnings = True
+            logger.check_warn_stop()
+        self.report('error', self.c_err, data)
         # Check the final status
         error_level = -1 if self._dont_stop else err
         if self.c_err:
