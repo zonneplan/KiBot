@@ -12,13 +12,6 @@ from .misc import MISSING_TOOL
 from .macros import macros, document, filter_class  # noqa: F401
 from . import log
 logger = log.get_logger()
-STR2ATTR = {'bga': pcbnew.PAD_PROP_BGA,
-            'local_fiducial': pcbnew.PAD_PROP_FIDUCIAL_LOCAL,
-            'global_fiducial': pcbnew.PAD_PROP_FIDUCIAL_GLBL,
-            'testpoint': pcbnew.PAD_PROP_TESTPOINT,
-            'heatsink': pcbnew.PAD_PROP_HEATSINK,
-            'castellated': pcbnew.PAD_PROP_CASTELLATED,
-            'none': pcbnew.PAD_PROP_NONE}
 
 
 class PadAttribute(Optionable):
@@ -47,7 +40,15 @@ class Separate_Pins(BaseFilter):  # noqa: F821
 
     def config(self, parent):
         super().config(parent)
-        self._attribute = {STR2ATTR[v] for v in self.attribute}
+        if not GS.ki5:
+            STR2ATTR = {'bga': pcbnew.PAD_PROP_BGA,
+                        'local_fiducial': pcbnew.PAD_PROP_FIDUCIAL_LOCAL,
+                        'global_fiducial': pcbnew.PAD_PROP_FIDUCIAL_GLBL,
+                        'testpoint': pcbnew.PAD_PROP_TESTPOINT,
+                        'heatsink': pcbnew.PAD_PROP_HEATSINK,
+                        'castellated': pcbnew.PAD_PROP_CASTELLATED,
+                        'none': pcbnew.PAD_PROP_NONE}
+            self._attribute = {STR2ATTR[v] for v in self.attribute}
 
     def filter(self, comp):
         """ Separate the selected pins as pseudo-components """
