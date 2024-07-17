@@ -44,6 +44,7 @@ Credits
    -  **KiCad Gerber Zipper**: @g200kg
    -  **pimpmykicadbom**: Anton Savov (@antto)
    -  **electro-grammar**: Kaspar Emanuel (@kasbah)
+   -  **kicad-testpoints**: Simon Hobbs (@snhobbs)
 
 -  **Others**:
 

@@ -330,6 +330,10 @@ def create_component_from_footprint(m, ref):
     return c
 
 
+class PadProperty(object):
+    pass
+
+
 def get_board_comps_data(comps):
     """ Add information from the PCB to the list of components from the schematic.
         Note that we do it every time the function is called to reset transformation filters like rot_footprint. """
@@ -370,6 +374,15 @@ def get_board_comps_data(comps):
             c.footprint_y = center.y
             (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
             c.has_pcb_info = True
+            c.pad_properties = {}
+            # Net
+            net_name = set()
+            net_class = set()
+            for pad in m.Pads():
+                net_name.add(pad.GetNetname())
+                net_class.add(pad.GetNetClassName())
+            c.net_name = ','.join(net_name)
+            c.net_class = ','.join(net_class)
             if GS.ki5:
                 # KiCad 5
                 if attrs == UI_SMD:
@@ -394,6 +407,16 @@ def get_board_comps_data(comps):
                     c.in_bom_pcb = False
                 if attrs & MOD_BOARD_ONLY:
                     c.in_pcb_only = True
+                for pad in m.Pads():
+                    p = PadProperty()
+                    center = pad.GetCenter()
+                    p.x = center.x
+                    p.y = center.y
+                    p.fab_property = pad.GetProperty()
+                    p.net = pad.GetNetname()
+                    p.net_class = pad.GetNetClassName()
+                    p.has_hole = pad.HasHole()
+                    c.pad_properties[pad.GetNumber()] = p
 
 
 def expand_comp_fields(c, env):

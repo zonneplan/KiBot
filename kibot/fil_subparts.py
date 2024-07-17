@@ -25,7 +25,10 @@ class DistributorsList(Optionable):
 @filter_class
 class Subparts(BaseFilter):  # noqa: F821
     """ Subparts
-        This filter implements the KiCost subparts mechanism """
+        This filter implements the KiCost subparts mechanism.
+        It allows to have more than one part in the same schematic symbol.
+        Some people use it to include connectors and cables related to a connector in the PCB.
+        [KiCost docs](https://hildogjr.github.io/KiCost/docs/_build/singlehtml/index.html) """
     def __init__(self):
         super().__init__()
         self._is_transform = True

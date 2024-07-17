@@ -894,7 +894,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
             # Index entry
             preface = preface[:-2] + f' :index:`: <pair: {context}; {k}>` '
         clines = len(lines)
-        print('{}{}{}'.format(preface, adapt_text(lines[0].strip()), '.' if clines == 1 and dot else ''))
+        print(preface+adapt_text(lines[0].strip()+('.' if clines == 1 and dot else '')))
         if rst_mode:
             if skip_keys:
                 ind_help = (indent+ind_size)*' '
@@ -925,7 +925,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
                 if in_list:
                     in_list = False
                     print()
-            print('{}{}'.format(ind_help+adapt_text(text), '.' if ln+1 == clines else ''))
+            print(ind_help+adapt_text(text+('.' if ln+1 == clines else '')))
         num_opts = num_opts+1
         if isinstance(v, type):
             new_context = context
@@ -1134,6 +1134,12 @@ def adapt_text(text):
                     t.append('.. warning::')
                     in_warning = True
                     ln = ln[:indent]+ln[indent+9:]
+                if 'Important: ' in ln:
+                    indent = ln.index('Important: ')
+                    t.append('')
+                    t.append('.. note::')
+                    in_warning = True
+                    ln = ln[:indent]+ln[indent+11:]
                 t.append(ln)
             if in_warning:
                 t.append('.. ')
@@ -1168,12 +1174,12 @@ def print_filters_help(rst):
             help = ''
             title = 'Undocumented'
         else:
-            title, help = reformat_text(help, ind_size)
+            title, help = reformat_text(help.strip()+'.', ind_size)
             title = f'(**{title}**)'
 
         print(f'- {extra}**{n}**: {title}')
         if help:
-            print(f'{help}.')
+            print(help)
         print_output_options(n, o, ind_size, 'filter - '+n)
 
 

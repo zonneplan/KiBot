@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Experimental Altium PCB conversion (#625)
 - Preflights:
   - check_fields: used to ensure conditions on desired fields (#643)
+- Filters:
+  - separate_pins: used to create testpoint reports (#638)
 - BoM: logo file name can contain env vars and/or ~ (#620)
 - Datasheet: option to classify the datasheets by reference.
 - KiCost: option to specify a configuration file (#615)

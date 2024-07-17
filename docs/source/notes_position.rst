@@ -476,6 +476,7 @@ The following fields contains the needed information:
 Additionally we support:
 
 -  ``Footprint Type`` (SMD, THT, VIRTUAL)
+-  ``Footprint Type NV`` (SMD, THT)
 -  ``Footprint X-Size``
 -  ``Footprint Y-Size``
 -  ``Footprint Populate``

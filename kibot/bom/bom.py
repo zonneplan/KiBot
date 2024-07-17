@@ -350,6 +350,13 @@ class ComponentGroup(object):
         if comp.virtual:
             type = 2
         self.fields[ColumnList.COL_FP_TYPE_L] = footprint_type_values[type]
+        if comp.smd:
+            type = footprint_type_values[0]
+        elif comp.tht:
+            type = footprint_type_values[1]
+        else:
+            type = ''
+        self.fields[ColumnList.COL_FP_TYPE_NV_L] = type
         self.fields[ColumnList.COL_FP_FIT_L] = footprint_populate_values[comp.fitted]
         self.fields[ColumnList.COL_FP_XS_L] = "{:.4f}".format(comp.footprint_w * conv)
         self.fields[ColumnList.COL_FP_YS_L] = "{:.4f}".format(comp.footprint_h * conv)
@@ -357,6 +364,8 @@ class ComponentGroup(object):
         self.fields[ColumnList.COL_SHEETPATH_L] = comp.sheet_path_h
         if not self.fields[ColumnList.COL_DESCRIPTION_L]:
             self.fields[ColumnList.COL_DESCRIPTION_L] = comp.desc
+        self.fields[ColumnList.COL_NET_NAME_L] = comp.net_name
+        self.fields[ColumnList.COL_NET_CLASS_L] = comp.net_class
 
     def get_row(self, columns):
         """ Return a dict of the KiCad data based on the supplied columns """

@@ -682,11 +682,14 @@ In addition to all the user defined fields you also have the following columns:
 -  **Footprint Rot**: The rotation angle for the footprint.
 -  **Footprint Side**: The side of the footprint, *bottom* or *top*.
 -  **Footprint Type**: The type of the footprint, can be: *SMD*, *THT* or *VIRTUAL*.
+-  **Footprint Type NV**: The type of the footprint, can be: *SMD* or *THT*. Empty if not defined.
    Affected by the **footprint_type_values** option.
 -  **Footprint Populate**: If the footprint is populated (soldered) or not, can be: *yes* or *no*.
    Affected by the **footprint_populate_values** option.
 -  **Footprint X-Size**: The footprint width, no rotation computed.
 -  **Footprint Y-Size**: The footprint height, no rotation computed.
+-  **Net Name**: Name of the nets associated with the footprint. Useful for testpoints.
+-  **Net Class**: Name of the net classes associated with the footprint. Useful for testpoints.
 -  **Part**: The name of the symbol for the component, without the library name.
 -  **Part Lib**: The name of the library for the symbol.
 -  **Datasheet**: The datasheet from the standard field.

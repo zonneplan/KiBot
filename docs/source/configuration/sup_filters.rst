@@ -34,7 +34,7 @@ Supported filters
 
 -  **field_rename**: (**Field Renamer**)
    This filter implements a field renamer. |br|
-   The internal `_kicost_rename` filter emulates the KiCost behavior.
+   The internal `_kicost_rename` filter emulates the KiCost behavior. |br|
 
    -  Valid keys:
 
@@ -53,7 +53,7 @@ Supported filters
    It also provides some shortcuts for common situations. |br|
    Note that matches aren't case sensitive and spaces at the beginning and the end are removed. |br|
    The internal `_mechanical` filter emulates the KiBoM behavior for default exclusions. |br|
-   The internal `_kicost_dnp` filter emulates KiCost's `dnp` field.
+   The internal `_kicost_dnp` filter emulates KiCost's `dnp` field. |br|
 
    -  Valid keys:
 
@@ -121,7 +121,7 @@ Supported filters
    This filter can rotate footprints, used for the positions file generation. |br|
    Some manufacturers use a different rotation than KiCad. |br|
    The `JLCPCB Rotation Offset` and `JLCPCB Position Offset` fields can be used to adjust special cases. |br|
-   The internal `_rot_footprint` filter implements the simplest case.
+   The internal `_rot_footprint` filter implements the simplest case. |br|
 
    -  Valid keys:
 
@@ -180,13 +180,35 @@ Supported filters
       -  ``skip_bottom`` :index:`: <pair: filter - rot_footprint; skip_bottom>` [:ref:`boolean <boolean>`] (default: ``false``) Do not rotate components on the bottom.
       -  ``skip_top`` :index:`: <pair: filter - rot_footprint; skip_top>` [:ref:`boolean <boolean>`] (default: ``false``) Do not rotate components on the top.
 
+-  **separate_pins**: (**Separate Pins**)
+   This filter can create pseudo-components from pins of the components. |br|
+   Is used to create special BoMs to perform electrical checks using nail of beds. |br|
+   Use it as a `pre_transform` filter for the `bom` output. |br|
+
+.. note::
+   The pin coordinates aren't affected by the rotation filters. |br|
+
+.. note::
+   Needs KiCad 6 or newer. |br|
+.. 
+
+   -  Valid keys:
+
+      -  ``attribute`` :index:`: <pair: filter - separate_pins; attribute>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['testpoint']``) (choices: "bga", "local_fiducial", "global_fiducial", "testpoint", "heatsink", "castellated", "none") Fabrication
+         attribute/s of the included pads.
+
+      -  ``comment`` :index:`: <pair: filter - separate_pins; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+      -  ``keep_component`` :index:`: <pair: filter - separate_pins; keep_component>` [:ref:`boolean <boolean>`] (default: ``false``) If we also keep the original component or we just get the selected pads.
+      -  ``name`` :index:`: <pair: filter - separate_pins; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
+      -  ``ref_sep`` :index:`: <pair: filter - separate_pins; ref_sep>` [:ref:`string <string>`] (default: ``'.'``) Separator used in the reference (i.e. R10.1).
+
 -  **spec_to_field**: (**Spec to Field**)
    This filter extracts information from the specs obtained from component distributors
    and fills fields. |br|
    I.e. create a field with the RoHS status of a component. |br|
    In order to make it work you must be able to get prices using the KiCost options of
    the `bom` output. Make sure you can do this before trying to use this filter. |br|
-   Usage `example <https://inti-cmnb.github.io/kibot-examples-1/spec_to_field/>`__.
+   Usage `example <https://inti-cmnb.github.io/kibot-examples-1/spec_to_field/>`__. |br|
 
    -  Valid keys:
 
@@ -217,7 +239,10 @@ Supported filters
       -  ``name`` :index:`: <pair: filter - spec_to_field; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
 
 -  **subparts**: (**Subparts**)
-   This filter implements the KiCost subparts mechanism.
+   This filter implements the KiCost subparts mechanism. |br|
+   It allows to have more than one part in the same schematic symbol. |br|
+   Some people use it to include connectors and cables related to a connector in the PCB. |br|
+   `KiCost docs <https://hildogjr.github.io/KiCost/docs/_build/singlehtml/index.html>`__. |br|
 
    -  Valid keys:
 
@@ -253,7 +278,7 @@ Supported filters
 -  **value_split**: (**Value Splitter**)
    This filter extracts information from the value and fills other fields. |br|
    I.e. extracts the tolerance and puts it in the `tolerance` field. |br|
-   Usage `example <https://inti-cmnb.github.io/kibot-examples-1/value_split/>`__.
+   Usage `example <https://inti-cmnb.github.io/kibot-examples-1/value_split/>`__. |br|
 
    -  Valid keys:
 
@@ -281,7 +306,7 @@ Supported filters
    *1N4001* when the variant in use is *V1*. |br|
    Note that this mechanism can be used to change a footprint, i.e. *VARIANT:Footprint* assigned
    with *Diode_SMD:D_0805_2012Metric* will change the footprint when *VARIANT* is in use. Of course the
-   footprints should be similar, or your PCB will become invalid.
+   footprints should be similar, or your PCB will become invalid. |br|
 
    -  Valid keys:
 
@@ -301,7 +326,7 @@ Supported filters
    footprints should be similar, or your PCB will become invalid. |br|
    The internal `_var_rename_kicost` filter is configured to emulate the KiCost behavior. You can create
    other filters to fine-tune the behavior, i.e. you can make the mechanism to be triggered by fields
-   like *kibot.VARIANT|FIELD*.
+   like *kibot.VARIANT|FIELD*. |br|
 
    -  Valid keys:
 

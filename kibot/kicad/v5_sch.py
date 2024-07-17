@@ -906,6 +906,7 @@ class SchematicComponent(object):
         self.has_pcb_info = False
         self.qty = 1
         self.annotation_error = False
+        self.net_name = self.net_class = ''
         # Position offset i.e. from the rotation filter
         self.pos_offset_x = self.pos_offset_y = None
         # KiCad 5 PCB flags (mutually exclusive)

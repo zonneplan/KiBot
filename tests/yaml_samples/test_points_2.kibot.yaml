@@ -1,0 +1,43 @@
+kibot:
+  version: 1
+
+filters:
+  - name: only_testpoints
+    comment: "Select testpoint pads"
+    type: separate_pins
+
+outputs:
+  - name: testpoints
+    comment: "Testpoint report"
+    type: bom
+    options:
+      pre_transform: ['_kicost_rename', 'only_testpoints']
+      exclude_filter: '_null'
+      dnf_filter: '_null'
+      exclude_marked_in_sch: false
+      group_fields: []
+      sort_style: ref
+      use_aux_axis_as_origin: true
+      ignore_dnf: false
+      format: XLSX
+      xlsx:
+        logo_scale: 1.7
+      footprint_type_values: 'SMT,THRU,'
+      columns:
+        - field: Row
+          name: ''
+        - field: References
+          name: Source
+        - field: Net Name
+          name: Net
+        - field: Net Class
+        - field: Footprint Side
+          name: Side
+        - field: Footprint X
+          name: X-Loc
+        - field: Footprint Y
+          name: Y-Loc
+        - field: Footprint Type
+          name: Pad Type
+        - field: Value
+        - field: Footprint
