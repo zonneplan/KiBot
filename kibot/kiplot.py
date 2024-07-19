@@ -407,6 +407,7 @@ def get_board_comps_data(comps):
                     c.in_bom_pcb = False
                 if attrs & MOD_BOARD_ONLY:
                     c.in_pcb_only = True
+                look_for_type = (not c.smd) and (not c.tht)
                 for pad in m.Pads():
                     p = PadProperty()
                     center = pad.GetCenter()
@@ -416,7 +417,17 @@ def get_board_comps_data(comps):
                     p.net = pad.GetNetname()
                     p.net_class = pad.GetNetClassName()
                     p.has_hole = pad.HasHole()
-                    c.pad_properties[pad.GetNumber()] = p
+                    name = pad.GetNumber()
+                    c.pad_properties[name] = p
+                    # Try to figure out if this is THT or SMD when not specified
+                    if look_for_type:
+                        if p.has_hole:
+                            # At least one THT, stop looking
+                            c.tht = True
+                            look_for_type = False
+                        elif name:
+                            # We have pad a valid pad, assume this is all SMD and keep looking
+                            c.smd = True
 
 
 def expand_comp_fields(c, env):

@@ -368,7 +368,7 @@
 		(path "/4865779a-1f67-4666-93e6-033755e85cb4")
 		(sheetname "Raíz")
 		(sheetfile "test_points.kicad_sch")
-		(attr smd exclude_from_pos_files exclude_from_bom)
+		(attr exclude_from_pos_files exclude_from_bom)
 		(fp_circle
 			(center 0 0)
 			(end 0 1.2)
@@ -656,7 +656,7 @@
 		(path "/efdd716d-c2dd-4abe-891e-5cca0c2ff88c")
 		(sheetname "Raíz")
 		(sheetfile "test_points.kicad_sch")
-		(attr through_hole exclude_from_pos_files exclude_from_bom)
+		(attr exclude_from_pos_files exclude_from_bom)
 		(fp_circle
 			(center 0 0)
 			(end 0 -1.7)

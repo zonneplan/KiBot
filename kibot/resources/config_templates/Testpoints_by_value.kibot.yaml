@@ -45,7 +45,7 @@ outputs:
           name: X-Loc
         - field: Footprint Y
           name: Y-Loc
-        - field: Footprint Type
+        - field: Footprint Type NV
           name: Pad Type
 
 ...
