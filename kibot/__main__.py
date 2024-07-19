@@ -20,7 +20,7 @@ Usage:
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
-  kibot [-v...] [--rst] --help-filters
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-filters
   kibot [-v...] [--markdown|--json|--rst] --help-dependencies
   kibot [-v...] [--rst] --help-global-options
   kibot [-v...] --help-list-offsets

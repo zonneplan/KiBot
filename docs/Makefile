@@ -36,7 +36,7 @@ source/configuration/sup_preflights.rst: ../kibot/pre_*.py ../kibot/config_reade
 	../src/kibot --rst --help-preflights -d source/configuration/preflights/ > $@
 
 source/configuration/sup_filters.rst: ../kibot/fil_*.py ../kibot/config_reader.py
-	../src/kibot --rst --help-filters > $@
+	../src/kibot --rst --help-filters -d source/configuration/filters/ > $@
 
 source/configuration/sup_variants.rst: ../kibot/var_*.py ../kibot/config_reader.py
 	../src/kibot --rst --help-variants > $@

@@ -1168,6 +1168,11 @@ def reformat_text(txt, ind_size):
 def print_filters_help(rst):
     filters = RegFilter.get_registered()
     ind_size, extra = make_title(rst, 'filters', len(filters))
+    split = GS.out_dir_in_cmd_line and rst_mode
+    ' '*ind_size
+    if split:
+        print('.. toctree::')
+        print('   :maxdepth: 2\n')
     for n, o in OrderedDict(sorted(filters.items())).items():
         help = o.__doc__
         if help is None:
@@ -1175,12 +1180,29 @@ def print_filters_help(rst):
             title = 'Undocumented'
         else:
             title, help = reformat_text(help.strip()+'.', ind_size)
-            title = f'(**{title}**)'
-
-        print(f'- {extra}**{n}**: {title}')
-        if help:
-            print(help)
+        if split:
+            print(f'   filters/{n}')
+            dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
+            f = open(dest, 'wt')
+            ori = sys.stdout
+            sys.stdout = f
+            print(RST_WARNING)
+            name2 = n.replace('_', ' ').capitalize() if not help else title
+            print(f'.. index::\n   pair: {name2}; {n}\n')
+            print(name2)
+            print('~'*len(name2))
+            print()
+            if help:
+                print(help)
+                print()
+        else:
+            print(f'- {extra}**{n}**: {title}')
+            if help:
+                print(help)
         print_output_options(n, o, ind_size, 'filter - '+n)
+        if split:
+            sys.stdout = ori
+            f.close()
 
 
 def print_global_options_help(rst):
