@@ -1,0 +1,9 @@
+# Testpoints selected by fabrication attribute
+kibot:
+  version: 1
+
+import:
+  - file: Testpoints_by_attr
+    definitions:
+      _KIBOT_IMPORT_ID: '_csv'
+      _KIBOT_TESTPOINTS_FORMAT: CSV

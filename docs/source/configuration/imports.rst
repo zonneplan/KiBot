@@ -312,6 +312,31 @@ Here is a list of currently defined templates and their outputs / groups:
 -  `PCBWay_stencil <https://www.pcbway.com>`__: same as **PCBWay**, but
    also generates gerbers for *F.Paste* and *B.Paste* layers.
 
+-  **Testpoints_by_attr**: Creates a testpoints report in XLSX format. All pads with the testpoint fabrication attribute will be reported.
+
+   - **_testpoints_attr**: The testpoint report
+
+-  **Testpoints_by_attr_csv**: Creates a testpoints report in CSV format. All pads with the testpoint fabrication attribute will be reported.
+
+   - **_testpoints_attr_csv**: The testpoint report
+
+-  **Testpoints_by_attr_html**: Creates a testpoints report in HTML format. All pads with the testpoint fabrication attribute will be reported.
+
+   - **_testpoints_attr_html**: The testpoint report
+
+-  **Testpoints_by_value**: Creates a testpoints report in XLSX format. All components with value starting with *TestPoint* will be reported.
+
+   - **_testpoints_value**: The testpoint report
+
+-  **Testpoints_by_value_csv**: Creates a testpoints report in CSV format. All components with value starting with *TestPoint* will be reported.
+
+   - **_testpoints_value_csv**: The testpoint report
+
+-  **Testpoints_by_value_html**: Creates a testpoints report in HTML format. All components with value starting with *TestPoint* will be reported.
+
+   - **_testpoints_value_html**: The testpoint report
+
+
 
 .. _templates-parameters:
 
@@ -377,6 +402,17 @@ ExportProject:
 
 Note that manufacturer templates named *\*_stencil* are created using parameters.
 As an example: *Elecrow_stencil* is just *Elecrow* customized like this:
+
+Tespoint reports:
+
+-  **_KIBOT_IMPORT_ID**: Suffix used for the output (default: '', but used for the CSV and HTML versions)
+-  **_KIBOT_IMPORT_DIR**: Target directory for the output (default: 'Testpoints')
+-  **_KIBOT_TESTPOINTS_FORMAT**: Format for the report, the default is 'XLSX', the CSV and HTML templates defines it accordingly.
+-  **_KIBOT_PRE_TRANSFORM**: Pre-transform filter. The default always includes *_kicost_rename*. In the attribute version it also includes
+   a filter named *_separate_pins_for_tp* used to filter the pads with testpoint attribute.
+-  **_KIBOT_DNF_FILTER**: The filter used to mark things as Do Not Fit. The default is '_null'. We include the DNF components.
+-  **_KIBOT_EXCLUDE_FILTER**: The filter used to exclude components. In the attributes version this filter is `_null` and in the values
+   version is a filter named *_separate_testpoints* that matches components with a value starting with *TestPoint*.
 
 
 .. code:: yaml
