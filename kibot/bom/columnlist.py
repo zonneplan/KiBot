@@ -120,9 +120,12 @@ class ColumnList:
         COL_FP_ROT,
         COL_FP_SIDE,
         COL_FP_TYPE,
+        COL_FP_TYPE_NV,
         COL_FP_FIT,
         COL_FP_XS,
         COL_FP_YS,
+        COL_NET_NAME,
+        COL_NET_CLASS,
     ]
 
     # Default columns
