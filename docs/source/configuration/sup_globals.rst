@@ -49,9 +49,9 @@
          `use_dir_for_preflights` is disabled.
       -  ``disable_3d_alias_as_env`` :index:`: <pair: global options; disable_3d_alias_as_env>` [:ref:`boolean <boolean>`] (default: ``false``) Disable the use of environment and text variables as 3D models aliases.
       -  ``drc_exclusions_workaround`` :index:`: <pair: global options; drc_exclusions_workaround>` [:ref:`boolean <boolean>`] (default: ``false``) KiCad 6 introduced DRC exclusions. They are stored in the project but ignored by the Python API.
-         This is reported as bug number 11562 (https://gitlab.com/kicad/code/kicad/-/issues/11562).
+         This problem affects KiCad 6 and 7.
          If you really need exclusions enable this option, this will use the GUI version of the DRC (slower).
-         Current KiCad version is 6.0.7 and the bug is still there.
+         Note that this isn't needed for KiCad 8 and the `drc` preflight.
       -  ``drill_size_increment`` :index:`: <pair: global options; drill_size_increment>` [:ref:`number <number>`] (default: ``0.05``) This is the difference between drill tools in millimeters.
          A manufacturer with 0.05 of increment has drills for 0.1, 0.15, 0.2, 0.25, etc..
       -  ``edge_connector`` :index:`: <pair: global options; edge_connector>` [:ref:`string <string>`] (default: ``'no'``) (choices: "yes", "no", "bevelled") Has the PCB edge connectors?
