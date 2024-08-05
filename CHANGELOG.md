@@ -48,6 +48,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Variants:
   - Problems when remove_solder_paste_for_dnp and remove_adhesive_for_dnp are
     both disabled (remove_solder_mask_for_dnp wrongly defined) (#632)
+  - Problems when using `set_text_variables_before_output` (#649)
 - Draw Stackup:
   - Dimension always drawn on User.Drawings layer (#629)
   - Problems when the PCB wasn't loaded by another preflight

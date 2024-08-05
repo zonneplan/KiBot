@@ -83,6 +83,7 @@ Fixed:
    -  Problems when remove_solder_paste_for_dnp and
       remove_adhesive_for_dnp are both disabled
       (remove_solder_mask_for_dnp wrongly defined) (#632)
+   -  Problems when using ``set_text_variables_before_output`` (#649)
 
 -  Draw Stackup:
 

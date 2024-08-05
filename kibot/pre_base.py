@@ -220,8 +220,8 @@ class BasePreFlight(Optionable, Registrable):
 
     def _find_subpcb(self):
         # Preflights doesn't have a variant, but we could have one global default
-        if hasattr(self, '_variant') and self._variant and self.variant._sub_pcb:
-            return self.variant._sub_pcb.name
+        if hasattr(self, '_variant') and self._variant and self._variant._sub_pcb:
+            return self._variant._sub_pcb.name
         return Optionable._find_global_subpcb()
 
     def ensure_tool(self, name):
