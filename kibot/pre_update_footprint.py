@@ -32,4 +32,4 @@ class Update_Footprint(BasePreFlight):  # noqa: F821
     def apply(self):
         if not self.update_footprint:
             logger.warning(W_NOFOOTP+'Nothing to update in `update_footprint`')
-        replace_footprints(GS.pcb_file, {k: None for k in self.update_footprint}, logger)
+        replace_footprints(GS.pcb_file, dict.fromkeys(self.update_footprint), logger)
