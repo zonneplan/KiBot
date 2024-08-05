@@ -343,7 +343,7 @@ def copy_fields(c, m):
         if c.is_field(name.lower()):
             # Already there
             old = c.get_field_value(name)
-            if old != value and not (old == '~' and value == ''):
+            if value and old != value:
                 logger.warning(f"{W_VALMISMATCH}{name} field mismatch for `{c.ref}` (SCH: `{old}` PCB: `{value}`)")
                 c.set_field(name, value)
         else:
