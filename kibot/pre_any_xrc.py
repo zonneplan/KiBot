@@ -57,6 +57,11 @@ class ERCOptions(FiltersOptions):
             """ Continue even if we detect errors """
             self.units = 'millimeters'
             """ [millimeters,inches,mils] Units used for the positions. Affected by global options """
+            self.category = Optionable
+            """ [string|list(string)=''] {comma_sep} The category for this preflight. If not specified an internally defined
+                category is used.
+                Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                The categories are currently used for `navigate_results` """
         super().__init__()
         self.filters = FilterOptionsXRC
         self.set_doc('filters', " [list(dict)=[]] Used to manipulate the violations. Avoid using the *filters* preflight")
@@ -68,6 +73,8 @@ class ERCOptions(FiltersOptions):
         super().config(parent)
         if not self.format:
             self.format = ['HTML']
+        if not self.category:
+            self.category = self.force_list(parent._category)
 
 
 class DRCOptions(ERCOptions):
