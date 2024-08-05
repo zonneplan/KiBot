@@ -41,6 +41,10 @@ Added
       Testpoints_by_value_CSV and Testpoints_by_value_HTML: Used to
       generate testpoint reports (#638)
 
+-  Command line:
+
+   -  Option to also list sub-PCBs found in variants
+
 -  BoM: logo file name can contain env vars and/or ~ (#620)
 -  Datasheet: option to classify the datasheets by reference.
 -  KiCost: option to specify a configuration file (#615)

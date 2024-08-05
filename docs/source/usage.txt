@@ -9,7 +9,7 @@ Usage:
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
-         --list-variants
+        [--sub-pcbs] --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
@@ -65,6 +65,7 @@ Options:
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
+  --sub-pcbs                       When listing variants also include sub-PCBs
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
   -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)

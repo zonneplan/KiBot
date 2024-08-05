@@ -16,7 +16,7 @@ Usage:
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
-         --list-variants
+        [--sub-pcbs] --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
@@ -72,6 +72,7 @@ Options:
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
+  --sub-pcbs                       When listing variants also include sub-PCBs
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
   -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
@@ -204,7 +205,7 @@ def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_gro
         logger.info("")
 
 
-def list_variants(logger, only_names):
+def list_variants(logger, only_names, sub_pcbs):
     variants = RegOutput.get_variants()
     if not variants:
         if not only_names:
@@ -212,11 +213,20 @@ def list_variants(logger, only_names):
         return
     if only_names:
         for name in sorted(variants.keys()):
-            logger.info(name)
+            v = variants[name]
+            if sub_pcbs and v.sub_pcbs:
+                for s in v.sub_pcbs:
+                    logger.info(f'{name}[{s.name}]')
+            else:
+                logger.info(name)
         return
     logger.info("Available variants: 'comment/description' (name) [type]")
     for name in sorted(variants.keys()):
         logger.info('- '+str(variants[name]))
+        v = variants[name]
+        if sub_pcbs and v.sub_pcbs:
+            for s in v.sub_pcbs:
+                logger.info(f'  - {s.name}')
 
 
 def solve_config(a_plot_config, quiet=False):
@@ -569,7 +579,7 @@ def main():
         sys.exit(0)
 
     if args.list_variants:
-        list_variants(logger, args.only_names)
+        list_variants(logger, args.only_names, args.sub_pcbs)
         sys.exit(0)
 
     if args.makefile:
