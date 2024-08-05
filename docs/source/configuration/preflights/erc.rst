@@ -15,6 +15,11 @@ This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer
       -  Valid keys:
 
          -  **output** :index:`: <pair: preflight - erc - erc; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated archive (%i=erc %x=according to format). Affected by global options.
+         -  ``category`` :index:`: <pair: preflight - erc - erc; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this preflight. If not specified an internally defined
+            category is used.
+            Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+            The categories are currently used for `navigate_results`.
+
          -  ``dir`` :index:`: <pair: preflight - erc - erc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
          -  ``dont_stop`` :index:`: <pair: preflight - erc - erc; dont_stop>` [:ref:`boolean <boolean>`] (default: ``false``) Continue even if we detect errors.
          -  ``enabled`` :index:`: <pair: preflight - erc - erc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the check. This is the replacement for the boolean value.

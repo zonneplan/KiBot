@@ -17,6 +17,11 @@ GUI exclusions and schematic parity are supported
 
          -  **output** :index:`: <pair: preflight - drc - drc; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated archive (%i=drc %x=according to format). Affected by global options.
          -  ``all_track_errors`` :index:`: <pair: preflight - drc - drc; all_track_errors>` [:ref:`boolean <boolean>`] (default: ``false``) Report all the errors for all the tracks, not just the first.
+         -  ``category`` :index:`: <pair: preflight - drc - drc; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this preflight. If not specified an internally defined
+            category is used.
+            Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+            The categories are currently used for `navigate_results`.
+
          -  ``dir`` :index:`: <pair: preflight - drc - drc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
          -  ``dont_stop`` :index:`: <pair: preflight - drc - drc; dont_stop>` [:ref:`boolean <boolean>`] (default: ``false``) Continue even if we detect errors.
          -  ``enabled`` :index:`: <pair: preflight - drc - drc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the check. This is the replacement for the boolean value.

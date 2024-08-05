@@ -43,6 +43,7 @@ Added
    -  Solder paste usage stats (#616)
    -  Support for variants (See #616)
 
+-  xDRC: configurable category (#647)
 -  Schematic:
 
    -  Support for text boxes inside symbols (#621)

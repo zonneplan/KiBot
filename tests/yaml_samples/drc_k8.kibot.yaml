@@ -10,3 +10,10 @@ global:
 preflight:
   drc:
     format: RPT,HTML,CSV,JSON
+    category: 'Tests'
+
+outputs:
+  - name: 'navigate'
+    comment: "Browse the results"
+    type: navigate_results
+    run_by_default: false
