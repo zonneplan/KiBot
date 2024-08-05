@@ -372,6 +372,9 @@ class Globals(FiltersOptions):
             self.include_components_from_pcb = True
             """ Include components that are only in the PCB, not in the schematic, for filter and variants processing.
                 Note that version 1.6.3 and older ignored them """
+            self.use_pcb_fields = True
+            """ When a PCB is processed also use fields defined in the PCB, for filter and variants processing.
+                This is available for KiCad 8 and newer """
             self.allow_component_ranges = True
             """ Allow using ranges like *R5-R20* in the `show_components` and `highlight` options.
                 If you have references that looks like a range you should disable this option """

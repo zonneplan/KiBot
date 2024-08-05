@@ -11,7 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Preflights:
   - check_fields: used to ensure conditions on desired fields (#643)
 - Filters:
-  - separate_pins: used to create testpoint reports (#638)
+  - `separate_pins`: used to create testpoint reports (#638)
+  - `_null` can be used to skip the filters processing
+- Global options:
+  - `use_pcb_fields`: allows using fields defined in the PCB (and not
+    only in the schematic), enabled by default (#648 and #650)
 - Internal templates:
   - Testpoints_by_attr, Testpoints_by_attr_CSV, Testpoints_by_attr_HTML,
     Testpoints_by_value, Testpoints_by_value_CSV and Testpoints_by_value_HTML:
@@ -27,8 +31,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Support for text boxes inside symbols (#621)
 - Worksheet:
   - Support for KiCad 8 bitmaps (#623)
-- Filters:
-  - `_null` can be used to skip the filters processing
 
 ### Fixed:
 - iBoM: *highlight_pin1* option didn't allow the use of the new choices.

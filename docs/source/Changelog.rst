@@ -26,7 +26,13 @@ Added
 
 -  Filters:
 
-   -  separate_pins: used to create testpoint reports (#638)
+   -  ``separate_pins``: used to create testpoint reports (#638)
+   -  ``_null`` can be used to skip the filters processing
+
+-  Global options:
+
+   -  ``use_pcb_fields``: allows using fields defined in the PCB (and
+      not only in the schematic), enabled by default (#648 and #650)
 
 -  Internal templates:
 
@@ -51,10 +57,6 @@ Added
 -  Worksheet:
 
    -  Support for KiCad 8 bitmaps (#623)
-
--  Filters:
-
-   -  ``_null`` can be used to skip the filters processing
 
 Fixed:
 ~~~~~~

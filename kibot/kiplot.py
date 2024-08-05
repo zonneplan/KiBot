@@ -334,6 +334,24 @@ class PadProperty(object):
     pass
 
 
+def copy_fields(c, m):
+    if not hasattr(m, 'GetFields'):
+        return
+    for f in m.GetFields():
+        name = f.GetName()
+        value = f.GetText()
+        if c.is_field(name.lower()):
+            # Already there
+            old = c.get_field_value(name)
+            if old != value and not (old == '~' and value == ''):
+                logger.warning(f"{W_VALMISMATCH}{name} field mismatch for `{c.ref}` (SCH: `{old}` PCB: `{value}`)")
+                c.set_field(name, value)
+        else:
+            # New one
+            logger.debug(f'Adding {name} field to {c.ref} ({value})')
+            c.set_field(name, value)
+
+
 def get_board_comps_data(comps):
     """ Add information from the PCB to the list of components from the schematic.
         Note that we do it every time the function is called to reset transformation filters like rot_footprint. """
@@ -375,6 +393,8 @@ def get_board_comps_data(comps):
             (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
             c.has_pcb_info = True
             c.pad_properties = {}
+            if GS.global_use_pcb_fields:
+                copy_fields(c, m)
             # Net
             net_name = set()
             net_class = set()

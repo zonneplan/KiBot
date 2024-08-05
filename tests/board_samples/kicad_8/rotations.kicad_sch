@@ -184,6 +184,16 @@
 			)
 		)
 	)
+	(text "Q3 is rotated using a field\nonly found in the PCB"
+		(exclude_from_sim no)
+		(at 110.49 40.894 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+		)
+		(uuid "002436c9-cca0-428c-8b3a-624e67a0a337")
+	)
 	(symbol
 		(lib_id "Device:Q_NPN_BCE")
 		(at 55.88 50.8 0)
@@ -605,15 +615,6 @@
 			)
 		)
 		(property "Description" ""
-			(at 106.68 50.8 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "JLCRotOffset" "270"
 			(at 106.68 50.8 0)
 			(effects
 				(font

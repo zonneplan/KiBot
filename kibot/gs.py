@@ -172,6 +172,7 @@ class GS(object):
     global_kiauto_wait_start = None
     global_layer_defaults = None
     global_include_components_from_pcb = None
+    global_use_pcb_fields = None
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.

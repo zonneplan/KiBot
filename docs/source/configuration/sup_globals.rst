@@ -196,5 +196,7 @@
          the `erc` and `drc` preflights. Also KiCad 6 dimensions.
       -  ``use_dir_for_preflights`` :index:`: <pair: global options; use_dir_for_preflights>` [:ref:`boolean <boolean>`] (default: ``true``) Use the global `dir` as subdir for the preflights.
       -  ``use_os_env_for_expand`` :index:`: <pair: global options; use_os_env_for_expand>` [:ref:`boolean <boolean>`] (default: ``true``) In addition to KiCad text variables also use the OS environment variables when expanding `${VARIABLE}`.
+      -  ``use_pcb_fields`` :index:`: <pair: global options; use_pcb_fields>` [:ref:`boolean <boolean>`] (default: ``true``) When a PCB is processed also use fields defined in the PCB, for filter and variants processing.
+         This is available for KiCad 8 and newer.
       -  ``variant`` :index:`: <pair: global options; variant>` [:ref:`string <string>`] (default: ``''``) Default variant to apply to all outputs.
 
