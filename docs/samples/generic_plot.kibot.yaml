@@ -383,11 +383,17 @@ outputs:
       # [string|list(string)='_null'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
       dnf_filter: '_null'
-      # [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd). Affected by global options
+      # [string='BRD'] [BRD,BVR] Format used for the generated file. The BVR file format is bigger but keeps
+      # more information, like alphanumeric pin names
+      format: 'BRD'
+      # [string='%f-%i%I%v.%x'] Filename for the output (%i=boardview, %x=brd/brv). Affected by global options
       output: '%f-%i%I%v.%x'
       # [string|list(string)='_null'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_null'
+      # [boolean=true] Sort components by reference. Disable this option to get a file closer to what
+      # kicad-boardview generates
+      sorted: true
       # [string=''] Board variant to apply.
       # Used for sub-PCBs
       variant: ''
