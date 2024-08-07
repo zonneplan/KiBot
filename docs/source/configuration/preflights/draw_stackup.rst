@@ -19,9 +19,9 @@ stackup
 
       -  Valid keys:
 
-         -  **columns** :index:`: <pair: preflight - draw_stackup - draw_stackup; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of columns to display.
+         -  **columns** :index:`: <pair: preflight - draw_stackup - draw_stackup; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: computed for your project) List of columns to display.
             Can be just the name of the column.
-            Available columns are *gerber*, *drawing* and *description*.
+            Available columns are *gerber*, *drawing*, *thickness* and *description*.
             When empty KiBot will add them in the above order, skipping the *gerber* if not available.
 
             -  Valid keys:

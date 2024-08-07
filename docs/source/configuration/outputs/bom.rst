@@ -305,7 +305,7 @@ Parameters:
          This is done using a **_expand_text_vars** filter.
          If you need to customize the filter, or apply it before, you can disable this option and
          add a custom filter to the filter chain.
-      -  ``fit_field`` :index:`: <pair: output - bom - options; fit_field>` [:ref:`string <string>`] (default: ``'Config'``) [:ref:`case insensitive <no_case>`]Field name used for internal filters (not for variants).
+      -  ``fit_field`` :index:`: <pair: output - bom - options; fit_field>` [:ref:`string <string>`] (default: ``'config'``) [:ref:`case insensitive <no_case>`]Field name used for internal filters (not for variants).
       -  ``footprint_populate_values`` :index:`: <pair: output - bom - options; footprint_populate_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'no,yes'``) [:ref:`comma separated <comma_sep>`] Values for the `Footprint Populate` column.
 
       -  ``footprint_type_values`` :index:`: <pair: output - bom - options; footprint_type_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'SMD,THT,VIRTUAL'``) [:ref:`comma separated <comma_sep>`] Values for the `Footprint Type` column.

@@ -540,8 +540,8 @@ outputs:
       # If you need to customize the filter, or apply it before, you can disable this option and
       # add a custom filter to the filter chain
       expand_text_vars: true
-      # [string='Config'] {no_case} Field name used for internal filters (not for variants)
-      fit_field: 'Config'
+      # [string='config'] {no_case} Field name used for internal filters (not for variants)
+      fit_field: 'config'
       # [string|list(string)='no,yes'] {comma_sep} Values for the `Footprint Populate` column
       footprint_populate_values: 'no,yes'
       # [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} Values for the `Footprint Type` column
