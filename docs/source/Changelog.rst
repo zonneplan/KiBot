@@ -20,6 +20,8 @@ Added
 ~~~~~
 
 -  Experimental Altium PCB conversion (#625)
+-  Most places where a field is expected now support ``_field_*`` to
+   fetch the globally defined value.
 -  Preflights:
 
    -  check_fields: used to ensure conditions on desired fields (#643)
@@ -33,6 +35,7 @@ Added
 
    -  ``use_pcb_fields``: allows using fields defined in the PCB (and
       not only in the schematic), enabled by default (#648 and #650)
+   -  ``field_current``: to specify the field used for current ratings
 
 -  Internal templates:
 

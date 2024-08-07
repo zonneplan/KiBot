@@ -18,7 +18,7 @@ Spec to Field
 
       -  **from_output** :index:`: <pair: filter - spec_to_field; from_output>` [:ref:`string <string>`] (default: ``''``) Name of the output used to collect the specs.
          Currently this must be a `bom` output with KiCost enabled and a distributor that returns specs.
-      -  **specs** :index:`: <pair: filter - spec_to_field; specs>` [:ref:`list(dict) <list(dict)>` | :ref:`dict <dict>`] (default: ``[{'spec': '_voltage', 'field': 'Voltage'}, {'spec': '_tolerance', 'field': 'Tolerance'}, {'spec': '_power', 'field': 'Power'}, {'spec': '_current', 'field': 'Current'}]``) One or more specs to be copied.
+      -  **specs** :index:`: <pair: filter - spec_to_field; specs>` [:ref:`list(dict) <list(dict)>` | :ref:`dict <dict>`] (default: ``[{'spec': '_voltage', 'field': '_field_voltage'}, {'spec': '_tolerance', 'field': '_field_tolerance'}, {'spec': '_power', 'field': '_field_power'}, {'spec': '_current', 'field': '_field_current'}]``) One or more specs to be copied.
 
          -  Valid keys:
 

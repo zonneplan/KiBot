@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.7.1] - UNRELEASED
 ### Added
 - Experimental Altium PCB conversion (#625)
+- Most places where a field is expected now support `_field_*` to fetch the
+  globally defined value.
 - Preflights:
   - check_fields: used to ensure conditions on desired fields (#643)
 - Filters:
@@ -16,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Global options:
   - `use_pcb_fields`: allows using fields defined in the PCB (and not
     only in the schematic), enabled by default (#648 and #650)
+  - `field_current`: to specify the field used for current ratings
 - Internal templates:
   - Testpoints_by_attr, Testpoints_by_attr_CSV, Testpoints_by_attr_HTML,
     Testpoints_by_value, Testpoints_by_value_CSV and Testpoints_by_value_HTML:
