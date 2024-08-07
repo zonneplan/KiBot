@@ -1781,7 +1781,7 @@ outputs:
     type: 'kikit_present'
     dir: 'Example/kikit_present_dir'
     options:
-      # [dict|list(dict)={}] One or more boards that compose your project.
+      # [dict|list(dict)=[{}]] One or more boards that compose your project.
       # When empty we will use only the main PCB for the current project
       boards:
         # [string=''] How to obtain the back view of the PCB.
@@ -3323,7 +3323,7 @@ outputs:
       # [string='%f-%i%I%v.%x'] Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
       # You must use %x in the name to get a symbols lib and a footprints lib. Affected by global options
       output: '%f-%i%I%v.%x'
-      # [dict|list(dict)={}] QR codes to include in the library
+      # [dict|list(dict)=[{}]] QR codes to include in the library
       qrs:
         # [string='low'] [low,medium,quartile,high] Error correction level
         - correction_level: 'low'
