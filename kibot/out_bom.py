@@ -476,7 +476,7 @@ class BoMOptions(BaseOptions):
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
             """ *Exclude DNF (Do Not Fit) components """
-            self.fit_field = 'Config'
+            self.fit_field = 'config'
             """ {no_case} Field name used for internal filters (not for variants) """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
