@@ -24,8 +24,8 @@ DEF_CHECK = ['_value', '_tolerance', '_power', '_current', '_voltage', '_temp_co
 
 class SpecOptions(Optionable):
     """ A spec to copy """
-    _default = [{'spec': '_voltage', 'field': 'Voltage'}, {'spec': '_tolerance', 'field': 'Tolerance'},
-                {'spec': '_power', 'field': 'Power'}, {'spec': '_current', 'field': 'Current'}]
+    _default = [{'spec': '_voltage', 'field': '_field_voltage'}, {'spec': '_tolerance', 'field': '_field_tolerance'},
+                {'spec': '_power', 'field': '_field_power'}, {'spec': '_current', 'field': '_field_current'}]
 
     def __init__(self):
         super().__init__()
@@ -221,7 +221,8 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
         self.solve_from()
         self.check_coherent(comp)
         for s in self.specs:
-            field = s.field.lower()
+            field_solved = Optionable.solve_field_name(s.field)
+            field = field_solved.lower()
             spec_name = []
             spec_val = set()
             for sp in s.spec:
@@ -245,11 +246,11 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
                     continue
                 if not self.compare(cur_val, spec_val):
                     # Collision
-                    desc = "{} field `{}` collision, has `{}`, found `{}`".format(comp.ref, s.field, cur_val, spec_val)
+                    desc = "{} field `{}` collision, has `{}`, found `{}`".format(comp.ref, field_solved, cur_val, spec_val)
                     if s.collision == 'warning':
                         logger.warning(W_FLDCOLLISION+desc)
                     elif s.collision == 'error':
                         raise KiPlotConfigurationError(desc)
             if s.policy == 'overwrite' or (self.p == 'update' and has_field) or (s.policy == 'new' and not has_field):
-                comp.set_field(s.field, spec_val)
-                logger.debugl(2, "- {} {}: {} ({})".format(comp.ref, s.field, spec_val, spec_name))
+                comp.set_field(field_solved, spec_val)
+                logger.debugl(2, "- {} {}: {} ({})".format(comp.ref, field_solved, spec_val, spec_name))

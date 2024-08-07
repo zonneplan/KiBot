@@ -672,11 +672,26 @@ class Optionable(object):
 
     @staticmethod
     def solve_field_name(field, empty_when_none=False):
-        if field != '_field_lcsc_part':
+        if field[:7] != '_field_':
             return field
-        logger.debug('Looking for LCSC field name')
-        field = Optionable._solve_field_name(field, empty_when_none)
-        logger.debug('Using {} as LCSC field name'.format(field))
+        rest = field[7:]
+        if rest == 'current':
+            return GS.global_field_current[0] if GS.global_field_current else field
+        if rest == 'lcsc_part':
+            logger.debug('Looking for LCSC field name')
+            field = Optionable._solve_field_name(field, empty_when_none)
+            logger.debug('Using {} as LCSC field name'.format(field))
+            return field
+        if rest == 'package':
+            return GS.global_field_package[0] if GS.global_field_package else field
+        if rest == 'power':
+            return GS.global_field_power[0] if GS.global_field_power else field
+        if rest == 'temp_coef':
+            return GS.global_field_temp_coef[0] if GS.global_field_temp_coef else field
+        if rest == 'tolerance':
+            return GS.global_field_tolerance[0] if GS.global_field_tolerance else field
+        if rest == 'voltage':
+            return GS.global_field_voltage[0] if GS.global_field_voltage else field
         return field
 
 
