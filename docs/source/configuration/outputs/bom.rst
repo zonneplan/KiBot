@@ -46,7 +46,7 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **field** :index:`: <pair: output - bom - options - columns - join; field>` [:ref:`string <string>`] (default: ``''``) Name of the field.
+                  -  **field** :index:`: <pair: output - bom - options - columns - join; field>` [:ref:`string <string>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Name of the field.
                   -  ``text`` :index:`: <pair: output - bom - options - columns - join; text>` [:ref:`string <string>`] (default: ``''``) Text to use instead of a field. This option is incompatible with the `field` option.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
@@ -73,7 +73,7 @@ Parameters:
       -  **format** :index:`: <pair: output - bom - options; format>` [:ref:`string <string>`] (default: ``'Auto'``) (choices: "HTML", "CSV", "TXT", "TSV", "XML", "XLSX", "HRTXT", "Auto") format for the BoM.
          `Auto` defaults to CSV or a guess according to the options.
          HRTXT stands for Human Readable TeXT.
-      -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [:ref:`list(string) <list(string)>`] (default: ``['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']``) List of fields used for sorting individual components into groups.
+      -  **group_fields** :index:`: <pair: output - bom - options; group_fields>` [:ref:`list(string) <list(string)>`] (default: ``['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']``) [:ref:`case insensitive <no_case>`]List of fields used for sorting individual components into groups.
          Components which match (comparing *all* fields) will be grouped together.
          Field names are case-insensitive.
          For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
@@ -99,25 +99,25 @@ Parameters:
 
          -  Valid keys:
 
-            -  **datasheet_as_link** :index:`: <pair: output - bom - options - html; datasheet_as_link>` [:ref:`string <string>`] (default: ``''``) Column with links to the datasheet.
+            -  **datasheet_as_link** :index:`: <pair: output - bom - options - html; datasheet_as_link>` [:ref:`string <string>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column with links to the datasheet.
             -  **generate_dnf** :index:`: <pair: output - bom - options - html; generate_dnf>` [:ref:`boolean <boolean>`] (default: ``true``) Generate a separated section for DNF (Do Not Fit) components.
             -  **logo** :index:`: <pair: output - bom - options - html; logo>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) PNG/SVG file to use as logo, use false to remove.
                Note that when using an SVG this is first converted to a PNG using `logo_width`.
 
             -  **title** :index:`: <pair: output - bom - options - html; title>` [:ref:`string <string>`] (default: ``'KiBot Bill of Materials'``) BoM title.
             -  ``col_colors`` :index:`: <pair: output - bom - options - html; col_colors>` [:ref:`boolean <boolean>`] (default: ``true``) Use colors to show the field type.
-            -  ``digikey_link`` :index:`: <pair: output - bom - options - html; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Digi-Key part numbers, will be linked to web page.
+            -  ``digikey_link`` :index:`: <pair: output - bom - options - html; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column/s containing Digi-Key part numbers, will be linked to web page.
 
             -  ``extra_info`` :index:`: <pair: output - bom - options - html; extra_info>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Information to put after the title and before the pcb and stats info.
 
             -  ``hide_pcb_info`` :index:`: <pair: output - bom - options - html; hide_pcb_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide project information.
             -  ``hide_stats_info`` :index:`: <pair: output - bom - options - html; hide_stats_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide statistics information.
             -  ``highlight_empty`` :index:`: <pair: output - bom - options - html; highlight_empty>` [:ref:`boolean <boolean>`] (default: ``true``) Use a color for empty cells. Applies only when `col_colors` is `true`.
-            -  ``lcsc_link`` :index:`: <pair: output - bom - options - html; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing LCSC part numbers, will be linked to web page.
+            -  ``lcsc_link`` :index:`: <pair: output - bom - options - html; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column/s containing LCSC part numbers, will be linked to web page.
                Use **true** to copy the value indicated by the `field_lcsc_part` global option.
 
             -  ``logo_width`` :index:`: <pair: output - bom - options - html; logo_width>` [:ref:`number <number>`] (default: ``370``) Used when the logo is an SVG image. This width is used to render the SVG image.
-            -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Mouser part numbers, will be linked to web page.
+            -  ``mouser_link`` :index:`: <pair: output - bom - options - html; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column/s containing Mouser part numbers, will be linked to web page.
 
             -  ``row_colors`` :index:`: <pair: output - bom - options - html; row_colors>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Used to highlight rows using filters. Rows that match a filter can be colored.
                Note that these rows won't have colored columns.
@@ -146,7 +146,7 @@ Parameters:
 
          -  Valid keys:
 
-            -  **datasheet_as_link** :index:`: <pair: output - bom - options - xlsx; datasheet_as_link>` [:ref:`string <string>`] (default: ``''``) Column with links to the datasheet.
+            -  **datasheet_as_link** :index:`: <pair: output - bom - options - xlsx; datasheet_as_link>` [:ref:`string <string>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column with links to the datasheet.
             -  **generate_dnf** :index:`: <pair: output - bom - options - xlsx; generate_dnf>` [:ref:`boolean <boolean>`] (default: ``true``) Generate a separated section for DNF (Do Not Fit) components.
             -  **kicost** :index:`: <pair: output - bom - options - xlsx; kicost>` [:ref:`boolean <boolean>`] (default: ``false``) Enable KiCost worksheet creation.
                Note: an example of how to use it on CI/CD can be found `here <https://github.com/set-soft/kicost_ci_test>`__.
@@ -157,7 +157,7 @@ Parameters:
                Works with only some KiCost APIs.
             -  **title** :index:`: <pair: output - bom - options - xlsx; title>` [:ref:`string <string>`] (default: ``'KiBot Bill of Materials'``) BoM title.
             -  ``col_colors`` :index:`: <pair: output - bom - options - xlsx; col_colors>` [:ref:`boolean <boolean>`] (default: ``true``) Use colors to show the field type.
-            -  ``digikey_link`` :index:`: <pair: output - bom - options - xlsx; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Digi-Key part numbers, will be linked to web page.
+            -  ``digikey_link`` :index:`: <pair: output - bom - options - xlsx; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column/s containing Digi-Key part numbers, will be linked to web page.
 
             -  ``extra_info`` :index:`: <pair: output - bom - options - xlsx; extra_info>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Information to put after the title and before the pcb and stats info.
 
@@ -174,13 +174,13 @@ Parameters:
                To understand how to achieve this, and also how to make use of the cache please visit the
                `kicost_ci_test <https://github.com/set-soft/kicost_ci_test>`__ repo.
             -  ``kicost_dist_desc`` :index:`: <pair: output - bom - options - xlsx; kicost_dist_desc>` [:ref:`boolean <boolean>`] (default: ``false``) Used to add a column with the distributor's description. So you can check this is the right component.
-            -  ``lcsc_link`` :index:`: <pair: output - bom - options - xlsx; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing LCSC part numbers, will be linked to web page.
+            -  ``lcsc_link`` :index:`: <pair: output - bom - options - xlsx; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column/s containing LCSC part numbers, will be linked to web page.
                Use **true** to copy the value indicated by the `field_lcsc_part` global option.
 
             -  ``logo_scale`` :index:`: <pair: output - bom - options - xlsx; logo_scale>` [:ref:`number <number>`] (default: ``2``) Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software.
             -  ``logo_width`` :index:`: <pair: output - bom - options - xlsx; logo_width>` [:ref:`number <number>`] (default: ``370``) Used when the logo is an SVG image. This width is used to render the SVG image.
             -  ``max_col_width`` :index:`: <pair: output - bom - options - xlsx; max_col_width>` [:ref:`number <number>`] (default: ``60``) (range: 20 to 999) Maximum column width (characters).
-            -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Mouser part numbers, will be linked to web page.
+            -  ``mouser_link`` :index:`: <pair: output - bom - options - xlsx; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Column/s containing Mouser part numbers, will be linked to web page.
 
             -  ``row_colors`` :index:`: <pair: output - bom - options - xlsx; row_colors>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Used to highlight rows using filters. Rows that match a filter can be colored.
                Note that these rows won't have colored columns.
@@ -211,7 +211,7 @@ Parameters:
 
                      -  Valid keys:
 
-                        -  **field** :index:`: <pair: output - bom - options - xlsx - specs_columns - join; field>` [:ref:`string <string>`] (default: ``''``) Name of the field.
+                        -  **field** :index:`: <pair: output - bom - options - xlsx - specs_columns - join; field>` [:ref:`string <string>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Name of the field.
                         -  ``text`` :index:`: <pair: output - bom - options - xlsx - specs_columns - join; text>` [:ref:`string <string>`] (default: ``''``) Text to use instead of a field. This option is incompatible with the `field` option.
                            Any space to separate it should be added in the text.
                            Use \\n for newline and \\t for tab.
@@ -268,7 +268,7 @@ Parameters:
 
                -  Valid keys:
 
-                  -  **field** :index:`: <pair: output - bom - options - cost_extra_columns - join; field>` [:ref:`string <string>`] (default: ``''``) Name of the field.
+                  -  **field** :index:`: <pair: output - bom - options - cost_extra_columns - join; field>` [:ref:`string <string>`] (default: ``''``) [:ref:`case insensitive <no_case>`]Name of the field.
                   -  ``text`` :index:`: <pair: output - bom - options - cost_extra_columns - join; text>` [:ref:`string <string>`] (default: ``''``) Text to use instead of a field. This option is incompatible with the `field` option.
                      Any space to separate it should be added in the text.
                      Use \\n for newline and \\t for tab.
@@ -305,19 +305,19 @@ Parameters:
          This is done using a **_expand_text_vars** filter.
          If you need to customize the filter, or apply it before, you can disable this option and
          add a custom filter to the filter chain.
-      -  ``fit_field`` :index:`: <pair: output - bom - options; fit_field>` [:ref:`string <string>`] (default: ``'Config'``) Field name used for internal filters (not for variants).
+      -  ``fit_field`` :index:`: <pair: output - bom - options; fit_field>` [:ref:`string <string>`] (default: ``'Config'``) [:ref:`case insensitive <no_case>`]Field name used for internal filters (not for variants).
       -  ``footprint_populate_values`` :index:`: <pair: output - bom - options; footprint_populate_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'no,yes'``) [:ref:`comma separated <comma_sep>`] Values for the `Footprint Populate` column.
 
       -  ``footprint_type_values`` :index:`: <pair: output - bom - options; footprint_type_values>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'SMD,THT,VIRTUAL'``) [:ref:`comma separated <comma_sep>`] Values for the `Footprint Type` column.
 
       -  ``group_connectors`` :index:`: <pair: output - bom - options; group_connectors>` [:ref:`boolean <boolean>`] (default: ``true``) Connectors with the same footprints will be grouped together, independent of the name of the connector.
-      -  ``group_fields_fallbacks`` :index:`: <pair: output - bom - options; group_fields_fallbacks>` [:ref:`list(string) <list(string)>`] (default: ``[]``) List of fields to be used when the fields in `group_fields` are empty.
+      -  ``group_fields_fallbacks`` :index:`: <pair: output - bom - options; group_fields_fallbacks>` [:ref:`list(string) <list(string)>`] (default: ``[]``) [:ref:`case insensitive <no_case>`]List of fields to be used when the fields in `group_fields` are empty.
          The first field in this list is the fallback for the first in `group_fields`, and so on.
 
       -  ``int_qtys`` :index:`: <pair: output - bom - options; int_qtys>` [:ref:`boolean <boolean>`] (default: ``true``) Component quantities are always expressed as integers. Using the ceil() function.
       -  ``merge_blank_fields`` :index:`: <pair: output - bom - options; merge_blank_fields>` [:ref:`boolean <boolean>`] (default: ``true``) Component groups with blank fields will be merged into the most compatible group, where possible.
       -  ``merge_both_blank`` :index:`: <pair: output - bom - options; merge_both_blank>` [:ref:`boolean <boolean>`] (default: ``true``) When creating groups two components with empty/missing field will be interpreted as with the same value.
-      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [:ref:`list(string) <list(string)>`] (default: computed for your project) List of fields where we tolerate conflicts.
+      -  ``no_conflict`` :index:`: <pair: output - bom - options; no_conflict>` [:ref:`list(string) <list(string)>`] (default: computed for your project) [:ref:`case insensitive <no_case>`]List of fields where we tolerate conflicts.
          Use it to avoid undesired warnings.
          By default the field indicated in `fit_field`, the field used for variants and
          the field `part` are excluded.

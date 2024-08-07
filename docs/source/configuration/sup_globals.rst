@@ -91,7 +91,7 @@
          This is because the plating reduces the hole, so you need to use a bigger drill.
          For more information consult: https://www.eurocircuits.com/pcb-design-guidelines/drilled-holes/.
       -  ``field_3D_model`` :index:`: <pair: global options; field_3D_model>` [:ref:`string <string>`] (default: ``'_3D_model'``) Name for the field controlling the 3D models used for a component.
-      -  ``field_current`` :index:`: <pair: global options; field_current>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['current']``) Name/s of the field/s used for the current raiting.
+      -  ``field_current`` :index:`: <pair: global options; field_current>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['current', 'i']``) Name/s of the field/s used for the current raiting.
          You can use `_field_current` as field name to use it in most places.
 
       -  ``field_lcsc_part`` :index:`: <pair: global options; field_lcsc_part>` [:ref:`string <string>`] (default: ``''``) The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.

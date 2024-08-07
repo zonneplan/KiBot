@@ -442,7 +442,7 @@ outputs:
           field: 'Row'
           # [list(dict)|list(string)|string=''] List of fields to join to this column
           join:
-            # [string=''] Name of the field
+            # [string=''] {no_case} Name of the field
             - field: 'Voltage'
               # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
               # Any space to separate it should be added in the text.
@@ -481,7 +481,7 @@ outputs:
           field: 'Row'
           # [list(dict)|list(string)|string=''] List of fields to join to this column
           join:
-            # [string=''] Name of the field
+            # [string=''] {no_case} Name of the field
             - field: 'Voltage'
               # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
               # Any space to separate it should be added in the text.
@@ -540,7 +540,7 @@ outputs:
       # If you need to customize the filter, or apply it before, you can disable this option and
       # add a custom filter to the filter chain
       expand_text_vars: true
-      # [string='Config'] Field name used for internal filters (not for variants)
+      # [string='Config'] {no_case} Field name used for internal filters (not for variants)
       fit_field: 'Config'
       # [string|list(string)='no,yes'] {comma_sep} Values for the `Footprint Populate` column
       footprint_populate_values: 'no,yes'
@@ -552,7 +552,7 @@ outputs:
       format: 'Auto'
       # [boolean=true] Connectors with the same footprints will be grouped together, independent of the name of the connector
       group_connectors: true
-      # [list(string)] List of fields used for sorting individual components into groups.
+      # [list(string)] {no_case} List of fields used for sorting individual components into groups.
       # Components which match (comparing *all* fields) will be grouped together.
       # Field names are case-insensitive.
       # For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
@@ -563,7 +563,7 @@ outputs:
       # If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
       #            'Voltage', 'Tolerance', 'Current', 'Power'] is used
       group_fields: ['part', 'part lib', 'value', 'footprint', 'footprint lib', 'voltage', 'tolerance', 'current', 'power']
-      # [list(string)=[]] List of fields to be used when the fields in `group_fields` are empty.
+      # [list(string)=[]] {no_case} List of fields to be used when the fields in `group_fields` are empty.
       # The first field in this list is the fallback for the first in `group_fields`, and so on
       group_fields_fallbacks: []
       # [dict={}] Options for the HRTXT formats
@@ -584,9 +584,9 @@ outputs:
       html:
         # [boolean=true] Use colors to show the field type
         col_colors: true
-        # [string=''] Column with links to the datasheet
+        # [string=''] {no_case} Column with links to the datasheet
         datasheet_as_link: ''
-        # [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page
+        # [string|list(string)=''] {no_case} Column/s containing Digi-Key part numbers, will be linked to web page
         digikey_link: ''
         # [string|list(string)=''] Information to put after the title and before the pcb and stats info
         extra_info: ''
@@ -598,7 +598,7 @@ outputs:
         hide_stats_info: false
         # [boolean=true] Use a color for empty cells. Applies only when `col_colors` is `true`
         highlight_empty: true
-        # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+        # [boolean|string|list(string)=''] {no_case} Column/s containing LCSC part numbers, will be linked to web page.
         # Use **true** to copy the value indicated by the `field_lcsc_part` global option
         lcsc_link: ''
         # [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
@@ -606,7 +606,7 @@ outputs:
         logo: ''
         # [number=370] Used when the logo is an SVG image. This width is used to render the SVG image
         logo_width: 370
-        # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
+        # [string|list(string)=''] {no_case} Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
         # [list(dict)=[]] Used to highlight rows using filters. Rows that match a filter can be colored.
         # Note that these rows won't have colored columns
@@ -633,7 +633,7 @@ outputs:
       merge_blank_fields: true
       # [boolean=true] When creating groups two components with empty/missing field will be interpreted as with the same value
       merge_both_blank: true
-      # [list(string)=computed for your project] List of fields where we tolerate conflicts.
+      # [list(string)=computed for your project] {no_case} List of fields where we tolerate conflicts.
       # Use it to avoid undesired warnings.
       # By default the field indicated in `fit_field`, the field used for variants and
       # the field `part` are excluded
@@ -682,9 +682,9 @@ outputs:
       xlsx:
         # [boolean=true] Use colors to show the field type
         col_colors: true
-        # [string=''] Column with links to the datasheet
+        # [string=''] {no_case} Column with links to the datasheet
         datasheet_as_link: ''
-        # [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page
+        # [string|list(string)=''] {no_case} Column/s containing Digi-Key part numbers, will be linked to web page
         digikey_link: ''
         # [string|list(string)=''] Information to put after the title and before the pcb and stats info
         extra_info: ''
@@ -711,7 +711,7 @@ outputs:
         kicost_config: ''
         # [boolean=false] Used to add a column with the distributor's description. So you can check this is the right component
         kicost_dist_desc: false
-        # [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+        # [boolean|string|list(string)=''] {no_case} Column/s containing LCSC part numbers, will be linked to web page.
         # Use **true** to copy the value indicated by the `field_lcsc_part` global option
         lcsc_link: ''
         # [string|boolean=''] PNG/SVG file to use as logo, use false to remove.
@@ -723,7 +723,7 @@ outputs:
         logo_width: 370
         # [number=60] [20,999] Maximum column width (characters)
         max_col_width: 60
-        # [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page
+        # [string|list(string)=''] {no_case} Column/s containing Mouser part numbers, will be linked to web page
         mouser_link: ''
         # [list(dict)=[]] Used to highlight rows using filters. Rows that match a filter can be colored.
         # Note that these rows won't have colored columns
@@ -753,7 +753,7 @@ outputs:
             field: 'Row'
             # [list(dict)|list(string)|string=''] List of fields to join to this column
             join:
-              # [string=''] Name of the field
+              # [string=''] {no_case} Name of the field
               - field: 'Voltage'
                 # [string=''] Text to use instead of a field. This option is incompatible with the `field` option.
                 # Any space to separate it should be added in the text.
