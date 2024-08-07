@@ -170,6 +170,10 @@ class FieldPower(Optionable):
     _default = ['power', 'pow']
 
 
+class FieldCurrent(Optionable):
+    _default = ['current']
+
+
 class Globals(FiltersOptions):
     """ Global options """
     def __init__(self):
@@ -307,7 +311,8 @@ class Globals(FiltersOptions):
                 The KIPRJMOD is also available for expansion """
             self.field_lcsc_part = ''
             """ The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
-                When empty KiBot will try to discover it """
+                When empty KiBot will try to discover it.
+                You can use `_field_lcsc_part` as field name to use it in most places """
             self.allow_blind_buried_vias = True
             """ Allow the use of buried vias. This value is only used for KiCad 7+.
                 For KiCad 5 and 6 use the design rules settings, stored in the project """
@@ -326,13 +331,6 @@ class Globals(FiltersOptions):
                 this flag """
             self.colored_tht_resistors = True
             """ Try to add color bands to the 3D models of KiCad THT resistors """
-            self.field_tolerance = FieldTolerance
-            """ [string|list(string)] Name/s of the field/s used for the tolerance.
-                Used while creating colored resistors and for the value split filter """
-            self.default_resistor_tolerance = 20
-            """ When no tolerance is specified we use this value.
-                Note that I know 5% is a common default, but technically speaking 20% is the default.
-                Used while creating colored resistors """
             self.cache_3d_resistors = False
             """ Use a cache for the generated 3D models of colored resistors.
                 Will save time, but you could need to remove the cache if you need to regenerate them """
@@ -344,18 +342,33 @@ class Globals(FiltersOptions):
                 which is used by the KiBot docker images, on other OSs *your mileage may vary* """
             self.use_os_env_for_expand = True
             """ In addition to KiCad text variables also use the OS environment variables when expanding `${VARIABLE}` """
+            self.field_tolerance = FieldTolerance
+            """ [string|list(string)] Name/s of the field/s used for the tolerance.
+                Used while creating colored resistors and for the value split filter.
+                You can use `_field_tolerance` as field name to use it in most places """
+            self.default_resistor_tolerance = 20
+            """ When no tolerance is specified we use this value.
+                Note that I know 5% is a common default, but technically speaking 20% is the default.
+                Used while creating colored resistors """
             self.field_voltage = FieldVoltage
             """ [string|list(string)] Name/s of the field/s used for the voltage raiting.
-                Used for the value split filter """
+                Used for the value split filter.
+                You can use `_field_voltage` as field name to use it in most places """
             self.field_package = FieldPackage
             """ [string|list(string)] Name/s of the field/s used for the package, not footprint.
-                I.e. 0805, SOT-23, etc. Used for the value split filter """
+                I.e. 0805, SOT-23, etc. Used for the value split filter.
+                You can use `_field_package` as field name to use it in most places """
             self.field_temp_coef = FieldTempCoef
             """ [string|list(string)] Name/s of the field/s used for the temperature coefficient.
-                I.e. X7R, NP0, etc. Used for the value split filter """
+                I.e. X7R, NP0, etc. Used for the value split filter.
+                You can use `_field_temp_coef` as field name to use it in most places """
             self.field_power = FieldPower
             """ [string|list(string)] Name/s of the field/s used for the power raiting.
-                Used for the value split filter  """
+                Used for the value split filter.
+                You can use `_field_power` as field name to use it in most places """
+            self.field_current = FieldCurrent
+            """ [string|list(string)] Name/s of the field/s used for the current raiting.
+                You can use `_field_current` as field name to use it in most places """
             self.invalidate_pcb_text_cache = 'auto'
             """ [auto,yes,no] Remove any cached text variable in the PCB. This is needed in order to force a text
                 variables update when using `set_text_variables`. You might want to disable it when applying some

@@ -1,6 +1,11 @@
 kibot:
   version: 1
 
+global:
+  field_current: Corriente
+  field_power: Potencia
+  field_voltage: Tensión
+
 filters:
   - name: spec_to_field
     type: spec_to_field
@@ -12,6 +17,12 @@ filters:
       - spec: [resistance_tolerance, capacitance_tolerance, _tolerance]
         field: Tolerance
         type: percent
+      - spec: _power
+        field: _field_power
+      - spec: _voltage
+        field: _field_voltage
+      - spec: _current
+        field: _field_current
 
 outputs:
   - name: create_sch

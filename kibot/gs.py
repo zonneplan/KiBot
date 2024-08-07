@@ -158,6 +158,7 @@ class GS(object):
     global_edge_plating = None
     global_extra_pth_drill = None
     global_field_3D_model = None
+    global_field_current = None
     global_field_lcsc_part = None
     global_field_package = None
     global_field_power = None
