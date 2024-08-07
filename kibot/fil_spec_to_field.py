@@ -98,8 +98,6 @@ class Spec_to_Field(BaseFilter):  # noqa: F821
             raise KiPlotConfigurationError("You must specify an output that collected the specs")
         if not self.specs:
             raise KiPlotConfigurationError("At least one spec must be provided ({})".format(str(self._tree)))
-        if isinstance(self.specs, SpecOptions):
-            self.specs = [self.specs]
 
     def _normalize(self, val, kind, comp):
         val = val.strip()

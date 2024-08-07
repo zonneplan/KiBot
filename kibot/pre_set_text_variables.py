@@ -80,11 +80,6 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
             self.set_text_variables = KiCadVariable
             """ [dict|list(dict)=[]] One or more variable definition """
 
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.set_text_variables, KiCadVariable):
-            self.set_text_variables = [self.set_text_variables]
-
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """

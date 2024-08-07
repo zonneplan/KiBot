@@ -92,11 +92,6 @@ class Check_Fields(BasePreFlight):  # noqa: F821
             self.check_fields = FieldCheck
             """ [dict|list(dict)=[]] One or more check rules """
 
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.check_fields, FieldCheck):
-            self.check_fields = [self.check_fields]
-
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """

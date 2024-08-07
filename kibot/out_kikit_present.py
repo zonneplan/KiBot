@@ -283,7 +283,7 @@ class KiKit_PresentOptions(BaseOptions):
                 more than one line KiBot will assume this is the markdown.
                 If empty KiBot will generate a silly text and a warning """
             self.boards = PresentBoards
-            """ [dict|list(dict)={}] One or more boards that compose your project.
+            """ [dict|list(dict)=[{}]] One or more boards that compose your project.
                 When empty we will use only the main PCB for the current project """
             self.resources = Optionable
             """ [string|list(string)='']  A list of file name patterns for additional resources to be included.
@@ -322,8 +322,6 @@ class KiKit_PresentOptions(BaseOptions):
             if len(self._description) == 1:
                 raise KiPlotConfigurationError('Missing description file `{}`'.format(self._description))
         # List of boards
-        if isinstance(self.boards, PresentBoards):
-            self.boards = [self.boards]
         if not self.name:
             self.name = GS.pcb_basename
         # Make sure the template exists

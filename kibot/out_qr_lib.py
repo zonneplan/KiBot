@@ -100,15 +100,13 @@ class QR_LibOptions(BaseOptions):
             self.use_sch_dir = True
             """ Generate the libs relative to the schematic/PCB dir """
             self.qrs = QRCodeOptions
-            """ *[dict|list(dict)={}] QR codes to include in the library """
+            """ *[dict|list(dict)=[{}]] QR codes to include in the library """
         super().__init__()
         self._expand_id = 'qr'
         self._expand_ext = 'lib'
 
     def config(self, parent):
         super().config(parent)
-        if not isinstance(self.qrs, list):
-            self.qrs = [self.qrs]
         names = set()
         for qr in self.qrs:
             if qr.name in names:

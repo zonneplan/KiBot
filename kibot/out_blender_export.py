@@ -18,7 +18,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
 from .gs import GS
-from .misc import MISSING_TOOL, BLENDER_ERROR, force_list
+from .misc import BLENDER_ERROR, MISSING_TOOL
 from .optionable import Optionable, BaseOptions
 from .out_base_3d import Base3D, Base3DOptionsWithHL
 from .registrable import RegOutput
@@ -377,7 +377,7 @@ class Blender_ExportOptions(BaseOptions):
             self.light = []
         # Check light names
         light_names = set()
-        for li in force_list(self.light):
+        for li in self.light:
             name = li.name if li.name else 'kibot_light'
             if name in light_names:
                 id = 2
@@ -415,9 +415,9 @@ class Blender_ExportOptions(BaseOptions):
         if isinstance(self.pcb3d, PCB3DExportOptions):
             files.append(self.pcb3d.get_output_name(out_dir))
         order = 1
-        for pov in force_list(self.point_of_view):
+        for pov in self.point_of_view:
             for _ in range(pov.steps):
-                for o in force_list(self.outputs):
+                for o in self.outputs:
                     files.append(self.get_output_filename(o, out_dir, pov, order))
                 order += 1
         return files
@@ -550,8 +550,8 @@ class Blender_ExportOptions(BaseOptions):
         # Can be used to export the PCB to Blender
         if not self.outputs:
             return
-        outputs = force_list(self.outputs)
-        point_of_view = force_list(self.point_of_view)
+        outputs = self.outputs
+        point_of_view = self.point_of_view
         # Make sure Blender is available
         command = self._pcb3d.ensure_tool('Blender')
         if self.render_options.auto_crop:
@@ -565,7 +565,7 @@ class Blender_ExportOptions(BaseOptions):
                 lights = [{'name': light.name,
                            'position': (light._pos_x, light._pos_y, light._pos_z),
                            'type': light.type,
-                           'energy': light.energy} for light in force_list(self.light)]
+                           'energy': light.energy} for light in self.light]
                 scene['lights'] = lights
             if self.get_user_defined('camera'):
                 # Only when the user defined a camera, otherwise let the script create a suitable one
@@ -693,7 +693,7 @@ class Blender_Export(Base3D):
     def get_renderer_options(self):
         """ Where are the options for this output when used as a 'renderer' """
         ops = self.options
-        out = next(filter(lambda x: x.type == 'render', force_list(ops.outputs)), None)
+        out = next(filter(lambda x: x.type == 'render', ops.outputs), None)
         res = None
         if out is not None:
             if isinstance(ops.pcb3d, str):
@@ -701,7 +701,7 @@ class Blender_Export(Base3D):
                 out = None
             else:
                 res = ops.pcb3d
-                res._pov = force_list(ops.point_of_view)[0]
+                res._pov = ops.point_of_view[0]
                 res._out = out
         return res if out is not None else None
 
