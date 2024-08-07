@@ -364,7 +364,6 @@ class Blender_ExportOptions(BaseOptions):
         super().__init__()
         self._expand_id = '3D_blender'
         self._unknown_is_error = True
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

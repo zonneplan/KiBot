@@ -100,7 +100,6 @@ class PositionOptions(VariantOptions):
             """ Include the board edge in the gerber output """
         super().__init__()
         self._expand_id = 'position'
-        self._init_from_defaults = True
 
     def config(self, parent):
         super().config(parent)

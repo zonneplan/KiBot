@@ -666,7 +666,6 @@ class BoMOptions(BaseOptions):
         valid_columns_l = {c.lower(): c for c in valid_columns + extra_columns}
         logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
         # Create the different lists
-        logger.error(cols)
         for col in cols:
             if isinstance(col, str):
                 # Just a string, add to the list of used
