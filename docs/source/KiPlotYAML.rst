@@ -67,6 +67,11 @@ And here are some examples for strings:
 
 Note that quotes are optional and can be used to disambiguate.
 
+.. _no_case
+
+Also note that most strings are case sensitive, but things like schematic field names aren't.
+In this case using *value* or *Value* is the same.
+
 Compound data types
 -------------------
 

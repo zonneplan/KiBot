@@ -74,6 +74,8 @@ class Optionable(object):
         if not isinstance(val, str):
             raise KiPlotConfigurationError("Option `{}` must be a string".format(key))
         new_val = Optionable._promote_str_to_list(val, doc, valid)
+        if '{no_case}' in doc:
+            new_val = new_val.lower() if isinstance(new_val, str) else [v.lower() for v in new_val]
         # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
         m = Optionable._str_values_re.search(doc)
         if m:
@@ -259,6 +261,7 @@ class Optionable(object):
                     elif isinstance(v, list):
                         new_val = []
                         filtered_valid = [t[5:-1] for t in valid if t.startswith('list(')]
+                        no_case = '{no_case}' in cur_doc
                         for element in v:
                             e_type = typeof(element, Optionable)
                             if e_type not in filtered_valid:
@@ -270,6 +273,8 @@ class Optionable(object):
                                 nv.config(self)
                                 new_val.append(nv)
                             else:
+                                if no_case and isinstance(element, str):
+                                    element = element.lower()
                                 new_val.append(element)
                         v = new_val
             # Seems to be ok, map it

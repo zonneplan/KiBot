@@ -171,7 +171,7 @@ class FieldPower(Optionable):
 
 
 class FieldCurrent(Optionable):
-    _default = ['current']
+    _default = ['current', 'i']
 
 
 class Globals(FiltersOptions):
