@@ -73,9 +73,9 @@ class DrawStackupOptions(Optionable):
             """ *Name of the output used to generate the gerbers. This is needed only when you
                 want to include the *gerber* column, containing the gerber file names """
             self.columns = SUColumns
-            """ *[list(dict)|list(string)=[]] List of columns to display.
+            """ *[list(dict)|list(string)=?] List of columns to display.
                 Can be just the name of the column.
-                Available columns are *gerber*, *drawing* and *description*.
+                Available columns are *gerber*, *drawing*, *thickness* and *description*.
                 When empty KiBot will add them in the above order, skipping the *gerber* if not available """
         super().__init__()
         self._unknown_is_error = True
