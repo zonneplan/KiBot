@@ -80,7 +80,7 @@ class BoMJoinField(Optionable):
         self._unknown_is_error = True
         with document:
             self.field = ''
-            """ *Name of the field """
+            """ *{no_case} Name of the field """
             self.text = ''
             """ Text to use instead of a field. This option is incompatible with the `field` option.
                 Any space to separate it should be added in the text.
@@ -109,7 +109,6 @@ class BoMJoinField(Optionable):
         if self.field and self.text:
             raise KiPlotConfigurationError("You can't specify a `field` and a `text` in a join list ({})".
                                            format(str(self._tree)))
-        self.field = self.field.lower()
         if self.text_before is None:
             self.text_before = ''
         if self.text_after is None:
@@ -216,13 +215,13 @@ class BoMLinkable(Optionable):
             self.col_colors = True
             """ Use colors to show the field type """
             self.datasheet_as_link = ''
-            """ *Column with links to the datasheet """
+            """ *{no_case} Column with links to the datasheet """
             self.digikey_link = Optionable
-            """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
+            """ [string|list(string)=''] {no_case} Column/s containing Digi-Key part numbers, will be linked to web page """
             self.mouser_link = Optionable
-            """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page """
+            """ [string|list(string)=''] {no_case} Column/s containing Mouser part numbers, will be linked to web page """
             self.lcsc_link = Optionable
-            """ [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+            """ [boolean|string|list(string)=''] {no_case} Column/s containing LCSC part numbers, will be linked to web page.
                 Use **true** to copy the value indicated by the `field_lcsc_part` global option """
             self.generate_dnf = True
             """ *Generate a separated section for DNF (Do Not Fit) components """
@@ -248,12 +247,8 @@ class BoMLinkable(Optionable):
 
     def config(self, parent):
         super().config(parent)
-        # *_link
-        self.digikey_link = [v.lower() for v in self.digikey_link]
-        self.mouser_link = [v.lower() for v in self.mouser_link]
         if isinstance(self.lcsc_link, bool):
             self.lcsc_link = [self.solve_field_name('_field_lcsc_part')] if self.lcsc_link else []
-        self.lcsc_link = [v.lower() for v in self.lcsc_link]
         # Logo
         if isinstance(self.logo, bool):
             self.logo = '' if self.logo else None
@@ -262,8 +257,6 @@ class BoMLinkable(Optionable):
                 self.logo = os.path.abspath(os.path.expandvars(os.path.expanduser(self.logo)))
             if not os.path.isfile(self.logo):
                 raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
-        # Datasheet as link
-        self.datasheet_as_link = self.datasheet_as_link.lower()
 
 
 class BoMHTML(BoMLinkable):
@@ -487,7 +480,7 @@ class BoMOptions(BaseOptions):
             self.ignore_dnf = True
             """ *Exclude DNF (Do Not Fit) components """
             self.fit_field = 'Config'
-            """ Field name used for internal filters (not for variants) """
+            """ {no_case} Field name used for internal filters (not for variants) """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.columns = BoMColumns
@@ -536,7 +529,7 @@ class BoMOptions(BaseOptions):
             self.merge_both_blank = True
             """ When creating groups two components with empty/missing field will be interpreted as with the same value """
             self.group_fields = GroupFields
-            """ *[list(string)] List of fields used for sorting individual components into groups.
+            """ *[list(string)] {no_case} List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
                 For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
@@ -547,7 +540,7 @@ class BoMOptions(BaseOptions):
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
                 .          'Voltage', 'Tolerance', 'Current', 'Power'] is used """
             self.group_fields_fallbacks = Optionable
-            """ [list(string)=[]] List of fields to be used when the fields in `group_fields` are empty.
+            """ [list(string)=[]] {no_case} List of fields to be used when the fields in `group_fields` are empty.
                 The first field in this list is the fallback for the first in `group_fields`, and so on """
             self.component_aliases = ComponentAliases
             """ [list(list(string))] A series of values which are considered to be equivalent for the part name.
@@ -566,7 +559,7 @@ class BoMOptions(BaseOptions):
                 extra information split it in separated fields, add the fields to `group_fields` and disable
                 `merge_blank_fields` """
             self.no_conflict = Optionable
-            """ [list(string)=?] List of fields where we tolerate conflicts.
+            """ [list(string)=?] {no_case} List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.
                 By default the field indicated in `fit_field`, the field used for variants and
                 the field `part` are excluded """
@@ -673,6 +666,7 @@ class BoMOptions(BaseOptions):
         valid_columns_l = {c.lower(): c for c in valid_columns + extra_columns}
         logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
         # Create the different lists
+        logger.error(cols)
         for col in cols:
             if isinstance(col, str):
                 # Just a string, add to the list of used
@@ -718,10 +712,6 @@ class BoMOptions(BaseOptions):
         if self._format == 'xlsx' and self.xlsx.title:
             self.xlsx.title = self.expand_filename_both(self.xlsx.title, make_safe=False)
             self.xlsx.extra_info = [self.expand_filename_both(t, make_safe=False) for t in self.xlsx.extra_info]
-        # Make the grouping fields lowercase
-        self.group_fields = [f.lower() for f in self.group_fields]
-        # Make the grouping fields lowercase
-        self.group_fields_fallbacks = [f.lower() for f in self.group_fields_fallbacks]
         # Fill with empty if needed
         if len(self.group_fields_fallbacks) < len(self.group_fields):
             self.group_fields_fallbacks.extend(['']*(len(self.group_fields)-len(self.group_fields_fallbacks)))
@@ -730,19 +720,16 @@ class BoMOptions(BaseOptions):
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
         self.dnf_filter = BaseFilter.solve_filter(KiBoM.fix_dnx_filter(self.dnf_filter, self.fit_field), 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(KiBoM.fix_dnx_filter(self.dnc_filter, self.fit_field), 'dnc_filter')
-        # Field names are handled in lowercase
-        self.fit_field = self.fit_field.lower()
         # Fields excluded from conflict warnings
-        no_conflict = set()
         if isinstance(self.no_conflict, type):
+            no_conflict = set()
             no_conflict.add(self.fit_field)
             no_conflict.add('part')
             var_field = self.variant.get_variant_field() if self.variant else None
             if var_field is not None:
-                no_conflict.add(var_field)
+                no_conflict.add(var_field.lower())
         else:
-            for field in self.no_conflict:
-                no_conflict.add(field.lower())
+            no_conflict = set(self.no_conflict)
         self._no_conflict = no_conflict
         # Column values
         if len(self.footprint_populate_values) != 2:

@@ -811,6 +811,7 @@ def process_help_data_type(obj, help, v):
         if def_val:
             new_data_type += f' (default: ``{def_val}``)'
     real_help = real_help.replace('{comma_sep}', '[:ref:`comma separated <comma_sep>`]')
+    real_help = real_help.replace('{no_case} ', '[:ref:`case insensitive <no_case>`]')
     string_added = False
     number_added = False
     for tp, validation in zip(valid, validations):
