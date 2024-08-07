@@ -10,7 +10,7 @@
 from copy import deepcopy
 import math
 import wx
-from .validators import NumberValidator
+from .validators import NumberValidator, LowerCaseValidator
 from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
                           get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm)
 from . import gui_helpers as gh
@@ -87,6 +87,12 @@ class DataTypeString(DataTypeBase):
             self.input.SetValue(value)
         self.ori_value = self.input.Value
         self.input.Bind(wx.EVT_TEXT, self.OnChange)
+
+    def get_widget(self, obj, window, entry, level, init, value, **kwargs):
+        res = super().get_widget(obj, window, entry, level, init, value, **kwargs)
+        if '{no_case}' in entry.help:
+            self.input.SetValidator(LowerCaseValidator(self.input, self.OnChange))
+        return res
 
 
 class DataTypeNumber(DataTypeString):
@@ -303,11 +309,13 @@ class DataTypeDict(DataTypeBase):
 
 
 class InputStringDialog(wx.Dialog):
-    def __init__(self, window, lbl, title, help, initial=''):
+    def __init__(self, window, lbl, title, help, initial='', no_case=False):
         wx.Dialog.__init__(self, window, title=title,
                            style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         _, self.input, inp_sizer = input_label_and_text(self, lbl, initial, help, def_text)
+        if no_case:
+            self.input.SetValidator(LowerCaseValidator(self.input))
         main_sizer.Add(inp_sizer, gh.SIZER_FLAGS_1)
         main_sizer.Add(ok_cancel(self), gh.SIZER_FLAGS_0)
         self.SetSizer(main_sizer)
@@ -407,7 +415,8 @@ class DataTypeListString(DataTypeList):
 
     def edit_item(self, string='', obj=None, index=-1):
         ori = string
-        dlg = InputStringDialog(self.window, self.label, self.create_edit_title(index), self.help, initial=string)
+        dlg = InputStringDialog(self.window, self.label, self.create_edit_title(index), self.help, initial=string,
+                                no_case='{no_case}' in self.entry.help)
         res = dlg.ShowModal()
         if res == wx.ID_OK:
             if index == -1:

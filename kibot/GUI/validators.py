@@ -100,3 +100,29 @@ class NumberValidator(GenericValidator):
         if c == '-' and self.parent.GetInsertionPoint() == 0:
             event.Skip()
             return
+
+
+class LowerCaseValidator(GenericValidator):
+    """ Force lowercase """
+    def __init__(self, parent, on_text=None):
+        super().__init__(parent, None, None)
+        self.Bind(wx.EVT_TEXT, self.OnText)
+        self.on_text = on_text
+
+    def Clone(self):
+        return LowerCaseValidator(self.parent, self.on_text)
+
+    def set_value(self, new_val):
+        t = self.parent
+        point = self.parent.GetInsertionPoint()
+        t.ChangeValue(new_val)
+        t.SetInsertionPoint(point)
+        logger.debug(f'set_value {new_val}')
+
+    def OnText(self, event):
+        """ Force lowercase if needed """
+        low = self.parent.Value.lower()
+        if low != self.parent.Value:
+            self.set_value(low)
+        elif self.on_text:
+            self.on_text(event)
