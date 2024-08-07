@@ -79,11 +79,6 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 Warning: don't use `-s all` or this preflight will be skipped """
         self._init_from_defaults = True
 
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.set_text_variables, KiCadVariable):
-            self.set_text_variables = [self.set_text_variables]
-
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """

@@ -90,11 +90,6 @@ class Check_Fields(BasePreFlight):  # noqa: F821
                 One use is to check that all components are suitable for a temperature range.
                 In this case a field must declare the temperature range """
 
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.check_fields, FieldCheck):
-            self.check_fields = [self.check_fields]
-
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """

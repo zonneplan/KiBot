@@ -258,6 +258,9 @@ class Optionable(object):
                             # Delegate the validation to the object
                             v.set_tree(new_val)
                             v.config(self)
+                            # Promote to a list if possible
+                            if 'list(dict)' in valid:
+                                v = [v]
                     elif isinstance(v, list):
                         new_val = []
                         filtered_valid = [t[5:-1] for t in valid if t.startswith('list(')]
@@ -324,6 +327,11 @@ class Optionable(object):
                     # The default initialization for the class
                     new_val = v()
                     new_val.config(self)
+            elif def_val == '[{}]':
+                # The default initialization for the class
+                new_val = v()
+                new_val.config(self)
+                new_val = [new_val]
             elif def_val == '[]':
                 # An empty list
                 new_val = []

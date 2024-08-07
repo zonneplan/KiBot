@@ -72,11 +72,6 @@ class Base_ReplaceOptions(Optionable):
             """ [dict|list(dict)=[]] Tag or tags to replace """
         self._init_from_defaults = True
 
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.replace_tags, TagReplaceBase):
-            self.replace_tags = [self.replace_tags]
-
 
 class Base_Replace(BasePreFlight):  # noqa: F821
     @classmethod
