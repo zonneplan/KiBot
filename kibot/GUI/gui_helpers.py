@@ -306,3 +306,9 @@ def add_abm_buttons(self, sb=None, add_add=False, add_add_ttip='', add_ttip=None
     self.but_remove.SetToolTip("Remove the entry")
     but_sizer.Add(self.but_remove, flags)
     return but_sizer
+
+
+def send_relayout_event(window):
+    # The selected widget might be bigger, adjust the dialog
+    ev = wx.PyCommandEvent(wx.EVT_COLLAPSIBLEPANE_CHANGED.typeId, window.GetId())
+    wx.PostEvent(window.GetEventHandler(), ev)

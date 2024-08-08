@@ -145,12 +145,12 @@ def report(all, kind):
     logger.info('-'*80)
     logger.info(f'{len(all.dts)} different data types')
     for k, v in sorted(all.dts.items(), key=lambda x: x[1], reverse=True):
-        logger.info(f'- {k:>16}: {v:4d}')
+        logger.info(f'- {k:>18}: {v:4d}')
 
     logger.info('-'*80)
     logger.info('Used as single data type:')
     for k, v in sorted(all.dts_s.items(), key=lambda x: x[1], reverse=True):
-        logger.info(f'- {k:>16}: {v:4d}')
+        logger.info(f'- {k:>18}: {v:4d}')
 
     logger.info('-'*80)
     logger.info(f'{len(all.dts_m)} different data type combinations')

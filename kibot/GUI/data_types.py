@@ -12,7 +12,8 @@ import math
 import wx
 from .validators import NumberValidator, LowerCaseValidator
 from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
-                          get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm)
+                          get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm,
+                          send_relayout_event)
 from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
@@ -20,12 +21,12 @@ from ..misc import typeof, try_int, RE_LEN
 from ..optionable import Optionable
 from .. import log
 logger = log.get_logger()
-TYPE_PRIORITY = {'list(dict|string)': 110, 'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80, 'dict': 60,
-                 'string_dict': 55, 'string': 50, 'number': 20, 'boolean': 10}
-TYPE_ABREV = {'list(dict|string)': 'LDS', 'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS', 'dict': 'D',
-              'string_dict': 'SD', 'string': 'S', 'number': 'N', 'boolean': 'B'}
+TYPE_PRIORITY = {'list(dict|string)': 110, 'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80,
+                 'list(string_s)': 80, 'dict': 60, 'string_dict': 55, 'string': 50, 'number': 20, 'boolean': 10}
+TYPE_ABREV = {'list(dict|string)': 'LDS', 'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS',
+              'list(string_s)': 'LSS', 'dict': 'D', 'string_dict': 'SD', 'string': 'S', 'number': 'N', 'boolean': 'B'}
 TYPE_EMPTY = {'list(dict|string)': [], 'list(dict)': [], 'list(list(string))': [], 'list(string)': [], 'dict': {},
-              'string_dict': {}, 'string': '', 'number': '', 'boolean': False}
+              'list(string_s)': '', 'string_dict': {}, 'string': '', 'number': '', 'boolean': False}
 max_label = 200
 def_text = 200
 BMP_CLEAR = wx.ART_DELETE
@@ -47,13 +48,13 @@ class DataTypeBase(object):
         if self.default is not None:
             help += f'\nDefault: {self.default}'
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        self.label = wx.StaticText(window, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
-        entry.show_status(self.label)
-        self.label.SetToolTip(help)
+        self.wlabel = wx.StaticText(window, label=self.get_label(entry), size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        entry.show_status(self.wlabel)
+        self.wlabel.SetToolTip(help)
         self.define_input(window, value, init)
         self.input.SetToolTip(help)
 
-        e_sizer.Add(self.label, gh.SIZER_FLAGS_0)
+        e_sizer.Add(self.wlabel, gh.SIZER_FLAGS_0)
         e_sizer.Add(self.input, gh.SIZER_FLAGS_1)
         self.input.Bind(wx.EVT_TEXT, self.OnChange)
         return e_sizer
@@ -71,13 +72,13 @@ class DataTypeBase(object):
         self.input.SetFocus()
 
     def reset(self, get_focus=True):
-        self.entry.set_edited(False, self.label)
+        self.entry.set_edited(False, self.wlabel)
         self.ori_value = self.input.Value = self.reset_value
         if get_focus:
             self.focus()
 
     def OnChange(self, event):
-        self.entry.set_edited(self.input.Value != self.ori_value, self.label)
+        self.entry.set_edited(self.input.Value != self.ori_value, self.wlabel)
 
 
 class DataTypeString(DataTypeBase):
@@ -168,7 +169,7 @@ class DataTypeChoice(DataTypeBase):
         return self.restriction[self.input.GetSelection()]
 
     def reset(self, get_focus=True):
-        self.entry.set_edited(False, self.label)
+        self.entry.set_edited(False, self.wlabel)
         if self.default is None:
             logger.error(f'Missing default for {self.entry.name}')
         self.reset_value = self.restriction.index(self.default) if self.default is not None else 0
@@ -177,7 +178,7 @@ class DataTypeChoice(DataTypeBase):
             self.focus()
 
     def OnChange(self, event):
-        self.entry.set_edited(self.input.Selection != self.ori_value, self.label)
+        self.entry.set_edited(self.input.Selection != self.ori_value, self.wlabel)
 
 
 class DataTypeNumberChoice(DataTypeChoice):
@@ -451,6 +452,91 @@ class DataTypeListString(DataTypeList):
 
     def get_value(self):
         return [self.lbox.GetString(n) for n in range(self.lbox.GetCount())]
+
+
+class DataTypeListStringSingular(DataTypeString, DataTypeListString):
+    def get_widget(self, obj, window, entry, level, init, value, **kwargs):
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        # A list box
+        self.use_str = False   # So get_value behaves right
+        sizer_lbox = DataTypeListString.get_widget(self, obj, window, entry, level, init, value, **kwargs)
+        items = self.lbox.GetCount()
+        if items <= 1:
+            if items:
+                value = self.lbox.GetString(0)
+            use_str = True
+        else:
+            use_str = False
+        self.use_str = use_str
+        # A text box
+        sizer_str = DataTypeBase.get_widget(self, obj, window, entry, level, init, value, **kwargs)
+        #   Add a button to make the string plural
+        self.but_plural = wx.BitmapButton(window, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
+        self.but_plural.SetToolTip("Add more entries")
+        self.but_plural.Bind(wx.EVT_BUTTON, self.MakePlural)
+        if not items:
+            # We need at least one to promote it to a list
+            self.but_plural.Disable()
+        sizer_str.Add(self.but_plural, wx.SizerFlags().Border(wx.RIGHT).Center())
+        # Add both widgets and enable the best for the current value
+        main_sizer.Add(sizer_lbox, gh.SIZER_FLAGS_1_NO_BORDER)
+        main_sizer.Add(sizer_str, gh.SIZER_FLAGS_1_NO_BORDER)
+        main_sizer.Show(sizer_lbox if use_str else sizer_str, False)
+        self.sizer_lbox = sizer_lbox
+        self.sizer_str = sizer_str
+        self.main_sizer = main_sizer
+        return main_sizer
+
+    def OnChange(self, event):
+        """ Enable the 'plural' button only when we have something """
+        super().OnChange(event)
+        self.but_plural.Enable(len(self.input.Value) != 0)
+
+    def switch_to_text(self, do_it=True, get_focus=True):
+        """ Make the input text visible and hide the list box """
+        self.main_sizer.Show(self.sizer_lbox, not do_it)
+        self.main_sizer.Show(self.sizer_str, do_it)
+        if get_focus:
+            if do_it:
+                self.input.SetFocus()
+            else:
+                self.lbox.SetFocus()
+        send_relayout_event(self.window)
+        self.use_str = do_it
+
+    def MakePlural(self, event):
+        """ Switch to the list box if the user needs more items """
+        cur_val = self.input.Value
+        if not cur_val:
+            # It shouldn't happen, we disable the button
+            return
+        # Promote this value to a list
+        self.lbox.SetItems([cur_val])
+        self.edit_item()
+        # Check if we have 2 items
+        if self.lbox.GetCount() != 2:
+            return
+        # Ok, we had a value and added another, switch to the list
+        self.switch_to_text(False)
+
+    def OnRemove(self, event):
+        """ Change to text input if we reduce the list to 1 item """
+        super().OnRemove(event)
+        # If we reduced the list to one value switch to a input box
+        items = self.lbox.GetCount()
+        if items > 1:
+            return
+        self.input.Value = self.lbox.GetString(0) if items else ''
+        self.switch_to_text()
+
+    def reset(self, get_focus=True):
+        """ Clear the input value and show the text input """
+        DataTypeBase.reset(self, False)  # Don't focus here, we will focus the correct widget in switch_to_text
+        self.switch_to_text(True, get_focus)
+
+    def get_value(self):
+        """ Here we return the optimal, Optionable can promote strings """
+        return self.input.Value if self.use_str else DataTypeListString.get_value(self)
 
 
 class DataTypeListDict(DataTypeList):
@@ -753,6 +839,8 @@ def get_class_for(kind, rest):
         return DataTypeDict
     elif kind == 'list(string)':
         return DataTypeListString
+    elif kind == 'list(string_s)':
+        return DataTypeListStringSingular
     elif kind == 'list(dict)':
         return DataTypeListDict
     elif kind == 'list(dict|string)':
@@ -965,9 +1053,7 @@ class DataEntry(object):
             for e in sel_dt.sub_entries:
                 e.update_shown()
         self.set_sel_tooltip()
-        # The selected widget might be bigger, adjust the dialog
-        ev = wx.PyCommandEvent(wx.EVT_COLLAPSIBLEPANE_CHANGED.typeId, self.window.GetId())
-        wx.PostEvent(self.window.GetEventHandler(), ev)
+        send_relayout_event(self.window)
 
     def update_shown(self):
         for c, w in enumerate(self.widgets):
@@ -1035,6 +1121,15 @@ def join_lists(valid, extra):
         new_extra.append(e)
     if list_index is not None:
         new_valid[list_index] += ')'
+    # Optimize the list(string)|string, named list(string_s)
+    try:
+        li = new_valid.index('list(string)')
+        ls = new_valid.index('string')
+        new_valid[li] = 'list(string_s)'
+        del new_valid[ls]
+        del new_extra[ls]
+    except ValueError:
+        pass
     return new_valid, new_extra
 
 
