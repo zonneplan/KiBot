@@ -495,6 +495,7 @@ DEFAULT_OFFSETS = [["^USB_C_Receptacle_XKB_U262-16XN-4BVC11", (0.0, -1.44)],
                    [r"^PinHeader_2x03_P1\.27mm_Vertical", (-1.27, -0.635)],
                    ]
 DEFAULT_OFFSET_FIELDS = ['JLCPCB Position Offset', 'JLCPosOffset']
+RE_LEN = re.compile(r'\{L:(\d+)\}')
 
 
 class Rect(object):

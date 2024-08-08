@@ -10,7 +10,7 @@ import re
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS, typeof
+from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS, typeof, RE_LEN
 from . import log
 
 logger = log.get_logger()
@@ -61,27 +61,27 @@ class Optionable(object):
     @staticmethod
     def _promote_str_to_list(val, doc, valid):
         if 'list(string)' not in valid or val == '_null':
-            return val
+            return val, False
         # Promote strings to list of strings
         if not val:
-            return []
+            return [], True
         if ',' in val and '{comma_sep}' in doc:
-            return [v.strip() for v in val.split(',')]
-        return [val]
+            return [v.strip() for v in val.split(',')], True
+        return [val], True
 
     @staticmethod
     def _check_str(key, val, doc, valid):
         if not isinstance(val, str):
             raise KiPlotConfigurationError("Option `{}` must be a string".format(key))
-        new_val = Optionable._promote_str_to_list(val, doc, valid)
+        new_val, is_list = Optionable._promote_str_to_list(val, doc, valid)
         if '{no_case}' in doc:
-            new_val = new_val.lower() if isinstance(new_val, str) else [v.lower() for v in new_val]
+            new_val = new_val.lower() if not is_list else [v.lower() for v in new_val]
         # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
         m = Optionable._str_values_re.search(doc)
         if m:
             vals = [v.strip() for v in m.group(1).split(',')]
             if '*' not in vals:
-                if isinstance(new_val, str):
+                if not is_list:
                     wrong = val not in vals
                 else:
                     for v in new_val:
@@ -93,6 +93,8 @@ class Optionable(object):
                         wrong = False
                 if wrong:
                     raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
+        if is_list:
+            Optionable._check_list_len(key, new_val, doc)
         return new_val
 
     @staticmethod
@@ -117,6 +119,14 @@ class Optionable(object):
     def _check_bool(key, val):
         if not isinstance(val, bool):
             raise KiPlotConfigurationError("Option `{}` must be true/false".format(key))
+
+    @staticmethod
+    def _check_list_len(k, v, doc):
+        m = re.search(RE_LEN, doc)
+        if m:
+            items = int(m.group(1))
+            if len(v) != items:
+                raise KiPlotConfigurationError(f"The `{k}` must contain {items} values ({v})")
 
     def get_doc_simple(self, name):
         return getattr(self, '_help_'+name)
@@ -280,6 +290,7 @@ class Optionable(object):
                                     element = element.lower()
                                 new_val.append(element)
                         v = new_val
+                        self._check_list_len(k, v, cur_doc)
             # Seems to be ok, map it
             dest_name = alias if is_alias else k
             setattr(self, dest_name, v)
@@ -344,7 +355,7 @@ class Optionable(object):
                 new_val = None
             elif def_val[0] == "'":
                 # String
-                new_val = self._promote_str_to_list(def_val[1:-1], real_help, valid)
+                new_val, _ = self._promote_str_to_list(def_val[1:-1], real_help, valid)
             elif def_val[0] in {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}:
                 new_val = float(def_val)
             else:

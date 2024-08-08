@@ -24,7 +24,7 @@ import textwrap
 from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
                    W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP, error_level_to_name,
-                   DEFAULT_ROTATIONS, DEFAULT_OFFSETS, W_EXTRADOCS)
+                   DEFAULT_ROTATIONS, DEFAULT_OFFSETS, W_EXTRADOCS, RE_LEN)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -816,6 +816,7 @@ def process_help_data_type(obj, help, v):
             new_data_type += f' (default: ``{def_val}``)'
     real_help = real_help.replace('{comma_sep}', '[:ref:`comma separated <comma_sep>`]')
     real_help = real_help.replace('{no_case} ', '[:ref:`case insensitive <no_case>`]')
+    real_help = re.sub(RE_LEN, r'(must contain \1 elements)', real_help, count=1)
     string_added = False
     number_added = False
     for tp, validation in zip(valid, validations):
