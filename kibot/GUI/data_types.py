@@ -16,7 +16,7 @@ from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, in
 from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
 from ..error import KiPlotConfigurationError
-from ..misc import typeof, try_int
+from ..misc import typeof, try_int, RE_LEN
 from ..optionable import Optionable
 from .. import log
 logger = log.get_logger()
@@ -339,6 +339,9 @@ class DataTypeList(DataTypeBase):
         self.help = entry.help
         self.window = window
         self.entry = entry
+        # Check if we have len constraints
+        m = RE_LEN.search(entry.help)
+        self.len_restriction = int(m.group(1)) if m else 0
 
         main_sizer = wx.StaticBoxSizer(wx.VERTICAL, window, entry.name)
         self.sp = main_sizer.GetStaticBox()
@@ -363,10 +366,12 @@ class DataTypeList(DataTypeBase):
 
         self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
         self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
-        self.but_add.Bind(wx.EVT_BUTTON, lambda event: self.edit_item())
+        self.but_add.Bind(wx.EVT_BUTTON, lambda event: self.pre_edit_item())
         self.but_remove.Bind(wx.EVT_BUTTON, self.OnRemove)
 
         self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnDClick)
+
+        self.update_add_remove()
         return main_sizer
 
     def OnDClick(self, event):
@@ -383,6 +388,16 @@ class DataTypeList(DataTypeBase):
     def mark_edited(self):
         cur_value = self.get_value()
         self.entry.set_edited(cur_value != self.ori_value, self.sp)
+        self.update_add_remove()
+
+    def update_add_remove(self):
+        if not self.len_restriction:
+            return
+        count = self.lbox.GetCount()
+        if count >= self.len_restriction:
+            self.but_add.Disable()
+        if count <= self.len_restriction:
+            self.but_remove.Disable()
 
     def focus(self):
         self.lbox.SetFocus()
@@ -393,6 +408,11 @@ class DataTypeList(DataTypeBase):
         if get_focus:
             self.focus()
 
+    def pre_edit_item(self):
+        if self.len_restriction and self.lbox.GetCount() >= self.len_restriction:
+            return
+        self.edit_item()
+
     def OnUp(self, event):
         move_sel_up(self.lbox)
         self.mark_edited()
@@ -402,6 +422,8 @@ class DataTypeList(DataTypeBase):
         self.mark_edited()
 
     def OnRemove(self, event):
+        if self.len_restriction and self.lbox.GetCount() <= self.len_restriction:
+            return
         remove_item(self.lbox)
         self.mark_edited()
 
