@@ -542,9 +542,9 @@ outputs:
       expand_text_vars: true
       # [string='config'] {no_case} Field name used for internal filters (not for variants)
       fit_field: 'config'
-      # [string|list(string)='no,yes'] {comma_sep} Values for the `Footprint Populate` column
+      # [string|list(string)='no,yes'] {comma_sep} {L:2} Values for the `Footprint Populate` column
       footprint_populate_values: 'no,yes'
-      # [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} Values for the `Footprint Type` column
+      # [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} {L:3} Values for the `Footprint Type` column
       footprint_type_values: 'SMD,THT,VIRTUAL'
       # [string='Auto'] [HTML,CSV,TXT,TSV,XML,XLSX,HRTXT,Auto] format for the BoM.
       # `Auto` defaults to CSV or a guess according to the options.
