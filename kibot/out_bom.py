@@ -595,9 +595,9 @@ class BoMOptions(BaseOptions):
             self.sort_style = 'type_value'
             """ *[type_value,type_value_ref,ref] Sorting criteria """
             self.footprint_populate_values = Optionable
-            """ [string|list(string)='no,yes'] {comma_sep} Values for the `Footprint Populate` column """
+            """ [string|list(string)='no,yes'] {comma_sep} {L:2} Values for the `Footprint Populate` column """
             self.footprint_type_values = Optionable
-            """ [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} Values for the `Footprint Type` column """
+            """ [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} {L:3} Values for the `Footprint Type` column """
             self.expand_text_vars = True
             """ Expand KiCad 6 text variables after applying all filters and variants.
                 This is done using a **_expand_text_vars** filter.
@@ -730,13 +730,6 @@ class BoMOptions(BaseOptions):
         else:
             no_conflict = set(self.no_conflict)
         self._no_conflict = no_conflict
-        # Column values
-        if len(self.footprint_populate_values) != 2:
-            raise KiPlotConfigurationError("The `footprint_populate_values` must contain two values ({})".
-                                           format(self.footprint_populate_values))
-        if len(self.footprint_type_values) != 3:
-            raise KiPlotConfigurationError("The `footprint_type_values` must contain three values ({})".
-                                           format(self.footprint_type_values))
         # Columns
         (valid_columns, extra_columns) = self._get_columns()
         self.create_default_columns(valid_columns)
