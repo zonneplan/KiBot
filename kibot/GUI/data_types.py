@@ -970,6 +970,8 @@ def adapt_default(val, name):
         val = []
     elif val == '{}':
         val = {}
+    elif val == '[{}]':
+        val = [{}]
     elif val == 'true':
         val = True
     elif val == 'false':
