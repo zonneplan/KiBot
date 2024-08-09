@@ -22,11 +22,11 @@ from ..optionable import Optionable
 from .. import log
 logger = log.get_logger()
 TYPE_PRIORITY = {'list(dict|string)': 110, 'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80,
-                 'list(string_s)': 80, 'dict': 60, 'string_dict': 55, 'string': 50, 'number': 20, 'boolean': 10}
+                 'string_s': 80, 'dict': 60, 'string_dict': 55, 'string': 50, 'number': 20, 'boolean': 10}
 TYPE_ABREV = {'list(dict|string)': 'LDS', 'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS',
-              'list(string_s)': 'LSS', 'dict': 'D', 'string_dict': 'SD', 'string': 'S', 'number': 'N', 'boolean': 'B'}
+              'string_s': 'LSS', 'dict': 'D', 'string_dict': 'SD', 'string': 'S', 'number': 'N', 'boolean': 'B'}
 TYPE_EMPTY = {'list(dict|string)': [], 'list(dict)': [], 'list(list(string))': [], 'list(string)': [], 'dict': {},
-              'list(string_s)': '', 'string_dict': {}, 'string': '', 'number': '', 'boolean': False}
+              'string_s': '', 'string_dict': {}, 'string': '', 'number': '', 'boolean': False}
 max_label = 200
 def_text = 200
 BMP_CLEAR = wx.ART_DELETE
@@ -76,6 +76,9 @@ class DataTypeBase(object):
         self.ori_value = self.input.Value = self.reset_value
         if get_focus:
             self.focus()
+
+    def matches_type(self, data_type):
+        return self.kind == data_type
 
     def OnChange(self, event):
         self.entry.set_edited(self.input.Value != self.ori_value, self.wlabel)
@@ -353,7 +356,7 @@ class DataTypeList(DataTypeBase):
         self.lbox = wx.ListBox(self.sp, choices=[], size=wx.Size(def_text, -1), style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
         if init:
             try:
-                self.set_items(obj, entry.name)
+                self.set_items(obj, entry.name, value)
             except Exception:
                 logger.error(f'{entry.name} {getattr(obj, entry.name)}')
                 raise
@@ -430,11 +433,9 @@ class DataTypeList(DataTypeBase):
 
 
 class DataTypeListString(DataTypeList):
-    def set_items(self, obj, member):
-        val = getattr(obj, member)
-        if val is None or isinstance(val, type):
-            val = []
-        self.lbox.SetItems(val)
+    def set_items(self, obj, member, value):
+        # The value is more reliable for a string. I.e. filters are solved and become objects
+        self.lbox.SetItems(value)
 
     def edit_item(self, string='', obj=None, index=-1):
         ori = string
@@ -457,19 +458,21 @@ class DataTypeListString(DataTypeList):
 class DataTypeListStringSingular(DataTypeString, DataTypeListString):
     def get_widget(self, obj, window, entry, level, init, value, **kwargs):
         main_sizer = wx.BoxSizer(wx.VERTICAL)
+        if isinstance(value, str):
+            # If we get a plain string promote it to a list
+            # Note that this comes from the tree, before config
+            value = [value]
+        assert isinstance(value, list), type(value)
         # A list box
-        self.use_str = False   # So get_value behaves right
+        self.use_str = False   # Force list behavior for get_value (used by string list init)
         sizer_lbox = DataTypeListString.get_widget(self, obj, window, entry, level, init, value, **kwargs)
-        items = self.lbox.GetCount()
+        items = len(value)
         if items <= 1:
-            if items:
-                value = self.lbox.GetString(0)
-            use_str = True
-        else:
-            use_str = False
-        self.use_str = use_str
+            # Singular version, switch to a string
+            value = value[0] if items else ''
+            self.use_str = True
         # A text box
-        sizer_str = DataTypeBase.get_widget(self, obj, window, entry, level, init, value, **kwargs)
+        sizer_str = DataTypeBase.get_widget(self, obj, window, entry, level, init and self.use_str, value, **kwargs)
         #   Add a button to make the string plural
         self.but_plural = wx.BitmapButton(window, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
         self.but_plural.SetToolTip("Add more entries")
@@ -481,7 +484,7 @@ class DataTypeListStringSingular(DataTypeString, DataTypeListString):
         # Add both widgets and enable the best for the current value
         main_sizer.Add(sizer_lbox, gh.SIZER_FLAGS_1_NO_BORDER)
         main_sizer.Add(sizer_str, gh.SIZER_FLAGS_1_NO_BORDER)
-        main_sizer.Show(sizer_lbox if use_str else sizer_str, False)
+        main_sizer.Show(sizer_lbox if self.use_str else sizer_str, False)
         self.sizer_lbox = sizer_lbox
         self.sizer_str = sizer_str
         self.main_sizer = main_sizer
@@ -538,9 +541,12 @@ class DataTypeListStringSingular(DataTypeString, DataTypeListString):
         """ Here we return the optimal, Optionable can promote strings """
         return self.input.Value if self.use_str else DataTypeListString.get_value(self)
 
+    def matches_type(self, data_type):
+        return data_type == 'string' or data_type == 'list(string)'
+
 
 class DataTypeListDict(DataTypeList):
-    def set_items(self, obj, member):
+    def set_items(self, obj, member, value):
         val = getattr(obj, member)
         if val is None or isinstance(val, type):
             val = []
@@ -613,6 +619,9 @@ class DataTypeListDictOrString(DataTypeListDict):
     def get_value(self):
         return [v if isinstance(v, str) else v._tree for v in get_client_data(self.lbox)]
 
+    def matches_type(self, data_type):
+        return data_type == 'list(dict)' or data_type == 'list(string)'
+
 
 class StringPair(object):
     def __init__(self, key=None, value=None):
@@ -638,7 +647,7 @@ class StringPair(object):
 class DataTypeStringDict(DataTypeList):
     """ Class to edit a pair key/value
         Behaves like an Optionable """
-    def set_items(self, obj, member):
+    def set_items(self, obj, member, value):
         val = getattr(obj, member)
         if val is None or isinstance(val, type):
             val = {}
@@ -839,7 +848,7 @@ def get_class_for(kind, rest):
         return DataTypeDict
     elif kind == 'list(string)':
         return DataTypeListString
-    elif kind == 'list(string_s)':
+    elif kind == 'string_s':
         return DataTypeListStringSingular
     elif kind == 'list(dict)':
         return DataTypeListDict
@@ -945,7 +954,7 @@ class DataEntry(object):
 
     def get_used_data_type(self, value):
         data_type = typeof(value, Optionable)
-        return next((c for c, v in enumerate(self.valids) if v.kind == data_type), -1), data_type
+        return next((c for c, v in enumerate(self.valids) if v.matches_type(data_type)), -1), data_type
 
     def add_widgets(self, obj, window, sizer, level, extra_args):
         """ Add a widget for each possible data type.
@@ -1121,11 +1130,11 @@ def join_lists(valid, extra):
         new_extra.append(e)
     if list_index is not None:
         new_valid[list_index] += ')'
-    # Optimize the list(string)|string, named list(string_s)
+    # Optimize the list(string)|string, named "string_s"
     try:
         li = new_valid.index('list(string)')
         ls = new_valid.index('string')
-        new_valid[li] = 'list(string_s)'
+        new_valid[li] = 'string_s'
         del new_valid[ls]
         del new_extra[ls]
     except ValueError:
