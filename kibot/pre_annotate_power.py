@@ -23,7 +23,7 @@ class Annotate_Power(BasePreFlight):  # noqa: F821
         self._sch_related = True
         with document:
             self.annotate_power = False
-            """ [boolean] Enable this preflight """
+            """ Enable this preflight """
 
     def annotate_ki5(self):
         """ Annotate power components for KiCad 5 """

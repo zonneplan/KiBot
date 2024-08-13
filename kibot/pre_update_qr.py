@@ -22,7 +22,7 @@ class Update_QR(BasePreFlight):  # noqa: F821
         self._pcb_related = True
         with document:
             self.update_qr = False
-            """ [boolean] Enable this preflight """
+            """ Enable this preflight """
 
     def run(self):
         for o in RegOutput.get_outputs():

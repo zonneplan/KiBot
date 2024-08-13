@@ -241,7 +241,7 @@ class Update_Stackup(BasePreFlight):  # noqa: F821
         self._pcb_related = True
         with document:
             self.update_stackup = False
-            """ [boolean] Enable this preflight """
+            """ Enable this preflight """
 
     def v2str(self, v):
         return pcbnew.StringFromValue(self.pcb_iu, self.pcb_units, v, True)

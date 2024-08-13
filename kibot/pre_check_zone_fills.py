@@ -16,7 +16,7 @@ class Check_Zone_Fills(BasePreFlight):  # noqa: F821
         super().__init__()
         with document:
             self.check_zone_fills = False
-            """ [boolean] Enable this preflight """
+            """ Enable this preflight """
 
     def apply(self):
         BasePreFlight._set_option('check_zone_fills', self._enabled)  # noqa: F821
