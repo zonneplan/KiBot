@@ -655,7 +655,7 @@ class PreflightsPanel(DictPanel):
 
     def choose_type(self):
         used = set(BasePreFlight.get_in_use_names())
-        available = [name for name in BasePreFlight.get_registered().keys() if name not in used]
+        available = sorted([name for name in BasePreFlight.get_registered().keys() if name not in used])
         return choose_from_list(self, available, 'a preflight')
 
     def add_obj(self, obj):
