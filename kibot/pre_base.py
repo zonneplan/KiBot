@@ -64,9 +64,13 @@ class BasePreFlight(Optionable, Registrable):
         BasePreFlight._configured = False
 
     @staticmethod
-    def get_object_for(name, value=False):
+    def get_object_for(name, value=None):
         obj = BasePreFlight._registered[name]()
         assert name == obj.type
+        if value is None:
+            cur_doc, _, _ = obj.get_doc(name, no_basic=True)
+            _, _, def_val, _ = obj.get_valid_types(cur_doc, skip_extra=True)
+            value = eval(def_val.capitalize())
         obj._value = value
         obj.set_tree({name: value})
         return obj
