@@ -18,9 +18,7 @@ class Update_QR(BasePreFlight):  # noqa: F821
         self._pcb_related = True
         with document:
             self.update_qr = False
-            """ [boolean] Update the QR codes.
-                Complements the `qr_lib` output.
-                The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough """
+            """ Enable this preflight """
 
     def run(self):
         for o in RegOutput.get_outputs():

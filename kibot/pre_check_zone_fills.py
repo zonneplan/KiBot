@@ -12,9 +12,7 @@ class Check_Zone_Fills(BasePreFlight):  # noqa: F821
         super().__init__()
         with document:
             self.check_zone_fills = False
-            """ [boolean] Zones are filled before doing any operation involving PCB layers.
-                The original PCB remains unchanged. If you need to abort when the zone fill
-                creates significant changes to a layer use the CheckZoneFill internal template """
+            """ Enable this preflight """
 
     def apply(self):
         BasePreFlight._set_option('check_zone_fills', self._enabled)  # noqa: F821
