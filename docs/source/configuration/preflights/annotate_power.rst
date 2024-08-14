@@ -10,5 +10,5 @@ Annotates all power components.
 This preflight modifies the schematic, use it only in revision control environments. |br|
 Used to solve ERC problems when using filters that remove power reference numbers
 
-   -  **annotate_power** :index:`: <pair: preflight - annotate_power; annotate_power>` [:ref:`boolean <boolean>`] Enable this preflight.
+   -  **annotate_power** :index:`: <pair: preflight - annotate_power; annotate_power>` [:ref:`boolean <boolean>`] (default: ``false``) Enable this preflight.
 

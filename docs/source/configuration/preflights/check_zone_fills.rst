@@ -10,5 +10,5 @@ Zones are filled before doing any operation involving PCB layers.
 The original PCB remains unchanged. If you need to abort when the zone fill
 creates significant changes to a layer use the CheckZoneFill internal template
 
-   -  **check_zone_fills** :index:`: <pair: preflight - check_zone_fills; check_zone_fills>` [:ref:`boolean <boolean>`] Enable this preflight.
+   -  **check_zone_fills** :index:`: <pair: preflight - check_zone_fills; check_zone_fills>` [:ref:`boolean <boolean>`] (default: ``false``) Enable this preflight.
 

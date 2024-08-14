@@ -28,7 +28,7 @@ preflight:
   # Annotates all power components.
   # This preflight modifies the schematic, use it only in revision control environments.
   # Used to solve ERC problems when using filters that remove power reference numbers .
-  # [boolean] Enable this preflight.
+  # [boolean=false] Enable this preflight.
   annotate_power: true
   # Check Fields
   # Checks to apply to the schematic fields.
@@ -47,7 +47,7 @@ preflight:
   # Zones are filled before doing any operation involving PCB layers.
   # The original PCB remains unchanged. If you need to abort when the zone fill
   # creates significant changes to a layer use the CheckZoneFill internal template .
-  # [boolean] Enable this preflight.
+  # [boolean=false] Enable this preflight.
   check_zone_fills: true
   # Draw Stackup
   # Draw the PCB stackup. Needs KiCad 7 or newer.
@@ -169,7 +169,7 @@ preflight:
   # Update the QR codes.
   # Complements the `qr_lib` output.
   # The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough .
-  # [boolean] Enable this preflight.
+  # [boolean=false] Enable this preflight.
   update_qr: true
   # Update Stackup
   # Update the information in the Stackup Table.
@@ -177,7 +177,7 @@ preflight:
   # *Place* -> *Stackup Table*. But this information is static, so if
   # you modify anything related to it the block will be obsolete.
   # This preflight tries to refresh the information .
-  # [boolean] Enable this preflight.
+  # [boolean=false] Enable this preflight.
   update_stackup: true
   # Update XML
   # Update the XML version of the BoM (Bill of Materials).
