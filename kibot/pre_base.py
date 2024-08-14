@@ -70,6 +70,7 @@ class BasePreFlight(Optionable, Registrable):
         if value is None:
             cur_doc, _, _ = obj.get_doc(name, no_basic=True)
             _, _, def_val, _ = obj.get_valid_types(cur_doc, skip_extra=True)
+            assert def_val is not None, f'Missing default for `{name}`'
             value = eval(def_val.capitalize())
             if isinstance(value, bool):
                 # Create an object that is enabled

@@ -13,4 +13,4 @@ class Pre_Test(BasePreFlight):  # noqa: F821
         self._pcb_related = True
         with document:
             self.pre_test = False
-            """ [boolean] Enable this preflight """
+            """ Enable this preflight """
