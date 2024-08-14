@@ -71,6 +71,9 @@ class BasePreFlight(Optionable, Registrable):
             cur_doc, _, _ = obj.get_doc(name, no_basic=True)
             _, _, def_val, _ = obj.get_valid_types(cur_doc, skip_extra=True)
             value = eval(def_val.capitalize())
+            if isinstance(value, bool):
+                # Create an object that is enabled
+                value = True
         obj._value = value
         obj.set_tree({name: value})
         return obj
