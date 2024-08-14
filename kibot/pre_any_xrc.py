@@ -97,6 +97,9 @@ class XRC(BasePreFlight):
         self._opts_cls = cls
         self._init_from_defaults = True
 
+    def __str__(self):
+        return f'{self.type}: {self._enabled} ({self._format})'
+
     def config(self, parent):
         super().config(parent)
         ops = self.erc if self._sch_related else self.drc

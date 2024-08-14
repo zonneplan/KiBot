@@ -111,6 +111,9 @@ class Check_Fields(BasePreFlight):  # noqa: F821
             logger.info(msg)
         return severity == 'skip'
 
+    def __str__(self):
+        return f'{self.type} ({[v.field for v in self.check_fields]})'
+
     def run(self):
         load_sch()
         if not GS.sch:

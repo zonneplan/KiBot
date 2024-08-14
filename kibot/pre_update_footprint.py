@@ -5,7 +5,7 @@
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
 from .kicad.pcb import replace_footprints
-from .misc import W_NOFOOTP
+from .misc import W_NOFOOTP, pretty_list
 from .optionable import Optionable
 from .macros import macros, document, pre_class  # noqa: F401
 from .log import get_logger
@@ -24,6 +24,9 @@ class Update_Footprint(BasePreFlight):  # noqa: F821
         with document:
             self.update_footprint = Optionable
             """ [string|list(string)=''] {comma_sep} One or more component references """
+
+    def __str__(self):
+        return f'{self.type} ({pretty_list(self.update_footprint)})'
 
     def get_example():
         """ Returns a YAML value for the example config """

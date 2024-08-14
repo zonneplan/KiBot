@@ -438,6 +438,12 @@ class Draw_Stackup(BasePreFlight):  # noqa: F821
             self.draw_stackup = DrawStackupOptions
             """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
+    def __str__(self):
+        v = self.draw_stackup
+        if isinstance(v, bool):
+            return super().__str__()
+        return f'{self.type}: {v.enabled} ({[c.type for c in v._columns]})'
+
     def config(self, parent):
         super().config(parent)
         if isinstance(self.draw_stackup, bool):

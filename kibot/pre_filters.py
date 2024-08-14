@@ -8,6 +8,7 @@ import os
 import re
 from .gs import GS
 from .error import KiPlotConfigurationError
+from .misc import pretty_list
 from .optionable import Optionable
 from .kiplot import get_output_dir
 from .macros import macros, document, pre_class  # noqa: F401
@@ -100,6 +101,9 @@ class Filters(BasePreFlight, FiltersOptions):  # noqa: F821
     def __init__(self):
         super().__init__()
         self.set_doc('filters', "[list(dict)=[]] One or more filters")
+
+    def __str__(self):
+        return super().__str__()+f' ({pretty_list([v.filter for v in self.filters])})'
 
     def get_example():
         """ Returns a YAML value for the example config """
