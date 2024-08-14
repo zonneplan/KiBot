@@ -379,7 +379,8 @@ def parse_global_redef(args):
 class SimpleFilter(object):
     def __init__(self, num, regex=''):
         self.number = num
-        self.regex = re.compile(regex)
+        self._regex = re.compile(regex)
+        self.regex = regex
         self.error = ''
 
 
