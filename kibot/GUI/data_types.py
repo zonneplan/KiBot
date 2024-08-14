@@ -827,7 +827,7 @@ class DataTypeListListString(DataTypeListDict):
 
 class EditDict(wx.Dialog):
     """ Dialog for a group of options """
-    def __init__(self, parent, o, title, data_tree=None, validator=None):
+    def __init__(self, parent, o, title, data_tree=None, validator=None, can_remove=True):
         # Generated code
         wx.Dialog.__init__(self, parent, title=title,
                            style=wx.STAY_ON_TOP | wx.BORDER_DEFAULT | wx.CAPTION)  # wx.RESIZE_BORDER
@@ -845,7 +845,7 @@ class EditDict(wx.Dialog):
         # Main widgets area, scrollable
         self.scrl_sizer = wx.BoxSizer(wx.VERTICAL)
         self.data_type_tree = get_data_type_tree(o.__class__(), o) if data_tree is None else data_tree
-        add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer)
+        add_widgets(o, self.data_type_tree, self.scrollWindow, self.scrl_sizer, can_remove=can_remove)
         self.scrollWindow.SetSizer(self.scrl_sizer)
         self.compute_scroll_hints()
         self.scrl_sizer.Fit(self.scrollWindow)
@@ -941,10 +941,10 @@ class EditDict(wx.Dialog):
         return True, False
 
 
-def edit_dict(parent_dialog, obj, entries, entry_name, title=None, validator=None, force_changed=False):
+def edit_dict(parent_dialog, obj, entries, entry_name, title=None, validator=None, force_changed=False, can_remove=True):
     if title is None:
         title = parent_dialog.GetTitle() + ' | ' + entry_name
-    dlg = EditDict(parent_dialog, obj, title, entries, validator)
+    dlg = EditDict(parent_dialog, obj, title, entries, validator, can_remove)
     changed = dlg.ShowModal() == wx.ID_OK and (dlg.changed or force_changed)
     dlg.Destroy()
     return changed
@@ -984,7 +984,7 @@ def get_class_for(kind, rest):
     raise AssertionError()
 
 
-def add_widgets(obj, entries, window, sizer, level=0, parent=None):
+def add_widgets(obj, entries, window, sizer, level=0, parent=None, can_remove=True):
     if isinstance(obj, type):
         logger.error(f'- !!! {obj.__dict__} {type(obj)}')
         return
@@ -1011,6 +1011,8 @@ def add_widgets(obj, entries, window, sizer, level=0, parent=None):
     extra_args = {}
     if n_entries == 1:
         extra_args['force_embedded'] = True
+    if not can_remove:
+        extra_args['dont_remove_first_level'] = True
     for entry in entries:
         if not entry.skip:
             entry.add_widgets(obj, window, sizer, level, extra_args)
@@ -1098,6 +1100,7 @@ class DataEntry(object):
             self.select_data_type(obj)
             self.obj = obj
         self.widgets = []
+        self.dont_remove_first_level = extra_args.get('dont_remove_first_level')
         for c, valid in enumerate(self.valids):
             if is_first:
                 if len(self.valids) > 1:
@@ -1111,14 +1114,18 @@ class DataEntry(object):
                     sel = wx.StaticText(window, label=TYPE_ABREV[valid.kind], size=wx.Size(60, -1),
                                         style=wx.ALIGN_CENTER)
                 # Button to clear the data, and remove it from the YAML
-                clr = wx.BitmapButton(window, bitmap=get_res_bitmap(BMP_CLEAR))
-                clr.SetToolTip(f'Reset {self.name}')
-                clr.Bind(wx.EVT_BUTTON, self.OnRemove)
+                if not (level == 0 and self.dont_remove_first_level):
+                    clr = wx.BitmapButton(window, bitmap=get_res_bitmap(BMP_CLEAR))
+                    clr.SetToolTip(f'Reset {self.name}')
+                    clr.Bind(wx.EVT_BUTTON, self.OnRemove)
+                else:
+                    clr = None
                 self.ori_fore_color = sel.GetForegroundColour()
                 if not TYPE_SEL_RIGHT:
                     flgs = wx.SizerFlags().Border(wx.RIGHT).Center()
                     self.sizer.Add(sel, flgs)
-                    self.sizer.Add(clr, flgs)
+                    if clr:
+                        self.sizer.Add(clr, flgs)
                 self.sel_widget = sel
                 self.clr_widget = clr
             is_selected = c == self.selected
@@ -1131,10 +1138,11 @@ class DataEntry(object):
         if TYPE_SEL_RIGHT:
             flgs = wx.SizerFlags().Border(wx.LEFT).Center()
             self.sizer.Add(sel, flgs)
-            self.sizer.Add(clr, flgs)
+            if clr:
+                self.sizer.Add(clr, flgs)
         if self.user_defined:
             sel.SetForegroundColour(gh.USER_EDITED_COLOR)
-        else:
+        elif clr:
             clr.Disable()
         self.set_sel_tooltip()
         sizer.Add(self.sizer, gh.SIZER_FLAGS_0_NO_BORDER)
@@ -1148,7 +1156,8 @@ class DataEntry(object):
             return False
         self.user_defined = new_user_defined
         self.sel_widget.SetForegroundColour(gh.USER_EDITED_COLOR if new_user_defined else self.ori_fore_color)
-        self.clr_widget.Enable(new_user_defined)
+        if self.clr_widget:
+            self.clr_widget.Enable(new_user_defined)
         if widget:
             self.show_status(widget)
         if self.parent_embedded():

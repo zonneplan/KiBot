@@ -166,6 +166,7 @@ class MainDialog(wx.Dialog):
 class DictPanel(wx.Panel):
     def __init__(self, parent):
         wx.Panel.__init__(self, parent)
+        self.can_remove_first_level = True
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -200,7 +201,8 @@ class DictPanel(wx.Panel):
             return False
         self.editing = obj
         self.pre_edit(obj)
-        if edit_dict(self, obj, None, None, title=self.dict_type.capitalize()+" "+str(obj), validator=self.validate):
+        if edit_dict(self, obj, None, None, title=self.dict_type.capitalize()+" "+str(obj), validator=self.validate,
+                     can_remove=self.can_remove_first_level):
             self.mark_edited()
             self.lbox.SetString(index, str(obj))
             return True
@@ -233,7 +235,8 @@ class DictPanel(wx.Panel):
             return
         # Create a new object of the selected type
         self.editing = obj = self.new_obj(kind)
-        if edit_dict(self, obj, None, None, title=f"New {kind} filter", validator=self.validate):
+        if edit_dict(self, obj, None, None, title=f"New {kind} {self.dict_type}", validator=self.validate,
+                     force_changed=True, can_remove=self.can_remove_first_level):
             self.lbox.Append(str(obj), obj)
             self.mark_edited()
             self.add_obj(obj)
@@ -647,6 +650,7 @@ class PreflightsPanel(DictPanel):
     def __init__(self, parent):
         super().__init__(parent)
         self.dict_type = "preflight"
+        self.can_remove_first_level = False
 
     def refresh_lbox(self):
         BasePreFlight.configure_all()
