@@ -62,7 +62,7 @@ class DRC(XRC):  # noqa: F821
                 else:
                     # Check if any filter matches this violation
                     for f in filters:
-                        if type == f.error and f.regex.search(txt):
+                        if type == f.error and f._regex.search(txt):
                             change_to = f.change_to if hasattr(f, 'change_to') else 'ignore'
                             if change_to == 'ignore':
                                 if not excluded:

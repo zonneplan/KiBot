@@ -99,7 +99,7 @@ class MyLogger(logging.Logger):
                 else:
                     number = int(num_str)
                 for f in filters:
-                    if (f.number == number or f.error == id) and f.regex.search(buf):
+                    if (f.number == number or f.error == id) and f._regex.search(buf):
                         MyLogger.n_filtered += 1
                         return
         MyLogger.warn_cnt += 1

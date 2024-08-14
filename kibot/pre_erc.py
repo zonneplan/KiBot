@@ -52,7 +52,7 @@ class ERC(XRC):  # noqa: F821
                 # Check if any filter matches this violation
                 excluded = violation.get('excluded')
                 for f in filters:
-                    if type == f.error and f.regex.search(txt):
+                    if type == f.error and f._regex.search(txt):
                         change_to = f.change_to if hasattr(f, 'change_to') else 'ignore'
                         if change_to == 'ignore':
                             if not excluded:
