@@ -234,7 +234,7 @@ class Optionable(object):
                 v.set_default(def_val)
             cur_val = getattr(self, alias)
             # Get the type used by the user as a string
-            v_type = typeof(v, Optionable)
+            v_type = typeof(v, Optionable, valid)
             if v_type not in valid and not self.check_string_dict(v_type, valid, k, v):
                 # Not a valid type for this key
                 if v_type == 'None':

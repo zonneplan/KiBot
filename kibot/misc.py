@@ -554,7 +554,7 @@ def force_list(v):
     return v if v is None or isinstance(v, list) else [v]
 
 
-def typeof(v, cls):
+def typeof(v, cls, valid=None):
     if isinstance(v, bool):
         return 'boolean'
     if isinstance(v, (int, float)):
@@ -565,6 +565,8 @@ def typeof(v, cls):
         return 'dict'
     if isinstance(v, list):
         if len(v) == 0:
+            if valid is not None:
+                return next(filter(lambda x: x.startswith('list('), valid), 'list(string)')
             return 'list(string)'
         return 'list({})'.format(typeof(v[0], cls))
     return 'None'
