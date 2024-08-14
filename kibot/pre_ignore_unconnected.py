@@ -19,7 +19,7 @@ class Ignore_Unconnected(BasePreFlight):  # noqa: F821
         super().__init__()
         with document:
             self.ignore_unconnected = False
-            """ [boolean=false] Enable this preflight """
+            """ Enable this preflight """
 
     def config(self, parent):
         super().config(parent)

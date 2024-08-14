@@ -18,7 +18,7 @@ class Fill_Zones(BasePreFlight):  # noqa: F821
         self._pcb_related = True
         with document:
             self.fill_zones = False
-            """ [boolean=false] Enable this preflight """
+            """ Enable this preflight """
 
     def apply(self):
         load_board()
