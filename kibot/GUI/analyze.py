@@ -72,7 +72,8 @@ class DTTStats(object):
                 # self.dts_m[cls] = self.dts_m.get(cls, 0)+1
                 self.dts_m.setdefault(cls, []).append(n)
             else:
-                self.dts_s[cls] = self.dts_s.get(cls, 0)+1
+                # self.dts_s[cls] = self.dts_s.get(cls, 0)+1
+                self.dts_s.setdefault(cls, []).append(n)
 
     def analyze(self):
         self.avg_params = round(self.total_params/self.n)
@@ -149,8 +150,8 @@ def report(all, kind):
 
     logger.info('-'*80)
     logger.info('Used as single data type:')
-    for k, v in sorted(all.dts_s.items(), key=lambda x: x[1], reverse=True):
-        logger.info(f'- {k:>18}: {v:4d}')
+    for k, v in sorted(all.dts_s.items(), key=lambda x: len(x[1]), reverse=True):
+        logger.info(f'- {k:>18}: {len(v):4d} {"" if len(v)>10 else v}')
 
     logger.info('-'*80)
     logger.info(f'{len(all.dts_m)} different data type combinations')
