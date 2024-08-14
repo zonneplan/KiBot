@@ -18,7 +18,7 @@ class ERC_Warnings(BasePreFlight):  # noqa: F821
         super().__init__()
         with document:
             self.erc_warnings = False
-            """ [boolean=false] Enable this preflight """
+            """ Enable this preflight """
 
     def config(self, parent):
         super().config(parent)

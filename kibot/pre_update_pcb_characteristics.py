@@ -62,7 +62,7 @@ class Update_PCB_Characteristics(BasePreFlight):  # noqa: F821
         self._pcb_related = True
         with document:
             self.update_pcb_characteristics = False
-            """ [boolean=false] Enable this preflight """
+            """ Enable this preflight """
 
     def v2str(self, v):
         return pcbnew.StringFromValue(self.pcb_iu, self.pcb_units, v, True)
