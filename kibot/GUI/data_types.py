@@ -21,12 +21,13 @@ from ..misc import typeof, try_int, RE_LEN
 from ..optionable import Optionable
 from .. import log
 logger = log.get_logger()
-TYPE_PRIORITY = {'list(dict|string)': 110, 'list(dict)': 100, 'list(list(string))': 90, 'list(string)': 80,
+TYPE_PRIORITY = {'list(dict|string)': 110, 'list(dict)': 100, 'dict_s': 100, 'list(list(string))': 90, 'list(string)': 80,
                  'string_s': 80, 'dict': 60, 'string_dict': 55, 'string': 50, 'number': 20, 'boolean': 10}
-TYPE_ABREV = {'list(dict|string)': 'LDS', 'list(dict)': 'LD', 'list(list(string))': 'LLS', 'list(string)': 'LS',
-              'string_s': 'LSS', 'dict': 'D', 'string_dict': 'SD', 'string': 'S', 'number': 'N', 'boolean': 'B'}
-TYPE_EMPTY = {'list(dict|string)': [], 'list(dict)': [], 'list(list(string))': [], 'list(string)': [], 'dict': {},
-              'string_s': '', 'string_dict': {}, 'string': '', 'number': '', 'boolean': False}
+TYPE_ABREV = {'list(dict|string)': 'LDS', 'list(dict)': 'LD', 'dict_s': 'LD1', 'list(list(string))': 'LLS',
+              'list(string)': 'LS', 'string_s': 'LS1', 'dict': 'D', 'string_dict': 'SD', 'string': 'S', 'number': 'N',
+              'boolean': 'B'}
+TYPE_EMPTY = {'list(dict|string)': [], 'list(dict)': [], 'list(list(string))': [], 'list(string)': [],
+              'string_s': '', 'string_dict': {}, 'string': '', 'number': '', 'boolean': False, 'dict': {}, 'dict_s': {}}
 max_label = 200
 def_text = 200
 BMP_CLEAR = wx.ART_DELETE
@@ -38,8 +39,9 @@ class DataTypeBase(object):
         self.kind = kind
         self.restriction = restriction
         self.default = self.reset_value = default
-        self.is_dict = kind == 'dict'
-        self.is_list_dict = kind == 'list(dict)' or kind == 'list(dict|string)'
+        self.is_dict = kind == 'dict' or kind == 'dict_s'
+        self.is_list_dict = kind == 'list(dict)' or kind == 'list(dict|string)' or kind == 'dict_s'
+        self.is_list = kind.startswith('list(') or kind in {'string_s', 'dict_s'}
 
     def get_widget(self, obj, window, entry, level, init, value, **kwargs):
         self.entry = entry
@@ -79,6 +81,10 @@ class DataTypeBase(object):
 
     def matches_type(self, data_type):
         return self.kind == data_type
+
+    def update_shown(self, sizer, w, show):
+        """ Regular update when all widgets are visible together """
+        sizer.Show(w, show)
 
     def OnChange(self, event):
         self.entry.set_edited(self.input.Value != self.ori_value, self.wlabel)
@@ -246,6 +252,8 @@ class DataTypeDict(DataTypeBase):
         self.window = window
         self.entry = entry
         self.obj = obj
+        # This option tells the dict can be represented as a string
+        self.show_value = kwargs.get('show_value')
         e_sizer = wx.BoxSizer(wx.HORIZONTAL)
 
         if USE_DIALOG_FOR_NESTED:
@@ -255,7 +263,7 @@ class DataTypeDict(DataTypeBase):
                 sb = sb_sizer.GetStaticBox()
                 # TODO: better solution than an extra sizer?
                 sep_sizer = wx.BoxSizer(wx.VERTICAL)  # Add some border
-                add_widgets(self.sub_obj, entry.sub, sb, sep_sizer, level+1)
+                add_widgets(self.sub_obj, entry.sub, sb, sep_sizer, level+1, entry)
                 sb_sizer.Add(sep_sizer, gh.SIZER_FLAGS_1)
                 e_sizer.Add(sb_sizer, gh.SIZER_FLAGS_1)
                 # Which widget will be focused
@@ -263,7 +271,7 @@ class DataTypeDict(DataTypeBase):
             else:
                 self.embedded = False
                 self.entry_name = lbl
-                self.btn = wx.Button(window, label="Edit "+lbl)
+                self.btn = wx.Button(window, label=self.get_button_label())
                 e_sizer.Add(self.btn, gh.SIZER_FLAGS_1)
                 self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
                 # Which widget will be focused
@@ -286,17 +294,27 @@ class DataTypeDict(DataTypeBase):
             self.input = self.pane
         return e_sizer
 
+    def get_button_label(self):
+        return "Edit "+self.get_label(self.entry)+(f' ({self.sub_obj})'if self.show_value else '')
+
+    def update_button(self):
+        if not hasattr(self, 'btn'):
+            return
+        self.btn.SetLabel(self.get_button_label())
+
     def OnEdit(self, event):
         window = self.window.Parent
         if isinstance(window, wx.ScrolledWindow):
             window = window.Parent
         if edit_dict(window, self.sub_obj, self.sub_entries, self.entry_name):
             self.entry.set_edited(True)
+            self.update_button()
 
     def reset(self, get_focus=True):
         self.entry.set_edited(False)
         # self.ori_value = {}
         self.sub_obj = create_new_optionable(self.entry.cls, self.obj)
+        self.update_button()
         if get_focus:
             self.focus()
 
@@ -495,6 +513,12 @@ class DataTypeListStringSingular(DataTypeString, DataTypeListString):
         super().OnChange(event)
         self.but_plural.Enable(len(self.input.Value) != 0)
 
+    def update_shown(self, sizer, w, show):
+        """ Apply the global visibility and then adjust which sub-widget is visible """
+        sizer.Show(w, show)
+        self.main_sizer.Show(self.sizer_lbox, not self.use_str)
+        self.main_sizer.Show(self.sizer_str, self.use_str)
+
     def switch_to_text(self, do_it=True, get_focus=True):
         """ Make the input text visible and hide the list box """
         self.main_sizer.Show(self.sizer_lbox, not do_it)
@@ -566,6 +590,104 @@ class DataTypeListDict(DataTypeList):
 
     def get_value(self):
         return [v._tree for v in get_client_data(self.lbox)]
+
+
+class DataTypeListDictSingular(DataTypeDict, DataTypeListDict):
+    def get_widget(self, obj, window, entry, level, init, value, **kwargs):
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+        if isinstance(value, dict):
+            # If we get a plain string promote it to a list
+            # Note that this comes from the tree, before config
+            value = [value]
+        assert isinstance(value, list), type(value)
+        # A list box
+        self.use_dict = False   # Force list behavior for get_value (used by string list init)
+        sizer_lbox = DataTypeListDict.get_widget(self, obj, window, entry, level, init, value, **kwargs)
+        items = len(value)
+        if items <= 1:
+            # Singular version, switch to a dict
+            self.use_dict = True
+            init_dict = init and items
+            if items:
+                # DataTypeDict.get_widget will get the value from the real object, but this is a list
+                # So here we temporarily change it to the only element in the list and use it
+                old_value = getattr(obj, entry.name)
+                setattr(obj, entry.name, value[0])
+        else:
+            init_dict = False
+        # A dict editor
+        kwargs['force_embedded'] = False
+        kwargs['show_value'] = True
+        sizer_dict = DataTypeDict.get_widget(self, obj, window, entry, level, init_dict, value, **kwargs)
+        if init_dict:
+            # Revert the temporal singular
+            setattr(obj, entry.name, old_value)
+        #   Add a button to make the string plural
+        self.but_plural = wx.BitmapButton(window, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
+        self.but_plural.SetToolTip("Add more entries")
+        self.but_plural.Bind(wx.EVT_BUTTON, self.MakePlural)
+        sizer_dict.Add(self.but_plural, wx.SizerFlags().Border(wx.RIGHT).Center())
+        # Add both widgets and enable the best for the current value
+        main_sizer.Add(sizer_lbox, gh.SIZER_FLAGS_1_NO_BORDER)
+        main_sizer.Add(sizer_dict, gh.SIZER_FLAGS_1_NO_BORDER)
+        main_sizer.Show(sizer_lbox if self.use_dict else sizer_dict, False)
+        self.sizer_lbox = sizer_lbox
+        self.sizer_dict = sizer_dict
+        self.main_sizer = main_sizer
+        return main_sizer
+
+    def switch_to_dict(self, do_it=True, get_focus=True):
+        """ Make the input text visible and hide the list box """
+        self.main_sizer.Show(self.sizer_lbox, not do_it)
+        self.main_sizer.Show(self.sizer_dict, do_it)
+        if get_focus:
+            if do_it:
+                self.input.SetFocus()
+            else:
+                self.lbox.SetFocus()
+        send_relayout_event(self.window)
+        self.use_dict = do_it
+
+    def MakePlural(self, event):
+        """ Switch to the list box if the user needs more items """
+        # Promote the value used for the dict to a list
+        # TODO: what about embedded ones?
+        set_items(self.lbox, [self.sub_obj])
+        self.edit_item()
+        # Check if we have 2 items
+        if self.lbox.GetCount() != 2:
+            return
+        # Ok, we had a value and added another, switch to the list
+        self.switch_to_dict(False)
+
+    def OnRemove(self, event):
+        """ Change to text input if we reduce the list to 1 item """
+        super().OnRemove(event)
+        # If we reduced the list to one value switch to a input box
+        items = self.lbox.GetCount()
+        if items > 1:
+            return
+        # Copy the only remaining item in the list to the dict
+        self.sub_obj = self.lbox.GetClientData(0)
+        self.switch_to_dict()
+
+    def update_shown(self, sizer, w, show):
+        """ Apply the global visibility and then adjust which sub-widget is visible """
+        sizer.Show(w, show)
+        self.main_sizer.Show(self.sizer_lbox, not self.use_dict)
+        self.main_sizer.Show(self.sizer_dict, self.use_dict)
+
+    def reset(self, get_focus=True):
+        """ Clear the input value and show the text input """
+        DataTypeDict.reset(self, False)  # Don't focus here, we will focus the correct widget in switch_to_dict
+        self.switch_to_dict(True, get_focus)
+
+    def get_value(self):
+        """ Here we return the optimal, Optionable can promote strings """
+        return DataTypeDict.get_value(self) if self.use_dict else DataTypeListDict.get_value(self)
+
+    def matches_type(self, data_type):
+        return data_type == 'dict' or data_type == 'list(dict)'
 
 
 class DummyForDictOrString(object):
@@ -852,6 +974,8 @@ def get_class_for(kind, rest):
         return DataTypeListStringSingular
     elif kind == 'list(dict)':
         return DataTypeListDict
+    elif kind == 'dict_s':
+        return DataTypeListDictSingular
     elif kind == 'list(dict|string)':
         return DataTypeListDictOrString
     elif kind == 'list(list(string))':
@@ -860,7 +984,7 @@ def get_class_for(kind, rest):
     raise AssertionError()
 
 
-def add_widgets(obj, entries, window, sizer, level=0):
+def add_widgets(obj, entries, window, sizer, level=0, parent=None):
     if isinstance(obj, type):
         logger.error(f'- !!! {obj.__dict__} {type(obj)}')
         return
@@ -890,6 +1014,7 @@ def add_widgets(obj, entries, window, sizer, level=0):
     for entry in entries:
         if not entry.skip:
             entry.add_widgets(obj, window, sizer, level, extra_args)
+            entry.parent = parent
     max_label = cur_max
 
 
@@ -938,7 +1063,11 @@ class DataEntry(object):
         self.selected, data_type = self.get_used_data_type(self.ori_val)
         if self.selected == -1:  # I.e. optionable not used and hence is None
             self.selected = 0
-            self.ori_val = TYPE_EMPTY[self.valids[0].kind]
+            try:
+                self.ori_val = TYPE_EMPTY[self.valids[0].kind]
+            except KeyError:
+                logger.error(f'{self.name}: {self.valids[0].kind}')
+                raise
         logger.debug(f'{" "*level*2}- {self.name} ori:{self.ori_val} user:{self.user_defined} {data_type} sel:{self.selected}')
 
     def get_label(self):
@@ -954,6 +1083,8 @@ class DataEntry(object):
 
     def get_used_data_type(self, value):
         data_type = typeof(value, Optionable)
+        if isinstance(value, list) and len(value) == 0:
+            return next((c for c, v in enumerate(self.valids) if v.is_list), -1), data_type
         return next((c for c, v in enumerate(self.valids) if v.matches_type(data_type)), -1), data_type
 
     def add_widgets(self, obj, window, sizer, level, extra_args):
@@ -1066,7 +1197,7 @@ class DataEntry(object):
 
     def update_shown(self):
         for c, w in enumerate(self.widgets):
-            self.sizer.Show(w, c == self.selected)
+            self.valids[c].update_shown(self.sizer, w, c == self.selected)
 
     def OnRemove(self, event):
         if pop_confirm(f'Remove the data from {self.name}?'):
@@ -1135,6 +1266,15 @@ def join_lists(valid, extra):
         li = new_valid.index('list(string)')
         ls = new_valid.index('string')
         new_valid[li] = 'string_s'
+        del new_valid[ls]
+        del new_extra[ls]
+    except ValueError:
+        pass
+    # Optimize the list(dict)|dict, named "dict_s"
+    try:
+        li = new_valid.index('list(dict)')
+        ls = new_valid.index('dict')
+        new_valid[li] = 'dict_s'
         del new_valid[ls]
         del new_extra[ls]
     except ValueError:
