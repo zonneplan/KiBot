@@ -86,7 +86,7 @@ class FiltersOptions(Optionable):
             if comment:
                 parsed += '# '+comment+'\n'
             parsed += '{},{}\n'.format(error, regex)
-            f.regex = re.compile(regex)
+            f._regex = re.compile(regex)
         self._parsed = parsed
 
 
