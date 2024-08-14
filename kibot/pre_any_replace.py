@@ -7,7 +7,7 @@ import os
 import re
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
-from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS
+from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS, pretty_list
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
@@ -82,6 +82,13 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 "\n        command: 'git log -1 --format=\"%h\" \"$KIBOT_{}_NAME\"'"
                 "\n        before: 'Git hash: <'"
                 "\n        after: '>'".format(cls._context, cls._context))
+
+    def __str__(self):
+        res = self.type
+        main_value = getattr(self, self.type)
+        if len(main_value.replace_tags):
+            res += f' ({pretty_list([v.tag for v in main_value.replace_tags])})'
+        return res
 
     def replace(self, file, o):
         logger.debug('Applying replacements to `{}`'.format(file))

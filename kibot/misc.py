@@ -573,6 +573,8 @@ def typeof(v, cls, valid=None):
 
 
 def pretty_list(items, short=False):
+    if not items:
+        return ''
     if short:
         if len(items) == 1:
             return items[0].short_str()

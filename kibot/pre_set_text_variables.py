@@ -15,7 +15,7 @@ import os
 import re
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
-from .misc import FAILED_EXECUTE, W_EMPTREP
+from .misc import FAILED_EXECUTE, W_EMPTREP, pretty_list
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
@@ -79,6 +79,9 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
         with document:
             self.set_text_variables = KiCadVariable
             """ [dict|list(dict)=[]] One or more variable definition """
+
+    def __str__(self):
+        return f'{self.type} ({pretty_list([v.name for v in self.set_text_variables])})'
 
     @classmethod
     def get_example(cls):

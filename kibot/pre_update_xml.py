@@ -57,6 +57,12 @@ class Update_XML(BasePreFlight):  # noqa: F821
             self.update_xml = Update_XMLOptions
             """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
+    def __str__(self):
+        res = super().__str__()
+        if self._check_pcb_parity:
+            res += ' + check PCB/SCH parity'
+        return res
+
     def config(self, parent):
         super().config(parent)
         if isinstance(self.update_xml, Update_XMLOptions):
