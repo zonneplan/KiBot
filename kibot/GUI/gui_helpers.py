@@ -260,6 +260,8 @@ class ChooseFromList(wx.Dialog):
 
 
 def choose_from_list(parent, items, what, multiple=False, search_on=None):
+    if len(items) == 1:
+        return items if multiple else items[0]
     l_style = wx.LB_MULTIPLE if multiple else wx.LB_SINGLE
     dlg = ChooseFromList(parent, items, what, True, l_style, search_on)
     if dlg.ShowModal() == wx.ID_OK:
