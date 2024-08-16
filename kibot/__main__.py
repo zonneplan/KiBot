@@ -549,7 +549,7 @@ def main():
         generate_makefile(args.makefile, plot_config, outputs)
     elif args.gui:
         from .GUI.gui import do_gui
-        do_gui(plot_config)
+        do_gui(plot_config, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority)
     elif args.internal_check:
         from .GUI.analyze import analyze
         analyze()

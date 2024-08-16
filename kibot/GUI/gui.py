@@ -10,6 +10,7 @@ import os
 import yaml
 from .. import __version__
 from .. import log
+from ..gs import GS
 from ..kiplot import config_output
 from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
@@ -39,13 +40,20 @@ else:
 OK_CHAR = '\U00002714'
 # NOT_OK_CHAR = '\U0000274C'
 NOT_OK_CHAR = '\U00002717'
+TARGETS_ORDER = ["Sort by priority", "Declared", "Selected", "Invert selection"]
+ORDER_PRIORITY = 0
+ORDER_DECLARED = 1
+ORDER_SELECTED = 2
+ORDER_INVERT = 3
+max_label = 200
+def_text = 200
 init_vars()
 
 
-def do_gui(cfg_file):
+def do_gui(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
     for o in RegOutput.get_outputs():
         config_output(o)
-    dlg = MainDialog(cfg_file)
+    dlg = MainDialog(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
     res = dlg.ShowModal()
     dlg.Destroy()
     return res
@@ -57,7 +65,7 @@ def do_gui(cfg_file):
 # ##########################################################################
 
 class MainDialog(wx.Dialog):
-    def __init__(self, cfg_file):
+    def __init__(self, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
         wx.Dialog.__init__(self, None, title='KiBot '+__version__,  # size = wx.Size(463,529),
                            style=wx.DEFAULT_DIALOG_STYLE | wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
 
@@ -66,6 +74,8 @@ class MainDialog(wx.Dialog):
         main_sizer.Add(self.notebook, gh.SIZER_FLAGS_1)
 
         # Pages for the notebook
+        self.main = MainPanel(self.notebook, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
+        self.notebook.AddPage(self.main, "Main")
         self.outputs = OutputsPanel(self.notebook)
         self.notebook.AddPage(self.outputs, "Outputs")
         self.groups = GroupsPanel(self.notebook)
@@ -100,7 +110,6 @@ class MainDialog(wx.Dialog):
         main_sizer.Fit(self)
         self.Centre(wx.BOTH)
 
-        self.cfg_file = cfg_file
         self.edited = False
 
         # Connect Events
@@ -148,9 +157,10 @@ class MainDialog(wx.Dialog):
         # Outputs
         if self.outputs.lbox.GetCount():
             tree['outputs'] = [o._tree for o in get_client_data(self.outputs.lbox)]
-        if os.path.isfile(self.cfg_file):
-            os.rename(self.cfg_file, os.path.join(os.path.dirname(self.cfg_file), '.'+os.path.basename(self.cfg_file)+'~'))
-        with open(self.cfg_file, 'wt') as f:
+        cfg_file = self.main.get_cfg_file()
+        if os.path.isfile(cfg_file):
+            os.rename(cfg_file, os.path.join(os.path.dirname(cfg_file), '.'+os.path.basename(cfg_file)+'~'))
+        with open(cfg_file, 'wt') as f:
             f.write(yaml.dump(tree, sort_keys=False))
         self.edited = False
         self.but_save.Disable()
@@ -245,6 +255,239 @@ class DictPanel(wx.Panel):
         if remove_item(self.lbox, confirm='Are you sure you want to remove the `{}` '+self.dict_type+'?',
                        callback=self.remove_obj):
             self.mark_edited()
+
+
+# ##########################################################################
+# # Class MainPanel
+# # Panel containing the main options (paths, targets, etc.)
+# ##########################################################################
+
+class MainPanel(wx.Panel):
+    def __init__(self, parent, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
+        wx.Panel.__init__(self, parent)
+
+        # All the widgets
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        # Paths
+        paths_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Paths')
+        self.path_w = paths_sizer.GetStaticBox()
+        cwd = os.getcwd()
+        self.wd_sizer, self.wd_input = self.add_path(paths_sizer, 'Working dir', cwd, is_dir=True)
+        self.cf_sizer, self.cf_input = self.add_path(paths_sizer, 'Config file', os.path.relpath(cfg_file, cwd))
+        self.de_sizer, self.de_input = self.add_path(paths_sizer, 'Destination', os.path.relpath(GS.out_dir, cwd), is_dir=True)
+        self.sch_sizer, self.sch_input = self.add_path(paths_sizer, 'Schematic', os.path.relpath(GS.sch_file, cwd))
+        self.pcb_sizer, self.pcb_input = self.add_path(paths_sizer, 'PCB', os.path.relpath(GS.pcb_file, cwd))
+
+        # Targets
+        targets_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Targets')
+        self.targets_w = targets_sizer.GetStaticBox()
+        self.add_targets(targets_sizer, self.targets_w, targets, invert_targets, cli_order, no_priority)
+
+        # Skip preflights
+        skippre_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Skip preflights')
+        self.skippre_w = skippre_sizer.GetStaticBox()
+        self.add_skippre(skippre_sizer, self.skippre_w, self.solve_skip_pre(skip_pre))
+
+        # Targets & Skip pre
+        lboxes_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        lboxes_sizer.Add(targets_sizer, gh.SIZER_FLAGS_1)
+        lboxes_sizer.Add(skippre_sizer, gh.SIZER_FLAGS_1)
+
+        # Paths on top of (Targets & Skip pre)
+        main_sizer.Add(paths_sizer, gh.SIZER_FLAGS_0)
+        main_sizer.Add(lboxes_sizer, gh.SIZER_FLAGS_1)
+
+        self.SetSizer(main_sizer)
+        self.Layout()
+
+        # Connect Events
+        # Targets
+        self.but_up_targets.Bind(wx.EVT_BUTTON, self.OnUpTargets)
+        self.but_down_targets.Bind(wx.EVT_BUTTON, self.OnDownTargets)
+        self.but_add_targets.Bind(wx.EVT_BUTTON, self.OnAddTargets)
+        self.but_remove_targets.Bind(wx.EVT_BUTTON, self.OnRemoveTargets)
+        self.invert_targets_input.Bind(wx.EVT_CHOICE, self.OnChangeSortMode)
+        # Skip preflights
+        self.but_up_skippre.Bind(wx.EVT_BUTTON, self.OnUpSkippre)
+        self.but_down_skippre.Bind(wx.EVT_BUTTON, self.OnDownSkippre)
+        self.but_add_skippre.Bind(wx.EVT_BUTTON, self.OnAddSkippre)
+        self.but_remove_skippre.Bind(wx.EVT_BUTTON, self.OnRemoveSkippre)
+
+    def OnUpTargets(self, event):
+        move_sel_up(self.targets_lbox)
+
+    def OnDownTargets(self, event):
+        move_sel_down(self.targets_lbox)
+
+    def OnRemoveTargets(self, event):
+        remove_item(self.targets_lbox)
+        self.update_targets_hint()
+
+    def OnAddTargets(self, event):
+        selected = set(self.targets_lbox.GetStrings())
+        available = [o.name for o in RegOutput.get_outputs() if o.name not in selected]
+        if not available:
+            pop_error('No outputs available to add')
+            return
+        outs = choose_from_list(self, available, what="an output", multiple=True, search_on=available)
+        if not outs:
+            return
+        self.targets_lbox.Append(outs)
+        self.update_targets_hint()
+
+    def OnUpSkippre(self, event):
+        move_sel_up(self.skippre_lbox)
+
+    def OnDownSkippre(self, event):
+        move_sel_down(self.skippre_lbox)
+
+    def OnRemoveSkippre(self, event):
+        remove_item(self.skippre_lbox)
+        self.update_pre_hint()
+
+    def OnAddSkippre(self, event):
+        selected = set(self.skippre_lbox.GetStrings())
+        available = [o for o in BasePreFlight.get_in_use_names() if o not in selected]
+        if 'all' not in selected:
+            available.append('all')
+        if not available:
+            pop_error('No preflights available to add')
+            return
+        preflights = choose_from_list(self, available, what="a preflight", multiple=True, search_on=available)
+        if not preflights:
+            return
+        self.skippre_lbox.Append(preflights)
+        self.update_pre_hint()
+
+    def add_targets(self, sizer, window, targets, invert_targets, cli_order, no_priority):
+        # Sort mode
+        invert_targets_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        new_label = wx.StaticText(window, label='Generation order', size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        self.invert_targets_input = wx.Choice(window, choices=TARGETS_ORDER)
+        self.invert_targets_input.SetSelection(self.solve_sort_mode(invert_targets, cli_order, no_priority))
+        invert_targets_sizer.Add(new_label, gh.SIZER_FLAGS_0)
+        invert_targets_sizer.Add(self.invert_targets_input, gh.SIZER_FLAGS_1)
+        sizer.Add(invert_targets_sizer, gh.SIZER_FLAGS_0)
+        # ABM
+        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        list_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.targets_lbox = wx.ListBox(window, choices=targets, size=wx.Size(def_text, -1),
+                                       style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
+        list_sizer.Add(self.targets_lbox, gh.SIZER_FLAGS_1)
+        self.target_hint = wx.StaticText(window, label=self.get_targets_hint())
+        list_sizer.Add(self.target_hint, wx.SizerFlags().Expand().CentreVertical().Border(wx.LEFT))
+        self.sort_hint = wx.StaticText(window, label=self.get_sort_hint())
+        list_sizer.Add(self.sort_hint, wx.SizerFlags().Expand().CentreVertical().Border(wx.LEFT | wx.BOTTOM))
+        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        abm_sizer.Add(add_abm_buttons(self, window), gh.SIZER_FLAGS_0_NO_EXPAND)
+        sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        self.but_up_targets = self.but_up
+        self.but_down_targets = self.but_down
+        self.but_add_targets = self.but_add
+        self.but_remove_targets = self.but_remove
+
+    def add_skippre(self, sizer, window, skip_pre):
+        #   ABM
+        abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        list_sizer = wx.BoxSizer(wx.VERTICAL)
+        self.skippre_lbox = wx.ListBox(window, choices=skip_pre, size=wx.Size(def_text, -1),
+                                       style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
+        list_sizer.Add(self.skippre_lbox, gh.SIZER_FLAGS_1)
+        self.pre_hint = wx.StaticText(window, label=self.get_pre_hint())
+        list_sizer.Add(self.pre_hint, wx.SizerFlags().Expand().CentreVertical().Border(wx.LEFT | wx.BOTTOM))
+        abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        abm_sizer.Add(add_abm_buttons(self, window), gh.SIZER_FLAGS_0_NO_EXPAND)
+        sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        self.but_up_skippre = self.but_up
+        self.but_down_skippre = self.but_down
+        self.but_add_skippre = self.but_add
+        self.but_remove_skippre = self.but_remove
+
+    def solve_skip_pre(self, skip_pre):
+        return [] if skip_pre is None else skip_pre.split(',')
+
+    def solve_sort_mode(self, invert_targets, cli_order, no_priority):
+        return ORDER_INVERT if invert_targets else (ORDER_SELECTED if cli_order else (ORDER_DECLARED if no_priority else
+                                                                                      ORDER_PRIORITY))
+
+    def get_cfg_file(self):
+        return os.path.abspath(os.path.join(self.wd_input.Value, self.cf_input.Value))
+
+    def get_pcb_file(self):
+        return os.path.abspath(os.path.join(self.wd_input.Value, self.pcb_input.Value))
+
+    def get_sch_file(self):
+        return os.path.abspath(os.path.join(self.wd_input.Value, self.sch_input.Value))
+
+    def get_out_dir(self):
+        return os.path.abspath(os.path.join(self.wd_input.Value, self.de_input.Value))
+
+    def get_targets_hint(self):
+        items = self.targets_lbox.GetCount()
+        sort_mode = self.invert_targets_input.GetSelection()
+        if sort_mode == ORDER_INVERT:
+            # Inverted selection
+            if not items:
+                return 'No target targets will be generated'
+            if items == 1:
+                return 'Will generate all but one target'
+            return f'{items} targets not generated'
+        # Regular selection
+        if not items:
+            return 'All available targets will be generated'
+        if items == 1:
+            return 'Will generate just one target'
+        return f'{items} targets selected'
+
+    def update_targets_hint(self):
+        self.target_hint.SetLabel(self.get_targets_hint())
+
+    def get_sort_hint(self):
+        sort_mode = self.invert_targets_input.GetSelection()
+        if sort_mode == ORDER_INVERT or sort_mode == ORDER_PRIORITY:
+            return 'Generation by priority'
+        if sort_mode == ORDER_SELECTED:
+            return 'Generation in the above order'
+        return 'Generation in the "Outputs" order'
+
+    def update_sort_hint(self):
+        self.sort_hint.SetLabel(self.get_sort_hint())
+
+    def get_pre_hint(self):
+        items = self.skippre_lbox.GetCount()
+        if not items:
+            return 'All preflights will be applied'
+        if self.skippre_lbox.FindString('all') == wx.NOT_FOUND:
+            if items == 1:
+                return 'All but one preflight will be applied'
+            return f'{items} preflights skipped'
+        return 'No preflight will be applied'
+
+    def update_pre_hint(self):
+        self.pre_hint.SetLabel(self.get_pre_hint())
+
+    def OnChangeSortMode(self, event):
+        self.update_targets_hint()
+        self.update_sort_hint()
+
+    def add_path(self, sizer, label, value, is_dir=False):
+        window = self.path_w
+        li_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        new_label = wx.StaticText(window, label=label, size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        if False:
+            new_input = wx.TextCtrl(window, size=wx.Size(def_text, -1))
+            new_input.Value = value
+        else:
+            if is_dir:
+                new_input = wx.DirPickerCtrl(window, message=label, size=wx.Size(def_text, -1))
+            else:
+                new_input = wx.FilePickerCtrl(window, message=label, size=wx.Size(def_text, -1))
+            new_input.SetPath(value)
+        li_sizer.Add(new_label, gh.SIZER_FLAGS_0)
+        li_sizer.Add(new_input, gh.SIZER_FLAGS_1)
+        sizer.Add(li_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
+        return li_sizer, new_input
 
 
 # ##########################################################################
