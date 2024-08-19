@@ -170,6 +170,7 @@ def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_gro
     pf = BasePreFlight.get_in_use_objs()
     groups = RegOutput.get_groups()
     if pf and not only_groups:
+        BasePreFlight.configure_all()
         logger.info('Available pre-flights:')
         for c in pf:
             logger.info('- '+str(c))
