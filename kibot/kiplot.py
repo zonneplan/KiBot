@@ -208,9 +208,13 @@ def load_board(pcb_file=None, forced=False):
         with hide_stderr():
             board = pcbnew.LoadBoard(pcb_file)
         if GS.global_invalidate_pcb_text_cache == 'yes' and GS.ki6:
+            # Workaround for unexpected KiCad behavior:
+            # https://gitlab.com/kicad/code/kicad/-/issues/14360
             logger.debug('Current PCB text variables cache: {}'.format(board.GetProperties().items()))
             logger.debug('Removing cached text variables')
             board.SetProperties(pcbnew.MAP_STRING_STRING())
+            # Save the PCB, so external tools also gets the reset, i.e. panelize, see #652
+            board.Save(pcb_file)
         if BasePreFlight.get_option('check_zone_fills'):
             GS.fill_zones(board)
         if GS.global_units and GS.ki6:
