@@ -10,6 +10,7 @@ Main KiBot code
 """
 from copy import deepcopy
 from collections import OrderedDict
+import gzip
 import os
 import re
 from sys import path as sys_path
@@ -1011,6 +1012,27 @@ def discover_files(dest_dir):
     GS.set_pcb(solve_board_file(dest_dir, sug_b=False))
     GS.set_pro(solve_project_file())
     return fname
+
+
+def load_config(plot_config):
+    cr = CfgYamlReader()
+    outputs = None
+    try:
+        # The Python way ...
+        with gzip.open(plot_config, mode='rt') as cf_file:
+            try:
+                outputs = cr.read(cf_file)
+            except KiPlotConfigurationError as e:
+                config_error(str(e))
+    except OSError:
+        pass
+    if outputs is None:
+        with open(plot_config) as cf_file:
+            try:
+                outputs = cr.read(cf_file)
+            except KiPlotConfigurationError as e:
+                config_error(str(e))
+    return outputs
 
 
 def yaml_dump(f, tree):
