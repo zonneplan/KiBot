@@ -1130,14 +1130,20 @@ def generate_one_example(dest_dir, types):
     return fname
 
 
+def reset_config():
+    # Outputs, groups, filters and variants
+    RegOutput.reset()
+    # Preflights
+    BasePreFlight.reset()
+
+
 def generate_targets(config_file):
     """ Generate all possible targets for the configuration file """
     # Reset the board and schematic
     GS.board = None
     GS.sch = None
     # Reset the list of outputs and preflights
-    RegOutput.reset()
-    BasePreFlight.reset()
+    reset_config()
     # Read the config file
     cr = CfgYamlReader()
     with open(config_file) as cf_file:
