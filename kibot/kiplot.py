@@ -276,11 +276,13 @@ def load_any_sch(file, project, fatal=True, extra_msg=None):
     return sch
 
 
-def load_sch():
-    if GS.sch:  # Already loaded
+def load_sch(sch_file=None, forced=False):
+    if GS.sch is not None and not forced:  # Already loaded
         return
-    GS.check_sch()
-    GS.sch = load_any_sch(GS.sch_file, GS.sch_basename)
+    if not sch_file:
+        GS.check_sch()
+        sch_file = GS.sch_file
+    GS.sch = load_any_sch(sch_file, os.path.splitext(os.path.basename(sch_file))[0])
 
 
 def create_component_from_footprint(m, ref):
