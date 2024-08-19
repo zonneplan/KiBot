@@ -75,6 +75,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   outputs. If you need assistance to migrate a preflight just open a GitHub
   issue.
 - Outputs: Now all options must declare its default.
+- Global `invalidate_pcb_text_cache`: now it changes the PCB on disk, not just
+  on memory. This is needed for external tools like KiKit's panelize.
 - In many cases now we allow empty lists and use some sort of default.
   A warning is issued, but we continue.
   - Layers: now the default for missing layers is all layers.

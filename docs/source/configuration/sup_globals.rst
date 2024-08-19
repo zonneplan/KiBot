@@ -141,6 +141,7 @@
       -  ``invalidate_pcb_text_cache`` :index:`: <pair: global options; invalidate_pcb_text_cache>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "auto", "yes", "no") Remove any cached text variable in the PCB. This is needed in order to force a text
          variables update when using `set_text_variables`. You might want to disable it when applying some
          changes to the PCB and create a new copy to send to somebody without changing the cached values.
+         Note that it will save the PCB with the cache erased.
          The `auto` value will remove the cached values only when using `set_text_variables`.
       -  ``kiauto_time_out_scale`` :index:`: <pair: global options; kiauto_time_out_scale>` [:ref:`number <number>`] (default: ``0.0``) Time-out multiplier for KiAuto operations.
       -  ``kiauto_wait_start`` :index:`: <pair: global options; kiauto_wait_start>` [:ref:`number <number>`] (default: ``0``) Time to wait for KiCad in KiAuto operations.
