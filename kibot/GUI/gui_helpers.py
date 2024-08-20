@@ -106,8 +106,8 @@ def pop_error(msg):
 def pop_confirm(msg):
     if gui_config.USE_MSGBOX:
         # In wxGTK the Yes/No lacks icons, the Yes/No/Cancel is nicer
-        return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION) == wx.YES
-    return MessageBox(msg, 'Confirm', wx.ART_QUESTION, ok_btn=False) == wx.YES
+        return wx.MessageBox(msg, 'Confirm', wx.YES_NO | wx.CANCEL | wx.CANCEL_DEFAULT | wx.ICON_QUESTION)
+    return MessageBox(msg, 'Confirm', wx.ART_QUESTION, ok_btn=False)
 
 
 def pop_info(msg):
@@ -148,7 +148,7 @@ def remove_item(lbox, confirm=None, callback=None):
     if confirm is not None:
         name = lbox.GetString(selection)
         msg = confirm.format(name)
-        ok = pop_confirm(msg)
+        ok = pop_confirm(msg) == wx.YES
     if not ok:
         return False
     if callback is not None:
@@ -281,6 +281,10 @@ def get_res_bitmap(resource, size=wx.DefaultSize):
 
 
 def set_button_bitmap(btn, resource):
+    if isinstance(resource, str):
+        if wx.Platform == '__WXGTK__':
+            btn.SetBitmap(wx.ArtProvider.GetBitmapBundle(resource, wx.ART_BUTTON))
+        return
     btn.SetBitmap(get_res_bitmap(resource))
 
 

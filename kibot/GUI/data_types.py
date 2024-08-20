@@ -1209,7 +1209,7 @@ class DataEntry(object):
             self.valids[c].update_shown(self.sizer, w, c == self.selected)
 
     def OnRemove(self, event):
-        if pop_confirm(f'Remove the data from {self.name}?'):
+        if pop_confirm(f'Remove the data from {self.name}?') == wx.YES:
             self.user_defined_ori = False
             sel_dt = self.valids[self.selected]
             # Reset the selected data

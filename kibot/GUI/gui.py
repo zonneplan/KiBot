@@ -11,13 +11,13 @@ import yaml
 from .. import __version__
 from .. import log
 from ..gs import GS
-from ..kiplot import config_output
+from ..kiplot import config_output, load_board, load_sch, load_config, reset_config
 from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
 from .data_types import edit_dict
 from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
                           set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
-                          set_button_bitmap)
+                          set_button_bitmap, pop_confirm)
 from . import gui_helpers as gh
 logger = log.get_logger()
 
@@ -74,7 +74,7 @@ class MainDialog(wx.Dialog):
         main_sizer.Add(self.notebook, gh.SIZER_FLAGS_1)
 
         # Pages for the notebook
-        self.main = MainPanel(self.notebook, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
+        self.main = MainPanel(self.notebook, self, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
         self.notebook.AddPage(self.main, "Main")
         self.outputs = OutputsPanel(self.notebook)
         self.notebook.AddPage(self.outputs, "Outputs")
@@ -94,6 +94,10 @@ class MainDialog(wx.Dialog):
         self.but_save.Disable()
         set_button_bitmap(self.but_save, wx.ART_FILE_SAVE)
         but_sizer.Add(self.but_save, gh.SIZER_FLAGS_0_NO_EXPAND)
+        # Edit globals
+        self.but_globals = wx.Button(self, label="Globals")
+        set_button_bitmap(self.but_globals, "gtk-edit")
+        but_sizer.Add(self.but_globals, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Separator
         but_sizer.Add((50, 0), gh.SIZER_FLAGS_1_NO_BORDER)
         # Run
@@ -115,7 +119,16 @@ class MainDialog(wx.Dialog):
         # Connect Events
         self.but_save.Bind(wx.EVT_BUTTON, self.OnSave)
         self.but_generate.Bind(wx.EVT_BUTTON, self.OnGenerateOuts)
+        self.but_globals.Bind(wx.EVT_BUTTON, self.OnGlobals)
         # self.but_cancel.Bind(wx.EVT_BUTTON, self.OnExit)
+
+    def refresh_cfg(self):
+        """ Refresh panels after loading a new config """
+        self.outputs.refresh_lbox()
+        self.refresh_groups()
+        self.preflights.refresh_lbox()
+        self.filters.refresh_lbox()
+        self.variants.refresh_lbox()
 
     def refresh_groups(self):
         self.groups.refresh_groups()
@@ -125,13 +138,34 @@ class MainDialog(wx.Dialog):
             self.but_save.Enable(True)
         self.edited = True
 
+    def check_save(self):
+        if not self.edited:
+            return wx.YES
+        res = pop_confirm('Configuration changed, save?')
+        if res == wx.YES:
+            self.OnSave(None)
+        return res
+
+    def OnGlobals(self, event):
+        obj = GS.set_global_options_tree(GS.globals_tree)
+        if edit_dict(self, obj, None, None, title="Global options"):
+            self.mark_edited()
+            GS.globals_tree = obj._tree
+        logger.debug(f'Global options after editing: {GS.globals_tree}')
+
     def OnGenerateOuts(self, event):
+        self.main
+        print(os.getcwd())
+        print(GS.out_dir)
         # TODO: implement
         pop_error('Not implemented')
 
     def OnSave(self, event):
         tree = {'kibot': {'version': 1}}
         # TODO: Should we delegate it to the class handling it?
+        # Globals
+        if GS.globals_tree:
+            tree['globals'] = GS.globals_tree
         # We use the List Box items because they are sorted like the user wants
         # Filters
         if self.filters.lbox.GetCount():
@@ -263,8 +297,9 @@ class DictPanel(wx.Panel):
 # ##########################################################################
 
 class MainPanel(wx.Panel):
-    def __init__(self, parent, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
+    def __init__(self, parent, main, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
         wx.Panel.__init__(self, parent)
+        self.main = main
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -273,11 +308,17 @@ class MainPanel(wx.Panel):
         paths_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Paths')
         self.path_w = paths_sizer.GetStaticBox()
         cwd = os.getcwd()
-        self.wd_sizer, self.wd_input = self.add_path(paths_sizer, 'Working dir', cwd, is_dir=True)
-        self.cf_sizer, self.cf_input = self.add_path(paths_sizer, 'Config file', os.path.relpath(cfg_file, cwd))
-        self.de_sizer, self.de_input = self.add_path(paths_sizer, 'Destination', os.path.relpath(GS.out_dir, cwd), is_dir=True)
-        self.sch_sizer, self.sch_input = self.add_path(paths_sizer, 'Schematic', os.path.relpath(GS.sch_file, cwd))
-        self.pcb_sizer, self.pcb_input = self.add_path(paths_sizer, 'PCB', os.path.relpath(GS.pcb_file, cwd))
+        if not os.path.isdir(GS.out_dir):
+            os.makedirs(GS.out_dir)
+        self.wd_sizer, self.wd_input = self.add_path(paths_sizer, 'Working dir', cwd, self.OnChangeCWD, is_dir=True)
+        self.cf_sizer, self.cf_input = self.add_path(paths_sizer, 'Config file', os.path.relpath(cfg_file, cwd),
+                                                     self.OnChageCfg)
+        self.old_cfg = cfg_file
+        self.de_sizer, self.de_input = self.add_path(paths_sizer, 'Destination', os.path.relpath(GS.out_dir, cwd),
+                                                     self.OnChangeOutDir, is_dir=True)
+        self.sch_sizer, self.sch_input = self.add_path(paths_sizer, 'Schematic', os.path.relpath(GS.sch_file, cwd),
+                                                       self.OnChangeSCH)
+        self.pcb_sizer, self.pcb_input = self.add_path(paths_sizer, 'PCB', os.path.relpath(GS.pcb_file, cwd), self.OnChangePCB)
 
         # Targets
         targets_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Targets')
@@ -313,6 +354,103 @@ class MainPanel(wx.Panel):
         self.but_down_skippre.Bind(wx.EVT_BUTTON, self.OnDownSkippre)
         self.but_add_skippre.Bind(wx.EVT_BUTTON, self.OnAddSkippre)
         self.but_remove_skippre.Bind(wx.EVT_BUTTON, self.OnRemoveSkippre)
+
+    def revert_cfg(self, reload=False):
+        self.cf_input.SetPath(self.old_cfg)
+        if reload:
+            reset_config()
+            load_config(self.old_cfg)
+
+    def load_new_config(self):
+        # Should we save the current?
+        res = self.main.check_save()
+        if res == wx.CANCEL:
+            # Cancelled, revert
+            wx.CallAfter(self.revert_cfg)
+            return
+        # Check the file is there, shouldn't be necessary
+        new_cfg = self.cf_input.GetPath()
+        if not os.path.isfile(new_cfg):
+            pop_error("Wrong config selected!")
+            wx.CallAfter(self.revert_cfg)
+            return
+        # Try loading it
+        try:
+            log.start_recording_error_msgs()
+            reset_config()
+            load_config(new_cfg)
+        except SystemExit:
+            # The PCB failed to load, revert the file name
+            wx.CallAfter(self.revert_cfg, reload=True)
+            return
+        finally:
+            # Inform any error issued by logger.error
+            msgs = log.stop_recording_error_msgs()
+            if msgs:
+                pop_error(msgs)
+        self.old_cfg = new_cfg
+        self.main.refresh_cfg()
+
+    def OnChageCfg(self, event):
+        wx.CallAfter(self.load_new_config)
+
+    def revert_pcb(self, reload=False):
+        """ Revert the selected PCB """
+        self.pcb_input.SetPath(GS.pcb_file)
+        if reload:
+            load_board(forced=True)
+
+    def OnChangePCB(self, event):
+        new_pcb = self.pcb_input.GetPath()
+        if not os.path.isfile(new_pcb):
+            pop_error("Wrong PCB selected!")
+            wx.CallAfter(self.revert_pcb)
+            return
+        try:
+            log.start_recording_error_msgs()
+            load_board(new_pcb, forced=True)
+            GS.set_pcb(new_pcb)
+        except SystemExit:
+            # The PCB failed to load, revert the file name
+            wx.CallAfter(self.revert_pcb, reload=True)
+            return
+        finally:
+            # Inform any error issued by logger.error
+            msgs = log.stop_recording_error_msgs()
+            if msgs:
+                pop_error(msgs)
+
+    def revert_sch(self, reload=False):
+        """ Revert the selected PCB """
+        self.sch_input.SetPath(GS.sch_file)
+        if reload:
+            load_sch(forced=True)
+
+    def OnChangeSCH(self, event):
+        new_sch = self.sch_input.GetPath()
+        if not os.path.isfile(new_sch):
+            pop_error("Wrong SCH selected!")
+            wx.CallAfter(self.revert_sch)
+            return
+        try:
+            log.start_recording_error_msgs()
+            load_sch(new_sch, forced=True)
+            GS.set_sch(new_sch)
+        except SystemExit:
+            # The sch failed to load, revert the file name
+            wx.CallAfter(self.revert_sch, reload=True)
+            return
+        finally:
+            # Inform any error issued by logger.error
+            msgs = log.stop_recording_error_msgs()
+            if msgs:
+                pop_error(msgs)
+
+    def OnChangeOutDir(self, event):
+        GS.out_dir = self.de_input.GetPath()
+
+    def OnChangeCWD(self, event):
+        os.chdir(self.wd_input.GetPath())
 
     def OnUpTargets(self, event):
         move_sel_up(self.targets_lbox)
@@ -412,16 +550,16 @@ class MainPanel(wx.Panel):
                                                                                       ORDER_PRIORITY))
 
     def get_cfg_file(self):
-        return os.path.abspath(os.path.join(self.wd_input.Value, self.cf_input.Value))
+        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.cf_input.GetPath()))
 
     def get_pcb_file(self):
-        return os.path.abspath(os.path.join(self.wd_input.Value, self.pcb_input.Value))
+        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.pcb_input.GetPath()))
 
     def get_sch_file(self):
-        return os.path.abspath(os.path.join(self.wd_input.Value, self.sch_input.Value))
+        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.sch_input.GetPath()))
 
     def get_out_dir(self):
-        return os.path.abspath(os.path.join(self.wd_input.Value, self.de_input.Value))
+        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.de_input.GetPath()))
 
     def get_targets_hint(self):
         items = self.targets_lbox.GetCount()
@@ -471,7 +609,7 @@ class MainPanel(wx.Panel):
         self.update_targets_hint()
         self.update_sort_hint()
 
-    def add_path(self, sizer, label, value, is_dir=False):
+    def add_path(self, sizer, label, value, on_change=None, is_dir=False):
         window = self.path_w
         li_sizer = wx.BoxSizer(wx.HORIZONTAL)
         new_label = wx.StaticText(window, label=label, size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
@@ -480,9 +618,19 @@ class MainPanel(wx.Panel):
             new_input.Value = value
         else:
             if is_dir:
-                new_input = wx.DirPickerCtrl(window, message=label, size=wx.Size(def_text, -1))
+                new_input = wx.DirPickerCtrl(window, message=label, size=wx.Size(def_text, -1), style=wx.DIRP_DIR_MUST_EXIST)
+                if on_change:
+                    # This works as expected only if FLP_USE_TEXTCTRL is disabled
+                    # Otherwise we get partial changes
+                    new_input.Bind(wx.EVT_DIRPICKER_CHANGED, on_change)
             else:
-                new_input = wx.FilePickerCtrl(window, message=label, size=wx.Size(def_text, -1))
+                # Validator are useless here
+                new_input = wx.FilePickerCtrl(window, message=label, size=wx.Size(def_text, -1),
+                                              style=wx.FLP_OPEN | wx.FLP_FILE_MUST_EXIST)
+                if on_change:
+                    # This works as expected only if FLP_USE_TEXTCTRL is disabled
+                    # Otherwise we get partial changes
+                    new_input.Bind(wx.EVT_FILEPICKER_CHANGED, on_change)
             new_input.SetPath(value)
         li_sizer.Add(new_label, gh.SIZER_FLAGS_0)
         li_sizer.Add(new_input, gh.SIZER_FLAGS_1)
