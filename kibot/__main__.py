@@ -571,7 +571,7 @@ def main():
         generate_makefile(args.makefile, plot_config, outputs)
     else:
         # Do all the job (preflight + outputs)
-        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,
+        generate_outputs(args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,
                          dont_stop=args.dont_stop)
     # Print total warnings
     logger.log_totals()
