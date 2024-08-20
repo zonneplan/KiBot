@@ -1242,8 +1242,7 @@ def generate_examples(start_dir, dry, types):
         if not os.path.isdir(start_dir):
             GS.exit_with_error(f'Invalid dir {start_dir} to quick start', WRONG_ARGUMENTS)
     # Set default global options
-    glb = GS.class_for_global_opts()
-    glb.set_tree({})
+    glb = GS.set_global_options_tree({})
     glb.config(None)
     # Install the resources
     setup_resources()
