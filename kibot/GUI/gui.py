@@ -181,6 +181,7 @@ class MainDialog(wx.Dialog):
         logger.debug(f'- Skip preflights: {skip_pre}')
         try:
             # TODO: Show messages
+            RegOutput.reset_done()
             generate_outputs(targets, invert_sel, skip_pre, cli_order, no_priority)
         except SystemExit:
             pass
