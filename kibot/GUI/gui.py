@@ -7,11 +7,12 @@
 # Graphic User Interface
 from copy import deepcopy
 import os
+import tempfile
 import yaml
 from .. import __version__
 from .. import log
 from ..gs import GS
-from ..kiplot import config_output, load_board, load_sch, load_config, reset_config
+from ..kiplot import config_output, load_board, load_sch, load_config, reset_config, generate_outputs
 from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
 from .data_types import edit_dict
@@ -154,11 +155,35 @@ class MainDialog(wx.Dialog):
         logger.debug(f'Global options after editing: {GS.globals_tree}')
 
     def OnGenerateOuts(self, event):
-        self.main
-        print(os.getcwd())
-        print(GS.out_dir)
-        # TODO: implement
-        pop_error('Not implemented')
+        # Check the output is writable (wrong from CLI?)
+        try:
+            testfile = tempfile.TemporaryFile(dir=GS.out_dir)
+            testfile.close()
+        except OSError as e:
+            e.filename = GS.out_dir
+            pop_error(f'Invalid destination dir:\n{e}')
+        logger.debug('Starting targets generation from the GUI')
+        logger.debug(f'- Working dir: {os.getcwd()}')
+        logger.debug(f'- Destination dir: {GS.out_dir}')
+        targets = self.main.targets_lbox.GetStrings()
+        logger.debug(f'- Targets: {targets}')
+        invert_sel, cli_order, no_priority = self.main.split_sort_mode()
+        logger.debug(f'- Invert selected: {invert_sel}')
+        logger.debug(f'- CLI order: {cli_order}')
+        logger.debug(f'- No priority: {no_priority}')
+        skip_pre = self.main.skippre_lbox.GetStrings()
+        if not skip_pre:
+            skip_pre = None
+        elif 'all' in skip_pre:
+            skip_pre = 'all'
+        else:
+            skip_pre = ','.join(skip_pre)
+        logger.debug(f'- Skip preflights: {skip_pre}')
+        try:
+            # TODO: Show messages
+            generate_outputs(targets, invert_sel, skip_pre, cli_order, no_priority)
+        except SystemExit:
+            pass
 
     def OnSave(self, event):
         tree = {'kibot': {'version': 1}}
@@ -311,11 +336,13 @@ class MainPanel(wx.Panel):
         if not os.path.isdir(GS.out_dir):
             os.makedirs(GS.out_dir)
         self.wd_sizer, self.wd_input = self.add_path(paths_sizer, 'Working dir', cwd, self.OnChangeCWD, is_dir=True)
+        self.old_cwd = cwd
         self.cf_sizer, self.cf_input = self.add_path(paths_sizer, 'Config file', os.path.relpath(cfg_file, cwd),
                                                      self.OnChageCfg)
         self.old_cfg = cfg_file
         self.de_sizer, self.de_input = self.add_path(paths_sizer, 'Destination', os.path.relpath(GS.out_dir, cwd),
                                                      self.OnChangeOutDir, is_dir=True)
+        self.old_out_dir = GS.out_dir
         self.sch_sizer, self.sch_input = self.add_path(paths_sizer, 'Schematic', os.path.relpath(GS.sch_file, cwd),
                                                        self.OnChangeSCH)
         self.pcb_sizer, self.pcb_input = self.add_path(paths_sizer, 'PCB', os.path.relpath(GS.pcb_file, cwd), self.OnChangePCB)
@@ -447,10 +474,24 @@ class MainPanel(wx.Panel):
                 pop_error(msgs)
 
     def OnChangeOutDir(self, event):
-        GS.out_dir = self.de_input.GetPath()
+        try:
+            new_out_dir = self.de_input.GetPath()
+            testfile = tempfile.TemporaryFile(dir=new_out_dir)
+            testfile.close()
+            self.old_out_dir = GS.out_dir = new_out_dir
+        except OSError as e:
+            e.filename = new_out_dir
+            pop_error(f'Invalid destination dir:\n{e}')
+            self.de_input.SetPath(self.old_out_dir)
 
     def OnChangeCWD(self, event):
-        os.chdir(self.wd_input.GetPath())
+        try:
+            new_cwd = self.wd_input.GetPath()
+            os.chdir(new_cwd)
+            self.old_cwd = new_cwd
+        except OSError as e:
+            pop_error(f'Invalid working dir:\n{e}')
+            self.wd_input.SetPath(self.old_cwd)
 
     def OnUpTargets(self, event):
         move_sel_up(self.targets_lbox)
@@ -548,6 +589,17 @@ class MainPanel(wx.Panel):
     def solve_sort_mode(self, invert_targets, cli_order, no_priority):
         return ORDER_INVERT if invert_targets else (ORDER_SELECTED if cli_order else (ORDER_DECLARED if no_priority else
                                                                                       ORDER_PRIORITY))
+
+    def split_sort_mode(self):
+        sel = self.invert_targets_input.GetSelection()
+        invert_targets = cli_order = no_priority = False
+        if sel == ORDER_INVERT:
+            invert_targets = True
+        elif sel == ORDER_SELECTED:
+            cli_order = True
+        elif sel == ORDER_DECLARED:
+            no_priority = True
+        return invert_targets, cli_order, no_priority
 
     def get_cfg_file(self):
         return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.cf_input.GetPath()))
