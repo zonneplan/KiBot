@@ -137,6 +137,9 @@ class GS(object):
     def_global_output = '%f-%i%I%v.%x'
     # The class that controls the global options
     class_for_global_opts = None
+    # The last tree we used to configure it
+    globals_tree = {}
+    # Global options
     global_allow_component_ranges = None
     global_always_warn_about_paste_pads = None
     global_cache_3d_resistors = None
@@ -979,3 +982,10 @@ class GS(object):
     @staticmethod
     def mkdtemp(mod):
         return tempfile.mkdtemp(prefix='tmp-kibot-'+mod+'-')
+
+    @staticmethod
+    def set_global_options_tree(tree):
+        glb = GS.class_for_global_opts()
+        glb.set_tree(tree)
+        GS.globals_tree = tree
+        return glb

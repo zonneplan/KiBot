@@ -292,8 +292,7 @@ class CfgYamlReader(object):
                 update_dict(gb, self.imported_globals)
             logger.debug("Global options + imported: {}".format(gb))
         # Parse all keys inside it
-        glb = GS.class_for_global_opts()
-        glb.set_tree(gb)
+        glb = GS.set_global_options_tree(gb)
         try:
             glb.config(None)
         except KiPlotConfigurationError as e:
