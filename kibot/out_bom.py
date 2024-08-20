@@ -940,6 +940,9 @@ class BoMOptions(BaseOptions):
         if self.expand_text_vars:
             comps = apply_pre_transform(comps, BaseFilter.solve_filter('_expand_text_vars', 'KiCad 6 text vars',
                                                                        is_transform=True))
+        # We will manipulate the aggregate list, so we use a copy
+        real_aggregate = self.aggregate
+        self.aggregate = real_aggregate.copy()
         # We add the main project to the aggregate list so do_bom sees a complete list
         base_sch = Aggregate()
         base_sch.file = GS.sch_file
@@ -957,6 +960,7 @@ class BoMOptions(BaseOptions):
         except BoMError as e:
             raise KiPlotConfigurationError(str(e))
         finally:
+            self.aggregate = real_aggregate
             if tmp_png:
                 os.remove(tmp_png)
                 if self._format == 'html':
