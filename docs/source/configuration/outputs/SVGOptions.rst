@@ -60,5 +60,5 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   PcbMargin
    CustomReport
+   PcbMargin

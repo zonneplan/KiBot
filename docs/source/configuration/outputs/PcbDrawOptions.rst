@@ -69,7 +69,7 @@ Used dicts:
    :maxdepth: 5
 
    PcbDrawRemap
+   PcbDrawRemapComponents
    PcbDrawResistorRemap
    PcbDrawStyle
    PcbMargin
-   PcbDrawRemapComponents

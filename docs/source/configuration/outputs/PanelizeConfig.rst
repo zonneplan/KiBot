@@ -29,15 +29,15 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   PanelizeSource
+   PanelizeCopperfill
+   PanelizeCuts
+   PanelizeDebug
+   PanelizeFiducials
+   PanelizeFraming
    PanelizeLayout
    PanelizePage
-   PanelizeTabs
-   PanelizeDebug
-   PanelizeFraming
-   PanelizeText
    PanelizePost
-   PanelizeCopperfill
+   PanelizeSource
+   PanelizeTabs
+   PanelizeText
    PanelizeTooling
-   PanelizeFiducials
-   PanelizeCuts

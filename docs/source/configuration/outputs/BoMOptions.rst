@@ -122,9 +122,9 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   BoMColumns
    Aggregate
    BoMCSV
+   BoMColumns
    BoMHTML
    BoMTXT
    BoMXLSX

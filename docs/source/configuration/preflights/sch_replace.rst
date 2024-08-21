@@ -10,30 +10,11 @@ Replaces tags in the schematic. I.e. to insert the git hash or last revision dat
 This is useful for KiCad 5, use `set_text_variables` when using KiCad 6. |br|
 This preflight modifies the schematics. Even when a back-up is done use it carefully
 
-   -  **sch_replace** :index:`: <pair: preflight - sch_replace; sch_replace>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `sch_replace` preflight.
+   -  **sch_replace** :index:`: <pair: preflight - sch_replace; sch_replace>`  [:ref:`SCH_ReplaceOptions parameters <SCH_ReplaceOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `sch_replace` preflight.
 
-      -  Valid keys:
+Used dicts:
 
-         -  ``date_command`` :index:`: <pair: preflight - sch_replace - sch_replace; date_command>` [:ref:`string <string>`] (default: ``''``) Command to get the date to use in the SCH.\\
-            ```git log -1 --format='%as' -- "$KIBOT_SCH_NAME"```\\
-            Will return the date in YYYY-MM-DD format.\\
-            ```date -d @`git log -1 --format='%at' -- "$KIBOT_SCH_NAME"` +%Y-%m-%d_%H-%M-%S```\\
-            Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
-            Important: on KiCad 6 the title block data is optional.
-            This command will work only if you have a date in the SCH/Schematic.
-         -  ``replace_tags`` :index:`: <pair: preflight - sch_replace - sch_replace; replace_tags>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) Tag or tags to replace.
+.. toctree::
+   :maxdepth: 5
 
-            -  Valid keys:
-
-               -  ``after`` :index:`: <pair: preflight - sch_replace - sch_replace - replace_tags; after>` [:ref:`string <string>`] (default: ``''``) Text to add after the output of `command`.
-               -  ``before`` :index:`: <pair: preflight - sch_replace - sch_replace - replace_tags; before>` [:ref:`string <string>`] (default: ``''``) Text to add before the output of `command`.
-               -  ``command`` :index:`: <pair: preflight - sch_replace - sch_replace - replace_tags; command>` [:ref:`string <string>`] (default: ``''``) Command to execute to get the text, will be used only if `text` is empty.
-                  KIBOT_SCH_NAME variable is the name of the current sheet.
-                  KIBOT_TOP_SCH_NAME variable is the name of the top sheet.
-               -  ``tag`` :index:`: <pair: preflight - sch_replace - sch_replace - replace_tags; tag>` [:ref:`string <string>`] (default: ``''``) Name of the tag to replace. Use `version` for a tag named `@version@`.
-               -  ``tag_delimiter`` :index:`: <pair: preflight - sch_replace - sch_replace - replace_tags; tag_delimiter>` [:ref:`string <string>`] (default: ``'@'``) Character used to indicate the beginning and the end of a tag.
-                  Don't change it unless you really know about KiCad's file formats.
-               -  ``text`` :index:`: <pair: preflight - sch_replace - sch_replace - replace_tags; text>` [:ref:`string <string>`] (default: ``''``) Text to insert instead of the tag.
-
-
-
+   SCH_ReplaceOptions

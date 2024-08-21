@@ -25,5 +25,5 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   DrillReport
    DrillMap
+   DrillReport

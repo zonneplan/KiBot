@@ -48,5 +48,5 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   FieldRename
    Aggregate
+   FieldRename

@@ -50,5 +50,5 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   SVG_PCB_PrintOptions
    Layer
+   SVG_PCB_PrintOptions

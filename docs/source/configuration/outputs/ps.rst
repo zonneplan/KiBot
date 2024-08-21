@@ -50,5 +50,5 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   PSOptions
    Layer
+   PSOptions

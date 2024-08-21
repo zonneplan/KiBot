@@ -964,7 +964,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
         print('Used dicts:\n')
         print('.. toctree::')
         print('   :maxdepth: 5\n')
-        for p in sub_pages:
+        for p in sorted(sub_pages):
             print('   '+p)
     # if num_opts == 0:
     #     print(ind_str+'  - No available options')
@@ -1107,7 +1107,7 @@ def _print_preflights_help(rst, deprecated=False):
                 for ln in range(2, len(lines)):
                     print('                 '+adapt_text(lines[ln]))
         print_output_options(n, o, ind_size, 'preflight - '+n, skip_options={'comment', 'name'}, skip_keys=True,
-                             force_is_basic=True)
+                             force_is_basic=True, separate_files=split)
         if split:
             sys.stdout = ori
             f.close()

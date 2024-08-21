@@ -51,5 +51,5 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   PDF_PCB_PrintOptions
    Layer
+   PDF_PCB_PrintOptions

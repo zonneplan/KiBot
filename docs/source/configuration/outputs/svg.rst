@@ -51,5 +51,5 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   SVGOptions
    Layer
+   SVGOptions

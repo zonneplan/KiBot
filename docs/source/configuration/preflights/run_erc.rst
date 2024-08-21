@@ -11,12 +11,11 @@ For KiCad 8 use *erc*
 To ensure the schematic is electrically correct. |br|
 The report file name is controlled by the global output pattern (%i=erc %x=txt)
 
-   -  **run_erc** :index:`: <pair: preflight - run_erc; run_erc>` [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
+   -  **run_erc** :index:`: <pair: preflight - run_erc; run_erc>`  [:ref:`Run_ERCOptions parameters <Run_ERCOptions>`] [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
 
-      -  Valid keys:
+Used dicts:
 
-         -  ``dir`` :index:`: <pair: preflight - run_erc - run_erc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
-         -  ``enabled`` :index:`: <pair: preflight - run_erc - run_erc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the ERC. This is the replacement for the boolean value.
-         -  ``warnings_as_errors`` :index:`: <pair: preflight - run_erc - run_erc; warnings_as_errors>` [:ref:`boolean <boolean>`] (default: ``false``) ERC warnings are considered errors.
+.. toctree::
+   :maxdepth: 5
 
-
+   Run_ERCOptions

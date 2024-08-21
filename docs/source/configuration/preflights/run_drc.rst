@@ -15,13 +15,11 @@ KiCad 6 introduced `warnings` they are currently counted be the `unconnected` co
 This will change in the future. |br|
 If you use DRC exclusions please consult the `drc_exclusions_workaround` global option
 
-   -  **run_drc** :index:`: <pair: preflight - run_drc; run_drc>` [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
+   -  **run_drc** :index:`: <pair: preflight - run_drc; run_drc>`  [:ref:`Run_DRCOptions parameters <Run_DRCOptions>`] [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
 
-      -  Valid keys:
+Used dicts:
 
-         -  ``dir`` :index:`: <pair: preflight - run_drc - run_drc; dir>` [:ref:`string <string>`] (default: ``''``) Sub-directory for the report.
-         -  ``enabled`` :index:`: <pair: preflight - run_drc - run_drc; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the DRC. This is the replacement for the boolean value.
-         -  ``ignore_unconnected`` :index:`: <pair: preflight - run_drc - run_drc; ignore_unconnected>` [:ref:`boolean <boolean>`] (default: ``false``) Ignores the unconnected nets. Useful if you didn't finish the routing.
-            It will also ignore KiCad 6 warnings.
+.. toctree::
+   :maxdepth: 5
 
-
+   Run_DRCOptions

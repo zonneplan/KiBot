@@ -30,10 +30,10 @@ Used dicts:
 .. toctree::
    :maxdepth: 5
 
-   PCB2BlenderOptions
    BlenderCameraOptions
-   PCB3DExportOptions
-   BlenderRenderOptions
+   BlenderLightOptions
    BlenderOutputOptions
    BlenderPointOfViewOptions
-   BlenderLightOptions
+   BlenderRenderOptions
+   PCB2BlenderOptions
+   PCB3DExportOptions

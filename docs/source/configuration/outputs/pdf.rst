@@ -85,5 +85,5 @@ Used dicts:
    :maxdepth: 5
 
    CustomReport
-   PDFOptions
    Layer
+   PDFOptions
