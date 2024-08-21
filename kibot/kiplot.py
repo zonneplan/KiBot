@@ -600,6 +600,8 @@ def _generate_outputs(targets, invert, skip_pre, cli_order, no_priority, dont_st
         logger.debug('Outputs after sorting: {}'.format([t.name for t in targets]))
     # Configure and run the outputs
     for out in targets:
+        if GS.get_stop_flag():
+            break
         if config_output(out, dont_stop=dont_stop):
             logger.info('- '+str(out))
             run_output(out, dont_stop)

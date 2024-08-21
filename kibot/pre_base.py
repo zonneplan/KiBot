@@ -143,6 +143,8 @@ class BasePreFlight(Optionable, Registrable):
         BasePreFlight._targets = targets
         try:
             for k, v in BasePreFlight._in_use.items():
+                if GS.get_stop_flag():
+                    return
                 if v._enabled:
                     if v.is_sch():
                         GS.check_sch()
@@ -151,6 +153,8 @@ class BasePreFlight(Optionable, Registrable):
                     logger.debug('Preflight apply '+k)
                     v.apply()
             for k, v in BasePreFlight._in_use.items():
+                if GS.get_stop_flag():
+                    return
                 if v._enabled:
                     logger.debug('Preflight run '+k)
                     v.run()

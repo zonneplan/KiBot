@@ -8,6 +8,7 @@
 from copy import deepcopy
 import os
 import tempfile
+import threading
 import yaml
 from .. import __version__
 from .. import log
@@ -20,9 +21,12 @@ from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, ge
                           set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
                           set_button_bitmap, pop_confirm)
 from . import gui_helpers as gh
+from .gui_log import start_gui_log, stop_gui_log, EVT_WX_LOG_EVENT
+
 logger = log.get_logger()
 
 import wx
+import wx.lib.newevent
 # Do it before any wx thing is called
 app = wx.App()
 if hasattr(app, "GTKSuppressDiagnostics"):
@@ -48,6 +52,9 @@ ORDER_SELECTED = 2
 ORDER_INVERT = 3
 max_label = 200
 def_text = 200
+COLORS = {"Y": wx.YELLOW, "R": wx.RED, "C": wx.CYAN, "r": wx.Colour("violet red")}
+wxFinishEvent, EVT_WX_FINISH_EVENT = wx.lib.newevent.NewEvent()
+
 init_vars()
 
 
@@ -180,9 +187,12 @@ class MainDialog(wx.Dialog):
             skip_pre = ','.join(skip_pre)
         logger.debug(f'- Skip preflights: {skip_pre}')
         try:
-            # TODO: Show messages
+            # Clear the done flag so outputs gets generated again
             RegOutput.reset_done()
-            generate_outputs(targets, invert_sel, skip_pre, cli_order, no_priority)
+            # Open a dialog to collect the messages and block the GUI while running
+            dlg = RunControlDialog(self, targets, invert_sel, skip_pre, cli_order, no_priority)
+            dlg.ShowModal()
+            dlg.Destroy()
         except SystemExit:
             pass
 
@@ -1117,3 +1127,98 @@ class PreflightsPanel(DictPanel):
         obj = BasePreFlight.get_object_for(kind)
         obj.config(None)
         return obj
+
+
+# ##########################################################################
+# # class RunControlDialog
+# # A dialog to monitor the targets generation
+# ##########################################################################
+
+class RunControlDialog(wx.Dialog):
+    def __init__(self, parent, targets, invert_sel, skip_pre, cli_order, no_priority):
+        wx.Dialog.__init__(self, parent, title='Generating targets',
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        # Text from the logs
+        self.txt = wx.TextCtrl(self, size=wx.Size(920, 480), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        main_sizer.Add(self.txt, gh.SIZER_FLAGS_1)
+
+        # Buttons
+        but_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        # Stop
+        self.but_stop = wx.Button(self, label="Stop")
+        set_button_bitmap(self.but_stop, wx.ART_QUIT)
+        but_sizer.Add(self.but_stop, gh.SIZER_FLAGS_0_NO_EXPAND)
+        # Close
+        self.but_close = wx.Button(self, label="Close")
+        self.but_close.Disable()
+        set_button_bitmap(self.but_close, wx.ART_CLOSE)
+        but_sizer.Add(self.but_close, gh.SIZER_FLAGS_0_NO_EXPAND)
+        main_sizer.Add(but_sizer, gh.SIZER_FLAGS_0_NO_BORDER)
+
+        self.SetSizer(main_sizer)
+        main_sizer.Fit(self)
+        self.Centre(wx.BOTH)
+
+        self.Bind(EVT_WX_LOG_EVENT, self.OnLogEvent)
+        self.Bind(EVT_WX_FINISH_EVENT, self.OnFinish)
+        self.Bind(wx.EVT_CLOSE, self.OnExit)
+        self.but_close.Bind(wx.EVT_BUTTON, self.OnExit)
+        self.but_stop.Bind(wx.EVT_BUTTON, self.OnStop)
+
+        start_gui_log(self)
+        self.thread = threading.Thread(target=self.generate_outputs,
+                                       args=(targets, invert_sel, skip_pre, cli_order, no_priority))
+        GS.reset_stop_flag()
+        self.thread.start()
+        self.running = True
+
+    def generate_outputs(self, targets, invert_sel, skip_pre, cli_order, no_priority):
+        generate_outputs(targets, invert_sel, skip_pre, cli_order, no_priority)
+        # Notify we finished, not sure if an event is an overkill, but is safe
+        wx.PostEvent(self, wxFinishEvent())
+
+    def OnStop(self, event):
+        if not self.running:
+            # Nothing to stop
+            return
+        # Just a flag asking to stop
+        GS.set_stop_flag()
+        # Give feadback to the user
+        self.txt.SetDefaultStyle(wx.TextAttr(wx.Colour('orange')))
+        self.txt.AppendText("Waiting to finish this target to stop ...\n")
+        # Avoid more stop requests
+        self.but_stop.Disable()
+
+    def OnFinish(self, event):
+        # Called when we finished generating the targets
+        self.but_close.Enable()
+        self.but_stop.Disable()
+        self.running = False
+        self.txt.SetDefaultStyle(wx.TextAttr(wx.Colour('orange')))
+        self.txt.AppendText("Finished\n")
+
+    def OnExit(self, event):
+        """ Stop catching log messages """
+        if self.running:
+            # Avoid exiting while we still working
+            pop_error("Still generating targets, please wait")
+            return
+        stop_gui_log()
+        self.Destroy()
+
+    def OnLogEvent(self, event):
+        msg = event.message.strip("\r")+"\n"
+        old = None
+        if msg[0] == '\033':
+            color = COLORS[msg[1]]
+            msg = msg[2:]
+            old = self.txt.GetDefaultStyle()
+            self.txt.SetDefaultStyle(wx.TextAttr(color))
+        self.txt.AppendText(msg)
+        if old is not None:
+            self.txt.SetDefaultStyle(old)
+        # print(msg)
+        event.Skip()

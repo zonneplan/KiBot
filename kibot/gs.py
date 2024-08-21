@@ -989,3 +989,16 @@ class GS(object):
         glb.set_tree(tree)
         GS.globals_tree = tree
         return glb
+
+    # Naive stop mechanism, abstracted in case we need something more complex
+    @staticmethod
+    def reset_stop_flag():
+        GS.stop_flag = False
+
+    @staticmethod
+    def set_stop_flag():
+        GS.stop_flag = True
+
+    @staticmethod
+    def get_stop_flag():
+        return GS.stop_flag
