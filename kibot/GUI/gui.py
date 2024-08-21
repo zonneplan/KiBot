@@ -106,7 +106,13 @@ class MainDialog(wx.Dialog):
         self.but_globals = wx.Button(self, label="Globals")
         set_button_bitmap(self.but_globals, "gtk-edit")
         but_sizer.Add(self.but_globals, gh.SIZER_FLAGS_0_NO_EXPAND)
+        # Warnings
+        self.but_warn = wx.Button(self, label="Warnings")
+        set_button_bitmap(self.but_warn, wx.ART_WARNING)
+        but_sizer.Add(self.but_warn, gh.SIZER_FLAGS_0_NO_EXPAND)
+        #
         # Separator
+        #
         but_sizer.Add((50, 0), gh.SIZER_FLAGS_1_NO_BORDER)
         # Run
         self.but_generate = wx.Button(self, label="Run")
@@ -128,6 +134,7 @@ class MainDialog(wx.Dialog):
         self.but_save.Bind(wx.EVT_BUTTON, self.OnSave)
         self.but_generate.Bind(wx.EVT_BUTTON, self.OnGenerateOuts)
         self.but_globals.Bind(wx.EVT_BUTTON, self.OnGlobals)
+        self.but_warn.Bind(wx.EVT_BUTTON, self.OnWarnings)
         # self.but_cancel.Bind(wx.EVT_BUTTON, self.OnExit)
 
     def refresh_cfg(self):
@@ -160,6 +167,14 @@ class MainDialog(wx.Dialog):
             self.mark_edited()
             GS.globals_tree = obj._tree
         logger.debug(f'Global options after editing: {GS.globals_tree}')
+
+    def OnWarnings(self, event):
+        if not logger.warn_cnt:
+            pop_info("No warnings")
+            return
+        dlg = ShowWarnsDialog(self, logger.warn_hash.keys())
+        dlg.ShowModal()
+        dlg.Destroy()
 
     def OnGenerateOuts(self, event):
         # Check the output is writable (wrong from CLI?)
@@ -1222,3 +1237,30 @@ class RunControlDialog(wx.Dialog):
             self.txt.SetDefaultStyle(old)
         # print(msg)
         event.Skip()
+
+
+# ##########################################################################
+# # class ShowWarnsDialog
+# # A dialog to monitor the targets generation
+# ##########################################################################
+
+class ShowWarnsDialog(wx.Dialog):
+    def __init__(self, parent, warns):
+        wx.Dialog.__init__(self, parent, title='Collected warnings',
+                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        # Text from the logs
+        self.txt = wx.TextCtrl(self, size=wx.Size(920, 480), style=wx.TE_MULTILINE | wx.TE_READONLY)
+        main_sizer.Add(self.txt, gh.SIZER_FLAGS_1)
+        self.txt.SetDefaultStyle(wx.TextAttr(wx.YELLOW))
+        for w in warns:
+            self.txt.AppendText(w+'\n')
+
+        # Buttons
+        main_sizer.Add(ok_cancel(self, no_cancel=True), gh.SIZER_FLAGS_0)
+
+        self.SetSizer(main_sizer)
+        main_sizer.Fit(self)
+        self.Centre(wx.BOTH)
