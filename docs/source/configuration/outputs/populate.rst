@@ -23,33 +23,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - populate; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - populate; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `populate` output.
-
-   -  Valid keys:
-
-      -  **format** :index:`: <pair: output - populate - options; format>` [:ref:`string <string>`] (default: ``'html'``) (choices: "html", "md") Format for the generated output.
-      -  **input** :index:`: <pair: output - populate - options; input>` [:ref:`string <string>`] (default: ``''``) Name of the input file describing the assembly. Must be a markdown file.
-         Note that the YAML section of the file will be skipped, all the needed information
-         comes from this output and the `renderer` output, not from the YAML section.
-         When empty we use a dummy template, you should provide something better.
-      -  **renderer** :index:`: <pair: output - populate - options; renderer>` [:ref:`string <string>`] (default: ``''``) Name of the output used to render the PCB steps.
-         Currently this must be a `pcbdraw` or `render_3d` output.
-      -  ``dnf_filter`` :index:`: <pair: output - populate - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``imgname`` :index:`: <pair: output - populate - options; imgname>` [:ref:`string <string>`] (default: ``'img/populating_%d.%x'``) Pattern used for the image names. The `%d` is replaced by the image number.
-         The `%x` is replaced by the extension. Note that the format is selected by the
-         `renderer`.
-      -  ``initial_components`` :index:`: <pair: output - populate - options; initial_components>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] List of components soldered before the first step.
-
-      -  ``pre_transform`` :index:`: <pair: output - populate - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``template`` :index:`: <pair: output - populate - options; template>` [:ref:`string <string>`] The name of the handlebars template used for the HTML output.
-         The extension must be `.handlebars`, it will be added when missing.
-         The `simple.handlebars` template is a built-in template.
-      -  ``variant`` :index:`: <pair: output - populate - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-
+-  **options** :index:`: <pair: output - populate; options>`  [:ref:`PopulateOptions parameters <PopulateOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `populate` output.
 -  **type** :index:`: <pair: output - populate; type>` 'populate'
 -  ``category`` :index:`: <pair: output - populate; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -70,3 +44,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - populate; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   PopulateOptions

@@ -20,30 +20,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - download_datasheets; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - download_datasheets; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `download_datasheets` output.
-
-   -  Valid keys:
-
-      -  **field** :index:`: <pair: output - download_datasheets - options; field>` [:ref:`string <string>`] (default: ``'Datasheet'``) Name of the field containing the URL.
-      -  ``classify`` :index:`: <pair: output - download_datasheets - options; classify>` [:ref:`boolean <boolean>`] (default: ``false``) Use the reference to classify the components in different sub-dirs.
-         In this way C7 will go into a Capacitors sub-dir, R3 into Resistors, etc.
-      -  ``classify_extra`` :index:`: <pair: output - download_datasheets - options; classify_extra>` [:ref:`string_dict <string_dict>`] (default: empty dict, default values used) Extra reference associations used to classify the references.
-         They are pairs `Reference prefix` -> `Sub-dir`.
-
-      -  ``dnf`` :index:`: <pair: output - download_datasheets - options; dnf>` [:ref:`boolean <boolean>`] (default: ``false``) Include the DNF components.
-      -  ``dnf_filter`` :index:`: <pair: output - download_datasheets - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``link_repeated`` :index:`: <pair: output - download_datasheets - options; link_repeated>` [:ref:`boolean <boolean>`] (default: ``true``) Instead of download things we already downloaded use symlinks.
-      -  ``output`` :index:`: <pair: output - download_datasheets - options; output>` [:ref:`string <string>`] (default: ``'${VALUE}.pdf'``) Name used for the downloaded datasheet.
-         `${FIELD}` will be replaced by the FIELD content.
-      -  ``pre_transform`` :index:`: <pair: output - download_datasheets - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``repeated`` :index:`: <pair: output - download_datasheets - options; repeated>` [:ref:`boolean <boolean>`] (default: ``false``) Download URLs that we already downloaded.
-         It only makes sense if the `output` field makes their output different.
-      -  ``variant`` :index:`: <pair: output - download_datasheets - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-
+-  **options** :index:`: <pair: output - download_datasheets; options>`  [:ref:`Download_Datasheets_Options parameters <Download_Datasheets_Options>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `download_datasheets` output.
 -  **type** :index:`: <pair: output - download_datasheets; type>` 'download_datasheets'
 -  ``category`` :index:`: <pair: output - download_datasheets; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -64,3 +41,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - download_datasheets; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   Download_Datasheets_Options

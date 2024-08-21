@@ -25,29 +25,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - qr_lib; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - qr_lib; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `boardview` output.
-
-   -  Valid keys:
-
-      -  **lib** :index:`: <pair: output - qr_lib - options; lib>` [:ref:`string <string>`] (default: ``'QR'``) Short name for the library.
-      -  **output** :index:`: <pair: output - qr_lib - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename/dirname for the output library (%i=qr, %x=lib/kicad_sym/pretty).
-         You must use %x in the name to get a symbols lib and a footprints lib. Affected by global options.
-      -  **qrs** :index:`: <pair: output - qr_lib - options; qrs>` [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: list with one empty dict, default values used) QR codes to include in the library.
-
-         -  Valid keys:
-
-            -  **layer** :index:`: <pair: output - qr_lib - options - qrs; layer>` [:ref:`string <string>`] (default: ``'silk'``) (choices: "silk", "copper") Layer for the footprint.
-            -  **name** :index:`: <pair: output - qr_lib - options - qrs; name>` [:ref:`string <string>`] (default: ``'QR'``) Name for the symbol/footprint.
-            -  **size_pcb** :index:`: <pair: output - qr_lib - options - qrs; size_pcb>` [:ref:`number <number>`] (default: ``15``) Size of the QR footprint.
-            -  **size_sch** :index:`: <pair: output - qr_lib - options - qrs; size_sch>` [:ref:`number <number>`] (default: ``15``) Size of the QR symbol.
-            -  **text** :index:`: <pair: output - qr_lib - options - qrs; text>` [:ref:`string <string>`] (default: ``'%p %r'``) Text to encode as QR.
-            -  ``correction_level`` :index:`: <pair: output - qr_lib - options - qrs; correction_level>` [:ref:`string <string>`] (default: ``'low'``) (choices: "low", "medium", "quartile", "high") Error correction level.
-            -  ``pcb_negative`` :index:`: <pair: output - qr_lib - options - qrs; pcb_negative>` [:ref:`boolean <boolean>`] (default: ``false``) Generate a negative image for the PCB.
-            -  ``size_units`` :index:`: <pair: output - qr_lib - options - qrs; size_units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches") Units used for the size.
-
-      -  ``reference`` :index:`: <pair: output - qr_lib - options; reference>` [:ref:`string <string>`] (default: ``'QR'``) The reference prefix.
-      -  ``use_sch_dir`` :index:`: <pair: output - qr_lib - options; use_sch_dir>` [:ref:`boolean <boolean>`] (default: ``true``) Generate the libs relative to the schematic/PCB dir.
-
+-  **options** :index:`: <pair: output - qr_lib; options>`  [:ref:`QR_LibOptions parameters <QR_LibOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `boardview` output.
 -  **type** :index:`: <pair: output - qr_lib; type>` 'qr_lib'
 -  ``category`` :index:`: <pair: output - qr_lib; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -68,3 +46,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - qr_lib; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   QR_LibOptions

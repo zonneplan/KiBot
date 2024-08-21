@@ -19,34 +19,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - compress; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - compress; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `compress` output.
-
-   -  Valid keys:
-
-      -  **files** :index:`: <pair: output - compress - options; files>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
-
-         -  Valid keys:
-
-            -  **from_output** :index:`: <pair: output - compress - options - files; from_output>` [:ref:`string <string>`] (default: ``''``) Collect files from the selected output.
-               When used the `source` option is ignored.
-            -  **source** :index:`: <pair: output - compress - options - files; source>` [:ref:`string <string>`] (default: ``'*'``) File names to add, wildcards allowed. Use ** for recursive match.
-               By default this pattern is applied to the output dir specified with `-d` command line option.
-               See the `from_cwd` and `from_output_dir` options.
-            -  ``dest`` :index:`: <pair: output - compress - options - files; dest>` [:ref:`string <string>`] (default: ``''``) Destination directory inside the archive, empty means the same of the file.
-            -  ``filter`` :index:`: <pair: output - compress - options - files; filter>` [:ref:`string <string>`] (default: ``'.*'``) A regular expression that source files must match.
-            -  ``from_cwd`` :index:`: <pair: output - compress - options - files; from_cwd>` [:ref:`boolean <boolean>`] (default: ``false``) Use the current working directory instead of the dir specified by `-d`.
-            -  ``from_output_dir`` :index:`: <pair: output - compress - options - files; from_output_dir>` [:ref:`boolean <boolean>`] (default: ``false``) Use the current directory specified by the output instead of the dir specified by `-d`.
-               Note that it only applies when using `from_output` and no `dest` is specified.
-               It has more prescedence than `from_cwd`.
-
-      -  **format** :index:`: <pair: output - compress - options; format>` [:ref:`string <string>`] (default: ``'ZIP'``) (choices: "ZIP", "TAR", "RAR") Output file format.
-      -  **output** :index:`: <pair: output - compress - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
-      -  ``compression`` :index:`: <pair: output - compress - options; compression>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "auto", "stored", "deflated", "bzip2", "lzma") Compression algorithm. Use auto to let KiBot select a suitable one.
-      -  ``follow_links`` :index:`: <pair: output - compress - options; follow_links>` [:ref:`boolean <boolean>`] (default: ``true``) Store the file pointed by symlinks, not the symlink.
-      -  ``move_files`` :index:`: <pair: output - compress - options; move_files>` [:ref:`boolean <boolean>`] (default: ``false``) Move the files to the archive. In other words: remove the files after adding them to the archive.
-      -  *remove_files* :index:`: <pair: output - compress - options; remove_files>` Alias for move_files.
-      -  ``skip_not_run`` :index:`: <pair: output - compress - options; skip_not_run>` [:ref:`boolean <boolean>`] (default: ``false``) Skip outputs with `run_by_default: false`.
-
+-  **options** :index:`: <pair: output - compress; options>`  [:ref:`CompressOptions parameters <CompressOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `compress` output.
 -  **type** :index:`: <pair: output - compress; type>` 'compress'
 -  ``category`` :index:`: <pair: output - compress; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -67,3 +40,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - compress; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   CompressOptions

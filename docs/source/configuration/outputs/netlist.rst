@@ -20,23 +20,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - netlist; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - netlist; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `netlist` output.
-
-   -  Valid keys:
-
-      -  **format** :index:`: <pair: output - netlist - options; format>` [:ref:`string <string>`] (default: ``'classic'``) (choices: "classic", "ipc") The `classic` format is the KiCad internal format, and is generated
-         from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
-         testing, is generated from the PCB.
-      -  **output** :index:`: <pair: output - netlist - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
-      -  ``dnf_filter`` :index:`: <pair: output - netlist - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``pre_transform`` :index:`: <pair: output - netlist - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``variant`` :index:`: <pair: output - netlist - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-         Used for sub-PCBs.
-
+-  **options** :index:`: <pair: output - netlist; options>`  [:ref:`NetlistOptions parameters <NetlistOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `netlist` output.
 -  **type** :index:`: <pair: output - netlist; type>` 'netlist'
 -  ``category`` :index:`: <pair: output - netlist; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -57,3 +41,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - netlist; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   NetlistOptions

@@ -22,14 +22,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - info; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - info; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `info` output.
-
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: output - info - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=info, %x=txt). Affected by global options.
-      -  ``environment`` :index:`: <pair: output - info - options; environment>` [:ref:`string <string>`] (default: ``'names'``) (choices: "names", "none", "full") List environment variables.
-         IMPORTANT: Don't use `full` unless you know you are not leaking sensitive information.
-
+-  **options** :index:`: <pair: output - info; options>`  [:ref:`InfoOptions parameters <InfoOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `info` output.
 -  **type** :index:`: <pair: output - info; type>` 'info'
 -  ``category`` :index:`: <pair: output - info; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -50,3 +43,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - info; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   InfoOptions

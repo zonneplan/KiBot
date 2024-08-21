@@ -21,42 +21,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - position; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - position; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `position` output.
-
-   -  Valid keys:
-
-      -  **format** :index:`: <pair: output - position - options; format>` [:ref:`string <string>`] (default: ``'ASCII'``) (choices: "ASCII", "CSV", "GBR") Format for the position file.
-         Note that the gerber format (GBR) needs KiCad 7+ and doesn't support most of the options.
-         Only the options that explicitly say the format is supported.
-      -  **only_smd** :index:`: <pair: output - position - options; only_smd>` [:ref:`boolean <boolean>`] (default: ``true``) Only include the surface mount components.
-      -  **output** :index:`: <pair: output - position - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
-         Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
-      -  **separate_files_for_front_and_back** :index:`: <pair: output - position - options; separate_files_for_front_and_back>` [:ref:`boolean <boolean>`] (default: ``true``) Generate two separated files, one for the top and another for the bottom.
-      -  **units** :index:`: <pair: output - position - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
-      -  ``bottom_negative_x`` :index:`: <pair: output - position - options; bottom_negative_x>` [:ref:`boolean <boolean>`] (default: ``false``) Use negative X coordinates for footprints on bottom layer.
-      -  ``columns`` :index:`: <pair: output - position - options; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``['Ref', 'Val', 'Package', 'PosX', 'PosY', 'Rot', 'Side']``) Which columns are included in the output.
-
-         -  Valid keys:
-
-            -  **id** :index:`: <pair: output - position - options - columns; id>` [:ref:`string <string>`] (default: ``''``) (choices: "Ref", "Val", "Package", "PosX", "PosY", "Rot", "Side") Internal name.
-            -  ``name`` :index:`: <pair: output - position - options - columns; name>` [:ref:`string <string>`] (default: ``''``) Name to use in the output file. The id is used when empty.
-
-      -  ``dnf_filter`` :index:`: <pair: output - position - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``gerber_board_edge`` :index:`: <pair: output - position - options; gerber_board_edge>` [:ref:`boolean <boolean>`] (default: ``false``) Include the board edge in the gerber output.
-      -  ``include_virtual`` :index:`: <pair: output - position - options; include_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Include virtual components. For special purposes, not pick & place.
-         Note that virtual components is a KiCad 5 concept.
-         For KiCad 6+ we replace this concept by the option to exclude from position file.
-      -  ``pre_transform`` :index:`: <pair: output - position - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``quote_all`` :index:`: <pair: output - position - options; quote_all>` [:ref:`boolean <boolean>`] (default: ``false``) When generating the CSV quote all values, even numbers.
-      -  ``right_digits`` :index:`: <pair: output - position - options; right_digits>` [:ref:`number <number>`] (default: ``4``) number of digits for mantissa part of coordinates (0 is auto).
-      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - position - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``true``) Use the auxiliary axis as origin for coordinates (KiCad default).
-         Supported by the gerber format.
-      -  ``variant`` :index:`: <pair: output - position - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-
+-  **options** :index:`: <pair: output - position; options>`  [:ref:`PositionOptions parameters <PositionOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `position` output.
 -  **type** :index:`: <pair: output - position; type>` 'position'
 -  ``category`` :index:`: <pair: output - position; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -77,3 +42,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - position; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   PositionOptions

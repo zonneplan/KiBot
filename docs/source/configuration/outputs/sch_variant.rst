@@ -20,22 +20,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - sch_variant; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - sch_variant; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `sch_variant` output.
-
-   -  Valid keys:
-
-      -  ``copy_project`` :index:`: <pair: output - sch_variant - options; copy_project>` [:ref:`boolean <boolean>`] (default: ``false``) Copy the KiCad project to the destination directory.
-         Disabled by default for compatibility with older versions.
-      -  ``dnf_filter`` :index:`: <pair: output - sch_variant - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``pre_transform`` :index:`: <pair: output - sch_variant - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``title`` :index:`: <pair: output - sch_variant - options; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.
-         If it starts with `+` the text is concatenated.
-      -  ``variant`` :index:`: <pair: output - sch_variant - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-
+-  **options** :index:`: <pair: output - sch_variant; options>`  [:ref:`Sch_Variant_Options parameters <Sch_Variant_Options>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `sch_variant` output.
 -  **type** :index:`: <pair: output - sch_variant; type>` 'sch_variant'
 -  ``category`` :index:`: <pair: output - sch_variant; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -56,3 +41,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - sch_variant; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   Sch_Variant_Options

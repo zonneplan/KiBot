@@ -21,25 +21,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - gencad; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - gencad; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `gencad` output.
-
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: output - gencad - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=gencad, %x=cad). Affected by global options.
-      -  ``aux_origin`` :index:`: <pair: output - gencad - options; aux_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Use auxiliary axis as origin.
-      -  ``dnf_filter`` :index:`: <pair: output - gencad - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``flip_bottom_padstacks`` :index:`: <pair: output - gencad - options; flip_bottom_padstacks>` [:ref:`boolean <boolean>`] (default: ``false``) Flip bottom footprint padstacks.
-      -  ``no_reuse_shapes`` :index:`: <pair: output - gencad - options; no_reuse_shapes>` [:ref:`boolean <boolean>`] (default: ``false``) Generate a new shape for each footprint instance (Do not reuse shapes).
-      -  ``pre_transform`` :index:`: <pair: output - gencad - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``save_origin`` :index:`: <pair: output - gencad - options; save_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Save the origin coordinates in the file.
-      -  ``unique_pin_names`` :index:`: <pair: output - gencad - options; unique_pin_names>` [:ref:`boolean <boolean>`] (default: ``false``) Generate unique pin names.
-      -  ``variant`` :index:`: <pair: output - gencad - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-         Used for sub-PCBs.
-
+-  **options** :index:`: <pair: output - gencad; options>`  [:ref:`GenCADOptions parameters <GenCADOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `gencad` output.
 -  **type** :index:`: <pair: output - gencad; type>` 'gencad'
 -  ``category`` :index:`: <pair: output - gencad; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -60,3 +42,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - gencad; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   GenCADOptions

@@ -837,11 +837,13 @@ def process_help_data_type(obj, help, v):
             else:
                 new_data_type += f' (range: {validation[0]} to {validation[1]})'
     help = new_data_type+real_help
-    return help
+    return help, 'dict' in valid or 'list(dict)' in valid
 
 
-def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_options=None, force_is_basic=False):
+def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_options=None, force_is_basic=False,
+                         separate_files=False):
     ind_str = indent*' '
+    sub_pages = set()
     try:
         obj = cl()
     except TypeError as e:
@@ -890,12 +892,16 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
         assert help is not None, f'Undocumented option: `{k}`'
         if not is_alias and k != 'type':
             assert help[0] == '[', f'Missing option data type: `{k}`: {help}'
-            help = process_help_data_type(obj, help, v)
+            help, has_dict = process_help_data_type(obj, help, v)
+        else:
+            has_dict = False
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         if rst_mode and context:
             # Index entry
             preface = preface[:-2] + f' :index:`: <pair: {context}; {k}>` '
+        if separate_files and isinstance(v, type) and has_dict:
+            preface += f" [:ref:`{v.__name__} parameters <{v.__name__}>`] "
         clines = len(lines)
         print(preface+adapt_text(lines[0].strip()+('.' if clines == 1 and dot else '')))
         if rst_mode:
@@ -937,9 +943,29 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
             i = indent+ind_size
             if not skip_keys:
                 i += ind_size
-            print_output_options('', v, i, new_context)
+            if separate_files and has_dict:
+                dest = os.path.relpath(os.path.join(GS.out_dir, f'{v.__name__}.rst'))
+                f = open(dest, 'wt')
+                ori = sys.stdout
+                sys.stdout = f
+                i = 0
+                title = f'{v.__name__} parameters'
+                sub_pages.add(v.__name__)
+                print(f".. _{v.__name__}:\n\n")
+                print(title)
+                print('~'*len(title)+'\n')
+            print_output_options('', v, i, new_context, separate_files=separate_files, skip_keys=separate_files)
+            if separate_files and has_dict:
+                sys.stdout = ori
+                f.close()
     if rst_mode:
         print()
+    if sub_pages:
+        print('Used dicts:\n')
+        print('.. toctree::')
+        print('   :maxdepth: 5\n')
+        for p in sub_pages:
+            print('   '+p)
     # if num_opts == 0:
     #     print(ind_str+'  - No available options')
 
@@ -974,7 +1000,7 @@ def print_one_out_help(details, n, o):
             f.write('\nParameters:\n\n')
             ori = sys.stdout
             sys.stdout = f
-            print_output_options(n, o, 0, 'output - '+n, skip_keys=True)
+            print_output_options(n, o, 0, 'output - '+n, skip_keys=True, separate_files=True)
             sys.stdout = ori
     elif details:
         print('- '+lines[0])

@@ -23,116 +23,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - kibom; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - kibom; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `kibom` output.
-
-   -  Valid keys:
-
-      -  **format** :index:`: <pair: output - kibom - options; format>` [:ref:`string <string>`] (default: ``'HTML'``) (choices: "HTML", "CSV", "XML", "XLSX") Format for the BoM.
-      -  **number** :index:`: <pair: output - kibom - options; number>` [:ref:`number <number>`] (default: ``1``) Number of boards to build (components multiplier).
-      -  **output** :index:`: <pair: output - kibom - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=bom). Affected by global options.
-      -  ``conf`` :index:`: <pair: output - kibom - options; conf>` [:ref:`string <string>` | :ref:`dict <dict>`] (default: ``'bom.ini'``) BoM configuration file, relative to PCB. Environment variables and ~ allowed.
-         You can also define the configuration here, will be stored in `config.kibom.ini`.
-
-         -  Valid keys:
-
-            -  **columns** :index:`: <pair: output - kibom - options - conf; columns>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>`] (default: ``[]``) List of columns to display.
-               Can be just the name of the field.
-
-               -  Valid keys:
-
-                  -  **field** :index:`: <pair: output - kibom - options - conf - columns; field>` [:ref:`string <string>`] (default: ``''``) Name of the field to use for this column.
-                     Use `_field_lcsc_part` to get the value defined in the global options.
-                  -  **name** :index:`: <pair: output - kibom - options - conf - columns; name>` [:ref:`string <string>`] (default: ``''``) Name to display in the header. The field is used when empty.
-                  -  ``join`` :index:`: <pair: output - kibom - options - conf - columns; join>` [:ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``''``) List of fields to join to this column.
-
-
-            -  **fit_field** :index:`: <pair: output - kibom - options - conf; fit_field>` [:ref:`string <string>`] (default: ``'Config'``) Field name used to determine if a particular part is to be fitted (also DNC and variants).
-            -  **group_fields** :index:`: <pair: output - kibom - options - conf; group_fields>` [:ref:`list(string) <list(string)>`] (default: ``['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib']``) List of fields used for sorting individual components into groups.
-               Components which match (comparing *all* fields) will be grouped together.
-               Field names are case-insensitive.
-               If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib'] is used.
-
-            -  **ignore_dnf** :index:`: <pair: output - kibom - options - conf; ignore_dnf>` [:ref:`boolean <boolean>`] (default: ``true``) Exclude DNF (Do Not Fit) components.
-            -  **number_rows** :index:`: <pair: output - kibom - options - conf; number_rows>` [:ref:`boolean <boolean>`] (default: ``true``) First column is the row number.
-            -  ``component_aliases`` :index:`: <pair: output - kibom - options - conf; component_aliases>` [:ref:`list(list(string)) <list(list(string))>`] (default: ``[['r', 'r_small', 'res', 'resistor'], ['l', 'l_small', 'inductor'], ['c', 'c_small', 'cap', 'capacitor'], ['sw', 'switch'], ['zener', 'zenersmall'], ['d', 'diode', 'd_small']]``) A series of values which are considered to be equivalent for the part name.
-               Each entry is a list of equivalen names. Example: ['c', 'c_small', 'cap' ]
-               will ensure the equivalent capacitor symbols can be grouped together.
-               If empty the following aliases are used:
-
-               - ['r', 'r_small', 'res', 'resistor']
-               - ['l', 'l_small', 'inductor']
-               - ['c', 'c_small', 'cap', 'capacitor']
-               - ['sw', 'switch']
-               - ['zener', 'zenersmall']
-               - ['d', 'diode', 'd_small'].
-
-            -  ``datasheet_as_link`` :index:`: <pair: output - kibom - options - conf; datasheet_as_link>` [:ref:`string <string>`] (default: ``''``) Column with links to the datasheet (HTML only).
-            -  ``digikey_link`` :index:`: <pair: output - kibom - options - conf; digikey_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Digi-Key part numbers, will be linked to web page (HTML only).
-
-            -  ``exclude_any`` :index:`: <pair: output - kibom - options - conf; exclude_any>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A series of regular expressions used to exclude parts.
-               If a component matches ANY of these, it will be excluded.
-               Column names are case-insensitive.
-               If empty the following list is used by KiBoM:
-
-               - column: References |br|
-                 regex: '^TP[0-9]*'
-               - column: References |br|
-                 regex: '^FID'
-               - column: Part |br|
-                 regex: 'mount.*hole'
-               - column: Part |br|
-                 regex: 'solder.*bridge'
-               - column: Part |br|
-                 regex: 'test.*point'
-               - column: Footprint |br|
-                 regex 'test.*point'
-               - column: Footprint |br|
-                 regex: 'mount.*hole'
-               - column: Footprint |br|
-                 regex: 'fiducial'.
-
-               -  Valid keys:
-
-                  -  ``column`` :index:`: <pair: output - kibom - options - conf - exclude_any; column>` [:ref:`string <string>`] (default: ``''``) Name of the column to apply the regular expression.
-                     Use `_field_lcsc_part` to get the value defined in the global options.
-                  -  *field* :index:`: <pair: output - kibom - options - conf - exclude_any; field>` Alias for column.
-                  -  ``regex`` :index:`: <pair: output - kibom - options - conf - exclude_any; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match.
-                  -  *regexp* :index:`: <pair: output - kibom - options - conf - exclude_any; regexp>` Alias for regex.
-
-            -  ``group_connectors`` :index:`: <pair: output - kibom - options - conf; group_connectors>` [:ref:`boolean <boolean>`] (default: ``true``) Connectors with the same footprints will be grouped together, independent of the name of the connector.
-            -  ``hide_headers`` :index:`: <pair: output - kibom - options - conf; hide_headers>` [:ref:`boolean <boolean>`] (default: ``false``) Hide column headers.
-            -  ``hide_pcb_info`` :index:`: <pair: output - kibom - options - conf; hide_pcb_info>` [:ref:`boolean <boolean>`] (default: ``false``) Hide project information.
-            -  ``html_generate_dnf`` :index:`: <pair: output - kibom - options - conf; html_generate_dnf>` [:ref:`boolean <boolean>`] (default: ``true``) Generate a separated section for DNF (Do Not Fit) components (HTML only).
-            -  ``include_only`` :index:`: <pair: output - kibom - options - conf; include_only>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) A series of regular expressions used to select included parts.
-               If there are any regex defined here, only components that match against ANY of them will be included.
-               Column names are case-insensitive.
-               If empty all the components are included.
-
-               -  Valid keys:
-
-                  -  ``column`` :index:`: <pair: output - kibom - options - conf - include_only; column>` [:ref:`string <string>`] (default: ``''``) Name of the column to apply the regular expression.
-                     Use `_field_lcsc_part` to get the value defined in the global options.
-                  -  *field* :index:`: <pair: output - kibom - options - conf - include_only; field>` Alias for column.
-                  -  ``regex`` :index:`: <pair: output - kibom - options - conf - include_only; regex>` [:ref:`string <string>`] (default: ``''``) Regular expression to match.
-                  -  *regexp* :index:`: <pair: output - kibom - options - conf - include_only; regexp>` Alias for regex.
-
-            -  ``lcsc_link`` :index:`: <pair: output - kibom - options - conf; lcsc_link>` [:ref:`boolean <boolean>` | :ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing LCSC part numbers, will be linked to web page.
-               Use **true** to copy the value indicated by the `field_lcsc_part` global option.
-
-            -  ``merge_blank_fields`` :index:`: <pair: output - kibom - options - conf; merge_blank_fields>` [:ref:`boolean <boolean>`] (default: ``true``) Component groups with blank fields will be merged into the most compatible group, where possible.
-            -  ``mouser_link`` :index:`: <pair: output - kibom - options - conf; mouser_link>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Column/s containing Mouser part numbers, will be linked to web page (HTML only).
-
-            -  ``ref_separator`` :index:`: <pair: output - kibom - options - conf; ref_separator>` [:ref:`string <string>`] (default: ``' '``) Separator used for the list of references.
-            -  ``test_regex`` :index:`: <pair: output - kibom - options - conf; test_regex>` [:ref:`boolean <boolean>`] (default: ``true``) Each component group will be tested against a number of regular-expressions.
-            -  ``use_alt`` :index:`: <pair: output - kibom - options - conf; use_alt>` [:ref:`boolean <boolean>`] (default: ``false``) Print grouped references in the alternate compressed style eg: R1-R7,R18.
-
-      -  ``separator`` :index:`: <pair: output - kibom - options; separator>` [:ref:`string <string>`] (default: ``','``) CSV Separator.
-      -  ``variant`` :index:`: <pair: output - kibom - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant(s), used to determine which components
-         are output to the BoM. To specify multiple variants,
-         with a BOM file exported for each variant, separate
-         variants with the ';' (semicolon) character.
-         This isn't related to the KiBot concept of variants.
-
+-  **options** :index:`: <pair: output - kibom; options>`  [:ref:`KiBoMOptions parameters <KiBoMOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `kibom` output.
 -  **type** :index:`: <pair: output - kibom; type>` 'kibom'
 -  ``category`` :index:`: <pair: output - kibom; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -153,3 +44,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - kibom; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   KiBoMOptions

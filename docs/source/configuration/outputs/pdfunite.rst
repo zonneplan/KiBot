@@ -19,25 +19,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - pdfunite; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pdfunite; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pdfunite` output.
-
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: output - pdfunite - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated PDF (%i=name of the output %x=pdf). Affected by global options.
-      -  **outputs** :index:`: <pair: output - pdfunite - options; outputs>` [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
-
-         -  Valid keys:
-
-            -  **from_output** :index:`: <pair: output - pdfunite - options - outputs; from_output>` [:ref:`string <string>`] (default: ``''``) Collect files from the selected output.
-               When used the `source` option is ignored.
-            -  **source** :index:`: <pair: output - pdfunite - options - outputs; source>` [:ref:`string <string>`] (default: ``'*.pdf'``) File names to add, wildcards allowed. Use ** for recursive match.
-               By default this pattern is applied to the output dir specified with `-d` command line option.
-               See the `from_cwd` option.
-            -  ``filter`` :index:`: <pair: output - pdfunite - options - outputs; filter>` [:ref:`string <string>`] (default: ``'.*\\.pdf'``) A regular expression that source files must match.
-            -  ``from_cwd`` :index:`: <pair: output - pdfunite - options - outputs; from_cwd>` [:ref:`boolean <boolean>`] (default: ``false``) Use the current working directory instead of the dir specified by `-d`.
-
-      -  ``use_external_command`` :index:`: <pair: output - pdfunite - options; use_external_command>` [:ref:`boolean <boolean>`] (default: ``false``) Use the `pdfunite` tool instead of PyPDF2 Python module.
-
+-  **options** :index:`: <pair: output - pdfunite; options>`  [:ref:`PDFUniteOptions parameters <PDFUniteOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pdfunite` output.
 -  **type** :index:`: <pair: output - pdfunite; type>` 'pdfunite'
 -  ``category`` :index:`: <pair: output - pdfunite; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -58,3 +40,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - pdfunite; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   PDFUniteOptions

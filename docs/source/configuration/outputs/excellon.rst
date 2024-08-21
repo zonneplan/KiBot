@@ -21,46 +21,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - excellon; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - excellon; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `excellon` output.
-
-   -  Valid keys:
-
-      -  **metric_units** :index:`: <pair: output - excellon - options; metric_units>` [:ref:`boolean <boolean>`] (default: ``true``) Use metric units instead of inches.
-      -  **mirror_y_axis** :index:`: <pair: output - excellon - options; mirror_y_axis>` [:ref:`boolean <boolean>`] (default: ``false``) Invert the Y axis.
-      -  **output** :index:`: <pair: output - excellon - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
-      -  **pth_and_npth_single_file** :index:`: <pair: output - excellon - options; pth_and_npth_single_file>` [:ref:`boolean <boolean>`] (default: ``true``) Generate one file for both, plated holes and non-plated holes, instead of two separated files.
-      -  ``dnf_filter`` :index:`: <pair: output - excellon - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``left_digits`` :index:`: <pair: output - excellon - options; left_digits>` [:ref:`number <number>`] (default: ``0``) number of digits for integer part of coordinates (0 is auto).
-      -  ``map`` :index:`: <pair: output - excellon - options; map>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``'None'``) (choices: "hpgl", "ps", "gerber", "dxf", "svg", "pdf", "None") Format for a graphical drill map.
-         Not generated unless a format is specified.
-
-         -  Valid keys:
-
-            -  **output** :index:`: <pair: output - excellon - options - map; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
-            -  ``type`` :index:`: <pair: output - excellon - options - map; type>` [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
-
-      -  ``minimal_header`` :index:`: <pair: output - excellon - options; minimal_header>` [:ref:`boolean <boolean>`] (default: ``false``) Use a minimal header in the file.
-      -  ``npth_id`` :index:`: <pair: output - excellon - options; npth_id>` [:ref:`string <string>`] Force this replacement for %i when generating NPTH files.
-      -  ``pre_transform`` :index:`: <pair: output - excellon - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``pth_id`` :index:`: <pair: output - excellon - options; pth_id>` [:ref:`string <string>`] Force this replacement for %i when generating PTH and unified files.
-      -  ``report`` :index:`: <pair: output - excellon - options; report>` [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``''``) Name of the drill report. Not generated unless a name is specified.
-
-         -  Valid keys:
-
-            -  ``filename`` :index:`: <pair: output - excellon - options - report; filename>` [:ref:`string <string>`] (default: ``''``) Name of the drill report. Not generated unless a name is specified.
-               (%i='drill_report' %x='txt').
-
-      -  ``right_digits`` :index:`: <pair: output - excellon - options; right_digits>` [:ref:`number <number>`] (default: ``0``) number of digits for mantissa part of coordinates (0 is auto).
-      -  ``route_mode_for_oval_holes`` :index:`: <pair: output - excellon - options; route_mode_for_oval_holes>` [:ref:`boolean <boolean>`] (default: ``true``) Use route command for oval holes (G00), otherwise use G85.
-      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - excellon - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Use the auxiliary axis as origin for coordinates.
-      -  ``variant`` :index:`: <pair: output - excellon - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-         Used for sub-PCBs.
-      -  ``zeros_format`` :index:`: <pair: output - excellon - options; zeros_format>` [:ref:`string <string>`] (default: ``'DECIMAL_FORMAT'``) (choices: "DECIMAL_FORMAT", "SUPPRESS_LEADING", "SUPPRESS_TRAILING", "KEEP_ZEROS") How to handle the zeros.
-
+-  **options** :index:`: <pair: output - excellon; options>`  [:ref:`ExcellonOptions parameters <ExcellonOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `excellon` output.
 -  **type** :index:`: <pair: output - excellon; type>` 'excellon'
 -  ``category`` :index:`: <pair: output - excellon; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -81,3 +42,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - excellon; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   ExcellonOptions

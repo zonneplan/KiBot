@@ -20,24 +20,7 @@ Parameters:
    If it starts with `+` the rest is concatenated to the default dir.
 -  **name** :index:`: <pair: output - pcb_variant; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pcb_variant; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pcb_variant` output.
-
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: output - pcb_variant - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=variant, %x=kicad_pcb). Affected by global options.
-      -  ``copy_project`` :index:`: <pair: output - pcb_variant - options; copy_project>` [:ref:`boolean <boolean>`] (default: ``true``) Copy the KiCad project to the destination directory.
-      -  ``dnf_filter`` :index:`: <pair: output - pcb_variant - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``hide_excluded`` :index:`: <pair: output - pcb_variant - options; hide_excluded>` [:ref:`boolean <boolean>`] (default: ``false``) Hide components in the Fab layer that are marked as excluded by a variant.
-         Affected by global options.
-      -  ``pre_transform`` :index:`: <pair: output - pcb_variant - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``title`` :index:`: <pair: output - pcb_variant - options; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.
-         If it starts with `+` the text is concatenated.
-      -  ``variant`` :index:`: <pair: output - pcb_variant - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-
+-  **options** :index:`: <pair: output - pcb_variant; options>`  [:ref:`PCB_Variant_Options parameters <PCB_Variant_Options>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pcb_variant` output.
 -  **type** :index:`: <pair: output - pcb_variant; type>` 'pcb_variant'
 -  ``category`` :index:`: <pair: output - pcb_variant; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -58,3 +41,9 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - pcb_variant; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   PCB_Variant_Options

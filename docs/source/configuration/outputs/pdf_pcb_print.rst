@@ -21,49 +21,11 @@ Parameters:
 -  **comment** :index:`: <pair: output - pdf_pcb_print; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
 -  **dir** :index:`: <pair: output - pdf_pcb_print; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - pdf_pcb_print; layers>` [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
+-  **layers** :index:`: <pair: output - pdf_pcb_print; layers>`  [:ref:`Layer parameters <Layer>`] [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
    of PCB layers to include in the PDF.
-
-   -  Valid keys:
-
-      -  ``description`` :index:`: <pair: output - pdf_pcb_print - layers; description>` [:ref:`string <string>`] (default: ``''``) A description for the layer, for documentation purposes.
-         A default can be specified using the `layer_defaults` global option.
-      -  ``layer`` :index:`: <pair: output - pdf_pcb_print - layers; layer>` [:ref:`string <string>`] (default: ``''``) Name of the layer. As you see it in KiCad.
-      -  ``suffix`` :index:`: <pair: output - pdf_pcb_print - layers; suffix>` [:ref:`string <string>`] (default: ``''``) Suffix used in file names related to this layer. Derived from the name if not specified.
-         A default can be specified using the `layer_defaults` global option.
-
 -  **name** :index:`: <pair: output - pdf_pcb_print; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - pdf_pcb_print; options>` [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pdf_pcb_print` output.
-
-   -  Valid keys:
-
-      -  **plot_sheet_reference** :index:`: <pair: output - pdf_pcb_print - options; plot_sheet_reference>` [:ref:`boolean <boolean>`] (default: ``true``) Include the title-block.
-      -  **scaling** :index:`: <pair: output - pdf_pcb_print - options; scaling>` [:ref:`number <number>`] (default: ``1.0``) Scale factor (0 means autoscaling). You should disable `plot_sheet_reference` when using it.
-      -  **separated** :index:`: <pair: output - pdf_pcb_print - options; separated>` [:ref:`boolean <boolean>`] (default: ``false``) Print layers in separated pages.
-      -  ``color_theme`` :index:`: <pair: output - pdf_pcb_print - options; color_theme>` [:ref:`string <string>`] (default: ``'_builtin_classic'``) Selects the color theme. Onlyu applies to KiCad 6.
-         To use the KiCad 6 default colors select `_builtin_default`.
-         Usually user colors are stored as `user`, but you can give it another name.
-      -  ``dnf_filter`` :index:`: <pair: output - pdf_pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``drill_marks`` :index:`: <pair: output - pdf_pcb_print - options; drill_marks>` [:ref:`string <string>`] (default: ``'full'``) (choices: "none", "small", "full") What to use to indicate the drill places, can be none, small or full (for real scale).
-      -  ``force_edge_cuts`` :index:`: <pair: output - pdf_pcb_print - options; force_edge_cuts>` [:ref:`boolean <boolean>`] (default: ``true``) Only useful for KiCad 6 when printing in one page, you can disable the edge here.
-         KiCad 5 forces it by default, and you can't control it from config files.
-         Same for KiCad 6 when printing to separated pages.
-      -  ``hide_excluded`` :index:`: <pair: output - pdf_pcb_print - options; hide_excluded>` [:ref:`boolean <boolean>`] (default: ``false``) Hide components in the Fab layer that are marked as excluded by a variant.
-         Affected by global options.
-      -  ``mirror`` :index:`: <pair: output - pdf_pcb_print - options; mirror>` [:ref:`boolean <boolean>`] (default: ``false``) Print mirrored (X axis inverted). ONLY for KiCad 6.
-      -  ``monochrome`` :index:`: <pair: output - pdf_pcb_print - options; monochrome>` [:ref:`boolean <boolean>`] (default: ``false``) Print in black and white.
-      -  ``output`` :index:`: <pair: output - pdf_pcb_print - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output PDF (%i=layers, %x=pdf). Affected by global options.
-      -  *output_name* :index:`: <pair: output - pdf_pcb_print - options; output_name>` Alias for output.
-      -  ``pre_transform`` :index:`: <pair: output - pdf_pcb_print - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``title`` :index:`: <pair: output - pdf_pcb_print - options; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.
-         If it starts with `+` the text is concatenated.
-      -  ``variant`` :index:`: <pair: output - pdf_pcb_print - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
-
+-  **options** :index:`: <pair: output - pdf_pcb_print; options>`  [:ref:`PDF_PCB_PrintOptions parameters <PDF_PCB_PrintOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `pdf_pcb_print` output.
 -  **type** :index:`: <pair: output - pdf_pcb_print; type>` 'pdf_pcb_print'
 -  ``category`` :index:`: <pair: output - pdf_pcb_print; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
    category is used.
@@ -84,3 +46,10 @@ Parameters:
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
 -  ``run_by_default`` :index:`: <pair: output - pdf_pcb_print; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+Used dicts:
+
+.. toctree::
+   :maxdepth: 5
+
+   PDF_PCB_PrintOptions
+   Layer
