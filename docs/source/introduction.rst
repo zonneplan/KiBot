@@ -13,6 +13,9 @@ For example, it’s common that you might want for each board rev to create/do:
 
 -  Check ERC/DRC one last time (using `KiCad Automation
    Scripts <https://github.com/INTI-CMNB/kicad-automation-scripts/>`__)
+-  Generate and/or update QR codes embedded in the PCB/SCH, the drawing
+   of the stack-up, etc.
+-  Create assembly variants of the product
 -  Gerbers, drills and drill maps for a fab in their favourite format
 -  Fab docs for the assembler, including the BoM (Bill of Materials),
    costs spreadsheet and board view
