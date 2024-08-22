@@ -11,9 +11,7 @@ QR_LibOptions parameters
 -  ``reference`` :index:`: <pair: output - qr_lib - options; reference>` [:ref:`string <string>`] (default: ``'QR'``) The reference prefix.
 -  ``use_sch_dir`` :index:`: <pair: output - qr_lib - options; use_sch_dir>` [:ref:`boolean <boolean>`] (default: ``true``) Generate the libs relative to the schematic/PCB dir.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    QRCodeOptions

@@ -4,7 +4,7 @@ Supported preflights
 ^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    preflights/annotate_pcb
    preflights/annotate_power
@@ -26,7 +26,7 @@ Supported deprecated preflights
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    preflights/erc_warnings
    preflights/ignore_unconnected

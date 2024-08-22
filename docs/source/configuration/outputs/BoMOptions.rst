@@ -117,10 +117,8 @@ BoMOptions parameters
    The combination between the default for this option and the defaults for the filters provides
    a behavior that mimics KiBoM default behavior.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    Aggregate
    BoMCSV

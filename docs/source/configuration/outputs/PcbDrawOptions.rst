@@ -63,10 +63,8 @@ PcbDrawOptions parameters
    Note that any other content from this layer will be included.
 -  ``warnings`` :index:`: <pair: output - pcbdraw - options; warnings>` [:ref:`string <string>`] (default: ``'visible'``) (choices: "visible", "all", "none") Using visible only the warnings about components in the visible side are generated.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    PcbDrawRemap
    PcbDrawRemapComponents

@@ -4,7 +4,7 @@ Supported filters
 ^^^^^^^^^^^^^^^^^
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    filters/expand_text_vars
    filters/field_modify

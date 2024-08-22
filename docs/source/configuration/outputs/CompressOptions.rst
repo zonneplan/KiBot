@@ -13,9 +13,7 @@ CompressOptions parameters
 -  *remove_files* :index:`: <pair: output - compress - options; remove_files>` Alias for move_files.
 -  ``skip_not_run`` :index:`: <pair: output - compress - options; skip_not_run>` [:ref:`boolean <boolean>`] (default: ``false``) Skip outputs with `run_by_default: false`.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    FilesList

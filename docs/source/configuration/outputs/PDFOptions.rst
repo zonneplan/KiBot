@@ -41,9 +41,7 @@ PDFOptions parameters
 -  ``uppercase_extensions`` :index:`: <pair: output - pdf - options; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
 -  ``variant`` :index:`: <pair: output - pdf - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    CustomReport

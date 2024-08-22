@@ -24,10 +24,8 @@ PanelizeConfig parameters
 -  ``text3`` :index:`: <pair: output - panelize - options - configs; text3>`  [:ref:`PanelizeText parameters <PanelizeText>`] [:ref:`dict <dict>`] (default: ``null``) Used to add text to the panel.
 -  ``text4`` :index:`: <pair: output - panelize - options - configs; text4>`  [:ref:`PanelizeText parameters <PanelizeText>`] [:ref:`dict <dict>`] (default: ``null``) Used to add text to the panel.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    PanelizeCopperfill
    PanelizeCuts

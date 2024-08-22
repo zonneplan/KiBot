@@ -70,9 +70,7 @@ PCB_PrintOptions parameters
 -  ``variant`` :index:`: <pair: output - pcb_print - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 -  ``via_color`` :index:`: <pair: output - pcb_print - options; via_color>` [:ref:`string <string>`] (default: ``''``) Color used for through-hole `colored_vias`.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    PagesOptions

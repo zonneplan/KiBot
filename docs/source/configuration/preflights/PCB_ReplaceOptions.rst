@@ -13,9 +13,7 @@ PCB_ReplaceOptions parameters
    This command will work only if you have a date in the PCB/Schematic.
 -  ``replace_tags`` :index:`: <pair: preflight - pcb_replace - pcb_replace; replace_tags>`  [:ref:`TagReplacePCB parameters <TagReplacePCB>`] [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) Tag or tags to replace.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    TagReplacePCB

@@ -13,9 +13,7 @@ The report file name is controlled by the global output pattern (%i=erc %x=txt)
 
    -  **run_erc** :index:`: <pair: preflight - run_erc; run_erc>`  [:ref:`Run_ERCOptions parameters <Run_ERCOptions>`] [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    Run_ERCOptions

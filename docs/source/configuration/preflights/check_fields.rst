@@ -15,9 +15,7 @@ In this case a field must declare the temperature range
 
    -  **check_fields** :index:`: <pair: preflight - check_fields; check_fields>`  [:ref:`FieldCheck parameters <FieldCheck>`] [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) One or more check rules.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    FieldCheck

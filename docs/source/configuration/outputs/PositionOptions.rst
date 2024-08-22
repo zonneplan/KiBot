@@ -30,9 +30,7 @@ PositionOptions parameters
    Supported by the gerber format.
 -  ``variant`` :index:`: <pair: output - position - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    PosColumns

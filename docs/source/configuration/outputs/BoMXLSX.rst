@@ -49,10 +49,8 @@ BoMXLSX parameters
    Note that an empty list means all available specs, use `specs` options to disable it.
 -  ``style`` :index:`: <pair: output - bom - options - xlsx; style>` [:ref:`string <string>`] (default: ``'modern-blue'``) Head style: modern-blue, modern-green, modern-red and classic.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    BoMColumns
    RowColors

@@ -16,9 +16,7 @@ KiBoMOptions parameters
    variants with the ';' (semicolon) character.
    This isn't related to the KiBot concept of variants.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    KiBoMConfig

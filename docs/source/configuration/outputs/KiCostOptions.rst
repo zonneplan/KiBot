@@ -43,10 +43,8 @@ KiCostOptions parameters
 -  ``variant`` :index:`: <pair: output - kicost - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
    Don't use the `kicost_variant` when using internal variants/filters.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    Aggregate
    FieldRename

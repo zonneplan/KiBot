@@ -841,7 +841,7 @@ def process_help_data_type(obj, help, v):
 
 
 def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_options=None, force_is_basic=False,
-                         separate_files=False):
+                         separate_files=False, id=''):
     ind_str = indent*' '
     sub_pages = set()
     try:
@@ -901,7 +901,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
             # Index entry
             preface = preface[:-2] + f' :index:`: <pair: {context}; {k}>` '
         if separate_files and isinstance(v, type) and has_dict:
-            preface += f" [:ref:`{v.__name__} parameters <{v.__name__}>`] "
+            preface += f" [:ref:`{v.__name__} parameters <{v.__name__+id}>`] "
         clines = len(lines)
         print(preface+adapt_text(lines[0].strip()+('.' if clines == 1 and dot else '')))
         if rst_mode:
@@ -951,7 +951,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
                 i = 0
                 title = f'{v.__name__} parameters'
                 sub_pages.add(v.__name__)
-                print(f".. _{v.__name__}:\n\n")
+                print(f".. _{v.__name__+id}:\n\n")
                 print(title)
                 print('~'*len(title)+'\n')
             print_output_options('', v, i, new_context, separate_files=separate_files, skip_keys=separate_files)
@@ -961,9 +961,8 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
     if rst_mode:
         print()
     if sub_pages:
-        print('Used dicts:\n')
         print('.. toctree::')
-        print('   :maxdepth: 5\n')
+        print('   :caption: Used dicts\n')
         for p in sorted(sub_pages):
             print('   '+p)
     # if num_opts == 0:
@@ -1031,7 +1030,7 @@ def print_outputs_help(rst, details=False):
         print('2. Aliases are listed in *italics*.')
         if split:
             print('\n.. toctree::')
-            print('   :maxdepth: 2\n')
+            print('   :maxdepth: 1\n')
     for n, o in OrderedDict(sorted(outs.items())).items():
         if details:
             if split:
@@ -1072,7 +1071,7 @@ def _print_preflights_help(rst, deprecated=False):
     ind = ' '*ind_size
     if split:
         print('.. toctree::')
-        print('   :maxdepth: 2\n')
+        print('   :maxdepth: 1\n')
     for n in sorted(prefs):
         o = BasePreFlight.get_class_for(n)
         if deprecated and 'Deprecated' not in o.__doc__:
@@ -1123,18 +1122,41 @@ def print_variants_help(rst):
     from .var_base import BaseVariant
     vars = BaseVariant.get_registered()
     ind_size, extra = make_title(rst, 'variants', len(vars))
+    split = GS.out_dir_in_cmd_line and rst_mode
+    if split:
+        print('.. toctree::')
+        print('   :maxdepth: 1\n')
     for n, o in OrderedDict(sorted(vars.items())).items():
         help = o.__doc__
         if help is None:
-            help = 'Undocumented'
-            title = ''
+            help = ''
+            title = 'Undocumented'
         else:
             title, help = reformat_text(help, ind_size)
             title = f'(**{title}**)'
         if rst:
             title = f'{title} :index:`. <pair: variant; {n}>`'
-        print(f'- {extra}**{n}**: {title}\n\n{help}.')
-        print_output_options(n, o, ind_size, 'variant - '+n)
+        if split:
+            print(f'   variants/{n}')
+            dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
+            f = open(dest, 'wt')
+            ori = sys.stdout
+            sys.stdout = f
+            print(RST_WARNING)
+            name2 = n.replace('_', ' ').capitalize() if not help else f'**{n}** {title}'
+            print(f'.. index::\n   pair: {name2}; {n}\n')
+            print(name2)
+            print('~'*len(name2))
+            print()
+            if help:
+                print(help)
+                print()
+        else:
+            print(f'- {extra}**{n}**: {title}\n\n{help}.')
+        print_output_options(n, o, ind_size, 'variant - '+n, separate_files=split, skip_keys=True)
+        if split:
+            sys.stdout = ori
+            f.close()
 
 
 def adapt_text(text):
@@ -1201,7 +1223,7 @@ def print_filters_help(rst):
     ' '*ind_size
     if split:
         print('.. toctree::')
-        print('   :maxdepth: 2\n')
+        print('   :maxdepth: 1\n')
     for n, o in OrderedDict(sorted(filters.items())).items():
         help = o.__doc__
         if help is None:
@@ -1228,7 +1250,7 @@ def print_filters_help(rst):
             print(f'- {extra}**{n}**: {title}')
             if help:
                 print(help)
-        print_output_options(n, o, ind_size, 'filter - '+n)
+        print_output_options(n, o, ind_size, 'filter - '+n, separate_files=split, id='_fi', skip_keys=True)
         if split:
             sys.stdout = ori
             f.close()

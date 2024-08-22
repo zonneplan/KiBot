@@ -11,9 +11,7 @@ BoMColumns parameters
 -  ``join`` :index:`: <pair: output - bom - options - cost_extra_columns; join>`  [:ref:`BoMJoinField parameters <BoMJoinField>`] [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``''``) List of fields to join to this column.
 -  ``level`` :index:`: <pair: output - bom - options - cost_extra_columns; level>` [:ref:`number <number>`] (default: ``0``) Used to group columns. The XLSX output uses it to collapse columns.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    BoMJoinField

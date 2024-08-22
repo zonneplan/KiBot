@@ -43,9 +43,7 @@ PagesOptions parameters
 -  ``title`` :index:`: <pair: output - pcb_print - options - pages; title>` [:ref:`string <string>`] (default: ``''``) Text used to replace the sheet title. %VALUE expansions are allowed.
    If it starts with `+` the text is concatenated.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    LayerOptions

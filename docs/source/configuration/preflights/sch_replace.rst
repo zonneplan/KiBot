@@ -12,9 +12,7 @@ This preflight modifies the schematics. Even when a back-up is done use it caref
 
    -  **sch_replace** :index:`: <pair: preflight - sch_replace; sch_replace>`  [:ref:`SCH_ReplaceOptions parameters <SCH_ReplaceOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `sch_replace` preflight.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    SCH_ReplaceOptions

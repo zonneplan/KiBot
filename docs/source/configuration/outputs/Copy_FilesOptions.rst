@@ -28,9 +28,7 @@ Copy_FilesOptions parameters
 
 -  ``variant`` :index:`: <pair: output - copy_files - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    FilesList

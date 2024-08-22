@@ -43,9 +43,7 @@ HPGLOptions parameters
 -  ``uppercase_extensions`` :index:`: <pair: output - hpgl - options; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
 -  ``variant`` :index:`: <pair: output - hpgl - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    CustomReport

@@ -47,9 +47,7 @@ PSOptions parameters
 -  ``width_adjust`` :index:`: <pair: output - ps - options; width_adjust>` [:ref:`number <number>`] (default: ``0``) This width factor is intended to compensate PS printers/plotters that do not strictly obey line width settings.
    Only used to plot pads and tracks.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    CustomReport

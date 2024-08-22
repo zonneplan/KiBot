@@ -8,11 +8,8 @@ URLify
 
    Converts URL text in fields to HTML URLs.
 
+   -  ``comment`` :index:`: <pair: filter - urlify; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  ``fields`` :index:`: <pair: filter - urlify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'Datasheet'``) [:ref:`comma separated <comma_sep>`] Fields to convert.
 
-   -  Valid keys:
-
-      -  ``comment`` :index:`: <pair: filter - urlify; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
-      -  ``fields`` :index:`: <pair: filter - urlify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'Datasheet'``) [:ref:`comma separated <comma_sep>`] Fields to convert.
-
-      -  ``name`` :index:`: <pair: filter - urlify; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
+   -  ``name`` :index:`: <pair: filter - urlify; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
 

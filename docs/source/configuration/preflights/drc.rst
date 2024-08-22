@@ -13,9 +13,7 @@ GUI exclusions and schematic parity are supported
 
    -  **drc** :index:`: <pair: preflight - drc; drc>`  [:ref:`DRCOptions parameters <DRCOptions>`] [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    DRCOptions

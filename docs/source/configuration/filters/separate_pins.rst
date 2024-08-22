@@ -17,14 +17,11 @@ Separate Pins
    Needs KiCad 6 or newer. |br|
 .. 
 
+   -  ``attribute`` :index:`: <pair: filter - separate_pins; attribute>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['testpoint']``) (choices: "bga", "local_fiducial", "global_fiducial", "testpoint", "heatsink", "castellated", "none") Fabrication
+      attribute/s of the included pads.
 
-   -  Valid keys:
-
-      -  ``attribute`` :index:`: <pair: filter - separate_pins; attribute>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``['testpoint']``) (choices: "bga", "local_fiducial", "global_fiducial", "testpoint", "heatsink", "castellated", "none") Fabrication
-         attribute/s of the included pads.
-
-      -  ``comment`` :index:`: <pair: filter - separate_pins; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
-      -  ``keep_component`` :index:`: <pair: filter - separate_pins; keep_component>` [:ref:`boolean <boolean>`] (default: ``false``) If we also keep the original component or we just get the selected pads.
-      -  ``name`` :index:`: <pair: filter - separate_pins; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
-      -  ``ref_sep`` :index:`: <pair: filter - separate_pins; ref_sep>` [:ref:`string <string>`] (default: ``'.'``) Separator used in the reference (i.e. R10.1).
+   -  ``comment`` :index:`: <pair: filter - separate_pins; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  ``keep_component`` :index:`: <pair: filter - separate_pins; keep_component>` [:ref:`boolean <boolean>`] (default: ``false``) If we also keep the original component or we just get the selected pads.
+   -  ``name`` :index:`: <pair: filter - separate_pins; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
+   -  ``ref_sep`` :index:`: <pair: filter - separate_pins; ref_sep>` [:ref:`string <string>`] (default: ``'.'``) Separator used in the reference (i.e. R10.1).
 

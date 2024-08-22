@@ -17,9 +17,7 @@ If you use DRC exclusions please consult the `drc_exclusions_workaround` global 
 
    -  **run_drc** :index:`: <pair: preflight - run_drc; run_drc>`  [:ref:`Run_DRCOptions parameters <Run_DRCOptions>`] [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    Run_DRCOptions

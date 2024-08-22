@@ -45,9 +45,7 @@ GerberOptions parameters
 -  ``use_aux_axis_as_origin`` :index:`: <pair: output - gerber - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Use the auxiliary axis as origin for coordinates.
 -  ``variant`` :index:`: <pair: output - gerber - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    CustomReport

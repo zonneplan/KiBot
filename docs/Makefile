@@ -39,7 +39,7 @@ source/configuration/sup_filters.rst: ../kibot/fil_*.py ../kibot/config_reader.p
 	../src/kibot --rst --help-filters -d source/configuration/filters/ > $@
 
 source/configuration/sup_variants.rst: ../kibot/var_*.py ../kibot/config_reader.py
-	../src/kibot --rst --help-variants > $@
+	../src/kibot --rst --help-variants -d source/configuration/variants/ > $@
 
 source/configuration/sup_globals.rst: ../kibot/globals.py ../kibot/config_reader.py
 	../src/kibot --rst --help-global-options > $@

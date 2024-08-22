@@ -8,11 +8,8 @@ Expand Text Variables
 
    This filter expands KiCad 6 text variables (${VARIABLE}).
 
-
-   -  Valid keys:
-
-      -  ``comment`` :index:`: <pair: filter - expand_text_vars; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
-      -  ``include_kicad_env`` :index:`: <pair: filter - expand_text_vars; include_kicad_env>` [:ref:`boolean <boolean>`] (default: ``true``) Also expand KiCad environment variables.
-      -  ``include_os_env`` :index:`: <pair: filter - expand_text_vars; include_os_env>` [:ref:`boolean <boolean>`] (default: ``false``) Also expand system environment variables.
-      -  ``name`` :index:`: <pair: filter - expand_text_vars; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
+   -  ``comment`` :index:`: <pair: filter - expand_text_vars; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  ``include_kicad_env`` :index:`: <pair: filter - expand_text_vars; include_kicad_env>` [:ref:`boolean <boolean>`] (default: ``true``) Also expand KiCad environment variables.
+   -  ``include_os_env`` :index:`: <pair: filter - expand_text_vars; include_os_env>` [:ref:`boolean <boolean>`] (default: ``false``) Also expand system environment variables.
+   -  ``name`` :index:`: <pair: filter - expand_text_vars; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
 

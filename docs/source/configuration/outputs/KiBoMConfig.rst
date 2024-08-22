@@ -68,10 +68,8 @@ KiBoMConfig parameters
 -  ``test_regex`` :index:`: <pair: output - kibom - options - conf; test_regex>` [:ref:`boolean <boolean>`] (default: ``true``) Each component group will be tested against a number of regular-expressions.
 -  ``use_alt`` :index:`: <pair: output - kibom - options - conf; use_alt>` [:ref:`boolean <boolean>`] (default: ``false``) Print grouped references in the alternate compressed style eg: R1-R7,R18.
 
-Used dicts:
-
 .. toctree::
-   :maxdepth: 5
+   :caption: Used dicts
 
    KiBoMColumns
    KiBoMRegex
