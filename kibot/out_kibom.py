@@ -14,7 +14,7 @@ Dependencies:
 """
 import os
 from re import search
-from .misc import BOM_ERROR, W_EXTNAME
+from .misc import BOM_ERROR, W_EXTNAME, W_NONETLIST
 from .gs import GS
 from .kiplot import run_command
 from .optionable import Optionable, BaseOptions
@@ -200,12 +200,15 @@ class KiBoMConfig(Optionable):
         """ Create a list of valid columns """
         if not GS.sch:
             return ColumnList.COLUMNS_DEFAULT
+        xml = GS.sch_no_ext+'.xml'
+        if not os.path.isfile(xml):
+            logger.warning(W_NONETLIST+f"Missing `{xml}`, can't verify the field names")
+            return ColumnList.COLUMNS_DEFAULT
         command = GS.ensure_tool('kibom', 'KiBoM')
         config = None
         csv = None
         columns = None
         try:
-            xml = GS.sch_no_ext+'.xml'
             config = os.path.abspath(KiBoMConfig._create_minimal_ini())
             csv = GS.tmp_file(suffix='.csv')
             cmd = [command, '--cfg', config, '-d', os.path.dirname(csv), '-s', ',', xml, csv]
