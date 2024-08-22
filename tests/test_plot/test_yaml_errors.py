@@ -51,7 +51,7 @@ pytest-3 --log-cli-level debug
 import pytest
 import os
 from . import context
-from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR, WRONG_ARGUMENTS)
+from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, WRONG_ARGUMENTS)
 PRJ = 'fail-project'
 
 
@@ -460,8 +460,9 @@ def test_error_bom_column(test_dir):
 @pytest.mark.indep
 def test_error_bom_no_columns(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_column')
-    ctx.run(BOM_ERROR, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom_no_xml'+context.KICAD_SCH_EXT)])
-    assert ctx.search_err("Failed to get the column names")
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
+            'bom_no_xml'+context.KICAD_SCH_EXT)])
+    assert ctx.search_err("can't verify the field names")
     ctx.clean_up(keep_project=True)
 
 
