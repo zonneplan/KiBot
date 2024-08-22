@@ -145,3 +145,11 @@ with document:
     self.solder_joints = "SMART"
     """ [NONE,SMART,ALL,*] The plug-in can add nice looking solder joints """
 ```
+
+## Random notes
+
+We edit the data from the YAML tree, but we also use the data from the actually created objects for things that aren't in the tree.
+
+Why not just the defaults?
+
+The classes are free to fill things from the data to fill the gaps.
