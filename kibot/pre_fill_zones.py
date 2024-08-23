@@ -23,10 +23,4 @@ class Fill_Zones(BasePreFlight):  # noqa: F821
     def apply(self):
         load_board()
         pcbnew.ZONE_FILLER(GS.board).Fill(GS.board.Zones())
-        GS.make_bkp(GS.pcb_file)
-        # KiCad likes to write the project every time we save the PCB
-        # But KiCad doesn't read the exclusions, so they get lost
-        # As a workaround we restore the project, there is no need to change it
-        prj = GS.read_pro()
-        GS.board.Save(GS.pcb_file)
-        GS.write_pro(prj)
+        GS.save_pcb()

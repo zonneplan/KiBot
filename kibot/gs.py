@@ -991,3 +991,17 @@ class GS(object):
         glb.set_tree(tree)
         GS.globals_tree = tree
         return glb
+
+    @staticmethod
+    def save_pcb(pcb_file=None, board=None):
+        if pcb_file is None:
+            pcb_file = GS.pcb_file
+        if board is None:
+            board = GS.board
+        GS.make_bkp(pcb_file)
+        # KiCad likes to write the project every time we save the PCB
+        # But KiCad doesn't read the exclusions, so they get lost
+        # As a workaround we restore the project, there is no need to change it
+        prj = GS.read_pro()
+        board.Save(pcb_file)
+        GS.write_pro(prj)

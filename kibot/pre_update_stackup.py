@@ -254,5 +254,4 @@ class Update_Stackup(BasePreFlight):  # noqa: F821
             raise KiPlotConfigurationError('Unable to find the stackup information')
         # Collect the information
         if update_table():
-            GS.make_bkp(GS.pcb_file)
-            GS.board.Save(GS.pcb_file)
+            GS.save_pcb()

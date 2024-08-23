@@ -459,5 +459,4 @@ class Draw_Stackup(BasePreFlight):  # noqa: F821
         if not GS.stackup:
             raise KiPlotConfigurationError('Unable to find the stackup information')
         if update_drawing(self._value, self):
-            GS.make_bkp(GS.pcb_file)
-            GS.board.Save(GS.pcb_file)
+            GS.save_pcb()

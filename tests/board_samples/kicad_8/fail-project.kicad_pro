@@ -289,5 +289,7 @@
     "legacy_lib_list": []
   },
   "sheets": [],
-  "text_variables": {}
+  "text_variables": {
+    "DUMMY": "foobar"
+  }
 }

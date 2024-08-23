@@ -215,7 +215,7 @@ def load_board(pcb_file=None, forced=False):
             logger.debug('Removing cached text variables')
             board.SetProperties(pcbnew.MAP_STRING_STRING())
             # Save the PCB, so external tools also gets the reset, i.e. panelize, see #652
-            board.Save(pcb_file)
+            GS.save_pcb(pcb_file, board)
         if BasePreFlight.get_option('check_zone_fills'):
             GS.fill_zones(board)
         if GS.global_units and GS.ki6:

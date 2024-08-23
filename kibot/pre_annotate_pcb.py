@@ -226,8 +226,7 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
                 changes[old_ref] = m.new_ref_suffix
             m.footprint.SetReference(new_ref)
         logger.debug('- Saving PCB')
-        GS.make_bkp(GS.pcb_file)
-        GS.board.Save(GS.pcb_file)
+        GS.save_pcb()
         #
         # SCH part
         #

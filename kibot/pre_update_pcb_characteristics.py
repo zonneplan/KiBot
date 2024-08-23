@@ -94,5 +94,4 @@ class Update_PCB_Characteristics(BasePreFlight):  # noqa: F821
                   YESNO[GS.global_edge_plating],
                   GS.global_edge_connector.capitalize())
         if update_table(values):
-            GS.make_bkp(GS.pcb_file)
-            GS.board.Save(GS.pcb_file)
+            GS.save_pcb()
