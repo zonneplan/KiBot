@@ -61,6 +61,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update XML: `check_pcb_parity` not usable for KiCad 8, must use the `drc`
   preflight (#633)
 - PCB Print: %ln and %ll substitution when using `repeat_for_layer` option
+- QR Lib output and various preflights: might remove DRC exclusions. This is
+  a KiCad bug that we must workaround (#653)
 
 ### Changed:
 - KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it is
