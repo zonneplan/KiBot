@@ -218,7 +218,7 @@ def list_variants(logger, only_names):
         logger.info('- '+str(variants[name]))
 
 
-def solve_config(a_plot_config, quiet=False):
+def solve_config(a_plot_config, quiet, gui):
     plot_config = a_plot_config
     if not plot_config:
         plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')+glob('*.kibot.yml')
@@ -231,6 +231,8 @@ def solve_config(a_plot_config, quiet=False):
             logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
                            '  Using '+plot_config+' if you want to use another use -c option.')
         else:
+            if gui:
+                return ''
             GS.exit_with_error('No config file found (*.kibot.yaml), use -c to specify one.', EXIT_BAD_ARGS)
     if not os.path.isfile(plot_config):
         GS.exit_with_error("Plot config file not found: "+plot_config, EXIT_BAD_ARGS)
@@ -501,7 +503,7 @@ def main():
         sys.exit(0)
 
     # Determine the YAML file
-    plot_config = solve_config(args.plot_config, args.only_names)
+    plot_config = solve_config(args.plot_config, args.only_names, args.gui)
     if not (args.list or args.list_variants) or args.config_outs:
         # Determine the SCH file
         GS.set_sch(solve_schematic('.', args.schematic, args.board_file, plot_config))

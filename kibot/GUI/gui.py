@@ -183,6 +183,9 @@ class MainDialog(wx.Dialog):
         dlg.Destroy()
 
     def OnGenerateOuts(self, event):
+        if not self.outputs.lbox.GetCount() and not self.preflights.lbox.GetCount():
+            pop_error('Please add outputs and/or preflights first')
+            return
         # Check the output is writable (wrong from CLI?)
         try:
             testfile = tempfile.TemporaryFile(dir=GS.out_dir)
@@ -385,15 +388,14 @@ class MainPanel(wx.Panel):
             os.makedirs(GS.out_dir)
         self.wd_sizer, self.wd_input = self.add_path(paths_sizer, 'Working dir', cwd, self.OnChangeCWD, is_dir=True)
         self.old_cwd = cwd
-        self.cf_sizer, self.cf_input = self.add_path(paths_sizer, 'Config file', os.path.relpath(cfg_file, cwd),
-                                                     self.OnChageCfg)
+        self.cf_sizer, self.cf_input = self.add_path(paths_sizer, 'Config file', cfg_file, self.OnChageCfg)
         self.old_cfg = cfg_file
-        self.de_sizer, self.de_input = self.add_path(paths_sizer, 'Destination', os.path.relpath(GS.out_dir, cwd),
-                                                     self.OnChangeOutDir, is_dir=True)
+        self.de_sizer, self.de_input = self.add_path(paths_sizer, 'Destination', GS.out_dir, self.OnChangeOutDir, is_dir=True)
         self.old_out_dir = GS.out_dir
-        self.sch_sizer, self.sch_input = self.add_path(paths_sizer, 'Schematic', os.path.relpath(GS.sch_file, cwd),
-                                                       self.OnChangeSCH)
-        self.pcb_sizer, self.pcb_input = self.add_path(paths_sizer, 'PCB', os.path.relpath(GS.pcb_file, cwd), self.OnChangePCB)
+        sch = GS.sch_file if GS.sch_file is not None else ''
+        self.sch_sizer, self.sch_input = self.add_path(paths_sizer, 'Schematic', sch, self.OnChangeSCH)
+        pcb = GS.sch_file if GS.sch_file is not None else ''
+        self.pcb_sizer, self.pcb_input = self.add_path(paths_sizer, 'PCB', pcb, self.OnChangePCB)
 
         # Targets
         targets_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Targets')
@@ -508,8 +510,6 @@ class MainPanel(wx.Panel):
                     self.sch_input.SetPath(new_sch)
                 except SystemExit:
                     GS.sch = None
-        # Check if this is enough to enable the generation
-        self.Parent.Parent.check_can_generate()
 
     def revert_sch(self, reload=False):
         """ Revert the selected PCB """
@@ -550,8 +550,6 @@ class MainPanel(wx.Panel):
                     self.pcb_input.SetPath(new_pcb)
                 except SystemExit:
                     GS.board = None
-        # Check if this is enough to enable the generation
-        self.Parent.Parent.check_can_generate()
 
     def OnChangeOutDir(self, event):
         try:
@@ -682,16 +680,19 @@ class MainPanel(wx.Panel):
         return invert_targets, cli_order, no_priority
 
     def get_cfg_file(self):
-        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.cf_input.GetPath()))
+        return self.cf_input.GetPath()
+
+    def set_cfg_file(self, name):
+        return self.cf_input.SetPath(name)
 
     def get_pcb_file(self):
-        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.pcb_input.GetPath()))
+        return self.pcb_input.GetPath()
 
     def get_sch_file(self):
-        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.sch_input.GetPath()))
+        return self.sch_input.GetPath()
 
     def get_out_dir(self):
-        return os.path.abspath(os.path.join(self.wd_input.GetPath(), self.de_input.GetPath()))
+        return self.de_input.GetPath()
 
     def get_targets_hint(self):
         items = self.targets_lbox.GetCount()
@@ -819,6 +820,15 @@ class OutputsPanel(DictPanel):
         obj._tree = {}
         config_output(obj)
         return obj
+
+    def OnAdd(self, event):
+        if not GS.sch:
+            pop_error('Please first select a schematic')
+            return
+        if not GS.board:
+            pop_error('Please first select a PCB')
+            return
+        super().OnAdd(event)
 
 
 # ##########################################################################
@@ -1196,6 +1206,15 @@ class PreflightsPanel(DictPanel):
         obj = BasePreFlight.get_object_for(kind)
         obj.config(None)
         return obj
+
+    def OnAdd(self, event):
+        if not GS.sch:
+            pop_error('Please first select a schematic')
+            return
+        if not GS.board:
+            pop_error('Please first select a PCB')
+            return
+        super().OnAdd(event)
 
 
 # ##########################################################################

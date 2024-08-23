@@ -957,6 +957,8 @@ def discover_files(dest_dir):
 
 
 def load_config(plot_config):
+    if not plot_config:
+        return []
     cr = CfgYamlReader()
     outputs = None
     try:
