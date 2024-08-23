@@ -59,8 +59,14 @@ init_vars()
 
 
 def do_gui(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
+    # Configure all outputs
     for o in RegOutput.get_outputs():
         config_output(o)
+    # Check that we have some global options
+    if GS.globals_tree is None:
+        # Nope, we didn't load a config, so go for defaults
+        glb = GS.set_global_options_tree({})
+        glb.config(None)
     dlg = MainDialog(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
     res = dlg.ShowModal()
     dlg.Destroy()
