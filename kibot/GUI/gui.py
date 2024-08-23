@@ -218,6 +218,21 @@ class MainDialog(wx.Dialog):
             pass
 
     def OnSave(self, event):
+        cfg_file = self.main.get_cfg_file()
+        if not cfg_file:
+            dlg = wx.FileDialog(self, "Save to file:", ".", "", "YAML (*.kibot.yaml)|*.kibot.yaml", wx.FD_SAVE)
+            if dlg.ShowModal() != wx.ID_OK:
+                return
+            cfg_file = dlg.GetPath()
+            dlg.Destroy()
+            name, ext = os.path.splitext(cfg_file)
+            if not ext:
+                cfg_file = name+'.kibot.yaml'
+            if os.path.isfile(cfg_file):
+                # Confirm overwrite
+                if pop_confirm(f'{os.path.basename(cfg_file)} already exists, overwrite?') != wx.YES:
+                    return
+            self.main.set_cfg_file(cfg_file)
         tree = {'kibot': {'version': 1}}
         # TODO: Should we delegate it to the class handling it?
         # Globals
@@ -248,9 +263,10 @@ class MainDialog(wx.Dialog):
         # Outputs
         if self.outputs.lbox.GetCount():
             tree['outputs'] = [o._tree for o in get_client_data(self.outputs.lbox)]
-        cfg_file = self.main.get_cfg_file()
         if os.path.isfile(cfg_file):
+            logger.debug(f'Creating back-up for {cfg_file}')
             os.rename(cfg_file, os.path.join(os.path.dirname(cfg_file), '.'+os.path.basename(cfg_file)+'~'))
+        logger.debug(f'Saving config to {cfg_file}')
         with open(cfg_file, 'wt') as f:
             f.write(yaml.dump(tree, sort_keys=False))
         self.edited = False
