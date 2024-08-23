@@ -193,6 +193,7 @@ class MainDialog(wx.Dialog):
         except OSError as e:
             e.filename = GS.out_dir
             pop_error(f'Invalid destination dir:\n{e}')
+            return
         logger.debug('Starting targets generation from the GUI')
         logger.debug(f'- Working dir: {os.getcwd()}')
         logger.debug(f'- Destination dir: {GS.out_dir}')
@@ -223,19 +224,9 @@ class MainDialog(wx.Dialog):
     def OnSave(self, event):
         cfg_file = self.main.get_cfg_file()
         if not cfg_file:
-            dlg = wx.FileDialog(self, "Save to file:", ".", "", "YAML (*.kibot.yaml)|*.kibot.yaml", wx.FD_SAVE)
-            if dlg.ShowModal() != wx.ID_OK:
+            cfg_file = self.main.choose_new_cfg()
+            if not cfg_file:
                 return
-            cfg_file = dlg.GetPath()
-            dlg.Destroy()
-            name, ext = os.path.splitext(cfg_file)
-            if not ext:
-                cfg_file = name+'.kibot.yaml'
-            if os.path.isfile(cfg_file):
-                # Confirm overwrite
-                if pop_confirm(f'{os.path.basename(cfg_file)} already exists, overwrite?') != wx.YES:
-                    return
-            self.main.set_cfg_file(cfg_file)
         tree = {'kibot': {'version': 1}}
         # TODO: Should we delegate it to the class handling it?
         # Globals
@@ -386,16 +377,18 @@ class MainPanel(wx.Panel):
         cwd = os.getcwd()
         if not os.path.isdir(GS.out_dir):
             os.makedirs(GS.out_dir)
-        self.wd_sizer, self.wd_input = self.add_path(paths_sizer, 'Working dir', cwd, self.OnChangeCWD, is_dir=True)
+        self.wd_sizer, self.wd_input, _ = self.add_path(paths_sizer, 'Working dir', cwd, self.OnChangeCWD, is_dir=True)
         self.old_cwd = cwd
-        self.cf_sizer, self.cf_input = self.add_path(paths_sizer, 'Config file', cfg_file, self.OnChageCfg)
+        self.cf_sizer, self.cf_input, self_ren_but = self.add_path(paths_sizer, 'Config file', cfg_file, self.OnChageCfg,
+                                                                   rename=self.OnChangeName)
         self.old_cfg = cfg_file
-        self.de_sizer, self.de_input = self.add_path(paths_sizer, 'Destination', GS.out_dir, self.OnChangeOutDir, is_dir=True)
+        self.de_sizer, self.de_input, _ = self.add_path(paths_sizer, 'Destination', GS.out_dir, self.OnChangeOutDir,
+                                                        is_dir=True)
         self.old_out_dir = GS.out_dir
         sch = GS.sch_file if GS.sch_file is not None else ''
-        self.sch_sizer, self.sch_input = self.add_path(paths_sizer, 'Schematic', sch, self.OnChangeSCH)
+        self.sch_sizer, self.sch_input, _ = self.add_path(paths_sizer, 'Schematic', sch, self.OnChangeSCH)
         pcb = GS.sch_file if GS.sch_file is not None else ''
-        self.pcb_sizer, self.pcb_input = self.add_path(paths_sizer, 'PCB', pcb, self.OnChangePCB)
+        self.pcb_sizer, self.pcb_input, _ = self.add_path(paths_sizer, 'PCB', pcb, self.OnChangePCB)
 
         # Targets
         targets_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Targets')
@@ -431,6 +424,29 @@ class MainPanel(wx.Panel):
         self.but_down_skippre.Bind(wx.EVT_BUTTON, self.OnDownSkippre)
         self.but_add_skippre.Bind(wx.EVT_BUTTON, self.OnAddSkippre)
         self.but_remove_skippre.Bind(wx.EVT_BUTTON, self.OnRemoveSkippre)
+
+    def choose_new_cfg(self):
+        dlg = wx.FileDialog(self, "Save to file:", ".", "", "YAML (*.kibot.yaml)|*.kibot.yaml", wx.FD_SAVE)
+        if dlg.ShowModal() != wx.ID_OK:
+            return None
+        cfg_file = dlg.GetPath()
+        dlg.Destroy()
+        name, ext = os.path.splitext(cfg_file)
+        if not ext:
+            cfg_file = name+'.kibot.yaml'
+        if os.path.isfile(cfg_file):
+            # Confirm overwrite
+            if pop_confirm(f'{os.path.basename(cfg_file)} already exists, overwrite?') != wx.YES:
+                return None
+        wx.CallAfter(self.change_cfg, cfg_file)
+        return cfg_file
+
+    def change_cfg(self, cfg):
+        self.cf_input.SetPath(cfg)
+        self.Parent.Parent.mark_edited()
+
+    def OnChangeName(self, event):
+        self.choose_new_cfg()
 
     def revert_cfg(self, reload=False):
         self.cf_input.SetPath(self.old_cfg)
@@ -682,9 +698,6 @@ class MainPanel(wx.Panel):
     def get_cfg_file(self):
         return self.cf_input.GetPath()
 
-    def set_cfg_file(self, name):
-        return self.cf_input.SetPath(name)
-
     def get_pcb_file(self):
         return self.pcb_input.GetPath()
 
@@ -742,7 +755,7 @@ class MainPanel(wx.Panel):
         self.update_targets_hint()
         self.update_sort_hint()
 
-    def add_path(self, sizer, label, value, on_change=None, is_dir=False):
+    def add_path(self, sizer, label, value, on_change=None, is_dir=False, rename=None):
         window = self.path_w
         li_sizer = wx.BoxSizer(wx.HORIZONTAL)
         new_label = wx.StaticText(window, label=label, size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
@@ -767,8 +780,15 @@ class MainPanel(wx.Panel):
             new_input.SetPath(value)
         li_sizer.Add(new_label, gh.SIZER_FLAGS_0)
         li_sizer.Add(new_input, gh.SIZER_FLAGS_1)
+        if rename is not None:
+            but_rename = wx.Button(window, label="Rename")
+            set_button_bitmap(but_rename, "gtk-edit")
+            li_sizer.Add(but_rename, gh.SIZER_FLAGS_0)
+            but_rename.Bind(wx.EVT_BUTTON, rename)
+        else:
+            but_rename = None
         sizer.Add(li_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
-        return li_sizer, new_input
+        return li_sizer, new_input, but_rename
 
 
 # ##########################################################################
