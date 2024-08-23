@@ -1297,7 +1297,10 @@ class RunControlDialog(wx.Dialog):
         self.running = True
 
     def generate_outputs(self, targets, invert_sel, skip_pre, cli_order, no_priority):
-        generate_outputs(targets, invert_sel, skip_pre, cli_order, no_priority)
+        try:
+            generate_outputs(targets, invert_sel, skip_pre, cli_order, no_priority)
+        except SystemExit:
+            pass
         # Notify we finished, not sure if an event is an overkill, but is safe
         wx.PostEvent(self, wxFinishEvent())
 
