@@ -68,9 +68,7 @@ def do_gui(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
         glb = GS.set_global_options_tree({})
         glb.config(None)
     dlg = MainDialog(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
-    res = dlg.ShowModal()
-    dlg.Destroy()
-    return res
+    return dlg.ShowModal()
 
 
 # ##########################################################################
@@ -141,7 +139,23 @@ class MainDialog(wx.Dialog):
         self.but_generate.Bind(wx.EVT_BUTTON, self.OnGenerateOuts)
         self.but_globals.Bind(wx.EVT_BUTTON, self.OnGlobals)
         self.but_warn.Bind(wx.EVT_BUTTON, self.OnWarnings)
-        # self.but_cancel.Bind(wx.EVT_BUTTON, self.OnExit)
+        self.but_cancel.Bind(wx.EVT_BUTTON, self.OnCancel)
+        self.Bind(wx.EVT_CLOSE, self.OnExit)
+
+    def OnCancel(self, event):
+        self.Destroy()
+
+    def OnExit(self, event):
+        if self.edited:
+            res = pop_confirm('The configuration is changed, save?')
+            if res == wx.CANCEL:
+                return
+            if res == wx.YES:
+                self.OnSave(event)
+                if self.edited:
+                    # Something went wrong, give the user a chance to retry saving
+                    return
+        self.Destroy()
 
     def refresh_cfg(self):
         """ Refresh panels after loading a new config """
@@ -217,7 +231,6 @@ class MainDialog(wx.Dialog):
             # Open a dialog to collect the messages and block the GUI while running
             dlg = RunControlDialog(self, targets, invert_sel, skip_pre, cli_order, no_priority)
             dlg.ShowModal()
-            dlg.Destroy()
         except SystemExit:
             pass
 
