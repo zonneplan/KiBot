@@ -471,6 +471,9 @@ class MainPanel(wx.Panel):
 
     def revert_pcb(self, reload=False):
         """ Revert the selected PCB """
+        if not GS.pcb_file:
+            self.pcb_input.SetPath('')
+            return
         self.pcb_input.SetPath(GS.pcb_file)
         if reload:
             load_board(forced=True)
@@ -494,9 +497,25 @@ class MainPanel(wx.Panel):
             msgs = log.stop_recording_error_msgs()
             if msgs:
                 pop_error(msgs)
+        # Success
+        if GS.sch is None:
+            # Try using the corresponding SCH
+            new_sch = GS.pcb_no_ext+'.kicad_sch'
+            if os.path.isfile(new_sch):
+                try:
+                    load_sch(new_sch, forced=True)
+                    GS.set_sch(new_sch)
+                    self.sch_input.SetPath(new_sch)
+                except SystemExit:
+                    GS.sch = None
+        # Check if this is enough to enable the generation
+        self.Parent.Parent.check_can_generate()
 
     def revert_sch(self, reload=False):
         """ Revert the selected PCB """
+        if not GS.sch_file:
+            self.sch_input.SetPath('')
+            return
         self.sch_input.SetPath(GS.sch_file)
         if reload:
             load_sch(forced=True)
@@ -520,6 +539,19 @@ class MainPanel(wx.Panel):
             msgs = log.stop_recording_error_msgs()
             if msgs:
                 pop_error(msgs)
+        # Success
+        if GS.board is None:
+            # Try using the corresponding PCB
+            new_pcb = GS.sch_no_ext+'.kicad_pcb'
+            if os.path.isfile(new_pcb):
+                try:
+                    load_board(new_pcb, forced=True)
+                    GS.set_pcb(new_pcb)
+                    self.pcb_input.SetPath(new_pcb)
+                except SystemExit:
+                    GS.board = None
+        # Check if this is enough to enable the generation
+        self.Parent.Parent.check_can_generate()
 
     def OnChangeOutDir(self, event):
         try:
