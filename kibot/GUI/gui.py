@@ -55,6 +55,7 @@ max_label = 200
 def_text = 200
 COLORS = {"Y": wx.YELLOW, "R": wx.RED, "C": wx.CYAN, "r": wx.Colour("violet red")}
 wxFinishEvent, EVT_WX_FINISH_EVENT = wx.lib.newevent.NewEvent()
+wxProgressEvent, EVT_WX_PROGRESS_EVENT = wx.lib.newevent.NewEvent()
 
 init_vars()
 
@@ -1512,3 +1513,67 @@ class ShowWarnsDialog(wx.Dialog):
         self.SetSizer(main_sizer)
         main_sizer.Fit(self)
         self.Centre(wx.BOTH)
+
+
+# ##########################################################################
+# # class SplashScreen
+# # A dialog to monitor the targets generation
+# ##########################################################################
+
+class SplashScreen(wx.Dialog):
+    def __init__(self, target, args):
+        wx.Dialog.__init__(self, None, style=wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_NONE)
+
+        main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        bitmap = wx.Bitmap(name=os.path.join(GS.get_resource_path('images'), 'splash.png'), type=wx.BITMAP_TYPE_PNG)
+        main_sizer.Add(wx.StaticBitmap(self, bitmap=bitmap), gh.SIZER_FLAGS_1_NO_BORDER)
+        self.text = wx.StaticText(self)
+        main_sizer.Add(self.text, gh.SIZER_FLAGS_0)
+
+        self.SetSizer(main_sizer)
+        main_sizer.Fit(self)
+        self.Centre(wx.BOTH)
+
+        self.Bind(EVT_WX_FINISH_EVENT, self.OnFinish)
+        self.Bind(EVT_WX_PROGRESS_EVENT, self.OnProgress)
+
+        self.target = target
+        self.args = args
+        self.stop = False
+        self.thread = threading.Thread(target=self.run_target)
+        self.thread.start()
+
+    def run_target(self):
+        log.start_recording_error_msgs()
+        try:
+            self.target(self.args, self.progress)
+        except Exception:
+            self.stop = True
+        finally:
+            # Inform any error issued by logger.error
+            msgs = log.stop_recording_error_msgs()
+            if msgs:
+                pop_error(msgs)
+            elif self.stop:
+                pop_error('Fatal error, exiting')
+        wx.PostEvent(self, wxFinishEvent())
+
+    def progress(self, msg):
+        evt = wxProgressEvent()
+        evt.msg = msg
+        wx.PostEvent(self, evt)
+
+    def OnProgress(self, event):
+        self.text.SetLabel(event.msg)
+
+    def OnFinish(self, event):
+        self.EndModal(wx.ID_OK)
+        if self.stop:
+            exit(1)
+
+
+def show_splash(target, args):
+    dlg = SplashScreen(target, args)
+    dlg.ShowModal()
+    dlg.Destroy()

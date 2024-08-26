@@ -405,6 +405,30 @@ def detect_windows():  # pragma: no cover (Windows)
     logger.warning(W_ONWIN+'Running on Windows, this is experimental, please report any problem')
 
 
+def initialization(args, progress):
+    detect_kicad()
+    detect_windows()
+    debug_arguments(args)
+
+    # Force iBoM to avoid the use of graphical stuff
+    os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
+    # Tell git that we don't want interactive stuff
+    os.environ['GIT_TERMINAL_PROMPT'] = '0'
+
+    # Parse global overwrite options
+    parse_global_redef(args)
+
+    # Disable auto-download if needed
+    if args.no_auto_download:
+        dep_downloader.disable_auto_download = True
+
+    # Output dir: relative to CWD (absolute path overrides)
+    GS.out_dir = os.path.join(os.getcwd(), args.out_dir)
+
+    # Load output and preflight plugins
+    load_actions(progress)
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -426,28 +450,15 @@ def main():
     logger.debug('KiBot {} verbose level: {} started on {}'.format(__version__, args.verbose, datetime.now()))
     apply_warning_filter(args)
     log.stop_on_warnings = args.stop_on_warnings
+
     # Now we have the debug level set we can check (and optionally inform) KiCad info
-    detect_kicad()
-    detect_windows()
-    debug_arguments(args)
-
-    # Force iBoM to avoid the use of graphical stuff
-    os.environ['INTERACTIVE_HTML_BOM_NO_DISPLAY'] = 'True'
-    # Tell git that we don't want interactive stuff
-    os.environ['GIT_TERMINAL_PROMPT'] = '0'
-
-    # Parse global overwrite options
-    parse_global_redef(args)
-
-    # Disable auto-download if needed
-    if args.no_auto_download:
-        dep_downloader.disable_auto_download = True
-
-    # Output dir: relative to CWD (absolute path overrides)
-    GS.out_dir = os.path.join(os.getcwd(), args.out_dir)
-
-    # Load output and preflight plugins
-    load_actions()
+    logger.debug('Start of initialization')
+    if args.gui:
+        from .GUI.gui import show_splash
+        show_splash(initialization, args)
+    else:
+        initialization(args)
+    logger.debug('End of initialization')
 
     if args.banner is not None:
         try:
@@ -516,6 +527,7 @@ def main():
     parse_defines(args)
 
     # Read the config file
+    logger.debug('Starting to load the configuration')
     outputs = load_config(plot_config)
 
     # Is just "list the available targets"?
@@ -533,6 +545,7 @@ def main():
         generate_makefile(args.makefile, plot_config, outputs)
     elif args.gui:
         from .GUI.gui import do_gui
+        logger.debug('Starting the GUI')
         do_gui(plot_config, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority)
     elif args.internal_check:
         from .GUI.analyze import analyze
