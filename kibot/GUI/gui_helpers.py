@@ -200,6 +200,9 @@ def get_client_data(container):
 def set_items(lbox, objs):
     """ Set the list box items using the string representation of the objs.
         Keep the objects in the client data """
+    if isinstance(objs, list) and len(objs) and isinstance(objs[0], str):
+        lbox.SetItems(objs)
+        return
     lbox.SetItems([str(o) for o in objs])
     for n, o in enumerate(objs):
         lbox.SetClientData(n, o)
@@ -228,7 +231,8 @@ class ChooseFromList(wx.Dialog):
             self.search.Bind(wx.EVT_TEXT, self.OnText)
             # Take ENTER as a confirmation
             self.search.Bind(wx.EVT_SEARCH, self.OnDClick)
-        self.lbox = wx.ListBox(self, choices=items, style=l_style)
+        self.lbox = wx.ListBox(self, style=l_style)
+        set_items(self.lbox, items)
         main_sizer.Add(self.lbox, SIZER_FLAGS_1)
         main_sizer.Add(ok_cancel(self), SIZER_FLAGS_0)
         self.SetSizer(main_sizer)
@@ -256,7 +260,7 @@ class ChooseFromList(wx.Dialog):
                 items.append(s)
         if self.search_on:
             items = [self.translate[v] for v in items]
-        self.lbox.SetItems(items)
+        set_items(self.lbox, items)
         self.lbox.SetSelection(0)
 
 
@@ -266,10 +270,14 @@ def choose_from_list(parent, items, what, multiple=False, search_on=None):
     l_style = wx.LB_MULTIPLE if multiple else wx.LB_SINGLE
     dlg = ChooseFromList(parent, items, what, True, l_style, search_on)
     if dlg.ShowModal() == wx.ID_OK:
+        is_str = isinstance(items[0], str)
         if multiple:
-            res = [dlg.lbox.GetString(i) for i in dlg.lbox.GetSelections()]
+            if is_str:
+                res = [dlg.lbox.GetString(i) for i in dlg.lbox.GetSelections()]
+            else:
+                res = [dlg.lbox.GetClientData(i) for i in dlg.lbox.GetClientData()]
         else:
-            res = dlg.lbox.GetString(dlg.lbox.Selection)
+            res = dlg.lbox.GetString(dlg.lbox.Selection) if is_str else dlg.lbox.GetClientData(dlg.lbox.Selection)
     else:
         res = None
     dlg.Destroy()

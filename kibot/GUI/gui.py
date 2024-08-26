@@ -20,6 +20,7 @@ from .data_types import edit_dict
 from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
                           set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
                           set_button_bitmap, pop_confirm)
+from . import gui_setups
 from . import gui_helpers as gh
 from .gui_log import start_gui_log, stop_gui_log, EVT_WX_LOG_EVENT
 
@@ -59,6 +60,7 @@ init_vars()
 
 
 def do_gui(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
+    gui_setups.init()
     # Configure all outputs
     for o in RegOutput.get_outputs():
         config_output(o)
@@ -68,7 +70,9 @@ def do_gui(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
         glb = GS.set_global_options_tree({})
         glb.config(None)
     dlg = MainDialog(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
-    return dlg.ShowModal()
+    dlg.ShowModal()
+    dlg.Destroy()
+    gui_setups.save_setups()
 
 
 # ##########################################################################
@@ -110,6 +114,9 @@ class MainDialog(wx.Dialog):
         self.but_globals = wx.Button(self, label="Globals")
         set_button_bitmap(self.but_globals, "gtk-edit")
         but_sizer.Add(self.but_globals, gh.SIZER_FLAGS_0_NO_EXPAND)
+        # Recent
+        self.but_recent = wx.Button(self, label="Recent")
+        but_sizer.Add(self.but_recent, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Warnings
         self.but_warn = wx.Button(self, label="Warnings")
         set_button_bitmap(self.but_warn, wx.ART_WARNING)
@@ -138,24 +145,52 @@ class MainDialog(wx.Dialog):
         self.but_save.Bind(wx.EVT_BUTTON, self.OnSave)
         self.but_generate.Bind(wx.EVT_BUTTON, self.OnGenerateOuts)
         self.but_globals.Bind(wx.EVT_BUTTON, self.OnGlobals)
+        self.but_recent.Bind(wx.EVT_BUTTON, self.OnRecent)
         self.but_warn.Bind(wx.EVT_BUTTON, self.OnWarnings)
         self.but_cancel.Bind(wx.EVT_BUTTON, self.OnCancel)
         self.Bind(wx.EVT_CLOSE, self.OnExit)
 
+    def ask_save(self):
+        res = pop_confirm('The configuration is changed, save?')
+        if res == wx.CANCEL:
+            return False
+        if res == wx.YES:
+            self.OnSave(None)
+            if self.edited:
+                # Something went wrong, give the user a chance to retry saving
+                return False
+        return True
+
+    def OnRecent(self, event):
+        s = gui_setups.get_valid_setups(self.get_setup())
+        if not s:
+            pop_error('No recent runs')
+            return
+        if len(s) == 1:
+            if pop_confirm(f'Only one recent use with `{os.path.basename(s[0].config)}`, use it?') == wx.YES:
+                self.apply_setup(s[0])
+            return
+        setup = choose_from_list(self, s, what="a setup", search_on=[os.path.basename(i.config) for i in s])
+        if setup is not None:
+            self.apply_setup(setup)
+
+    def apply_setup(self, s):
+        # Do we need to save changes?
+        cur_cfg_file = self.main.get_cfg_file()
+        if s.config != cur_cfg_file and self.edited and not self.ask_save():
+            return
+        # Apply it
+        if self.main.apply_setup(s):
+            # Make this one the more recent
+            self.add_setup()
+
     def OnCancel(self, event):
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     def OnExit(self, event):
-        if self.edited:
-            res = pop_confirm('The configuration is changed, save?')
-            if res == wx.CANCEL:
-                return
-            if res == wx.YES:
-                self.OnSave(event)
-                if self.edited:
-                    # Something went wrong, give the user a chance to retry saving
-                    return
-        self.Destroy()
+        if self.edited and not self.ask_save():
+            return
+        self.EndModal(wx.ID_OK)
 
     def refresh_cfg(self):
         """ Refresh panels after loading a new config """
@@ -196,6 +231,14 @@ class MainDialog(wx.Dialog):
         dlg.ShowModal()
         dlg.Destroy()
 
+    def get_setup(self):
+        cwd = os.getcwd()
+        return gui_setups.Setup(os.path.relpath(self.main.get_cfg_file(), cwd), os.getcwd(), os.path.relpath(GS.out_dir, cwd),
+                                os.path.relpath(GS.pcb_file, cwd), os.path.relpath(GS.sch_file, cwd))
+
+    def add_setup(self):
+        gui_setups.add_setup(self.get_setup())
+
     def OnGenerateOuts(self, event):
         if not self.outputs.lbox.GetCount() and not self.preflights.lbox.GetCount():
             pop_error('Please add outputs and/or preflights first')
@@ -208,6 +251,7 @@ class MainDialog(wx.Dialog):
             e.filename = GS.out_dir
             pop_error(f'Invalid destination dir:\n{e}')
             return
+        self.add_setup()
         logger.debug('Starting targets generation from the GUI')
         logger.debug(f'- Working dir: {os.getcwd()}')
         logger.debug(f'- Destination dir: {GS.out_dir}')
@@ -231,6 +275,7 @@ class MainDialog(wx.Dialog):
             # Open a dialog to collect the messages and block the GUI while running
             dlg = RunControlDialog(self, targets, invert_sel, skip_pre, cli_order, no_priority)
             dlg.ShowModal()
+            dlg.Destroy()
         except SystemExit:
             pass
 
@@ -240,6 +285,7 @@ class MainDialog(wx.Dialog):
             cfg_file = self.main.choose_new_cfg()
             if not cfg_file:
                 return
+        self.add_setup()
         tree = {'kibot': {'version': 1}}
         # TODO: Should we delegate it to the class handling it?
         # Globals
@@ -392,12 +438,14 @@ class MainPanel(wx.Panel):
             os.makedirs(GS.out_dir)
         self.wd_sizer, self.wd_input, _ = self.add_path(paths_sizer, 'Working dir', cwd, self.OnChangeCWD, is_dir=True)
         self.old_cwd = cwd
-        self.cf_sizer, self.cf_input, self_ren_but = self.add_path(paths_sizer, 'Config file', cfg_file, self.OnChageCfg,
+        cfg_file = os.path.abspath(cfg_file)
+        self.cf_sizer, self.cf_input, self_ren_but = self.add_path(paths_sizer, 'Config file', cfg_file, self.OnChangeCfg,
                                                                    rename=self.OnChangeName)
         self.old_cfg = cfg_file
-        self.de_sizer, self.de_input, _ = self.add_path(paths_sizer, 'Destination', GS.out_dir, self.OnChangeOutDir,
+        out_dir = os.path.abspath(GS.out_dir)
+        self.de_sizer, self.de_input, _ = self.add_path(paths_sizer, 'Destination', out_dir, self.OnChangeOutDir,
                                                         is_dir=True)
-        self.old_out_dir = GS.out_dir
+        self.old_out_dir = out_dir
         sch = GS.sch_file if GS.sch_file is not None else ''
         self.sch_sizer, self.sch_input, _ = self.add_path(paths_sizer, 'Schematic', sch, self.OnChangeSCH)
         pcb = GS.sch_file if GS.sch_file is not None else ''
@@ -467,6 +515,20 @@ class MainPanel(wx.Panel):
             reset_config()
             load_config(self.old_cfg)
 
+    def apply_changed_config(self, new_cfg):
+        try:
+            log.start_recording_error_msgs()
+            reset_config()
+            load_config(new_cfg)
+        except SystemExit:
+            return False
+        finally:
+            # Inform any error issued by logger.error
+            msgs = log.stop_recording_error_msgs()
+            if msgs:
+                pop_error(msgs)
+        return True
+
     def load_new_config(self):
         # Should we save the current?
         res = self.main.check_save()
@@ -476,28 +538,17 @@ class MainPanel(wx.Panel):
             return
         # Check the file is there, shouldn't be necessary
         new_cfg = self.cf_input.GetPath()
-        if not os.path.isfile(new_cfg):
-            pop_error("Wrong config selected!")
+        if not self.check_changed_filename(new_cfg, 'config'):
             wx.CallAfter(self.revert_cfg)
             return
         # Try loading it
-        try:
-            log.start_recording_error_msgs()
-            reset_config()
-            load_config(new_cfg)
-        except SystemExit:
-            # The PCB failed to load, revert the file name
+        if not self.apply_changed_config(new_cfg):
             wx.CallAfter(self.revert_cfg, reload=True)
             return
-        finally:
-            # Inform any error issued by logger.error
-            msgs = log.stop_recording_error_msgs()
-            if msgs:
-                pop_error(msgs)
         self.old_cfg = new_cfg
         self.main.refresh_cfg()
 
-    def OnChageCfg(self, event):
+    def OnChangeCfg(self, event):
         wx.CallAfter(self.load_new_config)
 
     def revert_pcb(self, reload=False):
@@ -509,25 +560,48 @@ class MainPanel(wx.Panel):
         if reload:
             load_board(forced=True)
 
-    def OnChangePCB(self, event):
-        new_pcb = self.pcb_input.GetPath()
-        if not os.path.isfile(new_pcb):
-            pop_error("Wrong PCB selected!")
-            wx.CallAfter(self.revert_pcb)
-            return
+    def apply_changed_pcb(self, new_pcb):
         try:
             log.start_recording_error_msgs()
             load_board(new_pcb, forced=True)
             GS.set_pcb(new_pcb)
         except SystemExit:
-            # The PCB failed to load, revert the file name
-            wx.CallAfter(self.revert_pcb, reload=True)
-            return
+            return False
         finally:
             # Inform any error issued by logger.error
             msgs = log.stop_recording_error_msgs()
             if msgs:
                 pop_error(msgs)
+        return True
+
+    def check_changed_filename(self, name, kind):
+        if not os.path.isfile(name):
+            pop_error(f"The selected {kind} is not a file!\n{name}")
+            return False
+        if not os.access(name, os.R_OK):
+            pop_error(f"No permission to read the selected {kind}!\n{name}")
+            return False
+        return True
+
+    def check_changed_dirname(self, name, kind):
+        if not os.path.isdir(name):
+            pop_error(f"The selected {kind} is not a directory!\n{name}")
+            return False
+        if not os.access(name, os.R_OK | os.X_OK):
+            pop_error(f"No permission to access the selected {kind}!\n{name}")
+            return False
+        return True
+
+    def OnChangePCB(self, event):
+        new_pcb = self.pcb_input.GetPath()
+        if not self.check_changed_filename(new_pcb, 'PCB'):
+            # Wrong file name, revert it
+            wx.CallAfter(self.revert_pcb)
+            return
+        if not self.apply_changed_pcb(new_pcb):
+            # The PCB failed to load, revert the file name and make sure we have a valid one in memory
+            wx.CallAfter(self.revert_pcb, reload=True)
+            return
         # Success
         if GS.sch is None:
             # Try using the corresponding SCH
@@ -549,25 +623,38 @@ class MainPanel(wx.Panel):
         if reload:
             load_sch(forced=True)
 
-    def OnChangeSCH(self, event):
-        new_sch = self.sch_input.GetPath()
-        if not os.path.isfile(new_sch):
-            pop_error("Wrong SCH selected!")
-            wx.CallAfter(self.revert_sch)
-            return
+    def apply_changed_sch(self, new_sch):
         try:
             log.start_recording_error_msgs()
             load_sch(new_sch, forced=True)
             GS.set_sch(new_sch)
         except SystemExit:
-            # The sch failed to load, revert the file name
-            wx.CallAfter(self.revert_sch, reload=True)
-            return
+            return False
         finally:
             # Inform any error issued by logger.error
             msgs = log.stop_recording_error_msgs()
             if msgs:
                 pop_error(msgs)
+        return True
+
+    def check_changed_sch(self, new_sch):
+        if not os.path.isfile(new_sch):
+            pop_error("The selected schematic is not a file!")
+            return False
+        if not os.access(new_sch, os.R_OK):
+            pop_error("No permission to read the selected schematic!")
+            return False
+        return True
+
+    def OnChangeSCH(self, event):
+        new_sch = self.sch_input.GetPath()
+        if not self.check_changed_filename(new_sch, 'schematic'):
+            wx.CallAfter(self.revert_sch)
+            return
+        if not self.apply_changed_sch(new_sch):
+            # The sch failed to load, revert the file name
+            wx.CallAfter(self.revert_sch, reload=True)
+            return
         # Success
         if GS.board is None:
             # Try using the corresponding PCB
@@ -580,20 +667,38 @@ class MainPanel(wx.Panel):
                 except SystemExit:
                     GS.board = None
 
-    def OnChangeOutDir(self, event):
+    def check_changed_outdir(self, name):
+        if not os.path.isdir(name):
+            # Doesn't exist, try to create it
+            try:
+                os.makedirs(name)
+            except Exception:
+                pass
+        if not self.check_changed_dirname(name, 'destination dir'):
+            return False
+        # A more strict check, trying to actually write there
         try:
-            new_out_dir = self.de_input.GetPath()
-            testfile = tempfile.TemporaryFile(dir=new_out_dir)
+            testfile = tempfile.TemporaryFile(dir=name)
             testfile.close()
-            self.old_out_dir = GS.out_dir = new_out_dir
         except OSError as e:
-            e.filename = new_out_dir
+            e.filename = name
             pop_error(f'Invalid destination dir:\n{e}')
+            return False
+        return True
+
+    def OnChangeOutDir(self, event):
+        new_out_dir = self.de_input.GetPath()
+        if self.check_changed_outdir(new_out_dir):
+            self.old_out_dir = GS.out_dir = new_out_dir
+        else:
             self.de_input.SetPath(self.old_out_dir)
 
     def OnChangeCWD(self, event):
+        new_cwd = self.wd_input.GetPath()
+        if not self.check_changed_dirname(new_cwd, 'working dir'):
+            self.wd_input.SetPath(self.old_cwd)
+            return
         try:
-            new_cwd = self.wd_input.GetPath()
             os.chdir(new_cwd)
             self.old_cwd = new_cwd
         except OSError as e:
@@ -802,6 +907,40 @@ class MainPanel(wx.Panel):
             but_rename = None
         sizer.Add(li_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
         return li_sizer, new_input, but_rename
+
+    def apply_setup(self, s):
+        # Check we got usable file names
+        if not (self.check_changed_filename(s.pcb, 'PCB') and self.check_changed_filename(s.schematic, 'schematic') and
+                self.check_changed_filename(s.config, 'config') and self.check_changed_dirname(s.cwd, 'working dir') and
+                self.check_changed_outdir(s.dest)):
+            return False
+        # All seems to be ok, apply it
+        self.cf_input.SetPath(s.config)
+        if not self.apply_changed_config(s.config):
+            wx.CallAfter(self.revert_cfg, reload=True)
+            return False
+        self.pcb_input.SetPath(s.pcb)
+        if not self.apply_changed_pcb(s.pcb):
+            wx.CallAfter(self.revert_cfg, reload=True)
+            wx.CallAfter(self.revert_pcb, reload=True)
+            return False
+        self.sch_input.SetPath(s.schematic)
+        if not self.apply_changed_sch(s.schematic):
+            wx.CallAfter(self.revert_cfg, reload=True)
+            wx.CallAfter(self.revert_pcb, reload=True)
+            wx.CallAfter(self.revert_sch, reload=True)
+            return False
+        # Allow a fail here without reverting all the others
+        self.wd_input.SetPath(s.cwd)
+        try:
+            os.chdir(s.cwd)
+            self.old_cwd = s.cwd
+        except OSError as e:
+            pop_error(f'Invalid working dir:\n{e}')
+            self.wd_input.SetPath(self.old_cwd)
+        self.de_input.SetPath(s.dest)
+        GS.out_dir = s.dest
+        return True
 
 
 # ##########################################################################
@@ -1331,7 +1470,7 @@ class RunControlDialog(wx.Dialog):
             pop_error("Still generating targets, please wait")
             return
         stop_gui_log()
-        self.Destroy()
+        self.EndModal(wx.ID_OK)
 
     def OnLogEvent(self, event):
         msg = event.message.strip("\r")+"\n"
