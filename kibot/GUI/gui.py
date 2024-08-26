@@ -453,7 +453,7 @@ class MainPanel(wx.Panel):
         self.old_out_dir = out_dir
         sch = GS.sch_file if GS.sch_file is not None else ''
         self.sch_sizer, self.sch_input, _ = self.add_path(paths_sizer, 'Schematic', sch, self.OnChangeSCH)
-        pcb = GS.sch_file if GS.sch_file is not None else ''
+        pcb = GS.pcb_file if GS.pcb_file is not None else ''
         self.pcb_sizer, self.pcb_input, _ = self.add_path(paths_sizer, 'PCB', pcb, self.OnChangePCB)
 
         # Targets
