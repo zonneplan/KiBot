@@ -7,10 +7,12 @@
 # Graphic User Interface
 from copy import deepcopy
 import os
+import platform
+import sys
 import tempfile
 import threading
 import yaml
-from .. import __version__
+from .. import __version__, __copyright__, __url__, __email__
 from .. import log
 from ..gs import GS
 from ..kiplot import config_output, load_board, load_sch, load_config, reset_config, generate_outputs
@@ -103,6 +105,8 @@ class MainDialog(wx.Dialog):
         self.notebook.AddPage(self.filters, "Filters")
         self.variants = VariantsPanel(self.notebook)
         self.notebook.AddPage(self.variants, "Variants")
+        self.about = AboutPanel(self.notebook)
+        self.notebook.AddPage(self.about, "About")
 
         # Buttons
         but_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -1517,7 +1521,8 @@ class ShowWarnsDialog(wx.Dialog):
 
 # ##########################################################################
 # # class SplashScreen
-# # A dialog to monitor the targets generation
+# # A dialog to inform the user we are already running
+# # Note: the wxPython examples from the Wiki are useless
 # ##########################################################################
 
 class SplashScreen(wx.Dialog):
@@ -1577,3 +1582,33 @@ def show_splash(target, args):
     dlg = SplashScreen(target, args)
     dlg.ShowModal()
     dlg.Destroy()
+
+
+# ##########################################################################
+# # Class AboutPanel
+# # Panel containing the main options (paths, targets, etc.)
+# ##########################################################################
+
+class AboutPanel(wx.Panel):
+    def __init__(self, parent):
+        wx.Panel.__init__(self, parent)
+
+        # All the widgets
+        self.sizer = main_sizer = wx.BoxSizer(wx.VERTICAL)
+
+        bitmap = wx.Bitmap(name=os.path.join(GS.get_resource_path('images'), 'about.png'), type=wx.BITMAP_TYPE_PNG)
+        main_sizer.Add(wx.StaticBitmap(self, bitmap=bitmap), gh.SIZER_FLAGS_1_NO_BORDER)
+        self.add_line(__copyright__)
+        self.add_line('Version: '+__version__)
+        self.add_line('Python: '+sys.version)
+        self.add_line('Platform: '+platform.platform().replace('-', ' '))
+        self.add_line('KiCad: '+GS.kicad_version)
+        self.add_line('URL: '+__url__)
+        self.add_line('e-mail: '+__email__)
+
+        self.SetSizer(main_sizer)
+        self.Layout()
+
+    def add_line(self, msg):
+        txt = wx.StaticText(self, label=msg, style=wx.ALIGN_CENTRE_HORIZONTAL)
+        self.sizer.Add(txt, gh.SIZER_FLAGS_0)
