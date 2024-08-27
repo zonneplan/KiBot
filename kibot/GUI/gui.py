@@ -14,6 +14,7 @@ import threading
 import yaml
 from .. import __version__, __copyright__, __url__, __email__
 from .. import log
+from ..config_reader import get_doc_lines
 from ..gs import GS
 from ..kiplot import config_output, load_board, load_sch, load_config, reset_config, generate_outputs
 from ..pre_base import BasePreFlight
@@ -994,8 +995,19 @@ class OutputsPanel(DictPanel):
     def new_obj(self, kind):
         # Create a new object of the selected type
         obj = RegOutput.get_class_for(kind)()
+        # Create a unique name for it
+        n = 1
+        while n:
+            name = f'new_{kind}_{n}'
+            if RegOutput.get_output(name) is None:
+                break
+            n += 1
+        # Create an object for this kind
         obj.type = kind
-        obj._tree = {}
+        desc = get_doc_lines(obj)[1]
+        if desc[-1] == '.':
+            desc = desc[:-1]
+        obj._tree = {'name': name, 'comment': desc}
         # This will load the needed schematic and/or PCB
         config_output(obj)
         return obj

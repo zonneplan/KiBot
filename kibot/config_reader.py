@@ -940,10 +940,15 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
     #     print(ind_str+'  - No available options')
 
 
-def print_one_out_help(details, n, o):
+def get_doc_lines(o):
     lines = trim(o.__doc__)
     if len(lines) == 0:
         lines = ['Undocumented', 'No description']
+    return lines
+
+
+def print_one_out_help(details, n, o):
+    lines = get_doc_lines(o)
     ind_size = 3 if rst_mode else 2
     ind = ' '*ind_size
     extra = ' ' if rst_mode else ''
