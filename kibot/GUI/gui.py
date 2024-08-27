@@ -65,6 +65,7 @@ init_vars()
 def do_gui(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
     gui_setups.init()
     # Configure all outputs
+    # Note that this will load the schematic and/or PCB if needed
     for o in RegOutput.get_outputs():
         config_output(o)
     # Check that we have some global options
@@ -995,14 +996,15 @@ class OutputsPanel(DictPanel):
         obj = RegOutput.get_class_for(kind)()
         obj.type = kind
         obj._tree = {}
+        # This will load the needed schematic and/or PCB
         config_output(obj)
         return obj
 
     def OnAdd(self, event):
-        if not GS.sch:
+        if not GS.sch_file:
             pop_error('Please first select a schematic')
             return
-        if not GS.board:
+        if not GS.pcb_file:
             pop_error('Please first select a PCB')
             return
         super().OnAdd(event)
