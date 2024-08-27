@@ -15,7 +15,7 @@ from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, in
                           get_selection, get_emp_font, pop_error, add_abm_buttons, get_res_bitmap, pop_confirm,
                           send_relayout_event)
 from . import gui_helpers as gh
-from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT
+from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT, SEPARATE_ADVANCED
 from ..error import KiPlotConfigurationError
 from ..misc import typeof, try_int, RE_LEN
 from ..optionable import Optionable
@@ -304,6 +304,8 @@ class DataTypeDict(DataTypeBase):
 
     def OnEdit(self, event):
         window = self.window.Parent
+        if isinstance(window, wx.Notebook):
+            window = window.Parent
         if isinstance(window, wx.ScrolledWindow):
             window = window.Parent
         if edit_dict(window, self.sub_obj, self.sub_entries, self.entry_name):
@@ -984,6 +986,20 @@ def get_class_for(kind, rest):
     raise AssertionError()
 
 
+class WidgetsSizer(wx.Panel):
+    def __init__(self, parent, entries, parent_entry, obj, level, extra_args, advanced=False):
+        wx.Panel.__init__(self, parent)
+
+        sizer = wx.BoxSizer(wx.VERTICAL)
+        for entry in entries:
+            if not entry.skip and (entry.is_basic ^ advanced):
+                entry.add_widgets(obj, self, sizer, level, extra_args)
+                entry.parent = parent_entry
+
+        self.SetSizer(sizer)
+        self.Layout()
+
+
 def add_widgets(obj, entries, window, sizer, level=0, parent=None, can_remove=True):
     if isinstance(obj, type):
         logger.error(f'- !!! {obj.__dict__} {type(obj)}')
@@ -1008,15 +1024,26 @@ def add_widgets(obj, entries, window, sizer, level=0, parent=None, can_remove=Tr
 
     # logger.error(f'{obj._tree}')
     n_entries = sum((1 for e in entries if not e.skip))
+    n_entries_basic = sum((1 for e in entries if not e.skip and not e.is_basic))
     extra_args = {}
     if n_entries == 1:
         extra_args['force_embedded'] = True
     if not can_remove:
         extra_args['dont_remove_first_level'] = True
-    for entry in entries:
-        if not entry.skip:
-            entry.add_widgets(obj, window, sizer, level, extra_args)
-            entry.parent = parent
+    if SEPARATE_ADVANCED and n_entries_basic and (n_entries - n_entries_basic):
+        # Use a separated panel for basic and advanced
+        notebook = wx.Notebook(window)
+        basic = WidgetsSizer(notebook, entries, parent, obj, level, extra_args)
+        advanced = WidgetsSizer(notebook, entries, parent, obj, level, extra_args, advanced=True)
+        notebook.AddPage(basic, "Basic")
+        notebook.AddPage(advanced, "Advanced")
+        sizer.Add(notebook, gh.SIZER_FLAGS_1_NO_BORDER)
+    else:
+        # Basic and advanced options together
+        for entry in entries:
+            if not entry.skip:
+                entry.add_widgets(obj, window, sizer, level, extra_args)
+                entry.parent = parent
     max_label = cur_max
 
 
