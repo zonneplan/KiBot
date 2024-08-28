@@ -104,6 +104,7 @@ Fixed:
    option
 -  QR Lib output and various preflights: might remove DRC exclusions.
    This is a KiCad bug that we must workaround (#653)
+-  3D outputs: temporal .kicad_dru file not removed (#655)
 
 Changed:
 ~~~~~~~~

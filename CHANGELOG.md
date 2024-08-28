@@ -63,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PCB Print: %ln and %ll substitution when using `repeat_for_layer` option
 - QR Lib output and various preflights: might remove DRC exclusions. This is
   a KiCad bug that we must workaround (#653)
+- 3D outputs: temporal .kicad_dru file not removed (#655)
 
 ### Changed:
 - KiCad 8.0.2: The behavior with hidden text changed in KiCad 8.0.2, it is

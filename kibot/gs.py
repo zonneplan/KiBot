@@ -580,10 +580,13 @@ class GS(object):
 
     @staticmethod
     def get_pcb_and_pro_names(name):
+        n = os.path.splitext(name)[0]
         if GS.ki5:
-            return [name, name.replace('kicad_pcb', 'pro')]
-        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl'),
-                name.replace('kicad_pcb', 'kicad_pro-bak'), name.replace('kicad_pcb', 'kicad_prl-bak')]
+            return [name, n+'.pro']
+        # All possible names, not just the ones that exist, they could be created in the process
+        # When removing we check they actually exist
+        return [name, n+'.kicad_pro', n+'.kicad_pro-bak', n+'.kicad_prl', n+'.kicad_prl-bak', n+'.kicad_dru',
+                n+'.kicad_dru-bak']
 
     @staticmethod
     def remove_pcb_and_pro(name):
