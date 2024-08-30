@@ -46,6 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     (#619)
   - "0 pico" for "0"
   - Use of `lcsc_link` as boolean
+  - User fields for components that are only in the PCB not filled (#656)
 - Worksheet: Size of PNGs that specify its PPI resolution.
 - Filters:
   - Problems with filters that change fields for components that are

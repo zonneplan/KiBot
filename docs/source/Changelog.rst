@@ -78,6 +78,8 @@ Fixed:
       colors. (#619)
    -  “0 pico” for “0”
    -  Use of ``lcsc_link`` as boolean
+   -  User fields for components that are only in the PCB not filled
+      (#656)
 
 -  Worksheet: Size of PNGs that specify its PPI resolution.
 -  Filters:

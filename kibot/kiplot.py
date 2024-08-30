@@ -320,13 +320,7 @@ def create_component_from_footprint(m, ref):
     f.number = 3
     c.add_field(f)
     # Other fields
-    for name, val in GS.get_fields(m).items():
-        f = SchematicField()
-        f.name = name
-        f.value = val
-        f.number = -1
-        f.visible(False)
-        c.add_field(f)
+    copy_fields(c, m)
     c._solve_fields(None)
     try:
         c.split_ref()
@@ -342,11 +336,7 @@ class PadProperty(object):
 
 
 def copy_fields(c, m):
-    if not hasattr(m, 'GetFields'):
-        return
-    for f in m.GetFields():
-        name = f.GetName()
-        value = f.GetText()
+    for name, value in GS.get_fields(m).items():
         if c.is_field(name.lower()):
             # Already there
             old = c.get_field_value(name)
