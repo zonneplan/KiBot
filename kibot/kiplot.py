@@ -26,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP,
-                   W_BADREF)
+                   W_BADREF, W_MULTIREF)
 from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -365,9 +365,13 @@ def get_board_comps_data(comps):
     for m in GS.get_modules():
         ref = m.GetReference()
         attrs = m.GetAttributes()
-        if ref not in comps_hash:
+        ref_in_hash = ref in comps_hash
+        if not ref_in_hash or not len(comps_hash[ref]):
             if not (attrs & MOD_BOARD_ONLY) and not ref.startswith('KiKit_'):
-                logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
+                if not ref_in_hash:
+                    logger.warning(W_PCBNOSCH+f'`{ref}` component in board, but not in schematic')
+                else:
+                    logger.warning(W_MULTIREF+f'multiple `{ref}` components, not all operations will work')
             if not GS.global_include_components_from_pcb:
                 # v1.6.3 behavior
                 continue
@@ -375,76 +379,77 @@ def get_board_comps_data(comps):
             c = create_component_from_footprint(m, ref)
             if c is None:
                 continue
-            comps_hash[ref] = [c]
             comps.append(c)
-        for c in comps_hash[ref]:
-            new_value = m.GetValue()
-            if new_value != c.value and '${' not in c.value:
-                logger.warning(f"{W_VALMISMATCH}Value field mismatch for `{ref}` (SCH: `{c.value}` PCB: `{new_value}`)")
-            c.value = new_value
-            c.bottom = m.IsFlipped()
-            c.footprint_rot = m.GetOrientationDegrees()
-            center = GS.get_center(m)
-            c.footprint_x = center.x
-            c.footprint_y = center.y
-            (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
-            c.has_pcb_info = True
-            c.pad_properties = {}
-            if GS.global_use_pcb_fields:
-                copy_fields(c, m)
-            # Net
-            net_name = set()
-            net_class = set()
-            for pad in m.Pads():
-                net_name.add(pad.GetNetname())
-                net_class.add(pad.GetNetClassName())
-            c.net_name = ','.join(net_name)
-            c.net_class = ','.join(net_class)
-            if GS.ki5:
-                # KiCad 5
-                if attrs == UI_SMD:
-                    c.smd = True
-                elif attrs == UI_VIRTUAL:
-                    c.virtual = True
-                else:
-                    c.tht = True
+        else:
+            # Take one with this ref. Note that more than one is not a normal situation
+            c = comps_hash[ref].pop()
+        new_value = m.GetValue()
+        if new_value != c.value and '${' not in c.value:
+            logger.warning(f"{W_VALMISMATCH}Value field mismatch for `{ref}` (SCH: `{c.value}` PCB: `{new_value}`)")
+        c.value = new_value
+        c.bottom = m.IsFlipped()
+        c.footprint_rot = m.GetOrientationDegrees()
+        center = GS.get_center(m)
+        c.footprint_x = center.x
+        c.footprint_y = center.y
+        (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
+        c.has_pcb_info = True
+        c.pad_properties = {}
+        if GS.global_use_pcb_fields:
+            copy_fields(c, m)
+        # Net
+        net_name = set()
+        net_class = set()
+        for pad in m.Pads():
+            net_name.add(pad.GetNetname())
+            net_class.add(pad.GetNetClassName())
+        c.net_name = ','.join(net_name)
+        c.net_class = ','.join(net_class)
+        if GS.ki5:
+            # KiCad 5
+            if attrs == UI_SMD:
+                c.smd = True
+            elif attrs == UI_VIRTUAL:
+                c.virtual = True
             else:
-                # KiCad 6
-                if attrs & MOD_SMD:
-                    c.smd = True
-                if attrs & MOD_THROUGH_HOLE:
-                    c.tht = True
-                if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
-                    c.virtual = True
-                if attrs & MOD_EXCLUDE_FROM_POS_FILES:
-                    c.in_pos = False
-                # The PCB contains another flag for the BoM
-                # I guess it should be in sync, but: why should somebody want to unsync it?
-                if attrs & MOD_EXCLUDE_FROM_BOM:
-                    c.in_bom_pcb = False
-                if attrs & MOD_BOARD_ONLY:
-                    c.in_pcb_only = True
-                look_for_type = (not c.smd) and (not c.tht)
-                for pad in m.Pads():
-                    p = PadProperty()
-                    center = pad.GetCenter()
-                    p.x = center.x
-                    p.y = center.y
-                    p.fab_property = pad.GetProperty()
-                    p.net = pad.GetNetname()
-                    p.net_class = pad.GetNetClassName()
-                    p.has_hole = pad.HasHole()
-                    name = pad.GetNumber()
-                    c.pad_properties[name] = p
-                    # Try to figure out if this is THT or SMD when not specified
-                    if look_for_type:
-                        if p.has_hole:
-                            # At least one THT, stop looking
-                            c.tht = True
-                            look_for_type = False
-                        elif name:
-                            # We have pad a valid pad, assume this is all SMD and keep looking
-                            c.smd = True
+                c.tht = True
+        else:
+            # KiCad 6
+            if attrs & MOD_SMD:
+                c.smd = True
+            if attrs & MOD_THROUGH_HOLE:
+                c.tht = True
+            if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
+                c.virtual = True
+            if attrs & MOD_EXCLUDE_FROM_POS_FILES:
+                c.in_pos = False
+            # The PCB contains another flag for the BoM
+            # I guess it should be in sync, but: why should somebody want to unsync it?
+            if attrs & MOD_EXCLUDE_FROM_BOM:
+                c.in_bom_pcb = False
+            if attrs & MOD_BOARD_ONLY:
+                c.in_pcb_only = True
+            look_for_type = (not c.smd) and (not c.tht)
+            for pad in m.Pads():
+                p = PadProperty()
+                center = pad.GetCenter()
+                p.x = center.x
+                p.y = center.y
+                p.fab_property = pad.GetProperty()
+                p.net = pad.GetNetname()
+                p.net_class = pad.GetNetClassName()
+                p.has_hole = pad.HasHole()
+                name = pad.GetNumber()
+                c.pad_properties[name] = p
+                # Try to figure out if this is THT or SMD when not specified
+                if look_for_type:
+                    if p.has_hole:
+                        # At least one THT, stop looking
+                        c.tht = True
+                        look_for_type = False
+                    elif name:
+                        # We have pad a valid pad, assume this is all SMD and keep looking
+                        c.smd = True
 
 
 def expand_comp_fields(c, env):

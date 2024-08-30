@@ -80,6 +80,20 @@ def test_position_3Rs_1(test_dir):
     ctx.clean_up()
 
 
+@pytest.mark.skipif(not context.ki8(), reason="Just checking with modern KiCad")
+def test_panel_C1x4(test_dir):
+    """ This tests a 4 boards panel with just one component C1
+        Half of the panel is rotated 180 degrees """
+    ctx = context.TestContext(test_dir, 'panel_C1x4', 'simple_position_csv', POS_DIR)
+    ctx.run()
+    pos_top = ctx.get_pos_top_csv_filename()
+    rows, header, info = ctx.load_csv(os.path.basename(pos_top))
+    assert len(rows) == 4
+    assert sum(1 for x in rows if float(x[5]) == 180) == 2
+    assert sum(1 for x in rows if float(x[5]) == 0) == 2
+    ctx.clean_up()
+
+
 def test_position_3Rs_neg_x(test_dir):
     ctx = context.TestContext(test_dir, '3Rs', 'simple_position_neg_x', POS_DIR)
     ctx.run()

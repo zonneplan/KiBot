@@ -280,6 +280,18 @@ class VariantOptions(BaseOptions):
             return None
         return {c.ref: c for c in self._comps}
 
+    def get_refs_hash_multi(self):
+        """ This version allows having multiple components with the same reference.
+            Is useful for things like a panel """
+        if not self._comps:
+            return None
+        comps_hash = {}
+        for c in self._comps:
+            cur_list = comps_hash.get(c.ref, [])
+            cur_list.append(c)
+            comps_hash[c.ref] = cur_list
+        return comps_hash
+
     def get_fitted_refs(self):
         """ List of fitted and included components """
         if not self._comps:

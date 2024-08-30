@@ -260,7 +260,7 @@ class PositionOptions(VariantOptions):
         columns = tuple(o.name for o in self.columns)
         conv = GS.unit_name_to_scale_factor(self.units)
         # Format all strings
-        comps_hash = self.get_refs_hash()
+        comps_hash = self.get_refs_hash_multi()
         modules = []
         modules_side = []
         is_pure_smd, is_not_virtual = self.get_attr_tests()
@@ -279,6 +279,8 @@ class PositionOptions(VariantOptions):
             if comps_hash:
                 c = comps_hash.get(ref, None)
                 if c:
+                    # Multiple components with the same reference is "normal" for a panel
+                    c = c.pop()
                     logger.debug('- fit: {} include: {}'.format(c.fitted, c.included))
                     if not c.fitted or not c.included:
                         continue
