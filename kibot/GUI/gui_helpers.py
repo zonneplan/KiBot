@@ -9,6 +9,7 @@
 import difflib
 import wx
 from . import gui_config
+from .gui_inject import create_id, InjectDialog
 # loaded_btns = {}
 emp_font = None
 SIZER_FLAGS_0 = SIZER_FLAGS_1 = SIZER_FLAGS_0_NO_BORDER = SIZER_FLAGS_1_NO_BORDER = None
@@ -44,10 +45,10 @@ def init_vars():
 #     return bmp
 
 
-class MessageDialog(wx.Dialog):
+class MessageDialog(InjectDialog):
     def __init__(self, msg, title, icon=None, ok_btn=True):
-        wx.Dialog.__init__(self, None, title=title,
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        InjectDialog.__init__(self, None, title=title,
+                              style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         msg_sizer = wx.BoxSizer(wx.HORIZONTAL)
         if icon is not None:
@@ -216,22 +217,22 @@ def get_selection(lbox):
     return index, lbox.GetString(index), lbox.GetClientData(index)
 
 
-class ChooseFromList(wx.Dialog):
+class ChooseFromList(InjectDialog):
     def __init__(self, parent, items, what, search, l_style, search_on):
         self.all_options = items
         self.search_on = search_on
         if search_on:
             self.translate = dict(zip(search_on, self.all_options))
-        wx.Dialog.__init__(self, parent, title="Select "+what,
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        InjectDialog.__init__(self, parent, title="Select "+what, name='choose_'+what, id=create_id('ID_CHOOSE'),
+                              style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         if search:
-            self.search = wx.SearchCtrl(self)
+            self.search = wx.SearchCtrl(self, id=create_id('ID_CHOOSE_SRCH'))
             main_sizer.Add(self.search, SIZER_FLAGS_0)
             self.search.Bind(wx.EVT_TEXT, self.OnText)
             # Take ENTER as a confirmation
             self.search.Bind(wx.EVT_SEARCH, self.OnDClick)
-        self.lbox = wx.ListBox(self, style=l_style)
+        self.lbox = wx.ListBox(self, style=l_style, id=create_id('ID_CHOOSE_LBX'))
         set_items(self.lbox, items)
         main_sizer.Add(self.lbox, SIZER_FLAGS_1)
         main_sizer.Add(ok_cancel(self), SIZER_FLAGS_0)
@@ -297,27 +298,29 @@ def set_button_bitmap(btn, resource):
     btn.SetBitmap(get_res_bitmap(resource))
 
 
-def add_abm_buttons(self, sb=None, add_add=False, add_add_ttip='', add_ttip=None):
+def add_abm_buttons(self, sb=None, add_add=False, add_add_ttip='', add_ttip=None, id=None):
     """ Buttons for the Add/Remove/Modify actions.
         They are added to `self` inside an `sb` widget """
     if sb is None:
         sb = self
     flags = SIZER_FLAGS_0
     but_sizer = wx.BoxSizer(wx.VERTICAL)
-    self.but_up = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_UP))
+    self.but_up = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_UP), id=create_id(id, 'up'))
     self.but_up.SetToolTip("Move the selection up")
     but_sizer.Add(self.but_up, flags)
-    self.but_down = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_DOWN))
+    self.but_down = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_GO_DOWN), id=create_id(id, 'down'))
     self.but_down.SetToolTip("Move the selection down")
     but_sizer.Add(self.but_down, flags)
-    self.but_add = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS))
+    self.but_add = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_PLUS), id=create_id(id, 'add'))
     self.but_add.SetToolTip(add_ttip or "Add one entry")
     but_sizer.Add(self.but_add, flags)
     if add_add:
-        self.but_add_add = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_LIST_VIEW))
+        self.but_add_add = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_LIST_VIEW),
+                                           id=create_id(id, 'add_add'))
         self.but_add_add.SetToolTip(add_add_ttip)
         but_sizer.Add(self.but_add_add, flags)
-    self.but_remove = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_MINUS))
+    self.but_remove = wx.BitmapButton(sb, style=wx.BU_AUTODRAW, bitmap=get_res_bitmap(wx.ART_MINUS),
+                                      id=create_id(id, 'remove'))
     self.but_remove.SetToolTip("Remove the entry")
     but_sizer.Add(self.but_remove, flags)
     return but_sizer

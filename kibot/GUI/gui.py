@@ -23,6 +23,7 @@ from .data_types import edit_dict
 from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
                           set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
                           set_button_bitmap, pop_confirm)
+from .gui_inject import create_id, InjectDialog
 from . import gui_setups
 from . import gui_helpers as gh
 from .gui_log import start_gui_log, stop_gui_log, EVT_WX_LOG_EVENT
@@ -59,7 +60,6 @@ def_text = 200
 COLORS = {"Y": wx.YELLOW, "R": wx.RED, "C": wx.CYAN, "r": wx.Colour("violet red")}
 wxFinishEvent, EVT_WX_FINISH_EVENT = wx.lib.newevent.NewEvent()
 wxProgressEvent, EVT_WX_PROGRESS_EVENT = wx.lib.newevent.NewEvent()
-
 init_vars()
 
 
@@ -85,13 +85,13 @@ def do_gui(cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
 # # The main dialog for the GUI
 # ##########################################################################
 
-class MainDialog(wx.Dialog):
+class MainDialog(InjectDialog):
     def __init__(self, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
-        wx.Dialog.__init__(self, None, title='KiBot '+__version__,  # size = wx.Size(463,529),
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        InjectDialog.__init__(self, None, title='KiBot '+__version__, name='main_dialog',
+                              style=wx.DEFAULT_DIALOG_STYLE | wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.notebook = wx.Notebook(self)
+        self.notebook = wx.Notebook(self, id=create_id('ID_MAIN_NOTEBOOK'))
         main_sizer.Add(self.notebook, gh.SIZER_FLAGS_1)
 
         # Pages for the notebook
@@ -113,19 +113,19 @@ class MainDialog(wx.Dialog):
         # Buttons
         but_sizer = wx.BoxSizer(wx.HORIZONTAL)
         # Save config
-        self.but_save = wx.Button(self, label="Save config")
+        self.but_save = wx.Button(self, label="Save config", id=create_id('ID_SAVE'))
         self.but_save.Disable()
         set_button_bitmap(self.but_save, wx.ART_FILE_SAVE)
         but_sizer.Add(self.but_save, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Edit globals
-        self.but_globals = wx.Button(self, label="Globals")
+        self.but_globals = wx.Button(self, label="Globals", id=create_id('ID_GLOBALS'))
         set_button_bitmap(self.but_globals, "gtk-edit")
         but_sizer.Add(self.but_globals, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Recent
-        self.but_recent = wx.Button(self, label="Recent")
+        self.but_recent = wx.Button(self, label="Recent", id=create_id('ID_RECENT'))
         but_sizer.Add(self.but_recent, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Warnings
-        self.but_warn = wx.Button(self, label="Warnings")
+        self.but_warn = wx.Button(self, label="Warnings", id=create_id('ID_WARNINGS'))
         set_button_bitmap(self.but_warn, wx.ART_WARNING)
         but_sizer.Add(self.but_warn, gh.SIZER_FLAGS_0_NO_EXPAND)
         #
@@ -133,7 +133,7 @@ class MainDialog(wx.Dialog):
         #
         but_sizer.Add((50, 0), gh.SIZER_FLAGS_1_NO_BORDER)
         # Run
-        self.but_generate = wx.Button(self, label="Run")
+        self.but_generate = wx.Button(self, label="Run", id=create_id('ID_GENERATE'))
         set_button_bitmap(self.but_generate, wx.ART_EXECUTABLE_FILE)
         self.but_generate.SetDefault()
         but_sizer.Add(self.but_generate, gh.SIZER_FLAGS_0_NO_EXPAND)
@@ -156,6 +156,8 @@ class MainDialog(wx.Dialog):
         self.but_warn.Bind(wx.EVT_BUTTON, self.OnWarnings)
         self.but_cancel.Bind(wx.EVT_BUTTON, self.OnCancel)
         self.Bind(wx.EVT_CLOSE, self.OnExit)
+
+        self.flag = False
 
     def ask_save(self):
         res = pop_confirm('The configuration is changed, save?')
@@ -342,7 +344,7 @@ class MainDialog(wx.Dialog):
 
 class DictPanel(wx.Panel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        wx.Panel.__init__(self, parent, name=self.dict_type+'.panel')
         self.can_remove_first_level = True
 
         # All the widgets
@@ -356,7 +358,7 @@ class DictPanel(wx.Panel):
         list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
         abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
         #   Buttons at the right
-        abm_sizer.Add(add_abm_buttons(self), gh.SIZER_FLAGS_0_NO_EXPAND)
+        abm_sizer.Add(add_abm_buttons(self, id=self.dict_type), gh.SIZER_FLAGS_0_NO_EXPAND)
         main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
 
         self.SetSizer(main_sizer)
@@ -412,8 +414,9 @@ class DictPanel(wx.Panel):
             return
         # Create a new object of the selected type
         self.editing = obj = self.new_obj(kind)
+        name = self.dict_type+'.'+kind
         if edit_dict(self, obj, None, None, title=f"New {kind} {self.dict_type}", validator=self.validate,
-                     force_changed=True, can_remove=self.can_remove_first_level):
+                     force_changed=True, can_remove=self.can_remove_first_level, name=name):
             self.lbox.Append(str(obj), obj)
             self.mark_edited()
             self.add_obj(obj)
@@ -443,20 +446,22 @@ class MainPanel(wx.Panel):
         cwd = os.getcwd()
         if not os.path.isdir(GS.out_dir):
             os.makedirs(GS.out_dir)
-        self.wd_sizer, self.wd_input, _ = self.add_path(paths_sizer, 'Working dir', cwd, self.OnChangeCWD, is_dir=True)
+        self.wd_sizer, self.wd_input, _ = self.add_path(paths_sizer, 'Working dir', cwd, 'ID_CWD', self.OnChangeCWD,
+                                                        is_dir=True)
         self.old_cwd = cwd
-        cfg_file = os.path.abspath(cfg_file)
-        self.cf_sizer, self.cf_input, self_ren_but = self.add_path(paths_sizer, 'Config file', cfg_file, self.OnChangeCfg,
-                                                                   rename=self.OnChangeName)
+        if cfg_file:
+            cfg_file = os.path.abspath(cfg_file)
+        self.cf_sizer, self.cf_input, self_ren_but = self.add_path(paths_sizer, 'Config file', cfg_file, 'ID_CFG_FILE',
+                                                                   self.OnChangeCfg, rename=self.OnChangeName)
         self.old_cfg = cfg_file
         out_dir = os.path.abspath(GS.out_dir)
-        self.de_sizer, self.de_input, _ = self.add_path(paths_sizer, 'Destination', out_dir, self.OnChangeOutDir,
+        self.de_sizer, self.de_input, _ = self.add_path(paths_sizer, 'Destination', out_dir, 'ID_DEST', self.OnChangeOutDir,
                                                         is_dir=True)
         self.old_out_dir = out_dir
         sch = GS.sch_file if GS.sch_file is not None else ''
-        self.sch_sizer, self.sch_input, _ = self.add_path(paths_sizer, 'Schematic', sch, self.OnChangeSCH)
+        self.sch_sizer, self.sch_input, _ = self.add_path(paths_sizer, 'Schematic', sch, 'ID_SCH', self.OnChangeSCH)
         pcb = GS.pcb_file if GS.pcb_file is not None else ''
-        self.pcb_sizer, self.pcb_input, _ = self.add_path(paths_sizer, 'PCB', pcb, self.OnChangePCB)
+        self.pcb_sizer, self.pcb_input, _ = self.add_path(paths_sizer, 'PCB', pcb, 'ID_PCB', self.OnChangePCB)
 
         # Targets
         targets_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Targets')
@@ -880,7 +885,7 @@ class MainPanel(wx.Panel):
         self.update_targets_hint()
         self.update_sort_hint()
 
-    def add_path(self, sizer, label, value, on_change=None, is_dir=False, rename=None):
+    def add_path(self, sizer, label, value, id, on_change=None, is_dir=False, rename=None):
         window = self.path_w
         li_sizer = wx.BoxSizer(wx.HORIZONTAL)
         new_label = wx.StaticText(window, label=label, size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
@@ -889,14 +894,15 @@ class MainPanel(wx.Panel):
             new_input.Value = value
         else:
             if is_dir:
-                new_input = wx.DirPickerCtrl(window, message=label, size=wx.Size(def_text, -1), style=wx.DIRP_DIR_MUST_EXIST)
+                new_input = wx.DirPickerCtrl(window, message=label, size=wx.Size(def_text, -1), style=wx.DIRP_DIR_MUST_EXIST,
+                                             id=create_id(id))
                 if on_change:
                     # This works as expected only if FLP_USE_TEXTCTRL is disabled
                     # Otherwise we get partial changes
                     new_input.Bind(wx.EVT_DIRPICKER_CHANGED, on_change)
             else:
                 # Validator are useless here
-                new_input = wx.FilePickerCtrl(window, message=label, size=wx.Size(def_text, -1),
+                new_input = wx.FilePickerCtrl(window, message=label, size=wx.Size(def_text, -1), id=create_id(id),
                                               style=wx.FLP_OPEN | wx.FLP_FILE_MUST_EXIST)
                 if on_change:
                     # This works as expected only if FLP_USE_TEXTCTRL is disabled
@@ -957,8 +963,8 @@ class MainPanel(wx.Panel):
 
 class OutputsPanel(DictPanel):
     def __init__(self, parent):
-        super().__init__(parent)
         self.dict_type = "output"
+        super().__init__(parent)
 
     def refresh_lbox(self):
         set_items(self.lbox, RegOutput.get_outputs())   # Populate the listbox
@@ -967,6 +973,7 @@ class OutputsPanel(DictPanel):
         self.grps_before = set(obj.groups)
 
     def add_obj(self, obj):
+        logger.debug(f'Adding output {obj}')
         RegOutput.add_output(obj)
 
     def remove_obj(self, obj):
@@ -1113,12 +1120,12 @@ class GroupsPanel(wx.Panel):
 # # Dialog to edit one group
 # ##########################################################################
 
-class EditGroupDialog(wx.Dialog):
+class EditGroupDialog(InjectDialog):
     """ Edit a group, can be a new one """
     def __init__(self, parent, group, used_names, group_names, is_new):
         self.initialized = False
-        wx.Dialog.__init__(self, parent, title="Add/Edit group",
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        InjectDialog.__init__(self, parent, title="Add/Edit group",
+                              style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -1310,8 +1317,8 @@ class EditGroupDialog(wx.Dialog):
 
 class FiltersPanel(DictPanel):
     def __init__(self, parent):
-        super().__init__(parent)
         self.dict_type = "filter"
+        super().__init__(parent)
 
     def refresh_lbox(self):
         set_items(self.lbox, [f for f in RegOutput.get_filters().values() if not f.name.startswith('_')])
@@ -1341,8 +1348,8 @@ class FiltersPanel(DictPanel):
 
 class VariantsPanel(DictPanel):
     def __init__(self, parent):
-        super().__init__(parent)
         self.dict_type = "variant"
+        super().__init__(parent)
 
     def refresh_lbox(self):
         set_items(self.lbox, list(RegOutput.get_variants().values()))
@@ -1372,8 +1379,8 @@ class VariantsPanel(DictPanel):
 
 class PreflightsPanel(DictPanel):
     def __init__(self, parent):
-        super().__init__(parent)
         self.dict_type = "preflight"
+        super().__init__(parent)
         self.can_remove_first_level = False
 
     def refresh_lbox(self):
@@ -1413,10 +1420,10 @@ class PreflightsPanel(DictPanel):
 # # A dialog to monitor the targets generation
 # ##########################################################################
 
-class RunControlDialog(wx.Dialog):
+class RunControlDialog(InjectDialog):
     def __init__(self, parent, targets, invert_sel, skip_pre, cli_order, no_priority):
-        wx.Dialog.__init__(self, parent, title='Generating targets',
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        InjectDialog.__init__(self, parent, title='Generating targets',
+                              style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -1511,10 +1518,10 @@ class RunControlDialog(wx.Dialog):
 # # A dialog to monitor the targets generation
 # ##########################################################################
 
-class ShowWarnsDialog(wx.Dialog):
+class ShowWarnsDialog(InjectDialog):
     def __init__(self, parent, warns):
-        wx.Dialog.__init__(self, parent, title='Collected warnings',
-                           style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
+        InjectDialog.__init__(self, parent, title='Collected warnings',
+                              style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -1539,9 +1546,9 @@ class ShowWarnsDialog(wx.Dialog):
 # # Note: the wxPython examples from the Wiki are useless
 # ##########################################################################
 
-class SplashScreen(wx.Dialog):
+class SplashScreen(InjectDialog):
     def __init__(self, target, args):
-        wx.Dialog.__init__(self, None, style=wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_NONE)
+        InjectDialog.__init__(self, None, style=wx.DIALOG_NO_PARENT | wx.STAY_ON_TOP | wx.BORDER_NONE, name='splash')
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
 
@@ -1569,13 +1576,7 @@ class SplashScreen(wx.Dialog):
             self.target(self.args, self.progress)
         except Exception:
             self.stop = True
-        finally:
-            # Inform any error issued by logger.error
-            msgs = log.stop_recording_error_msgs()
-            if msgs:
-                pop_error(msgs)
-            elif self.stop:
-                pop_error('Fatal error, exiting')
+        self.msgs = log.stop_recording_error_msgs()
         wx.PostEvent(self, wxFinishEvent())
 
     def progress(self, msg):
@@ -1587,12 +1588,20 @@ class SplashScreen(wx.Dialog):
         self.text.SetLabel(event.msg)
 
     def OnFinish(self, event):
+        # Inform any error issued by logger.error
+        if self.msgs:
+            logger.error(self.msgs)
+            pop_error(self.msgs)
+        elif self.stop:
+            pop_error('Fatal error, exiting')
+        # Close the dialog
         self.EndModal(wx.ID_OK)
         if self.stop:
             exit(1)
 
 
 def show_splash(target, args):
+    InjectDialog.initialize(args.gui_inject)
     dlg = SplashScreen(target, args)
     dlg.ShowModal()
     dlg.Destroy()

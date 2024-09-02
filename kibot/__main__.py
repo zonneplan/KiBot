@@ -11,7 +11,7 @@ Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--warn-ci-cd]
-         [--banner N] [--gui | --internal-check] [TARGET...]
+         [--banner N] [--gui | --internal-check] [-I INJECT] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
@@ -55,6 +55,7 @@ Options:
   --gui                            Open a graphic dialog
   --internal-check                 Run some outputs internal checks
   -i, --invert-sel                 Generate the outputs not listed as targets
+  -I, --gui-inject INJECT          Inject events to the GUI from INJECT file
   -l, --list                       List available outputs, preflights and
                                    groups (in the config file).
                                    You don't need to specify an SCH/PCB unless
@@ -405,7 +406,7 @@ def detect_windows():  # pragma: no cover (Windows)
     logger.warning(W_ONWIN+'Running on Windows, this is experimental, please report any problem')
 
 
-def initialization(args, progress):
+def initialization(args, progress=None):
     detect_kicad()
     detect_windows()
     debug_arguments(args)

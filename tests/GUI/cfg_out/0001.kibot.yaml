@@ -1,0 +1,21 @@
+kibot:
+  version: 1
+outputs:
+- name: bom_html
+  comment: Bill of Materials in HTML format
+  type: kibom
+  dir: BoM
+  options:
+    format: HTML
+    variant: pp
+    output: ''
+    conf: ''
+- name: bom_csv
+  comment: Bill of Materials in CSV format
+  type: kibom
+  dir: BoM
+  options:
+    format: CSV
+- name: test_output
+  type: boardview
+  comment: Exports the PCB in board view format
