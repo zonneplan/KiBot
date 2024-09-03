@@ -110,6 +110,13 @@ class Events(object):
     def set_selection(self, id, selected):
         self.e.append([id, 'SetSelection', selected])
 
+    def set_choice(self, id, selected):
+        self.e.append([id, 'SetSelection', selected])
+        self.send_event(id, 'EVT_CHOICE')
+
+    def check_path(self, id, path):
+        self.e.append([id, '_CheckPath', path])
+
     def sel_outputs_page(self):
         self.set_selection('ID_MAIN_NOTEBOOK', MAIN_OUPUTS_PAGE)
 
@@ -129,8 +136,15 @@ class Events(object):
     def set_value(self, id, value):
         self.e.append([id, 'SetValue', value])
 
+    def edit_dict(self, id):
+        self.send_event(id, 'EVT_BUTTON')
+        self.wait(id)
+
     def ok(self):
         self.send_event('wx.ID_OK', 'EVT_BUTTON')
+
+    def press_button(self, name):
+        self.send_event('name:'+name, 'EVT_BUTTON')
 
     def save(self):
         self.send_event('ID_SAVE', 'EVT_BUTTON')
@@ -144,18 +158,16 @@ class Events(object):
             writer.writerows(self.e)
 
 
-def run_test(num, test_dir, recipe, keep_project=False):
+def run_test(num, test_dir, project, recipe, keep_project=False, no_board_file=False, no_yaml_file=False):
     id = "%04d" % num
     base_name = sys._getframe(1).f_code.co_name[9:]
     yaml_base = f'{id}.kibot.yaml'
-    yaml_ori = 'tests/GUI/cfg_in/'+yaml_base
+    yaml_ori = os.path.abspath('tests/GUI/cfg_in/'+yaml_base)
     logging.debug(f'Using `{yaml_ori}` config name')
     assert os.path.isfile(yaml_ori)
     with open(yaml_ori) as f:
         yaml_txt = f.read()
-    ctx = context.TestContext(test_dir, 'light_control', 'ibom')
-    ctx.gui_yaml_ori = yaml_ori
-
+    ctx = context.TestContext(test_dir, project, yaml_ori, test_name=sys._getframe(1).f_code.co_name)
     cfg = ctx.get_out_path('events.csv')
     recipe(ctx).save_events(cfg)
     logging.debug(f'Using `{cfg}` events')
@@ -164,7 +176,8 @@ def run_test(num, test_dir, recipe, keep_project=False):
     try:
         with Xvfb(width=1920, height=1080, colordepth=24):
             with start_record(True, ctx.output_dir, base_name):
-                ctx.run(extra=['--gui', '-I', cfg], no_board_file=True, no_yaml_file=True)
+                extra = ['--gui', '-I', cfg]
+                ctx.run(extra=extra, no_board_file=no_board_file, no_yaml_file=no_yaml_file)
     finally:
         with open(yaml_ori) as f:
             yaml_res = f.read()
@@ -179,8 +192,10 @@ def run_test(num, test_dir, recipe, keep_project=False):
 def new_board_view_recipe(ctx):
     e = Events()
     e.start()
-    e.set_cfg(ctx.gui_yaml_ori)
+    e.set_cfg(ctx.yaml_file)
     e.set_sch(ctx.sch_file)
+    # Check that setting the SCH is enough to also get the PCB
+    e.check_path('ID_PCB', 'light_control.kicad_pcb')
     e.sel_outputs_page()
     e.new_output('boardview')
     e.set_value('output.boardview.name.string', 'test_output')
@@ -191,5 +206,36 @@ def new_board_view_recipe(ctx):
     return e
 
 
-def test_gui_new_board_view(test_dir):
-    run_test(1, test_dir, new_board_view_recipe, keep_project=True)
+def new_board_view_deep_recipe(ctx):
+    e = Events()
+    e.start()
+    e.check_path('ID_CFG_FILE', 'tests/GUI/cfg_in/0002.kibot.yaml')
+    e.check_path('ID_SCH', 'light_control.kicad_sch')
+    e.check_path('ID_PCB', 'light_control.kicad_pcb')
+    e.sel_outputs_page()
+    e.new_output('boardview')
+    e.set_value('output.boardview.name.string', 'test_output')
+    e.edit_dict('output.boardview.options.dict')
+    # Advanced options
+    e.set_selection('output.boardview.options.dict.notebook', 1)
+    # BVR format
+    e.set_choice('output.boardview.options.dict.format.string', 1)
+    e.press_button('output.boardview.options.dict.ok')
+    e.wait('output.boardview')
+    e.press_button('output.boardview.ok')
+    e.wait_main()
+    e.save()
+    e.esc()
+    return e
+
+
+def test_gui_new_board_view_1(test_dir):
+    """ We start without config.
+        Force a known YAML, set an SCH, add a boardview output, name it test_output and save """
+    run_test(1, test_dir, 'light_control', new_board_view_recipe, keep_project=True, no_board_file=True, no_yaml_file=True)
+
+
+def test_gui_new_board_view_2(test_dir):
+    """ We start with config and SCH.
+        Add a boardview output, name it test_output and save """
+    run_test(2, test_dir, 'light_control', new_board_view_deep_recipe, keep_project=True)

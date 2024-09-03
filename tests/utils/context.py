@@ -203,7 +203,10 @@ class TestContext(object):
         return os.path.join(this_dir, '../yaml_samples')
 
     def _get_yaml_name(self, name, yaml_compressed):
-        self.yaml_file = os.path.abspath(os.path.join(self._get_yaml_dir(), name+'.kibot.yaml'))
+        if name.endswith('.kibot.yaml'):
+            self.yaml_file = name
+        else:
+            self.yaml_file = os.path.abspath(os.path.join(self._get_yaml_dir(), name+'.kibot.yaml'))
         if yaml_compressed:
             self.yaml_file += '.gz'
         if not os.path.isfile(self.yaml_file):

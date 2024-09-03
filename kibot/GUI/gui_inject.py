@@ -111,6 +111,8 @@ class InjectDialog(wx.Dialog):
                 InjectDialog.next_dialog = None
                 InjectDialog.cur_dialog = self.new_dialog
                 logger.debug(f'* Found `{self.new_dialog}` dialog')
+                if not InjectDialog.events:
+                    InjectDialog.enabled = False
             else:
                 # Not waiting, check we didn't get a change
                 if self.new_dialog != InjectDialog.cur_dialog:
@@ -126,45 +128,72 @@ class InjectDialog(wx.Dialog):
         if not InjectDialog.events:
             return False
         e = InjectDialog.events.pop(0)
-        if e[1] == '_SendEvent':
-            ev_n = e[2]
-            ev_o = getattr(wx, ev_n)
-            id = self.get_id(e[0]) if isinstance(e[0], str) else e[0]
-            o = wx.FindWindowById(id)
-            event = wx.CommandEvent(ev_o.typeId, id)
-            wx.PostEvent(o, event)
-            logger.debug(f'* Injecting event {ev_o}({ev_o.typeId}) to {e[0]} [{o}]')
-            return True
-        if e[1] == '_SendText':
-            # We must avoid processing events during the simulation
-            InjectDialog.lock = True
-            sim = wx.UIActionSimulator()
-            for v in e[2]:
-                sim.Char(ord(v))
-            logger.debug(f'* Injecting text: `{e[2]}`')
-            InjectDialog.lock = False
-            return True
-        if e[1] == '_SendKey':
-            sim = wx.UIActionSimulator()
-            sim.Char(e[2])
-            logger.debug(f'* Injecting key: {e[2]}')
-            return True
-        if e[1] == '_WaitDialog':
-            dlg = e[2]
-            if self.first_call:
-                if self.new_dialog != dlg:
-                    self.exit(f'Unexpected dialog: {self.new_dialog} (not {dlg})')
-                logger.debug(f'* First dialog matched `{dlg}`')
-            else:
-                InjectDialog.next_dialog = dlg
-                logger.debug(f'* Waiting for `{dlg}` dialog')
-            return False
+        id = e[0]
+        command = e[1]
+        data = e[2:]
+        if command[0] == '_':
+            return getattr(self, command[1:])(id, data[0])
         # Call member
-        o = wx.FindWindowById(self.get_id(e[0]))
-        f = getattr(o, e[1])
-        logger.debug(f'* Injecting {e[0][3:]}.{e[1]}{tuple(e[2:])} [{o}]')
-        f(*e[2:])
+        o = wx.FindWindowById(self.get_id(id))
+        f = getattr(o, command)
+        logger.debug(f'* Injecting {id[3:]}.{command}{tuple(data)} [{o}]')
+        f(*data)
         return True
+
+    # ########################################## #
+    # Implementation for the commands in the CSV #
+    # ########################################## #
+
+    def SendEvent(self, id, data):
+        ev_n = data
+        ev_o = getattr(wx, ev_n)
+        id_ori = id
+        if id.startswith('name:'):
+            o = wx.FindWindowByName(id[5:])
+            if o is None:
+                self.exit(f'No window named: {id[5:]})')
+            id = o.GetId()
+        else:
+            id = self.get_id(id) if isinstance(id, str) else id
+            o = wx.FindWindowById(id)
+        event = wx.CommandEvent(ev_o.typeId, id)
+        wx.PostEvent(o, event)
+        logger.debug(f'* Injecting event {ev_o}({ev_o.typeId}) to {id_ori} [{o}]')
+        return True
+
+    def SendText(self, id, data):
+        # We must avoid processing events during the simulation
+        InjectDialog.lock = True
+        sim = wx.UIActionSimulator()
+        for v in data:
+            sim.Char(ord(v))
+        logger.debug(f'* Injecting text: `{data}`')
+        InjectDialog.lock = False
+        return True
+
+    def SendKey(self, id, data):
+        sim = wx.UIActionSimulator()
+        sim.Char(data)
+        logger.debug(f'* Injecting key: {data}')
+        return True
+
+    def WaitDialog(self, id, data):
+        dlg = data
+        if self.first_call:
+            if self.new_dialog != dlg:
+                self.exit(f'Unexpected dialog: {self.new_dialog} (not {dlg})')
+            logger.debug(f'* First dialog matched `{dlg}`')
+        else:
+            InjectDialog.next_dialog = dlg
+            logger.debug(f'* Waiting for `{dlg}` dialog')
+        return False
+
+    def CheckPath(self, id, data):
+        o = wx.FindWindowById(self.get_id(id))
+        logger.debug(f'* Checking path from {id} == {data}')
+        cur_val = o.GetPath()
+        if not cur_val.endswith(data):
+            self.exit(f'Wrong path: {cur_val} (expected {data})')
 
 
 def create_id(name, sub_name=None):

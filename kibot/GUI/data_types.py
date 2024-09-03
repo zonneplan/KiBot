@@ -272,7 +272,7 @@ class DataTypeDict(DataTypeBase):
             else:
                 self.embedded = False
                 self.entry_name = lbl
-                self.btn = wx.Button(window, label=self.get_button_label())
+                self.btn = wx.Button(window, label=self.get_button_label(), id=create_id(name))
                 e_sizer.Add(self.btn, gh.SIZER_FLAGS_1)
                 self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
                 # Which widget will be focused
@@ -860,7 +860,7 @@ class EditDict(InjectDialog):
         b_sizer.Add(middle_sizer, gh.SIZER_FLAGS_1)
 
         # Standard Ok/Cancel button
-        b_sizer.Add(ok_cancel(self, self.OnOK), gh.SIZER_FLAGS_0)
+        b_sizer.Add(ok_cancel(self, self.OnOK, domain=w_name), gh.SIZER_FLAGS_0)
 
         # Resize things when the collapsible panes change their state
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
@@ -1040,7 +1040,7 @@ def add_widgets(obj, entries, window, sizer, level=0, parent=None, can_remove=Tr
         extra_args['dont_remove_first_level'] = True
     if SEPARATE_ADVANCED and n_entries_basic and (n_entries - n_entries_basic):
         # Use a separated panel for basic and advanced
-        notebook = wx.Notebook(window)
+        notebook = wx.Notebook(window, id=create_id(domain+'.notebook'))
         basic = WidgetsSizer(notebook, entries, parent, obj, level, domain, extra_args)
         advanced = WidgetsSizer(notebook, entries, parent, obj, level, domain, extra_args, advanced=True)
         notebook.AddPage(basic, "Basic")

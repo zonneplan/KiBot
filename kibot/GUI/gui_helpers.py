@@ -160,12 +160,12 @@ def remove_item(lbox, confirm=None, callback=None):
     return True
 
 
-def ok_cancel(parent, ok_callback=None, no_cancel=False):
+def ok_cancel(parent, ok_callback=None, no_cancel=False, domain=None):
     m_but_sizer = wx.StdDialogButtonSizer()
-    parent.but_ok = wx.Button(parent, wx.ID_OK)
+    parent.but_ok = wx.Button(parent, wx.ID_OK, name=domain+'.ok' if domain else wx.ButtonNameStr)
     m_but_sizer.AddButton(parent.but_ok)
     if not no_cancel:
-        m_but_sizer.AddButton(wx.Button(parent, wx.ID_CANCEL))
+        m_but_sizer.AddButton(wx.Button(parent, wx.ID_CANCEL, name=domain+'.cancel' if domain else wx.ButtonNameStr))
     m_but_sizer.Realize()
     if ok_callback:
         parent.but_ok.Bind(wx.EVT_BUTTON, ok_callback)
