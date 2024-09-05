@@ -1201,16 +1201,21 @@ class DataEntry(object):
         new_user_defined = edited or self.user_defined_ori
         self.edited = edited
         if new_user_defined == self.user_defined:
-            return False
-        self.user_defined = new_user_defined
-        self.sel_widget.SetForegroundColour(gh.USER_EDITED_COLOR if new_user_defined else self.ori_fore_color)
-        if self.clr_widget:
-            self.clr_widget.Enable(new_user_defined)
-        if widget:
-            self.show_status(widget)
+            changed_status = False
+        else:
+            self.user_defined = new_user_defined
+            self.sel_widget.SetForegroundColour(gh.USER_EDITED_COLOR if new_user_defined else self.ori_fore_color)
+            if self.clr_widget:
+                self.clr_widget.Enable(new_user_defined)
+            if widget:
+                self.show_status(widget)
+            changed_status = True
+        # We always try to notify our parent, even if this isn't a change from our point of view.
+        # This is needed when we have default values that correspond to a tree={} and our parent need to know that the user
+        # modified these values.
         if self.parent_embedded():
             self.parent.set_edited(new_user_defined)
-        return True
+        return changed_status
 
     def parent_embedded(self):
         if self.parent is None:
