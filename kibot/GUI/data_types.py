@@ -308,6 +308,8 @@ class DataTypeDict(DataTypeBase):
         window = self.window.Parent
         if isinstance(window, wx.Notebook):
             window = window.Parent
+        if isinstance(window, wx.StaticBox):
+            window = window.Parent
         if isinstance(window, wx.ScrolledWindow):
             window = window.Parent
         if edit_dict(window, self.sub_obj, self.sub_entries, self.entry_name, name=self.domain):
