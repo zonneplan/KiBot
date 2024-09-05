@@ -743,6 +743,14 @@ class DataTypeListDictOrString(DataTypeListDict):
                 self.lbox.SetClientData(index, new_val)
             self.mark_edited()
 
+    def set_items(self, obj, member, value):
+        val = getattr(obj, member)
+        if val is None or isinstance(val, type):
+            val = []
+        self.lbox.SetItems([str(o) for o in val])
+        for n, o in enumerate(val):
+            self.lbox.SetClientData(n, o)
+
     def get_value(self):
         return [v if isinstance(v, str) else v._tree for v in get_client_data(self.lbox)]
 
