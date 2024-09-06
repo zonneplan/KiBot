@@ -92,6 +92,7 @@ jobs:
       with:
         name: Test_Coverage_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         path: .coverage.*
+        include-hidden-files: true
     - name: Collect coverage ${{ matrix.ki_release }}
       run: |
         python3-coverage combine
@@ -106,6 +107,7 @@ jobs:
         name: Test_Output_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         # Important! empty directories are skipped!!!!
         path: output
+        include-hidden-files: true
     - name: Upload Coverage
       # Don't mix stable coverage with development coverage
       # if: ${{ (github.ref == 'refs/heads/dev') && (matrix.ki_release != 'ki8') }}
@@ -189,6 +191,7 @@ jobs:
       with:
         name: Test_Coverage_Independent
         path: .coverage.*
+        include-hidden-files: true
     - name: Collect coverage independent
       run: |
         python3-coverage combine
@@ -201,6 +204,7 @@ jobs:
         name: Test_Output_Independent
         # Important! empty directories are skipped!!!!
         path: output
+        include-hidden-files: true
     - name: Upload Coverage
       # Don't mix stable coverage with development coverage
       # if: github.ref == 'refs/heads/dev'
@@ -288,6 +292,7 @@ jobs:
       with:
         name: Test_Coverage_combined
         path: htmlcov
+        include-hidden-files: true
 
   coveralls:
     name: Finish Coveralls
