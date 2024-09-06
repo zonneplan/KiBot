@@ -6,6 +6,7 @@ pytest-3 --log-cli-level debug
 """
 from contextlib import contextmanager
 import csv
+import json
 import logging
 import os
 import signal
@@ -136,8 +137,15 @@ class Events(object):
     def set_value(self, id, value):
         self.e.append([id, 'SetValue', value])
 
+    def toggle_value(self, id):
+        self.e.append([id, '_ToggleValue', ''])
+
     def edit_dict(self, id):
         self.send_event(id, 'EVT_BUTTON')
+        self.wait(id)
+
+    def add_dict(self, id):
+        self.send_event(id+'.add', 'EVT_BUTTON')
         self.wait(id)
 
     def ok(self):
@@ -239,3 +247,91 @@ def test_gui_new_board_view_2(test_dir):
     """ We start with config and SCH.
         Add a boardview output, name it test_output and save """
     run_test(2, test_dir, 'light_control', new_board_view_deep_recipe, keep_project=True)
+
+
+def get_simple(path, items):
+    for i in items:
+        name = i[0]
+        if name == 'variant':
+            # Variants are verified during config
+            continue
+        if (name == 'description' or name == 'template') and path == 'output.kikit_present.options.dict':
+            # Is a file name
+            continue
+        if name == 'name' and path == 'output.kikit_present.options.dict.boards.dict':
+            # Is a PCB file
+            continue
+        if name == 'output' and path.startswith('output.stencil'):
+            # Pattern with %i
+            continue
+        if name == 'layer' and path.endswith('.layers.dict'):
+            # Valid layer name
+            continue
+        valids = i[1]
+        if 'DataTypeDict' in valids:
+            continue
+        if 'DataTypeString' in valids:
+            return name, 'string'
+        if 'DataTypeNumber' in valids:
+            return name, 'number'
+        if 'DataTypeBoolean' in valids:
+            return name, 'boolean'
+    return None, None
+
+
+def for_output(e, name, items, level=0):
+    input, ikind = get_simple(name, items)
+    assert input
+    val = name
+    if ikind == 'number':
+        val = 'str:20'
+    elif ikind == 'string' and input == 'separator':
+        val = ','
+    # Panelize
+    elif ikind == 'string' and (input == 'posx' or input == 'hspace' or input == 'vwidth' or input == 'drill' or
+                                input == 'hoffset' or input == 'clearance' or input == 'tolerance'):
+        val = '1mm'
+    # PcbDraw
+    elif ikind == 'string' and input == 'copper':
+        val = '#5e283a'
+    # KiBoM
+    elif ikind == 'string' and input == 'field':
+        val = 'References'
+    if ikind == 'boolean':
+        id = f'{name}.{input}.{ikind}'
+        e.toggle_value(id)
+        e.send_event(id, 'EVT_CHECKBOX')
+    else:
+        e.set_value(f'{name}.{input}.{ikind}', val)
+    for i in items:
+        input, valids, data = i
+        if data:
+            entry = f'{name}.{input}.dict'
+            if ('DataTypeDict' in valids) or ('DataTypeListDictSingular' in valids):
+                e.edit_dict(entry)
+            else:
+                e.add_dict(entry)
+            for_output(e, entry, data, level+1)
+            e.press_button(entry+'.ok')
+            e.wait(name)
+
+
+def try_all_outputs_recipe(ctx):
+    with open('tests/GUI/outputs') as f:
+        data = json.load(f)
+    e = Events()
+    e.start()
+    e.sel_outputs_page()
+    for o, c in data.items():
+        e.new_output(o)
+        name = 'output.'+o
+        for_output(e, name, c)
+        e.press_button(name+'.ok')
+        e.wait_main()
+    e.save()
+    e.esc()
+    return e
+
+
+def test_gui_try_all_outputs_1(test_dir):
+    run_test(3, test_dir, 'light_control', try_all_outputs_recipe, keep_project=True)

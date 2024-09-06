@@ -35,6 +35,10 @@ BMP_CLEAR = wx.ART_DELETE
 # BMP_CLEAR = wx.ART_CROSS_MARK
 
 
+def name_remove_end(name, count):
+    return '.'.join(name.split('.')[:-count])
+
+
 class DataTypeBase(object):
     def __init__(self, kind, restriction, default, name):
         self.kind = kind
@@ -259,12 +263,14 @@ class DataTypeDict(DataTypeBase):
 
         if USE_DIALOG_FOR_NESTED:
             if kwargs.get('force_embedded'):
+                # Remove the extra "NAME.dict" at the end
+                name_embedded = name_remove_end(name, 2)
                 self.embedded = True
                 sb_sizer = wx.StaticBoxSizer(wx.VERTICAL, window, lbl)
                 sb = sb_sizer.GetStaticBox()
                 # TODO: better solution than an extra sizer?
                 sep_sizer = wx.BoxSizer(wx.VERTICAL)  # Add some border
-                add_widgets(self.sub_obj, entry.sub, sb, sep_sizer, level+1, entry, domain=name)
+                add_widgets(self.sub_obj, entry.sub, sb, sep_sizer, level+1, entry, domain=name_embedded)
                 sb_sizer.Add(sep_sizer, gh.SIZER_FLAGS_1)
                 e_sizer.Add(sb_sizer, gh.SIZER_FLAGS_1)
                 # Which widget will be focused
@@ -390,7 +396,10 @@ class DataTypeList(DataTypeBase):
         list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
 
         abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
-        abm_sizer.Add(add_abm_buttons(self, self.sp, id=name), gh.SIZER_FLAGS_0_NO_EXPAND)
+        # Make the name uniform, not accurate
+        but_name = name_remove_end(name, 1)+'.dict'
+        self.path_name = but_name
+        abm_sizer.Add(add_abm_buttons(self, self.sp, id=but_name), gh.SIZER_FLAGS_0_NO_EXPAND)
         main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
 
         self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
@@ -587,7 +596,7 @@ class DataTypeListDict(DataTypeList):
         if obj is None:
             obj = create_new_optionable(self.entry.cls, self.entry.obj)
         res = edit_dict(self.window.Parent, obj, self.entry.sub, self.entry.name, self.create_edit_title(index),
-                        force_changed=True)
+                        force_changed=True, name=self.path_name)
         if res:
             if index == -1:
                 self.lbox.Append(str(obj), obj)
@@ -625,7 +634,8 @@ class DataTypeListDictSingular(DataTypeDict, DataTypeListDict):
         # A dict editor
         kwargs['force_embedded'] = False
         kwargs['show_value'] = True
-        sizer_dict = DataTypeDict.get_widget(self, obj, window, entry, level, init_dict, value, name, **kwargs)
+        single_name = name[:-2]  # .dict_s -> .dict
+        sizer_dict = DataTypeDict.get_widget(self, obj, window, entry, level, init_dict, value, single_name, **kwargs)
         if init_dict:
             # Revert the temporal singular
             setattr(obj, entry.name, old_value)
@@ -735,7 +745,8 @@ class DataTypeListDictOrString(DataTypeListDict):
         for e in new_entry.sub:
             e.parent = new_entry
         new_entry.cls = self.entry.cls
-        res = edit_dict(self.window.Parent, new_obj, [new_entry], name, self.create_edit_title(index), force_changed=True)
+        res = edit_dict(self.window.Parent, new_obj, [new_entry], name, self.create_edit_title(index), force_changed=True,
+                        name=self.path_name)
         if res:
             new_val = getattr(new_obj, name)
             if index == -1:

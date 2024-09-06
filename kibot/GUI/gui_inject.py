@@ -25,6 +25,12 @@ ids = {}
 def convert_to_number(value):
     if value.startswith('wx.'):
         return getattr(wx, value[3:])
+    if value == 'True':
+        return True
+    if value == 'False':
+        return False
+    if value.startswith('str:'):
+        return value[4:]
     try:
         # Convert to integer if possible
         return int(value)
@@ -136,7 +142,7 @@ class InjectDialog(wx.Dialog):
         # Call member
         o = wx.FindWindowById(self.get_id(id))
         f = getattr(o, command)
-        logger.debug(f'* Injecting {id[3:]}.{command}{tuple(data)} [{o}]')
+        logger.debug(f'* Injecting {id}.{command}{tuple(data)} [{o}]')
         f(*data)
         return True
 
@@ -194,6 +200,12 @@ class InjectDialog(wx.Dialog):
         cur_val = o.GetPath()
         if not cur_val.endswith(data):
             self.exit(f'Wrong path: {cur_val} (expected {data})')
+
+    def ToggleValue(self, id, data):
+        o = wx.FindWindowById(self.get_id(id))
+        cur_val = o.GetValue()
+        o.SetValue(not cur_val)
+        logger.debug(f'* Toggle {id} ({cur_val} -> {not cur_val})')
 
 
 def create_id(name, sub_name=None):

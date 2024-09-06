@@ -6,7 +6,7 @@ BUILDDIR      = build
 SPHINXTARGETS = html dirhtml singlehtml pickle json htmlhelp qthelp devhelp epub latex latexpdf latexpdfja text man texinfo info gettext changes xml pseudoxml linkcheck doctest coverage clean
 
 
-all: html samples/generic_plot.kibot.yaml ../kibot/resources/report_templates/report_full_svg.txt ../src/kibot-check
+all: html samples/generic_plot.kibot.yaml ../kibot/resources/report_templates/report_full_svg.txt ../src/kibot-check ../tests/GUI/stats
 
 ../src/kibot-check: ../src/kibot-check.in replace_tags.pl ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/registrable.py ../kibot/misc.py ../kibot/config_reader.py ../kibot/dep_downloader.py
 	cat ../src/kibot-check.in | perl replace_tags.pl > ../src/kibot-check
@@ -54,6 +54,9 @@ source/Changelog.rst: ../CHANGELOG.md
 	pandoc -o tmp.rst $<
 	cat changelog_pre.rst tmp.rst > $@
 	rm tmp.rst
+
+../tests/GUI/outputs ../tests/GUI/filters ../tests/GUI/preflights ../tests/GUI/variants ../tests/GUI/stats: ../kibot/fil_*.py ../kibot/out_*.py ../kibot/pre_*.py ../kibot/var_*.py ../kibot/config_reader.py
+	../src/kibot -b ../tests/board_samples/kicad_8/light_control.kicad_pcb --internal-check -d ../tests/GUI > ../tests/GUI/stats
 
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)

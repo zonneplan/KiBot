@@ -10,6 +10,8 @@ import difflib
 import wx
 from . import gui_config
 from .gui_inject import create_id, InjectDialog
+from .. import log
+logger = log.get_logger()
 # loaded_btns = {}
 emp_font = None
 SIZER_FLAGS_0 = SIZER_FLAGS_1 = SIZER_FLAGS_0_NO_BORDER = SIZER_FLAGS_1_NO_BORDER = None
@@ -46,8 +48,8 @@ def init_vars():
 
 
 class MessageDialog(InjectDialog):
-    def __init__(self, msg, title, icon=None, ok_btn=True):
-        InjectDialog.__init__(self, None, title=title,
+    def __init__(self, msg, title, icon=None, ok_btn=True, name=None):
+        InjectDialog.__init__(self, None, title=title, name=name,
                               style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         msg_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -91,13 +93,14 @@ class MessageDialog(InjectDialog):
 
 
 def MessageBox(msg, title, icon=None, ok_btn=True):
-    dlg = MessageDialog(msg, title, icon, ok_btn)
+    dlg = MessageDialog(msg, title, icon, ok_btn, name=title)
     res = dlg.ShowModal()
     dlg.Destroy()
     return res
 
 
 def pop_error(msg):
+    logger.error(msg)
     if gui_config.USE_MSGBOX:
         wx.MessageBox(msg, 'Error', wx.OK | wx.ICON_ERROR)
     else:

@@ -5,7 +5,9 @@
 # Project: KiBot (formerly KiPlot)
 #
 # Data type analyzer and rules enforcer
+import json
 import math
+from os import path as op
 import re
 from .data_types import get_data_type_tree, create_new_optionable
 from ..error import KiPlotConfigurationError
@@ -26,6 +28,7 @@ class DTTStat(object):
         self.n_types = []
         self.types = []
         self.names = []
+        self.paths = []
 
     def add_param(self, de, level, name):
         self.params += 1
@@ -33,6 +36,8 @@ class DTTStat(object):
         self.n_types.append(len(de.valids))
         self.types.append(de.valids)
         self.names.append(name)
+        for tp in de.valids:
+            self.paths.append(name+'.'+tp.kind)
 
 
 class DTTStats(object):
@@ -88,10 +93,12 @@ class DTTStats(object):
 
 
 def analyze_data_type_tree(tree, stats, pref='', level=0, parent=None):
+    entries = []
     for de in tree:
         # logger.error(f'  {"  "*level}- {de.name}')
         name = pref+de.name
         stats.add_param(de, level, name)
+        entries.append([de.name, [d.__class__.__name__ for d in de.valids], None])
         if de.def_val == '{}':
             logger.error(f'{name}')
         if de.cls is not None:
@@ -113,7 +120,8 @@ def analyze_data_type_tree(tree, stats, pref='', level=0, parent=None):
                 GS.exit_with_error(f'No default for {name} `{de.def_val}` ({de.valids})', INTERNAL_ERROR)
             # Go deeper
             if de.is_dict or de.is_list_dict:
-                analyze_data_type_tree(de.sub, stats, name+'.', level+1, de.obj)
+                entries[-1][2] = analyze_data_type_tree(de.sub, stats, name+'.', level+1, de.obj)
+    return entries
 
 
 def report(all, kind):
@@ -160,16 +168,20 @@ def report(all, kind):
 
 
 def scan_items(category, iterable, accum, totals, config):
+    entries = {}
     for name, cls in iterable.items():
         obj = cls()
         obj.type = name
         config(obj)
         dtt = get_data_type_tree(cls(), obj)
         stats = DTTStat(name)
-        analyze_data_type_tree(dtt, stats, name+'.')
+        entries[name] = analyze_data_type_tree(dtt, stats, name+'.')
         accum.add(stats)
         totals.add(stats)
     report(accum, category)
+    if GS.out_dir_in_cmd_line:
+        with open(op.join(GS.out_dir, category), 'w') as f:
+            f.write(json.dumps(entries, sort_keys=True, indent=2))
 
 
 CATS = (('outputs', RegOutput.get_registered, True),
@@ -179,6 +191,11 @@ CATS = (('outputs', RegOutput.get_registered, True),
 
 
 def analyze():
+    # Check that we have some global options
+    if GS.globals_tree is None:
+        # Nope, we didn't load a config, so go for defaults
+        glb = GS.set_global_options_tree({})
+        glb.config(None)
     totals = DTTStats()
     for c in CATS:
         stats = DTTStats()
