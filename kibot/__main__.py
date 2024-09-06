@@ -515,7 +515,7 @@ def main():
         sys.exit(0)
 
     # Determine the YAML file
-    plot_config = solve_config(args.plot_config, args.only_names, args.gui)
+    plot_config = solve_config(args.plot_config, args.only_names, args.gui or args.internal_check)
     if not (args.list or args.list_variants) or args.config_outs:
         # Determine the SCH file
         GS.set_sch(solve_schematic('.', args.schematic, args.board_file, plot_config))
