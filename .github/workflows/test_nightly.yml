@@ -33,7 +33,7 @@ jobs:
         ./${{ matrix.w_tests }}.sh
     - name: Store results
       if: ${{ always() }}
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: Test_Output_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         # Important! empty directories are skipped!!!!
