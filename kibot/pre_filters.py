@@ -42,7 +42,7 @@ class FilterOptionsKiBot(Optionable):
         txt = self.filter
         if self.error:
             txt += f' ({self.error})'
-        if self.number:
+        if getattr(self, 'number', None):
             txt += f' ({self.number})'
         if self.regex:
             txt += f' [{self.regex}]'
