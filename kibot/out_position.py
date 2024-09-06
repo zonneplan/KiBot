@@ -112,7 +112,7 @@ class PositionOptions(VariantOptions):
                 new_col = col.id
                 new_name = col.name if col.name else new_col
             new_columns.append(PosColumns(new_col, new_name))
-        self.columns = new_columns
+        self._columns = new_columns
         self._expand_ext = 'pos' if self.format == 'ASCII' else self.format.lower()
 
     def _do_position_plot_ascii(self, output_dir, columns, modulesStr, maxSizes, modules_side):
@@ -257,7 +257,7 @@ class PositionOptions(VariantOptions):
             self.run_gerber(output_dir)
             return
         self.filter_pcb_components()
-        columns = tuple(o.name for o in self.columns)
+        columns = tuple(o.name for o in self._columns)
         conv = GS.unit_name_to_scale_factor(self.units)
         # Format all strings
         comps_hash = self.get_refs_hash()
@@ -311,7 +311,7 @@ class PositionOptions(VariantOptions):
                     float_format = "{{:.{}f}}".format(self.right_digits)
                 else:
                     float_format = "{}"
-                for col in self.columns:
+                for col in self._columns:
                     k = col.id
                     if k == 'Ref':
                         row.append(quote_char+ref+quote_char)
