@@ -16,6 +16,8 @@ from xvfbwrapper import Xvfb
 from . import context
 CSVDIR = "tests/GUI/CSV/"
 MAIN_OUPUTS_PAGE = 1
+MAIN_GROUPS_PAGE = 2
+MAIN_PREFLIGHTS_PAGE = 3
 
 
 class PopenContext(Popen):
@@ -121,6 +123,9 @@ class Events(object):
     def sel_outputs_page(self):
         self.set_selection('ID_MAIN_NOTEBOOK', MAIN_OUPUTS_PAGE)
 
+    def sel_preflights_page(self):
+        self.set_selection('ID_MAIN_NOTEBOOK', MAIN_PREFLIGHTS_PAGE)
+
     def send_text(self, id, txt):
         self.e.append([id, '_SendText', txt])
 
@@ -133,6 +138,17 @@ class Events(object):
         self.send_text('ID_CHOOSE', name)
         self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
         self.wait('output.'+name)
+
+    def new_preflight(self, name):
+        self.send_event('preflight.add', 'EVT_BUTTON')
+        self.wait('choose_a preflight')
+        self.send_text('ID_CHOOSE', name)
+        self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
+        self.wait('preflight.'+name)
+
+    def new_last_preflight(self, name):
+        self.send_event('preflight.add', 'EVT_BUTTON')
+        self.wait('preflight.'+name)
 
     def set_value(self, id, value):
         self.e.append([id, 'SetValue', value])
@@ -281,28 +297,28 @@ def get_simple(path, items):
 
 def for_output(e, name, items, level=0):
     input, ikind = get_simple(name, items)
-    assert input
-    val = name
-    if ikind == 'number':
-        val = 'str:20'
-    elif ikind == 'string' and input == 'separator':
-        val = ','
-    # Panelize
-    elif ikind == 'string' and (input == 'posx' or input == 'hspace' or input == 'vwidth' or input == 'drill' or
-                                input == 'hoffset' or input == 'clearance' or input == 'tolerance'):
-        val = '1mm'
-    # PcbDraw
-    elif ikind == 'string' and input == 'copper':
-        val = '#5e283a'
-    # KiBoM
-    elif ikind == 'string' and input == 'field':
-        val = 'References'
-    if ikind == 'boolean':
-        id = f'{name}.{input}.{ikind}'
-        e.toggle_value(id)
-        e.send_event(id, 'EVT_CHECKBOX')
-    else:
-        e.set_value(f'{name}.{input}.{ikind}', val)
+    if input:
+        val = name
+        if ikind == 'number':
+            val = 'str:20'
+        elif ikind == 'string' and input == 'separator':
+            val = ','
+        # Panelize
+        elif ikind == 'string' and (input == 'posx' or input == 'hspace' or input == 'vwidth' or input == 'drill' or
+                                    input == 'hoffset' or input == 'clearance' or input == 'tolerance'):
+            val = '1mm'
+        # PcbDraw
+        elif ikind == 'string' and input == 'copper':
+            val = '#5e283a'
+        # KiBoM
+        elif ikind == 'string' and input == 'field':
+            val = 'References'
+        if ikind == 'boolean':
+            id = f'{name}.{input}.{ikind}'
+            e.toggle_value(id)
+            e.send_event(id, 'EVT_CHECKBOX')
+        else:
+            e.set_value(f'{name}.{input}.{ikind}', val)
     for i in items:
         input, valids, data = i
         if data:
@@ -333,5 +349,34 @@ def try_all_outputs_recipe(ctx):
     return e
 
 
+def try_all_preflights_recipe(ctx):
+    with open('tests/GUI/preflights') as f:
+        data = json.load(f)
+    e = Events()
+    e.start()
+    e.sel_preflights_page()
+    total = len(data)
+    for n, (o, c) in enumerate(data.items()):
+        if n < total-1:
+            e.new_preflight(o)
+        else:
+            e.new_last_preflight(o)
+        name = 'preflight.'+o
+        # Preflights can embed the first level
+        if len(c) == 1 and c[0][2] and 'DataTypeDict' in c[0][1]:
+            for_output(e, name, c[0][2])
+        else:
+            for_output(e, name, c)
+        e.press_button(name+'.ok')
+        e.wait_main()
+    e.save()
+    e.esc()
+    return e
+
+
 def test_gui_try_all_outputs_1(test_dir):
     run_test(3, test_dir, 'light_control', try_all_outputs_recipe, keep_project=True)
+
+
+def test_gui_try_all_preflights_1(test_dir):
+    run_test(4, test_dir, 'light_control', try_all_preflights_recipe, keep_project=True)
