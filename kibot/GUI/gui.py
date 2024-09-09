@@ -1406,10 +1406,10 @@ class PreflightsPanel(DictPanel):
         return obj
 
     def OnAdd(self, event):
-        if not GS.sch:
+        if not GS.sch_file:
             pop_error('Please first select a schematic')
             return
-        if not GS.board:
+        if not GS.pcb_file:
             pop_error('Please first select a PCB')
             return
         super().OnAdd(event)
