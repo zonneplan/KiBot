@@ -126,11 +126,9 @@ class SubPCBOptions(PanelOptions):
            self.is_zero(self.bry)):
             raise KiPlotConfigurationError('No reference or rectangle specified for {} sub-PCB'.format(self.name))
         self.add_units(('tlx', 'tly', 'brx', 'bry', 'tolerance'), self.units, convert=True)
-        self.board_rect = GS.create_eda_rect(self._tlx, self._tly, self._brx, self._bry)
         if not self._tolerance and GS.ki5:
             # KiCad 5 workaround: rounding issues generate 1 fm of error. So we change to 2 fm tolerance.
             self._tolerance = 2
-        self.board_rect.Inflate(int(self._tolerance))
 
     def get_separate_source(self):
         if self.reference:
@@ -184,7 +182,7 @@ class SubPCBOptions(PanelOptions):
             if with_width:
                 width = m.GetWidth()
                 m.SetWidth(0)
-            if not self.board_rect.Contains(m.GetBoundingBox()):
+            if not self._board_rect.Contains(m.GetBoundingBox()):
                 GS.board.Remove(m)
                 self._removed.append(m)
             if with_width:
@@ -196,14 +194,14 @@ class SubPCBOptions(PanelOptions):
             We also check their position, not their BBox. """
         for m in iter:
             ref = m.GetReference()
-            if not self.board_rect.Contains(m.GetPosition()) or (self.strip_annotation and ref == self.reference):
+            if not self._board_rect.Contains(m.GetPosition()) or (self.strip_annotation and ref == self.reference):
                 GS.board.Remove(m)
                 self._removed.append(m)
                 if comps_hash:
                     self._excl_by_sub_pcb.add(ref)
 
     def remove_outside(self, comps_hash):
-        """ Remove footprints, drawings, text and zones outside `board_rect` rectangle.
+        """ Remove footprints, drawings, text and zones outside `_board_rect` rectangle.
             Keep them in a list to restore later. """
         self._removed = []
         self._remove_modules(GS.get_modules(), comps_hash)
@@ -305,7 +303,7 @@ class SubPCBOptions(PanelOptions):
         paper_center_x = GS.from_mm(pcb.paper_w/2)
         paper_center_y = GS.from_mm(pcb.paper_h/2)
         # Compute the offset to make it centered
-        self._moved = self.board_rect.GetCenter()
+        self._moved = self._board_rect.GetCenter()
         self._moved.x = paper_center_x-self._moved.x
         self._moved.y = paper_center_y-self._moved.y
         self.move_objects()
@@ -313,11 +311,13 @@ class SubPCBOptions(PanelOptions):
     def apply(self, comps_hash):
         """ Apply the sub-PCB selection. """
         self._excl_by_sub_pcb = set()
+        self._board_rect = GS.create_eda_rect(self._tlx, self._tly, self._brx, self._bry)
+        self._board_rect.Inflate(int(self._tolerance))
         if self.tool == 'internal':
             if self.reference:
                 # Get the rectangle containing the board edge pointed by the reference
-                self.board_rect = self.search_reference_rect(self.reference)
-                self.board_rect.Inflate(int(self._tolerance))
+                self._board_rect = self.search_reference_rect(self.reference)
+                self._board_rect.Inflate(int(self._tolerance))
             # Using a rectangle
             self.remove_outside(comps_hash)
             # Center the PCB
@@ -325,6 +325,8 @@ class SubPCBOptions(PanelOptions):
         else:
             # Using KiKit:
             self.separate_board(comps_hash)
+        # This can't be cloned
+        self._board_rect = None
 
     def unload_board(self, comps_hash):
         # Undo the sub-PCB: just reload the PCB
