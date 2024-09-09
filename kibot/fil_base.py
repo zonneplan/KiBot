@@ -231,11 +231,11 @@ class BaseFilter(RegFilter):
         self._is_transform = False
         with document:
             self.name = ''
-            """ Used to identify this particular filter definition """
+            """ *Used to identify this particular filter definition """
             self.type = ''
             """ Type of filter """
             self.comment = ''
-            """ A comment for documentation purposes """
+            """ *A comment for documentation purposes """
 
     def config(self, parent):
         super().config(parent)
