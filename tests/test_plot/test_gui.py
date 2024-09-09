@@ -132,6 +132,9 @@ class Events(object):
     def sel_preflights_page(self):
         self.set_selection('ID_MAIN_NOTEBOOK', MAIN_PREFLIGHTS_PAGE)
 
+    def sel_variants_page(self):
+        self.set_selection('ID_MAIN_NOTEBOOK', MAIN_VARIANTS_PAGE)
+
     def send_text(self, id, txt):
         self.e.append([id, '_SendText', txt])
 
@@ -158,6 +161,13 @@ class Events(object):
         self.send_text('ID_CHOOSE', name)
         self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
         self.wait('preflight.'+name)
+
+    def new_variant(self, name):
+        self.send_event('variant.add', 'EVT_BUTTON')
+        self.wait('choose_a variant type')
+        self.send_text('ID_CHOOSE', name)
+        self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
+        self.wait('variant.'+name)
 
     def new_last_preflight(self, name):
         self.send_event('preflight.add', 'EVT_BUTTON')
@@ -404,6 +414,23 @@ def try_all_filters_recipe(ctx):
     return e
 
 
+def try_all_variants_recipe(ctx):
+    with open('tests/GUI/variants') as f:
+        data = json.load(f)
+    e = Events()
+    e.start()
+    e.sel_variants_page()
+    for o, c in data.items():
+        e.new_variant(o)
+        name = 'variant.'+o
+        for_output(e, name, c)
+        e.press_button(name+'.ok')
+        e.wait_main()
+    e.save()
+    e.esc()
+    return e
+
+
 def test_gui_try_all_outputs_1(test_dir):
     run_test(3, test_dir, 'light_control', try_all_outputs_recipe, keep_project=True)
 
@@ -414,3 +441,7 @@ def test_gui_try_all_preflights_1(test_dir):
 
 def test_gui_try_all_filters_1(test_dir):
     run_test(5, test_dir, 'light_control', try_all_filters_recipe, keep_project=True)
+
+
+def test_gui_try_all_variants_1(test_dir):
+    run_test(6, test_dir, 'light_control', try_all_variants_recipe, keep_project=True)

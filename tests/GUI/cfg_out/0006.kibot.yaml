@@ -1,0 +1,34 @@
+kibot:
+  version: 1
+variants:
+- name: variant.ibom
+  type: ibom
+  sub_pcbs:
+  - name: variant.ibom.sub_pcbs.dict
+    reference: BRD1
+- name: variant.kibom
+  type: kibom
+  sub_pcbs:
+  - name: variant.kibom.sub_pcbs.dict
+    reference: BRD1
+- name: variant.kicost
+  type: kicost
+  sub_pcbs:
+  - name: variant.kicost.sub_pcbs.dict
+    reference: BRD1
+outputs:
+- name: bom_html
+  comment: Bill of Materials in HTML format
+  type: kibom
+  dir: BoM
+  options:
+    format: HTML
+    variant: pp
+    output: ''
+    conf: ''
+- name: bom_csv
+  comment: Bill of Materials in CSV format
+  type: kibom
+  dir: BoM
+  options:
+    format: CSV
