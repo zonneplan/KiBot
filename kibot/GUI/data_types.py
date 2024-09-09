@@ -217,7 +217,7 @@ class DataTypeCombo(DataTypeBase):
         self.input.Bind(wx.EVT_TEXT, self.OnChange)
 
 
-def create_new_optionable(cls, parent):
+def create_new_optionable(cls, parent, extra=None):
     """ Create an Optionable from the cls class and configure it to get the default values.
         Some objects needs filled values or they fail to be configured, so here we use the docs examples to fill them """
     o = cls()
@@ -225,7 +225,7 @@ def create_new_optionable(cls, parent):
     if True:
         # This approach adds the examples to the tree, but then they get marked as defined by user, which is confusing
         # But is the best way because the internal mechanism relies on the values found on the tree
-        tree = {}
+        tree = extra if extra else {}
         for k, v in o.get_attrs_for().items():
             if k.startswith('_') and k.endswith('_example'):
                 tree[k[1:-8]] = v

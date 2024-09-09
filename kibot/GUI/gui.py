@@ -19,7 +19,7 @@ from ..gs import GS
 from ..kiplot import config_output, load_board, load_sch, load_config, reset_config, generate_outputs
 from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
-from .data_types import edit_dict
+from .data_types import edit_dict, create_new_optionable
 from .gui_helpers import (move_sel_up, move_sel_down, remove_item, pop_error, get_client_data, pop_info, ok_cancel,
                           set_items, get_selection, init_vars, choose_from_list, add_abm_buttons, input_label_and_text,
                           set_button_bitmap, pop_confirm)
@@ -1334,10 +1334,11 @@ class FiltersPanel(DictPanel):
 
     def new_obj(self, kind):
         # Create a new object of the selected type
-        obj = RegFilter.get_class_for(kind)()
-        obj.type = kind
-        obj._tree = {'name': 'new_filter'}
-        obj.config(None)
+        cls = RegFilter.get_class_for(kind)
+        desc = get_doc_lines(cls)[0]
+        if desc[-1] == '.':
+            desc = desc[:-1]
+        obj = create_new_optionable(cls, None, extra={'name': 'new_filter', 'type': kind, 'comment': desc})
         return obj
 
 

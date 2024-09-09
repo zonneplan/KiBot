@@ -18,6 +18,9 @@ CSVDIR = "tests/GUI/CSV/"
 MAIN_OUPUTS_PAGE = 1
 MAIN_GROUPS_PAGE = 2
 MAIN_PREFLIGHTS_PAGE = 3
+MAIN_FILTERS_PAGE = 4
+MAIN_VARIANTS_PAGE = 5
+MAIN_ABOUT_PAGE = 6
 
 
 class PopenContext(Popen):
@@ -123,6 +126,9 @@ class Events(object):
     def sel_outputs_page(self):
         self.set_selection('ID_MAIN_NOTEBOOK', MAIN_OUPUTS_PAGE)
 
+    def sel_filters_page(self):
+        self.set_selection('ID_MAIN_NOTEBOOK', MAIN_FILTERS_PAGE)
+
     def sel_preflights_page(self):
         self.set_selection('ID_MAIN_NOTEBOOK', MAIN_PREFLIGHTS_PAGE)
 
@@ -134,10 +140,17 @@ class Events(object):
 
     def new_output(self, name):
         self.send_event('output.add', 'EVT_BUTTON')
-        self.wait('choose_an output type')
+        self.wait('choose_an output type')  # From choose_type
         self.send_text('ID_CHOOSE', name)
         self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
-        self.wait('output.'+name)
+        self.wait('output.'+name)  # self.dict_type
+
+    def new_filter(self, name):
+        self.send_event('filter.add', 'EVT_BUTTON')
+        self.wait('choose_a filter type')
+        self.send_text('ID_CHOOSE', name)
+        self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
+        self.wait('filter.'+name)
 
     def new_preflight(self, name):
         self.send_event('preflight.add', 'EVT_BUTTON')
@@ -374,9 +387,30 @@ def try_all_preflights_recipe(ctx):
     return e
 
 
+def try_all_filters_recipe(ctx):
+    with open('tests/GUI/filters') as f:
+        data = json.load(f)
+    e = Events()
+    e.start()
+    e.sel_filters_page()
+    for o, c in data.items():
+        e.new_filter(o)
+        name = 'filter.'+o
+        for_output(e, name, c)
+        e.press_button(name+'.ok')
+        e.wait_main()
+    e.save()
+    e.esc()
+    return e
+
+
 def test_gui_try_all_outputs_1(test_dir):
     run_test(3, test_dir, 'light_control', try_all_outputs_recipe, keep_project=True)
 
 
 def test_gui_try_all_preflights_1(test_dir):
     run_test(4, test_dir, 'light_control', try_all_preflights_recipe, keep_project=True)
+
+
+def test_gui_try_all_filters_1(test_dir):
+    run_test(5, test_dir, 'light_control', try_all_filters_recipe, keep_project=True)
