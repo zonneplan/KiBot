@@ -55,6 +55,7 @@ class FilterOptions(FilterOptionsKiBot):
         super().__init__()
         self.add_to_doc('error', 'A name for KiCad 6 or a number for KiCad 5, but always a string')
         self.add_to_doc('number', 'KiCad 5 only')
+        self._error_example = 'lib_symbol_issues'
 
 
 class FiltersOptions(Optionable):
