@@ -1,0 +1,64 @@
+# Testpoints selected by fabrication attribute
+kibot:
+  version: 1
+
+filters:
+  - name: _separate_pins_for_tp
+    comment: "Separate pins with testpoint as fabrication attribute"
+    type: separate_pins
+
+outputs:
+  - name: _testpoints_attr@_KIBOT_IMPORT_ID@
+    comment: "Testpoints report by fabrication attribute"
+    type: bom
+    dir: @_KIBOT_IMPORT_DIR@
+    options:
+      pre_transform: @_KIBOT_PRE_TRANSFORM@
+      exclude_filter: @_KIBOT_EXCLUDE_FILTER@
+      dnf_filter: @_KIBOT_DNF_FILTER@
+      exclude_marked_in_sch: false
+      group_fields: []
+      sort_style: ref
+      use_aux_axis_as_origin: true
+      ignore_dnf: false
+      format: @_KIBOT_TESTPOINTS_FORMAT@
+      xlsx:
+        logo_scale: 1.7
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+      footprint_type_values: 'SMT,THRU,'
+      columns:
+        - field: Row
+          name: ''
+        - field: References
+          name: Source
+        - field: Net Name
+          name: Net
+        - field: Net Class
+        - field: Footprint Side
+          name: Side
+        - field: Footprint X
+          name: X-Loc
+        - field: Footprint Y
+          name: Y-Loc
+        - field: Footprint Type
+          name: Pad Type
+
+  - name: _testpoints_summary@_KIBOT_IMPORT_ID@
+    comment: "Testpoints summary by fabrication attribute"
+    type: report
+    dir: @_KIBOT_IMPORT_DIR@
+    output_id: _testpoints
+    options:
+      template: testpoints
+
+
+...
+definitions:
+  _KIBOT_IMPORT_ID: ''
+  _KIBOT_IMPORT_DIR: 'Testpoints'
+  _KIBOT_PRE_TRANSFORM: ['_kicost_rename', '_separate_pins_for_tp']
+  _KIBOT_DNF_FILTER: '_null'
+  _KIBOT_EXCLUDE_FILTER: '_null'
+  _KIBOT_TESTPOINTS_FORMAT: 'XLSX'

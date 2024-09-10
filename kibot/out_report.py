@@ -24,7 +24,7 @@ from .gs import GS
 from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT, W_UNKPADSH,
                    W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
-from .out_base import BaseOptions
+from .out_base import VariantOptions
 from .error import KiPlotConfigurationError
 from .kiplot import config_output, run_command
 from .dep_downloader import get_dep_data
@@ -176,15 +176,20 @@ def list_nice(names):
     return res[2:]
 
 
-class ReportOptions(BaseOptions):
+class PadProperty(object):
+    pass
+
+
+class ReportOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
             """ *Output file name (%i='report', %x='txt') """
             self.template = 'full'
-            """ *Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+            """ *[full,full_svg,simple,testpoints,*] Name for one of the internal templates or a custom template file.
                 Environment variables and ~ are allowed.
-                Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`) """
+                Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
+                Note: the testpoint variables uses the `testpoint` fabrication attribute of pads """
             self.convert_from = 'markdown'
             """ Original format for the report conversion. Current templates are `markdown`. See `do_convert` """
             self.convert_to = 'pdf'
@@ -229,7 +234,7 @@ class ReportOptions(BaseOptions):
         if self.template.endswith('_ASCII'):
             self.template = self.template[:-6]
             self.to_ascii = True
-        if self.template.lower() in ('full', 'simple', 'full_svg'):
+        if self.template.lower() in ('full', 'simple', 'full_svg', 'testpoints'):
             self.template = os.path.abspath(os.path.join(GS.get_resource_path('report_templates'),
                                             'report_'+self.template.lower()+'.txt'))
         if not os.path.isabs(self.template):
@@ -384,6 +389,34 @@ class ReportOptions(BaseOptions):
         text = ''
         for s in images:
             context = {'path': s[0], 'comment': s[1], 'new_line': '\n'}
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_nets_without_testpoint(self, line):
+        """ Replace iterator for the `nets_without_testpoint` context """
+        text = ''
+        for s in self._nets_without_testpoint:
+            context = {'net': s}
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_nets_with_one_testpoint(self, line):
+        """ Replace iterator for the `nets_with_one_testpoint` context """
+        text = ''
+        for n, pads in self._nets_with_tp.items():
+            if len(pads) > 1:
+                continue
+            context = {'net': n, 'pad': pads[0]}
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_nets_with_many_testpoints(self, line):
+        """ Replace iterator for the `nets_with_many_testpoints` context """
+        text = ''
+        for n, pads in self._nets_with_tp.items():
+            if len(pads) == 1:
+                continue
+            context = {'net': n, 'pads': ", ".join(pads)}
             text += self.do_replacements(line, context)
         return text
 
@@ -590,7 +623,9 @@ class ReportOptions(BaseOptions):
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         npth_attrib = 3 if GS.ki5 else pcbnew.PAD_ATTRIB_NPTH
         min_oar = GS.from_mm(0.1)
+        pad_properties = []
         for m in modules:
+            ref = m.GetReference()
             layer = m.GetLayer()
             if layer == top_layer:
                 if is_pure_smd(m):
@@ -604,6 +639,13 @@ class ReportOptions(BaseOptions):
                     self.bot_tht += 1
             pads = m.Pads()
             for pad in pads:
+                # Pad properties
+                if not GS.ki5:
+                    p = PadProperty()
+                    p.fab_property = pad.GetProperty()
+                    p.net = pad.GetNetname()
+                    p.name = ref+'.'+pad.GetNumber()
+                    pad_properties.append(p)
                 dr = pad.GetDrillSize()
                 if not dr.x:
                     continue
@@ -821,6 +863,23 @@ class ReportOptions(BaseOptions):
         self.paste_pads = self.paste_pads_front + self.paste_pads_bottom
         self.paste_pads_area = self.paste_pads_front_area + self.paste_pads_bottom_area
         self.solder_paste = self.solder_paste_front + self.solder_paste_bottom
+        ###########################################################
+        # Testpoints report
+        ###########################################################
+        nets = GS.board.GetNetsByName()
+        self.testpoint_pads = 0
+        self.total_pads = len(pad_properties)
+        nets_with_tp = {}
+        for p in pad_properties:
+            if p.fab_property == pcbnew.PAD_PROP_TESTPOINT:
+                self.testpoint_pads += 1
+                nets_with_tp[p.net] = nets_with_tp.get(p.net, [])+[p.name]
+        cnd = GS.board.GetConnectivity()
+        self.total_nets = cnd.GetNetCount()
+        self.nets_with_testpoint = len(nets_with_tp)
+        self.testpoint_coverage = (self.nets_with_testpoint/self.total_nets)*100
+        self._nets_without_testpoint = [str(n) for n in nets.keys() if str(n) and str(n) not in nets_with_tp]
+        self._nets_with_tp = nets_with_tp
 
     def eval_conditional(self, line):
         context = {k: getattr(self, k) for k in dir(self) if k[0] != '_' and not callable(getattr(self, k))}
