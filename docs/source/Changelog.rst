@@ -56,6 +56,7 @@ Added
 
    -  Solder paste usage stats (#616)
    -  Support for variants (See #616)
+   -  Testpoints report (See #638)
 
 -  xDRC: configurable category (#647)
 -  Schematic:
@@ -65,6 +66,10 @@ Added
 -  Worksheet:
 
    -  Support for KiCad 8 bitmaps (#623)
+
+-  Position:
+
+   -  Support for panels repeating the same component (See #656)
 
 Fixed:
 ~~~~~~

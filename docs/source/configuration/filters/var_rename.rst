@@ -13,9 +13,9 @@ Variant Renamer
    with *Diode_SMD:D_0805_2012Metric* will change the footprint when *VARIANT* is in use. Of course the
    footprints should be similar, or your PCB will become invalid. |br|
 
-   -  ``comment`` :index:`: <pair: filter - var_rename; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **comment** :index:`: <pair: filter - var_rename; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **name** :index:`: <pair: filter - var_rename; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``force_variant`` :index:`: <pair: filter - var_rename; force_variant>` [:ref:`string <string>`] (default: ``''``) Use this variant instead of the current variant. Useful for IBoM variants.
-   -  ``name`` :index:`: <pair: filter - var_rename; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``separator`` :index:`: <pair: filter - var_rename; separator>` [:ref:`string <string>`] (default: ``':'``) Separator used between the variant and the field name.
    -  ``variant_to_value`` :index:`: <pair: filter - var_rename; variant_to_value>` [:ref:`boolean <boolean>`] (default: ``false``) Rename fields matching the variant to the value of the component.
 

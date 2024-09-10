@@ -10,10 +10,10 @@ Value Splitter
    I.e. extracts the tolerance and puts it in the `tolerance` field. |br|
    Usage `example <https://inti-cmnb.github.io/kibot-examples-1/value_split/>`__. |br|
 
+   -  **comment** :index:`: <pair: filter - value_split; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **name** :index:`: <pair: filter - value_split; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``autoplace`` :index:`: <pair: filter - value_split; autoplace>` [:ref:`boolean <boolean>`] (default: ``true``) Try to figure out the position for the added fields.
    -  ``autoplace_mechanism`` :index:`: <pair: filter - value_split; autoplace_mechanism>` [:ref:`string <string>`] (default: ``'bottom'``) (choices: "bottom", "top") Put the new field at the bottom/top of the last field.
-   -  ``comment`` :index:`: <pair: filter - value_split; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
-   -  ``name`` :index:`: <pair: filter - value_split; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``package`` :index:`: <pair: filter - value_split; package>` [:ref:`string <string>`] (default: ``'yes'``) (choices: "yes", "no", "soft") Policy for the package.
       yes = overwrite existing value, no = don't touch, soft = copy if not defined.
    -  ``power`` :index:`: <pair: filter - value_split; power>` [:ref:`string <string>`] (default: ``'yes'``) (choices: "yes", "no", "soft") Policy for the power rating.

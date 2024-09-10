@@ -3546,9 +3546,10 @@ outputs:
       solder_paste_metal_amount: 87.75
       # [number=0.12] Stencil thickness in mm. Used to compute solder paste usage
       stencil_thickness: 0.12
-      # [string='full'] Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+      # [string='full'] [full,full_svg,simple,testpoints,*] Name for one of the internal templates or a custom template file.
       # Environment variables and ~ are allowed.
-      # Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`)
+      # Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
+      # Note: the testpoint variables uses the `testpoint` fabrication attribute of pads
       template: 'full'
       # [string=''] Board variant to apply
       variant: ''

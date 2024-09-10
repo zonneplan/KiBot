@@ -12,9 +12,10 @@ ReportOptions parameters
    In CI/CD environments: the `kicad_auto_test` docker image contains it.
    In Debian/Ubuntu environments: install `pandoc`, `texlive`, `texlive-latex-base` and `texlive-latex-recommended`.
 -  **output** :index:`: <pair: output - report - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Output file name (%i='report', %x='txt'). Affected by global options.
--  **template** :index:`: <pair: output - report - options; template>` [:ref:`string <string>`] (default: ``'full'``) Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+-  **template** :index:`: <pair: output - report - options; template>` [:ref:`string <string>`] (default: ``'full'``) (choices: "full", "full_svg", "simple", "testpoints") (also accepts any string) Name for one of the internal templates or a custom template file.
    Environment variables and ~ are allowed.
    Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
+   Note: the testpoint variables uses the `testpoint` fabrication attribute of pads.
 -  ``alloy_specific_gravity`` :index:`: <pair: output - report - options; alloy_specific_gravity>` [:ref:`number <number>`] (default: ``7.4``) Specific gravity of the alloy used for the solder paste, in g/cm3. Used to compute solder paste usage.
 -  ``convert_from`` :index:`: <pair: output - report - options; convert_from>` [:ref:`string <string>`] (default: ``'markdown'``) Original format for the report conversion. Current templates are `markdown`. See `do_convert`.
 -  ``converted_output`` :index:`: <pair: output - report - options; converted_output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Converted output file name (%i='report', %x=`convert_to`).

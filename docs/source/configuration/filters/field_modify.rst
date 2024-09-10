@@ -8,13 +8,13 @@ Field Modifier
 
    Changes the content of one or more fields.
 
-   -  ``comment`` :index:`: <pair: filter - field_modify; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **comment** :index:`: <pair: filter - field_modify; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **name** :index:`: <pair: filter - field_modify; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``fields`` :index:`: <pair: filter - field_modify; fields>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'Datasheet'``) [:ref:`comma separated <comma_sep>`] Fields to convert.
 
    -  ``include`` :index:`: <pair: filter - field_modify; include>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) Name of the filter to select which components will be affected.
       Applied to all if nothing specified here.
 
-   -  ``name`` :index:`: <pair: filter - field_modify; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``regex`` :index:`: <pair: filter - field_modify; regex>` [:ref:`string <string>`] (default: ``'(https?://\\S+)'``) Regular expression to match the field content.
       Only fields that matches will be modified.
       An empty regex will match anything.

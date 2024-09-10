@@ -17,8 +17,8 @@ Variant Renamer KiCost style
    other filters to fine-tune the behavior, i.e. you can make the mechanism to be triggered by fields
    like *kibot.VARIANT|FIELD*. |br|
 
-   -  ``comment`` :index:`: <pair: filter - var_rename_kicost; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
-   -  ``name`` :index:`: <pair: filter - var_rename_kicost; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
+   -  **comment** :index:`: <pair: filter - var_rename_kicost; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **name** :index:`: <pair: filter - var_rename_kicost; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``prefix`` :index:`: <pair: filter - var_rename_kicost; prefix>` [:ref:`string <string>`] (default: ``'kicost.'``) A mandatory prefix. Is not case sensitive.
    -  ``separator`` :index:`: <pair: filter - var_rename_kicost; separator>` [:ref:`string <string>`] (default: ``':'``) Separator used between the variant and the field name.
    -  ``variant`` :index:`: <pair: filter - var_rename_kicost; variant>` [:ref:`string <string>`] (default: ``''``) Variant regex to match the VARIANT part.

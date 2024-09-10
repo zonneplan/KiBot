@@ -12,7 +12,8 @@ Generic filter
    The internal `_mechanical` filter emulates the KiBoM behavior for default exclusions. |br|
    The internal `_kicost_dnp` filter emulates KiCost's `dnp` field. |br|
 
-   -  ``comment`` :index:`: <pair: filter - generic; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **comment** :index:`: <pair: filter - generic; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
+   -  **name** :index:`: <pair: filter - generic; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
    -  ``config_field`` :index:`: <pair: filter - generic; config_field>` [:ref:`string <string>`] (default: ``'Config'``) Name of the field used to classify components.
    -  ``config_separators`` :index:`: <pair: filter - generic; config_separators>` [:ref:`string <string>`] (default: ``' ,'``) Characters used to separate options inside the config field.
    -  ``exclude_all_hash_ref`` :index:`: <pair: filter - generic; exclude_all_hash_ref>` [:ref:`boolean <boolean>`] (default: ``false``) Exclude all components with a reference starting with #.
@@ -44,7 +45,6 @@ Generic filter
       Use `dnf_list` for ['dnf', 'dnl', 'dnp', 'do not fit', 'do not load', 'do not place', 'no stuff', 'nofit', 'noload', 'noplace', 'nostuff', 'not fitted', 'not loaded', 'not placed'].
       Use `dnc_list` for ['dnc', 'do not change', 'fixed', 'no change'].
 
-   -  ``name`` :index:`: <pair: filter - generic; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.
 
 .. toctree::
    :caption: Used dicts
