@@ -877,7 +877,7 @@ class ReportOptions(VariantOptions):
         cnd = GS.board.GetConnectivity()
         self.total_nets = cnd.GetNetCount()
         self.nets_with_testpoint = len(nets_with_tp)
-        self.testpoint_coverage = (self.nets_with_testpoint/self.total_nets)*100
+        self.testpoint_coverage = (self.nets_with_testpoint/self.total_nets)*100 if self.total_nets else 0
         self._nets_without_testpoint = [str(n) for n in nets.keys() if str(n) and str(n) not in nets_with_tp]
         self._nets_with_tp = nets_with_tp
 
