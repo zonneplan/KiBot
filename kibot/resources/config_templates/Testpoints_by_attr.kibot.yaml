@@ -45,6 +45,15 @@ outputs:
         - field: Footprint Type
           name: Pad Type
 
+  - name: _testpoints_summary@_KIBOT_IMPORT_ID@
+    comment: "Testpoints summary by fabrication attribute"
+    type: report
+    dir: @_KIBOT_IMPORT_DIR@
+    output_id: _testpoints
+    options:
+      template: testpoints
+
+
 ...
 definitions:
   _KIBOT_IMPORT_ID: ''
