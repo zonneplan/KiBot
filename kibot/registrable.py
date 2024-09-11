@@ -282,7 +282,7 @@ class RegOutput(Optionable, Registrable):
         if grp is not None:
             grp.add_from_output(out)
             return True, grp
-        grp = RegOutput.add_group(group, [out.name])
+        grp = RegOutput.add_group(group, [GroupEntry(out.name, from_out=True)])
         return False, grp
 
     @staticmethod
