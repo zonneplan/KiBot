@@ -138,7 +138,7 @@ class InjectDialog(wx.Dialog):
         command = e[1]
         data = e[2:]
         if command[0] == '_':
-            return getattr(self, command[1:])(id, data[0])
+            return getattr(self, command[1:])(id, data[0] if len(data) == 1 else data)
         # Call member
         o = wx.FindWindowById(self.get_id(id))
         f = getattr(o, command)
@@ -172,7 +172,7 @@ class InjectDialog(wx.Dialog):
         InjectDialog.lock = True
         sim = wx.UIActionSimulator()
         for v in data:
-            sim.Char(ord(v))
+            sim.Char(ord(v) if isinstance(v, str) else v)
         logger.debug(f'* Injecting text: `{data}`')
         InjectDialog.lock = False
         return True

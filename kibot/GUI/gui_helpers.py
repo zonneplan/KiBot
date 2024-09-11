@@ -186,11 +186,11 @@ def get_emp_font():
 #     return deemp_font
 
 
-def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1, style=0):
+def input_label_and_text(parent, lbl, initial, help, txt_w, lbl_w=-1, style=0, id=None):
     sizer = wx.BoxSizer(wx.HORIZONTAL)
     label = wx.StaticText(parent, label=lbl, size=wx.Size(lbl_w, -1), style=wx.ALIGN_RIGHT)
     label.SetToolTip(help)
-    input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1), style=style)
+    input = wx.TextCtrl(parent, value=initial, size=wx.Size(txt_w, -1), style=style, id=create_id(id))
     input.SetToolTip(help)
     sizer.Add(label, SIZER_FLAGS_0)
     sizer.Add(input, SIZER_FLAGS_1)

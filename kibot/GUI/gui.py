@@ -135,7 +135,9 @@ class MainDialog(InjectDialog):
         # Run
         self.but_generate = wx.Button(self, label="Run", id=create_id('ID_GENERATE'))
         set_button_bitmap(self.but_generate, wx.ART_EXECUTABLE_FILE)
-        self.but_generate.SetDefault()
+        # Setting the generate button as default interferes with list boxes on GTK
+        # They convert the RETURN key to a double-click event, but, somehow, it also triggers the default button
+        # self.but_generate.SetDefault()
         but_sizer.Add(self.but_generate, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Cancel
         self.but_cancel = wx.Button(self, id=wx.ID_CANCEL, label="Cancel")
@@ -1036,7 +1038,7 @@ class OutputsPanel(DictPanel):
 
 class GroupsPanel(wx.Panel):
     def __init__(self, parent):
-        wx.Panel.__init__(self, parent)
+        wx.Panel.__init__(self, parent, name='groups')
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -1049,14 +1051,14 @@ class GroupsPanel(wx.Panel):
         list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
         abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
         #   Buttons at the right
-        abm_sizer.Add(add_abm_buttons(self), gh.SIZER_FLAGS_0_NO_EXPAND)
+        abm_sizer.Add(add_abm_buttons(self, id='groups'), gh.SIZER_FLAGS_0_NO_EXPAND)
         main_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
 
         self.SetSizer(main_sizer)
         self.Layout()
 
         # Connect Events
-        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnItemDClick)
+        self.lbox.Bind(wx.EVT_LISTBOX_DCLICK, self.OnItemDClick)   # Mouse double click, on GTK also RETURN key
         self.but_up.Bind(wx.EVT_BUTTON, self.OnUp)
         self.but_down.Bind(wx.EVT_BUTTON, self.OnDown)
         self.but_add.Bind(wx.EVT_BUTTON, self.OnAdd)
@@ -1077,7 +1079,6 @@ class GroupsPanel(wx.Panel):
         position = self.lbox.Selection
         if not is_new:
             del group_names[position]
-        if not is_new:
             # Avoid messing with the actual group
             group = deepcopy(group)
         dlg = EditGroupDialog(self, group, used_names, group_names, is_new)
@@ -1124,7 +1125,8 @@ class EditGroupDialog(InjectDialog):
     """ Edit a group, can be a new one """
     def __init__(self, parent, group, used_names, group_names, is_new):
         self.initialized = False
-        InjectDialog.__init__(self, parent, title="Add/Edit group",
+        base_id = 'edit_group'
+        InjectDialog.__init__(self, parent, title="Add/Edit group", name=base_id,
                               style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
 
         # All the widgets
@@ -1132,7 +1134,7 @@ class EditGroupDialog(InjectDialog):
         #  Group name
         ttip = "Name for the group. Must be unique and different from any output."
         _, self.name_text, grp_name_sizer = input_label_and_text(self, "Group name", group.name, ttip, -1,
-                                                                 style=wx.TE_PROCESS_ENTER)
+                                                                 style=wx.TE_PROCESS_ENTER, id=base_id+'.name')
         main_sizer.Add(grp_name_sizer, gh.SIZER_FLAGS_0_NO_BORDER)
         #  Static Box with the ABM
         sb_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, "Outputs and groups")
@@ -1141,14 +1143,14 @@ class EditGroupDialog(InjectDialog):
         abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
         #    List box
         list_sizer = wx.BoxSizer(wx.VERTICAL)
-        self.lbox = wx.ListBox(sb, choices=[], style=wx.LB_SINGLE)
+        self.lbox = wx.ListBox(sb, choices=[], style=wx.LB_SINGLE, id=create_id('edit_group.lbox'))
         self.lbox.SetToolTip("Outputs and groups that belongs to this group")
         set_items(self.lbox, group.items)   # Populate the listbox
         list_sizer.Add(self.lbox, gh.SIZER_FLAGS_1)
         abm_sizer.Add(list_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
         #    Buttons at the right
         abm_buts = add_abm_buttons(self, sb, add_add=True, add_add_ttip="Add a group to this group",
-                                   add_ttip="Add one or more outputs to the group")
+                                   add_ttip="Add one or more outputs to the group", id=base_id)
         abm_sizer.Add(abm_buts, gh.SIZER_FLAGS_0_NO_EXPAND)
         sb_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
         main_sizer.Add(sb_sizer, gh.SIZER_FLAGS_1)
@@ -1158,7 +1160,7 @@ class EditGroupDialog(InjectDialog):
         status_sizer.Add(self.status_text, gh.SIZER_FLAGS_1)
         main_sizer.Add(status_sizer, gh.SIZER_FLAGS_0_NO_BORDER)
         #  OK/Cancel
-        main_sizer.Add(ok_cancel(self), gh.SIZER_FLAGS_0)
+        main_sizer.Add(ok_cancel(self, domain=base_id), gh.SIZER_FLAGS_0)
 
         self.SetSizer(main_sizer)  # Size hints comes from the main_sizer
         main_sizer.Fit(self)       # Ask the main_sizer to make the dialog big enough

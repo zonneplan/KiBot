@@ -135,38 +135,63 @@ class Events(object):
     def sel_variants_page(self):
         self.set_selection('ID_MAIN_NOTEBOOK', MAIN_VARIANTS_PAGE)
 
-    def send_text(self, id, txt):
-        self.e.append([id, '_SendText', txt])
+    def sel_groups_page(self):
+        self.set_selection('ID_MAIN_NOTEBOOK', MAIN_GROUPS_PAGE)
 
-    def send_key(self, id, key):
-        self.e.append([id, '_SendKey', key])
+    def send_text(self, txt):
+        self.e.append(['', '_SendText', txt])
+
+    def send_keys(self, keys):
+        self.e.append(['', '_SendText']+keys)
+
+    def send_key(self, key):
+        self.e.append(['', '_SendKey', key])
 
     def new_output(self, name):
         self.send_event('output.add', 'EVT_BUTTON')
         self.wait('choose_an output type')  # From choose_type
-        self.send_text('ID_CHOOSE', name)
-        self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
+        self.send_text(name)
+        self.enter()
         self.wait('output.'+name)  # self.dict_type
+
+    def new_group(self, name):
+        self.send_event('groups.add', 'EVT_BUTTON')
+        self.wait('edit_group')
+        self.set_value('edit_group.name', name)
+
+    def add_output_to_group(self, short):
+        self.send_event('edit_group.add', 'EVT_BUTTON')
+        self.wait('choose_an output')
+        self.send_text(short)
+        self.enter()
+        self.wait('edit_group')
+
+    def add_group_to_group(self, short):
+        self.send_event('edit_group.add_add', 'EVT_BUTTON')
+        self.wait('choose_a group')
+        self.send_text(short)
+        self.enter()
+        self.wait('edit_group')
 
     def new_filter(self, name):
         self.send_event('filter.add', 'EVT_BUTTON')
         self.wait('choose_a filter type')
-        self.send_text('ID_CHOOSE', name)
-        self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
+        self.send_text(name)
+        self.enter()
         self.wait('filter.'+name)
 
     def new_preflight(self, name):
         self.send_event('preflight.add', 'EVT_BUTTON')
         self.wait('choose_a preflight')
-        self.send_text('ID_CHOOSE', name)
-        self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
+        self.send_text(name)
+        self.enter()
         self.wait('preflight.'+name)
 
     def new_variant(self, name):
         self.send_event('variant.add', 'EVT_BUTTON')
         self.wait('choose_a variant type')
-        self.send_text('ID_CHOOSE', name)
-        self.send_key('ID_CHOOSE_SRCH', 'wx.WXK_RETURN')
+        self.send_text(name)
+        self.enter()
         self.wait('variant.'+name)
 
     def new_last_preflight(self, name):
@@ -197,7 +222,13 @@ class Events(object):
         self.send_event('ID_SAVE', 'EVT_BUTTON')
 
     def esc(self):
-        self.send_key('', 'wx.WXK_ESCAPE')
+        self.send_key('wx.WXK_ESCAPE')
+
+    def enter(self):
+        self.send_key('wx.WXK_RETURN')
+
+    def down(self):
+        self.send_key('wx.WXK_DOWN')
 
     def save_events(self, cfg):
         with open(cfg, mode='w', newline='') as file:
@@ -218,7 +249,6 @@ def run_test(num, test_dir, project, recipe, keep_project=False, no_board_file=F
     cfg = ctx.get_out_path('events.csv')
     recipe(ctx).save_events(cfg)
     logging.debug(f'Using `{cfg}` events')
-
     yaml_out = ctx.get_out_path('result.kibot.yaml')
     try:
         with Xvfb(width=1920, height=1080, colordepth=24):
@@ -270,6 +300,35 @@ def new_board_view_deep_recipe(ctx):
     e.press_button('output.boardview.options.dict.ok')
     e.wait('output.boardview')
     e.press_button('output.boardview.ok')
+    e.wait_main()
+    e.save()
+    e.esc()
+    return e
+
+
+def try_groups_1_recipe(ctx):
+    e = Events()
+    e.start()
+    e.sel_groups_page()
+    # A new group fab
+    e.new_group('fab')
+    e.add_output_to_group('ger')
+    e.add_output_to_group('exc')
+    e.add_output_to_group('pos')
+    e.press_button('edit_group.ok')
+    e.wait_main()
+    # Edit the plot group
+    e.enter()
+    e.wait('edit_group')
+    e.add_output_to_group('Pcb')
+    e.add_output_to_group('Pcb')
+    e.press_button('edit_group.ok')
+    e.wait_main()
+    # Edit the fab_svg group
+    e.send_keys(['wx.WXK_DOWN', 'wx.WXK_RETURN'])
+    e.wait('edit_group')
+    e.add_group_to_group('fab')
+    e.press_button('edit_group.ok')
     e.wait_main()
     e.save()
     e.esc()
@@ -445,3 +504,7 @@ def test_gui_try_all_filters_1(test_dir):
 
 def test_gui_try_all_variants_1(test_dir):
     run_test(6, test_dir, 'light_control', try_all_variants_recipe, keep_project=True)
+
+
+def test_gui_groups_1(test_dir):
+    run_test(7, test_dir, 'light_control', try_groups_1_recipe, keep_project=True)
