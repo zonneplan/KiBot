@@ -25,6 +25,7 @@ Added
 -  Preflights:
 
    -  check_fields: used to ensure conditions on desired fields (#643)
+   -  e/drc: option to force english messages (needed for KiCad 8.0.4)
 
 -  Filters:
 

@@ -57,6 +57,9 @@ class ERCOptions(FiltersOptions):
             """ Continue even if we detect errors """
             self.units = 'millimeters'
             """ [millimeters,inches,mils] Units used for the positions. Affected by global options """
+            self.force_english = True
+            """ Force english messages. KiCad 8.0.4 introduced translation, breaking filters for previous versions.
+                Disable it if you prefer using the system wide language """
             self.category = Optionable
             """ [string|list(string)=''] {comma_sep} The category for this preflight. If not specified an internally defined
                 category is used.
@@ -296,7 +299,14 @@ class XRC(BasePreFlight):
         # Run the xRC from the CLI
         cmd = self.get_command(output)
         logger.info(f'- Running the {nm}')
+        # Introduced in 8.0.4: translated messages
+        if self._force_english:
+            old_lang = os.environ.get('LANG')
+            if old_lang:
+                os.environ['LANG'] = 'en'
         run_command(cmd)
+        if self._force_english and old_lang:
+            os.environ['LANG'] = old_lang
         # Read the result
         with open(output, 'rt') as f:
             raw = f.read()

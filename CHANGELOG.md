@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   globally defined value.
 - Preflights:
   - check_fields: used to ensure conditions on desired fields (#643)
+  - e/drc: option to force english messages (needed for KiCad 8.0.4)
 - Filters:
   - `separate_pins`: used to create testpoint reports (#638)
   - `_null` can be used to skip the filters processing
