@@ -754,6 +754,8 @@ class VariantOptions(BaseOptions):
             models = m.Models()
             m_pos = m.GetPosition()
             rot = m.GetOrientationDegrees()
+            if m.IsFlipped():
+                rot = 180-rot
             # Measure the courtyard
             bbox = self.get_crtyd_bbox(board, m)
             if bbox.x1 is not None:
@@ -773,7 +775,7 @@ class VariantOptions(BaseOptions):
             if extra_debug:
                 logger.debug(f'Highlight for {ref}')
                 logger.debug(f' - Position {ToMM(m_pos.x)}, {ToMM(m_pos.y)}')
-                logger.debug(f' - Orientation {rot}')
+                logger.debug(f' - Orientation {rot} (Flipped: {m.IsFlipped()})')
                 logger.debug(f' - Center {ToMM(m_cen.x)} {ToMM(m_cen.y)}')
                 logger.debug(f' - w,h {ToMM(w)}, {ToMM(h)}')
             # Compute the offset
@@ -782,6 +784,8 @@ class VariantOptions(BaseOptions):
             rrot = math.radians(rot)
             # KiCad coordinates are inverted in the Y axis
             off_y = -off_y
+            if m.IsFlipped():
+                off_x = -off_x
             # Apply the component rotation
             off_xp = off_x*math.cos(rrot)+off_y*math.sin(rrot)
             off_yp = -off_x*math.sin(rrot)+off_y*math.cos(rrot)

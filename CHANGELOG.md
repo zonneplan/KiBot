@@ -66,6 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Update XML: `check_pcb_parity` not usable for KiCad 8, must use the `drc`
   preflight (#633)
 - PCB Print: %ln and %ll substitution when using `repeat_for_layer` option
+- Render_3D: bottom side components that doesn't rotate from its center got
+  displaced highlight (#659)
 - QR Lib output and various preflights: might remove DRC exclusions. This is
   a KiCad bug that we must workaround (#653)
 - 3D outputs: temporal .kicad_dru file not removed (#655)
