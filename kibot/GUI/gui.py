@@ -1191,6 +1191,7 @@ class EditGroupDialog(InjectDialog):
         #    Buttons at the right
         abm_buts = add_abm_buttons(self, sb, add_add=True, add_add_ttip="Add a group to this group",
                                    add_ttip="Add one or more outputs to the group", id=base_id)
+        self.abm_buts = abm_buts
         abm_sizer.Add(abm_buts, gh.SIZER_FLAGS_0_NO_EXPAND)
         sb_sizer.Add(abm_sizer, gh.SIZER_FLAGS_1_NO_BORDER)
         main_sizer.Add(sb_sizer, gh.SIZER_FLAGS_1)
@@ -1317,6 +1318,12 @@ class EditGroupDialog(InjectDialog):
             self.lbox.Append(str(i), i)
         self.valid_list = True
         self.eval_status()
+        # Adjust the size to fit the new items
+        size = self.GetClientSize()
+        lb_size = self.lbox.BestSize+self.abm_buts.GetSize()
+        if lb_size.Width > size.Width:
+            size.Width = lb_size.Width
+            self.SetClientSize(size)
 
     def OnAddG(self, event):
         if not self.group_names:
