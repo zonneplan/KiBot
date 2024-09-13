@@ -806,8 +806,8 @@ class MainPanel(wx.Panel):
         self.invert_targets_input = wx.Choice(window, choices=TARGETS_ORDER)
         self.invert_targets_input.SetToolTip(ttip)
         self.invert_targets_input.SetSelection(self.solve_sort_mode(invert_targets, cli_order, no_priority))
-        invert_targets_sizer.Add(new_label, gh.SIZER_FLAGS_0)
-        invert_targets_sizer.Add(self.invert_targets_input, gh.SIZER_FLAGS_1)
+        invert_targets_sizer.Add(new_label, gh.SIZER_FLAGS_0_NO_EXPAND)
+        invert_targets_sizer.Add(self.invert_targets_input, gh.SIZER_FLAGS_1_NO_EXPAND)
         sizer.Add(invert_targets_sizer, gh.SIZER_FLAGS_0)
         # ABM
         abm_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -950,8 +950,8 @@ class MainPanel(wx.Panel):
                     new_input.Bind(wx.EVT_FILEPICKER_CHANGED, on_change)
             new_input.SetPath(value)
             new_input.SetToolTip(ttip)
-        li_sizer.Add(new_label, gh.SIZER_FLAGS_0)
-        li_sizer.Add(new_input, gh.SIZER_FLAGS_1)
+        li_sizer.Add(new_label, gh.SIZER_FLAGS_0_NO_EXPAND)
+        li_sizer.Add(new_input, gh.SIZER_FLAGS_1_NO_EXPAND)
         if rename is not None:
             but_rename = wx.Button(window, label="Rename")
             but_rename.SetToolTip("Changes the name of the configuration file")
