@@ -230,16 +230,19 @@ class ChooseFromList(InjectDialog):
         self.search_on = search_on
         if search_on:
             self.translate = dict(zip(search_on, self.all_options))
-        InjectDialog.__init__(self, parent, title="Select "+what, name='choose_'+what, id=create_id('ID_CHOOSE'),
+        title = ('a ' if what[0] in 'aeiou' else 'a')+' '+what
+        InjectDialog.__init__(self, parent, title="Select "+title, name='choose_'+title, id=create_id('ID_CHOOSE'),
                               style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         if search:
             self.search = wx.SearchCtrl(self, id=create_id('ID_CHOOSE_SRCH'))
+            self.search.SetToolTip('Type here to do an incremental search')
             main_sizer.Add(self.search, SIZER_FLAGS_0)
             self.search.Bind(wx.EVT_TEXT, self.OnText)
             # Take ENTER as a confirmation
             self.search.Bind(wx.EVT_SEARCH, self.OnDClick)
         self.lbox = wx.ListBox(self, style=l_style, id=create_id('ID_CHOOSE_LBX'))
+        self.lbox.SetToolTip(f'Available {what}s to select')
         set_items(self.lbox, items)
         main_sizer.Add(self.lbox, SIZER_FLAGS_1)
         main_sizer.Add(ok_cancel(self), SIZER_FLAGS_0)

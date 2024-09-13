@@ -279,6 +279,7 @@ class DataTypeDict(DataTypeBase):
                 self.embedded = False
                 self.entry_name = lbl
                 self.btn = wx.Button(window, label=self.get_button_label(), id=create_id(name))
+                self.btn.SetToolTip('Open a separated dialog for this option')
                 e_sizer.Add(self.btn, gh.SIZER_FLAGS_1)
                 self.btn.Bind(wx.EVT_BUTTON, self.OnEdit)
                 # Which widget will be focused

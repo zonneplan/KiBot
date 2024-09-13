@@ -98,14 +98,25 @@ class MainDialog(InjectDialog):
         self.main = MainPanel(self.notebook, self, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
         self.notebook.AddPage(self.main, "Main")
         self.outputs = OutputsPanel(self.notebook)
+        self.outputs.SetToolTip("Defined outputs.\nThings you can generate pressing the Run button")
         self.notebook.AddPage(self.outputs, "Outputs")
         self.groups = GroupsPanel(self.notebook)
+        self.groups.SetToolTip("Groups of outputs.\n"
+                               "This makes easier to run some and exclude others.\n"
+                               "A group can contain another group.")
         self.notebook.AddPage(self.groups, "Groups")
         self.preflights = PreflightsPanel(self.notebook)
+        self.preflights.SetToolTip("Tasks executed before generating outputs.\n"
+                                   "I.e. run the DRC and or ERC.")
         self.notebook.AddPage(self.preflights, "Preflights")
         self.filters = FiltersPanel(self.notebook)
+        self.filters.SetToolTip("Defined filters.\n"
+                                "Used to include or exclude certain components.\n"
+                                "Some filters can apply transformations to components.")
         self.notebook.AddPage(self.filters, "Filters")
         self.variants = VariantsPanel(self.notebook)
+        self.variants.SetToolTip("Assembly variants for your project.\n"
+                                 "Same PCB for different products.")
         self.notebook.AddPage(self.variants, "Variants")
         self.about = AboutPanel(self.notebook)
         self.notebook.AddPage(self.about, "About")
@@ -115,17 +126,24 @@ class MainDialog(InjectDialog):
         # Save config
         self.but_save = wx.Button(self, label="Save config", id=create_id('ID_SAVE'))
         self.but_save.Disable()
+        self.but_save.SetToolTip("Save the current state to the `Config file' (Main tab)")
         set_button_bitmap(self.but_save, wx.ART_FILE_SAVE)
         but_sizer.Add(self.but_save, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Edit globals
         self.but_globals = wx.Button(self, label="Globals", id=create_id('ID_GLOBALS'))
         set_button_bitmap(self.but_globals, "gtk-edit")
+        self.but_globals.SetToolTip("Global configuration options, applies to all outputs")
         but_sizer.Add(self.but_globals, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Recent
         self.but_recent = wx.Button(self, label="Recent", id=create_id('ID_RECENT'))
+        self.but_recent.SetToolTip("Recently used setups.\n"
+                                   "Files and directories recently used")
         but_sizer.Add(self.but_recent, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Warnings
         self.but_warn = wx.Button(self, label="Warnings", id=create_id('ID_WARNINGS'))
+        self.but_warn.SetToolTip("Warnings issued on this run.\n"
+                                 "Note that they are reported just once.\n"
+                                 "Here are all the issued warnings")
         set_button_bitmap(self.but_warn, wx.ART_WARNING)
         but_sizer.Add(self.but_warn, gh.SIZER_FLAGS_0_NO_EXPAND)
         #
@@ -134,6 +152,7 @@ class MainDialog(InjectDialog):
         but_sizer.Add((50, 0), gh.SIZER_FLAGS_1_NO_BORDER)
         # Run
         self.but_generate = wx.Button(self, label="Run", id=create_id('ID_GENERATE'))
+        self.but_generate.SetToolTip("Run preflights and generate the outputs (targets)")
         set_button_bitmap(self.but_generate, wx.ART_EXECUTABLE_FILE)
         # Setting the generate button as default interferes with list boxes on GTK
         # They convert the RETURN key to a double-click event, but, somehow, it also triggers the default button
@@ -181,7 +200,7 @@ class MainDialog(InjectDialog):
             if pop_confirm(f'Only one recent use with `{os.path.basename(s[0].config)}`, use it?') == wx.YES:
                 self.apply_setup(s[0])
             return
-        setup = choose_from_list(self, s, what="a setup", search_on=[os.path.basename(i.config) for i in s])
+        setup = choose_from_list(self, s, what="setup", search_on=[os.path.basename(i.config) for i in s])
         if setup is not None:
             self.apply_setup(setup)
 
@@ -445,34 +464,43 @@ class MainPanel(wx.Panel):
         # Paths
         paths_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Paths')
         self.path_w = paths_sizer.GetStaticBox()
+        self.path_w.SetToolTip("Files and directories used for the Run")
         cwd = os.getcwd()
         if not os.path.isdir(GS.out_dir):
             os.makedirs(GS.out_dir)
-        self.wd_sizer, self.wd_input, _ = self.add_path(paths_sizer, 'Working dir', cwd, 'ID_CWD', self.OnChangeCWD,
-                                                        is_dir=True)
+        self.wd_sizer, self.wd_input, _ = self.add_path(paths_sizer, 'Working dir', cwd, 'ID_CWD',
+                                                        "All execution is performed here", self.OnChangeCWD, is_dir=True)
         self.old_cwd = cwd
         if cfg_file:
             cfg_file = os.path.abspath(cfg_file)
         self.cf_sizer, self.cf_input, self_ren_but = self.add_path(paths_sizer, 'Config file', cfg_file, 'ID_CFG_FILE',
-                                                                   self.OnChangeCfg, rename=self.OnChangeName)
+                                                                   "YAML file for the configuration", self.OnChangeCfg,
+                                                                   rename=self.OnChangeName)
         self.old_cfg = cfg_file
         out_dir = os.path.abspath(GS.out_dir)
-        self.de_sizer, self.de_input, _ = self.add_path(paths_sizer, 'Destination', out_dir, 'ID_DEST', self.OnChangeOutDir,
+        self.de_sizer, self.de_input, _ = self.add_path(paths_sizer, 'Destination', out_dir, 'ID_DEST',
+                                                        "Base directory to store the results", self.OnChangeOutDir,
                                                         is_dir=True)
         self.old_out_dir = out_dir
         sch = GS.sch_file if GS.sch_file is not None else ''
-        self.sch_sizer, self.sch_input, _ = self.add_path(paths_sizer, 'Schematic', sch, 'ID_SCH', self.OnChangeSCH)
+        self.sch_sizer, self.sch_input, _ = self.add_path(paths_sizer, 'Schematic', sch, 'ID_SCH',
+                                                          "Schematic used, usually the top-level", self.OnChangeSCH)
         pcb = GS.pcb_file if GS.pcb_file is not None else ''
-        self.pcb_sizer, self.pcb_input, _ = self.add_path(paths_sizer, 'PCB', pcb, 'ID_PCB', self.OnChangePCB)
+        self.pcb_sizer, self.pcb_input, _ = self.add_path(paths_sizer, 'PCB', pcb, 'ID_PCB',
+                                                          "PCB used for the generated outputs", self.OnChangePCB)
 
         # Targets
         targets_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Targets')
         self.targets_w = targets_sizer.GetStaticBox()
+        self.targets_w.SetToolTip("What is generated by the Run button")
         self.add_targets(targets_sizer, self.targets_w, targets, invert_targets, cli_order, no_priority)
 
         # Skip preflights
         skippre_sizer = wx.StaticBoxSizer(wx.VERTICAL, self, 'Skip preflights')
         self.skippre_w = skippre_sizer.GetStaticBox()
+        self.skippre_w.SetToolTip("Preflights that will be skipped.\n"
+                                  "Leave it empty to run all preflights.\n"
+                                  "Include the `all' name to skip all.")
         self.add_skippre(skippre_sizer, self.skippre_w, self.solve_skip_pre(skip_pre))
 
         # Targets & Skip pre
@@ -735,7 +763,7 @@ class MainPanel(wx.Panel):
         if not available:
             pop_error('No outputs available to add')
             return
-        outs = choose_from_list(self, available, what="an output", multiple=True, search_on=available)
+        outs = choose_from_list(self, available, what="output", multiple=True, search_on=available)
         if not outs:
             return
         self.targets_lbox.Append(outs)
@@ -759,7 +787,7 @@ class MainPanel(wx.Panel):
         if not available:
             pop_error('No preflights available to add')
             return
-        preflights = choose_from_list(self, available, what="a preflight", multiple=True, search_on=available)
+        preflights = choose_from_list(self, available, what="preflight", multiple=True, search_on=available)
         if not preflights:
             return
         self.skippre_lbox.Append(preflights)
@@ -768,8 +796,15 @@ class MainPanel(wx.Panel):
     def add_targets(self, sizer, window, targets, invert_targets, cli_order, no_priority):
         # Sort mode
         invert_targets_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        ttip = ("Sort order and how to interpret the list.\n"
+                "Sort by priority: uses the output priority, that you can adjust.\n"
+                "Declared: is the order in which they are declared (see Outputs tab).\n"
+                "Selected: is the order you see in the list.\n"
+                "Invert selection: the list says which ones are excluded (declared order)")
         new_label = wx.StaticText(window, label='Generation order', size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        new_label.SetToolTip(ttip)
         self.invert_targets_input = wx.Choice(window, choices=TARGETS_ORDER)
+        self.invert_targets_input.SetToolTip(ttip)
         self.invert_targets_input.SetSelection(self.solve_sort_mode(invert_targets, cli_order, no_priority))
         invert_targets_sizer.Add(new_label, gh.SIZER_FLAGS_0)
         invert_targets_sizer.Add(self.invert_targets_input, gh.SIZER_FLAGS_1)
@@ -779,6 +814,8 @@ class MainPanel(wx.Panel):
         list_sizer = wx.BoxSizer(wx.VERTICAL)
         self.targets_lbox = wx.ListBox(window, choices=targets, size=wx.Size(def_text, -1),
                                        style=wx.LB_NEEDED_SB | wx.LB_SINGLE)
+        self.targets_lbox.SetToolTip("List of outputs that will be generated by the Run button.\n"
+                                     "Leave it empty to generate all possible outputs.")
         list_sizer.Add(self.targets_lbox, gh.SIZER_FLAGS_1)
         self.target_hint = wx.StaticText(window, label=self.get_targets_hint())
         list_sizer.Add(self.target_hint, wx.SizerFlags().Expand().CentreVertical().Border(wx.LEFT))
@@ -887,10 +924,11 @@ class MainPanel(wx.Panel):
         self.update_targets_hint()
         self.update_sort_hint()
 
-    def add_path(self, sizer, label, value, id, on_change=None, is_dir=False, rename=None):
+    def add_path(self, sizer, label, value, id, ttip, on_change=None, is_dir=False, rename=None):
         window = self.path_w
         li_sizer = wx.BoxSizer(wx.HORIZONTAL)
         new_label = wx.StaticText(window, label=label, size=wx.Size(max_label, -1), style=wx.ALIGN_RIGHT)
+        new_label.SetToolTip(ttip)
         if False:
             new_input = wx.TextCtrl(window, size=wx.Size(def_text, -1))
             new_input.Value = value
@@ -911,10 +949,12 @@ class MainPanel(wx.Panel):
                     # Otherwise we get partial changes
                     new_input.Bind(wx.EVT_FILEPICKER_CHANGED, on_change)
             new_input.SetPath(value)
+            new_input.SetToolTip(ttip)
         li_sizer.Add(new_label, gh.SIZER_FLAGS_0)
         li_sizer.Add(new_input, gh.SIZER_FLAGS_1)
         if rename is not None:
             but_rename = wx.Button(window, label="Rename")
+            but_rename.SetToolTip("Changes the name of the configuration file")
             set_button_bitmap(but_rename, "gtk-edit")
             li_sizer.Add(but_rename, gh.SIZER_FLAGS_0)
             but_rename.Bind(wx.EVT_BUTTON, rename)
@@ -999,7 +1039,7 @@ class OutputsPanel(DictPanel):
                 self.Parent.Parent.refresh_groups()
 
     def choose_type(self):
-        return choose_from_list(self, list(RegOutput.get_registered().keys()), 'an output type')
+        return choose_from_list(self, list(RegOutput.get_registered().keys()), 'output type')
 
     def new_obj(self, kind):
         # Create a new object of the selected type
@@ -1268,7 +1308,7 @@ class EditGroupDialog(InjectDialog):
         if not available:
             pop_error('No outputs available to add')
             return
-        outs = choose_from_list(self, list(available.keys()), what="an output", multiple=True, search_on=available_names)
+        outs = choose_from_list(self, list(available.keys()), what="output", multiple=True, search_on=available_names)
         if not outs:
             return
         for out in outs:
@@ -1282,7 +1322,7 @@ class EditGroupDialog(InjectDialog):
         if not self.group_names:
             pop_error('No groups available to add')
             return
-        groups = choose_from_list(self, self.group_names, what='a group', multiple=True)
+        groups = choose_from_list(self, self.group_names, what='group', multiple=True)
         if not groups:
             return
         for g in groups:
@@ -1326,7 +1366,7 @@ class FiltersPanel(DictPanel):
         set_items(self.lbox, [f for f in RegOutput.get_filters().values() if not f.name.startswith('_')])
 
     def choose_type(self):
-        return choose_from_list(self, list(RegFilter.get_registered().keys()), 'a filter type')
+        return choose_from_list(self, list(RegFilter.get_registered().keys()), 'filter type')
 
     def add_obj(self, obj):
         RegOutput.add_filter(obj)
@@ -1358,7 +1398,7 @@ class VariantsPanel(DictPanel):
         set_items(self.lbox, list(RegOutput.get_variants().values()))
 
     def choose_type(self):
-        return choose_from_list(self, list(RegVariant.get_registered().keys()), 'a variant type')
+        return choose_from_list(self, list(RegVariant.get_registered().keys()), 'variant type')
 
     def add_obj(self, obj):
         RegOutput.add_variant(obj)
@@ -1394,7 +1434,7 @@ class PreflightsPanel(DictPanel):
     def choose_type(self):
         used = set(BasePreFlight.get_in_use_names())
         available = sorted([name for name in BasePreFlight.get_registered().keys() if name not in used])
-        return choose_from_list(self, available, 'a preflight')
+        return choose_from_list(self, available, 'preflight')
 
     def add_obj(self, obj):
         BasePreFlight.add_preflight(obj)
