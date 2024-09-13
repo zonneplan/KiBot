@@ -175,7 +175,7 @@ class MainDialog(InjectDialog):
         self.but_globals.Bind(wx.EVT_BUTTON, self.OnGlobals)
         self.but_recent.Bind(wx.EVT_BUTTON, self.OnRecent)
         self.but_warn.Bind(wx.EVT_BUTTON, self.OnWarnings)
-        self.but_cancel.Bind(wx.EVT_BUTTON, self.OnCancel)
+        self.but_cancel.Bind(wx.EVT_BUTTON, self.OnExit)
         self.Bind(wx.EVT_CLOSE, self.OnExit)
 
         self.flag = False
@@ -213,9 +213,6 @@ class MainDialog(InjectDialog):
         if self.main.apply_setup(s):
             # Make this one the more recent
             self.add_setup()
-
-    def OnCancel(self, event):
-        self.EndModal(wx.ID_OK)
 
     def OnExit(self, event):
         if self.edited and not self.ask_save():
