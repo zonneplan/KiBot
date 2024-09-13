@@ -154,7 +154,7 @@ class InjectDialog(wx.Dialog):
         ev_n = data
         ev_o = getattr(wx, ev_n)
         id_ori = id
-        if id.startswith('name:'):
+        if isinstance(id, str) and id.startswith('name:'):
             o = wx.FindWindowByName(id[5:])
             if o is None:
                 self.exit(f'No window named: {id[5:]})')
