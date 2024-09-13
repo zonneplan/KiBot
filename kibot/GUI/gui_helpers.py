@@ -264,8 +264,23 @@ class ChooseFromList(InjectDialog):
 
     def OnText(self, event):
         text = event.GetString()
+        text_l = text.lower()
         options = self.search_on or self.all_options
-        items = [o for o in options if o.startswith(text)]
+        options = options.copy()
+        items = []
+        if text in options:
+            items.append(text)
+            options.remove(text)
+        if text_l in options:
+            items.append(text_l)
+            options.remove(text_l)
+        remain = []
+        for o in options:
+            if o.startswith(text):
+                items.append(o)
+            else:
+                remain.append(o)
+        items += [o for o in remain if o.lower().startswith(text_l)]
         for s in difflib.get_close_matches(text, options, n=5, cutoff=0.3):
             if s not in items:
                 items.append(s)
