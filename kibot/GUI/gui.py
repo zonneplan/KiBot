@@ -403,12 +403,12 @@ class DictPanel(wx.Panel):
         return True
 
     def OnUp(self, event):
-        move_sel_up(self.lbox)
-        self.mark_edited()
+        if move_sel_up(self.lbox):
+            self.mark_edited()
 
     def OnDown(self, event):
-        move_sel_down(self.lbox)
-        self.mark_edited()
+        if move_sel_down(self.lbox):
+            self.mark_edited()
 
     def OnAdd(self, event):
         kind = self.choose_type()
@@ -1101,12 +1101,12 @@ class GroupsPanel(wx.Panel):
         self.edit_group(self.lbox.GetClientData(self.lbox.Selection))
 
     def OnUp(self, event):
-        move_sel_up(self.lbox)
-        self.mark_edited()
+        if move_sel_up(self.lbox):
+            self.mark_edited()
 
     def OnDown(self, event):
-        move_sel_down(self.lbox)
-        self.mark_edited()
+        if move_sel_down(self.lbox):
+            self.mark_edited()
 
     def OnAdd(self, event):
         self.edit_group(Group('new_group', []), is_new=True)

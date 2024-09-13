@@ -452,12 +452,12 @@ class DataTypeList(DataTypeBase):
         self.edit_item()
 
     def OnUp(self, event):
-        move_sel_up(self.lbox)
-        self.mark_edited()
+        if move_sel_up(self.lbox):
+            self.mark_edited()
 
     def OnDown(self, event):
-        move_sel_down(self.lbox)
-        self.mark_edited()
+        if move_sel_down(self.lbox):
+            self.mark_edited()
 
     def OnRemove(self, event):
         if self.len_restriction and self.lbox.GetCount() <= self.len_restriction:

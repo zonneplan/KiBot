@@ -124,24 +124,28 @@ def pop_info(msg):
 def move_sel_up(box):
     """ Helper to move the selection up """
     selection = box.Selection
-    if selection != wx.NOT_FOUND and selection > 0:
-        item = box.GetString(selection)
-        data = box.GetClientData(selection)
-        box.Delete(selection)
-        box.Insert(item, selection-1, data)
-        box.SetSelection(selection-1)
+    if selection == wx.NOT_FOUND or selection < 1:
+        return False
+    item = box.GetString(selection)
+    data = box.GetClientData(selection)
+    box.Delete(selection)
+    box.Insert(item, selection-1, data)
+    box.SetSelection(selection-1)
+    return True
 
 
 def move_sel_down(box):
     """ Helper to move the selection down """
     selection = box.Selection
     size = box.Count
-    if selection != wx.NOT_FOUND and selection < size-1:
-        item = box.GetString(selection)
-        data = box.GetClientData(selection)
-        box.Delete(selection)
-        box.Insert(item, selection+1, data)
-        box.SetSelection(selection+1)
+    if selection == wx.NOT_FOUND or selection >= size-1:
+        return False
+    item = box.GetString(selection)
+    data = box.GetClientData(selection)
+    box.Delete(selection)
+    box.Insert(item, selection+1, data)
+    box.SetSelection(selection+1)
+    return True
 
 
 def remove_item(lbox, confirm=None, callback=None):
