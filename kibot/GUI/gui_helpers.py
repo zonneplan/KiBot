@@ -230,7 +230,7 @@ class ChooseFromList(InjectDialog):
         self.search_on = search_on
         if search_on:
             self.translate = dict(zip(search_on, self.all_options))
-        title = ('a ' if what[0] in 'aeiou' else 'a')+' '+what
+        title = ('an' if what[0] in 'aeiou' else 'a')+' '+what
         InjectDialog.__init__(self, parent, title="Select "+title, name='choose_'+title, id=create_id('ID_CHOOSE'),
                               style=wx.DEFAULT_DIALOG_STYLE | wx.STAY_ON_TOP | wx.BORDER_DEFAULT)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
