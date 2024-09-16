@@ -115,6 +115,9 @@ Fixed:
 -  QR Lib output and various preflights: might remove DRC exclusions.
    This is a KiCad bug that we must workaround (#653)
 -  3D outputs: temporal .kicad_dru file not removed (#655)
+-  Generated PCB files: problems with some big structures, like zone
+   fills, that could generate huge lines in the generated PCB, not
+   supported by KiCad. (#660)
 
 Changed:
 ~~~~~~~~
