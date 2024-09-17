@@ -31,6 +31,8 @@ We use three basic data types:
 -  **boolean**: can take only two values *true* and *false*.
 -  **string**: almost anything else.
 
+.. _number:
+
 Here are some examples for numbers:
 
 .. code:: yaml
@@ -42,12 +44,16 @@ Here are some examples for numbers:
 Note that the decimal point is always a point, no matters what your
 locale settings indicate.
 
+.. _boolean:
+
 Here are some examples for booleans:
 
 .. code:: yaml
 
    v1: true
    v2: false
+
+.. _string:
 
 And here are some examples for strings:
 
@@ -57,8 +63,14 @@ And here are some examples for strings:
    v2: '3'
    v3: "true"
    v4: "  I have spaces  "
+   v5: '# I have special chars'
 
 Note that quotes are optional and can be used to disambiguate.
+
+.. _no_case:
+
+Also note that most strings are case sensitive, but things like schematic field names aren't.
+In this case using *value* or *Value* is the same.
 
 Compound data types
 -------------------
@@ -70,6 +82,8 @@ We use two types:
 -  **dict**: dictionaries or maps. Just a bunch of label with associated
    data.
 
+.. _list(string):
+
 Here is an example for a list of strings (**list(string)** in our case):
 
 .. code:: yaml
@@ -79,6 +93,8 @@ Here is an example for a list of strings (**list(string)** in our case):
    - "true"
    - "  I have spaces  "
 
+.. _dict:
+
 And here an example for a dict:
 
 .. code:: yaml
@@ -87,6 +103,8 @@ And here an example for a dict:
    v2: '3'
    v3: "true"
    v4: "  I have spaces  "
+
+Here the dict is mapping "Hi!" to the "v1" key, "3" to the "v2" key, etc.
 
 The list and dict elements can also be other lists and/or dicts. To
 understand how this is achieved we need one more thing.
@@ -130,6 +148,8 @@ And here is a mix of both:
 The indentation shows that ``age`` and ``gender`` are attached to
 ``John``, not directly applied to ``people``.
 
+.. _list(list(string)):
+
 Note that lists can be nested, here is a list of lists
 (**list(list(string))**):
 
@@ -146,6 +166,20 @@ Note that lists can be nested, here is a list of lists
 
 In this example we have a list with two elements, the first is a list
 with three elements and the second a list with four elements.
+
+.. _list(dict):
+
+Here is an example of a list of dicts (**list(dict)**):
+
+.. code:: yaml
+
+   list_of_lists:
+     - name: John
+       age: 25
+       gender: male
+     - name: Cindy
+       age: 32
+       gender: female
 
 Compact notation
 ----------------
@@ -193,6 +227,27 @@ Can be defined as:
      - Cindy
      - Luca
      - Laura
+
+.. _comma_sep:
+
+Also note that some options supports comma separated strings. This is common
+for options that can be a single string, or a list of strings. In this case
+the following are equivalent:
+
+.. code:: yaml
+
+   people: John,Cindy,Luca,Laura
+
+And:
+
+.. code:: yaml
+
+   people:
+     - John
+     - Cindy
+     - Luca
+     - Laura
+
 
 Putting all together
 --------------------
@@ -287,3 +342,36 @@ list (``&pcb_draw_ops``) and then we copy the data with
 Here we choose another ``style`` (ridiculous example), the bottom side
 (good example), a different list of components to show and we eliminate
 the ``remap`` dict.
+
+
+KiBot specific data types
+-------------------------
+
+KiBot defines some data types that are derived from YAML basic data types.
+
+.. _string_dict:
+
+string_dict
+...........
+
+This is a :ref:`dict <dict>` with the restriction that all the values must be strings.
+The following example is a valid `string_dict`:
+
+.. code:: yaml
+
+   v1: Hi!
+   v2: '3'
+   v3: "true"
+   v4: "  I have spaces  "
+
+But the following isn't:
+
+.. code:: yaml
+
+   v1: Hi!
+   v2: 3
+   v3: "true"
+   v4: "  I have spaces  "
+
+This is because we assign a number to the `v2` key, not a string.
+String dicts are used to define pairs of strings.

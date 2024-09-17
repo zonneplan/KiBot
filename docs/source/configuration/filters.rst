@@ -133,7 +133,14 @@ Built-in filters
       ‘fiducial’
 
 -  **_none** does nothing, useful when you want to remove a filter
-   with default value
+   with default value, but you want to keep the filters processing.
+   Can be used in a filter chain.
+   Note that an empty name will also create a **_none** filter
+-  **_null** does nothing, useful when you want to remove a filter
+   with default value, but you don't want to keep the filters processing.
+   Can't be used in a filter chain.
+   Note that inside a variant the filters processing will be triggered anyways,
+   by the variant itself, but **_null** is faster than **_none**
 -  **_only_smd** is used to get only SMD parts
 -  **_only_tht** is used to get only THT parts
 -  **_only_virtual** is used to get only virtual parts

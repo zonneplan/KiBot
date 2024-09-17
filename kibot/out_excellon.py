@@ -56,7 +56,7 @@ class Excellon(BaseOutput):  # noqa: F821
         self._category = 'PCB/fabrication/drill'
         with document:
             self.options = ExcellonOptions
-            """ *[dict] Options for the `excellon` output """
+            """ *[dict={}] Options for the `excellon` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

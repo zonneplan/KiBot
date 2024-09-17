@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2023 Salvador E. Tropea
-# Copyright (c) 2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2023-2024 Salvador E. Tropea
+# Copyright (c) 2023-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -18,7 +18,7 @@ from tempfile import NamedTemporaryFile, TemporaryDirectory
 from .error import KiPlotConfigurationError
 from .kiplot import get_output_targets, run_output, run_command, register_xmp_import, config_output, configure_and_run
 from .gs import GS
-from .misc import MISSING_TOOL, BLENDER_ERROR
+from .misc import BLENDER_ERROR, MISSING_TOOL
 from .optionable import Optionable, BaseOptions
 from .out_base_3d import Base3D, Base3DOptionsWithHL
 from .registrable import RegOutput
@@ -50,7 +50,7 @@ class PCB2BlenderOptions(Optionable):
             self.cut_boards = True
             """ Separate the sub-PCBs in separated 3D models """
             self.texture_dpi = 1016.0
-            """ [508-2032] Texture density in dots per inch """
+            """ [508,2032] Texture density in dots per inch """
             self.center = True
             """ Center the PCB at the coordinates origin """
             self.enhance_materials = True
@@ -67,6 +67,8 @@ class PCB2BlenderOptions(Optionable):
 
 class BlenderOutputOptions(Optionable):
     """ What is generated """
+    _default = [{'type': 'render'}]
+
     def __init__(self):
         super().__init__()
         with document:
@@ -85,6 +87,14 @@ class BlenderOutputOptions(Optionable):
             """ Subdirectory for this output """
         self._unknown_is_error = True
 
+    def __str__(self):
+        txt = self.type
+        if self.dir:
+            txt += f' ({self.dir})'
+        if self.output != GS.def_global_output:
+            txt += f' ({self.output})'
+        return txt
+
 
 class BlenderObjOptions(Optionable):
     """ A light/camera in the scene. """
@@ -94,11 +104,11 @@ class BlenderObjOptions(Optionable):
             self.name = ""
             """ Name for the """
             self.pos_x = 0
-            """ [number|string] X position [m]. You can use `width`, `height` and `size` for PCB dimensions """
+            """ [number|string=0] X position [m]. You can use `width`, `height` and `size` for PCB dimensions """
             self.pos_y = 0
-            """ [number|string] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions """
+            """ [number|string=0] Y position [m]. You can use `width`, `height` and `size` for PCB dimensions """
             self.pos_z = 0
-            """ [number|string] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions """
+            """ [number|string=0] Z position [m]. You can use `width`, `height` and `size` for PCB dimensions """
         self._unknown_is_error = True
 
     def solve(self, member):
@@ -114,13 +124,18 @@ class BlenderObjOptions(Optionable):
     def config(self, parent):
         super().config(parent)
         self._width, self._height, self._size = get_board_size()
-        self.pos_x = self.solve('pos_x')
-        self.pos_y = self.solve('pos_y')
-        self.pos_z = self.solve('pos_z')
+        self._pos_x = self.solve('pos_x')
+        self._pos_y = self.solve('pos_y')
+        self._pos_z = self.solve('pos_z')
+
+    def __str__(self):
+        return f'{self.name} ({self.pos_x},{self.pos_y},{self.pos_z})'
 
 
 class BlenderLightOptions(BlenderObjOptions):
     """ A light in the scene. """
+    _default = [{'name': 'kibot_light', 'pos_x': '-size*3.33', 'pos_y': 'size*3.33', 'pos_z': 'size*5', 'energy': 0}]
+
     def __init__(self):
         super().__init__()
         with document:
@@ -133,9 +148,9 @@ class BlenderLightOptions(BlenderObjOptions):
     def adjust(self):
         self._width, self._height, self._size = get_board_size()
         if not self.get_user_defined('pos_x') and not self.get_user_defined('pos_y') and not self.get_user_defined('pos_z'):
-            self.pos_x = -self._size*3.33
-            self.pos_y = self._size*3.33
-            self.pos_z = self._size*5.0
+            self._pos_x = -self._size*3.33
+            self._pos_y = self._size*3.33
+            self._pos_z = self._size*5.0
         if self.energy == 0:
             if self.type == "POINT":
                 # 10 W is the default, works for 5 cm board, we make it grow cudratically
@@ -205,7 +220,7 @@ class BlenderRenderOptions(Optionable):
 class BlenderPointOfViewOptions(Optionable):
     """ Point of View parameters """
     _views = {'top': 'z', 'bottom': 'Z', 'front': 'y', 'rear': 'Y', 'right': 'x', 'left': 'X'}
-    _rviews = {v: k for k, v in _views.items()}
+    _default = [{'view': 'top'}]
 
     def __init__(self):
         super().__init__()
@@ -223,26 +238,33 @@ class BlenderPointOfViewOptions(Optionable):
             """ String to differentiate the name of this point of view.
                 When empty we use the `default_file_id` or the `view` """
             self.steps = 1
-            """ [1-1000] Generate this amount of steps using the rotation angles as increments.
+            """ [1,1000] Generate this amount of steps using the rotation angles as increments.
                 Use a value of 1 (default) to interpret the angles as absolute.
                 Used for animations. You should define the `default_file_id` to something like
                 '_%03d' to get the animation frames """
         self._unknown_is_error = True
+        self._view = 'z'
 
     def config(self, parent):
         super().config(parent)
         # View point
-        view = self._views.get(self.view, None)
-        if view is not None:
-            self.view = view
+        self._view = self._views.get(self.view, self.view)
 
     def get_view(self):
-        return self._rviews.get(self.view, 'no_view')
+        return self.view
 
     def increment(self, inc):
         self.rotate_x += inc.rotate_x
         self.rotate_y += inc.rotate_y
         self.rotate_z += inc.rotate_z
+
+    def __str__(self):
+        txt = self.view
+        if self.rotate_x or self.rotate_y or self.rotate_z:
+            txt += f' ({self.rotate_x},{self.rotate_y},{self.rotate_z})'
+        if self.steps != 1:
+            txt += f' {self.steps} steps'
+        return txt
 
 
 class PCB3DExportOptions(Base3DOptionsWithHL):
@@ -309,11 +331,11 @@ class Blender_ExportOptions(BaseOptions):
     def __init__(self):
         with document:
             self.pcb3d = PCB3DExportOptions
-            """ *[string|dict] Options to export the PCB to Blender.
+            """ *[string|dict={}] Options to export the PCB to Blender.
                 You can also specify the name of the output that generates the PCB3D file.
                 See the `PCB2Blender_2_1`, `PCB2Blender_2_7` and `PCB2Blender_2_1_haschtl` templates """
             self.pcb_import = PCB2BlenderOptions
-            """ Options to configure how Blender imports the PCB.
+            """ [dict={}] Options to configure how Blender imports the PCB.
                 The default values are good for most cases """
             self.outputs = BlenderOutputOptions
             """ [dict|list(dict)] Outputs to generate in the same run """
@@ -323,7 +345,7 @@ class Blender_ExportOptions(BaseOptions):
             """ Add a default light when none specified.
                 The default light is located at (-size*3.33, size*3.33, size*5) where size is max(width, height) of the PCB """
             self.camera = BlenderCameraOptions
-            """ [dict] Options for the camera.
+            """ [dict={}] Options for the camera.
                 If none specified KiBot will create a suitable camera.
                 If no position is specified for the camera KiBot will look for a suitable position """
             self.fixed_auto_camera = False
@@ -336,7 +358,7 @@ class Blender_ExportOptions(BaseOptions):
             """ Default value for the `file_id` in the `point_of_view` options.
                 Use something like '_%03d' for animations """
             self.render_options = BlenderRenderOptions
-            """ *[dict] Controls how the render is done for the `render` output type """
+            """ *[dict={}] Controls how the render is done for the `render` output type """
             self.point_of_view = BlenderPointOfViewOptions
             """ *[dict|list(dict)] How the object is viewed by the camera """
         super().__init__()
@@ -349,33 +371,10 @@ class Blender_ExportOptions(BaseOptions):
         if isinstance(self.pcb3d, str) and not self.pcb3d:
             raise KiPlotConfigurationError('You must specify the name of the output that'
                                            ' generates the PCB3D file or its options')
-        if isinstance(self.pcb3d, type):
-            self.pcb3d = PCB3DExportOptions()
-            self.pcb3d.config(self)
-        # Do we have outputs?
-        if isinstance(self.outputs, type):
-            self.outputs = []
-        elif isinstance(self.outputs, BlenderOutputOptions):
-            # One, make a list
-            self.outputs = [self.outputs]
-        # Ensure we have import options
-        if isinstance(self.pcb_import, type):
-            self.pcb_import = PCB2BlenderOptions()
-        # Ensure we have a light
-        if isinstance(self.light, type):
-            # None
-            if self.add_default_light:
-                # Create one
-                light = BlenderLightOptions()
-                light.name = 'kibot_light'
-                light.adjust()
-                self.light = [light]
-            else:
-                # The dark ...
-                self.light = []
-        elif isinstance(self.light, BlenderLightOptions):
-            # Ensure a list
-            self.light = [self.light]
+        # Check if the user doesn't want a light
+        if not self.get_user_defined('light') and not self.add_default_light:
+            # Remove the default light
+            self.light = []
         # Check light names
         light_names = set()
         for li in self.light:
@@ -386,22 +385,9 @@ class Blender_ExportOptions(BaseOptions):
                     id += 1
                 name = name+'_'+str(id)
             li.name = name
-        # If no camera let the script create one
-        if isinstance(self.camera, type):
-            self.camera = None
-        elif not self.camera.name:
-            self.camera.name = 'kibot_camera'
-        # Ensure we have some render options
-        if isinstance(self.render_options, type):
-            self.render_options = BlenderRenderOptions()
-        # Point of View, make sure we have a list and at least 1 element
-        if isinstance(self.point_of_view, type):
-            pov = BlenderPointOfViewOptions()
-            # Manually translate top -> z
-            pov.view = 'z'
-            self.point_of_view = [pov]
-        elif isinstance(self.point_of_view, BlenderPointOfViewOptions):
-            self.point_of_view = [self.point_of_view]
+        # Check the camera name
+        if not self.camera.name:
+            self.camera.name = 'kibot_camera' if self.get_user_defined('camera') else 'kibot_auto_camera'
 
     def get_output_filename(self, o, output_dir, pov, order):
         if o.type == 'render':
@@ -564,6 +550,8 @@ class Blender_ExportOptions(BaseOptions):
         # Can be used to export the PCB to Blender
         if not self.outputs:
             return
+        outputs = self.outputs
+        point_of_view = self.point_of_view
         # Make sure Blender is available
         command = self._pcb3d.ensure_tool('Blender')
         if self.render_options.auto_crop:
@@ -575,17 +563,18 @@ class Blender_ExportOptions(BaseOptions):
             scene = {}
             if self.light:
                 lights = [{'name': light.name,
-                           'position': (light.pos_x, light.pos_y, light.pos_z),
+                           'position': (light._pos_x, light._pos_y, light._pos_z),
                            'type': light.type,
                            'energy': light.energy} for light in self.light]
                 scene['lights'] = lights
-            if self.camera:
+            if self.get_user_defined('camera'):
+                # Only when the user defined a camera, otherwise let the script create a suitable one
                 ca = self.camera
                 scene['camera'] = {'name': ca.name,
                                    'type': ca._type}
                 if (hasattr(ca, '_pos_x_user_defined') or hasattr(ca, '_pos_y_user_defined') or
                    hasattr(ca, '_pos_z_user_defined')):
-                    scene['camera']['position'] = (ca.pos_x, ca.pos_y, ca.pos_z)
+                    scene['camera']['position'] = (ca._pos_x, ca._pos_y, ca._pos_z)
                 if ca.clip_start >= 0:
                     scene['camera']['clip_start'] = ca.clip_start
             scene['fixed_auto_camera'] = self.fixed_auto_camera
@@ -599,7 +588,7 @@ class Blender_ExportOptions(BaseOptions):
                                'background2': ro.background2}
             povs = []
             last_pov = BlenderPointOfViewOptions()
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 if pov.steps > 1:
                     for _ in range(pov.steps):
                         last_pov.increment(pov)
@@ -641,16 +630,16 @@ class Blender_ExportOptions(BaseOptions):
             if self.render_options.no_denoiser:
                 cmd.append('--no_denoiser')
             cmd.append('--format')
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 for _ in range(pov.steps):
-                    for o in self.outputs:
+                    for o in outputs:
                         cmd.append(o.type)
             cmd.append('--output')
             names = set()
             order = 1
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 for _ in range(pov.steps):
-                    for o in self.outputs:
+                    for o in outputs:
                         name = self.get_output_filename(o, self._parent.output_dir, pov, order)
                         if name in names:
                             raise KiPlotConfigurationError('Repeated name (use `file_id`): '+name)
@@ -664,9 +653,9 @@ class Blender_ExportOptions(BaseOptions):
             self.analyze_errors(run_command(cmd))
         if self.render_options.auto_crop:
             order = 1
-            for pov in self.point_of_view:
+            for pov in point_of_view:
                 for _ in range(pov.steps):
-                    for o in self.outputs:
+                    for o in outputs:
                         if o.type != 'render':
                             continue
                         name = self.get_output_filename(o, self._parent.output_dir, pov, order)
@@ -690,7 +679,7 @@ class Blender_Export(Base3D):
         super().__init__()
         with document:
             self.options = Blender_ExportOptions
-            """ *[dict] Options for the `blender_export` output """
+            """ *[dict={}] Options for the `blender_export` output """
         self._category = 'PCB/3D'
 
     def get_dependencies(self):

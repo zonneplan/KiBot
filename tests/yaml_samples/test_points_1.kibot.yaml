@@ -1,0 +1,38 @@
+kibot:
+  version: 1
+
+filters:
+  - name: only_testpoints
+    comment: "Select only testpoints"
+    type: generic
+    include_only:
+      - column: Value
+        regex: "^TestPoint"
+
+outputs:
+  - name: testpoints
+    comment: "Testpoint report"
+    type: bom
+    options:
+      pre_transform: ['_kicost_rename', '_rot_footprint']
+      exclude_filter: 'only_testpoints'
+      dnf_filter: '_null'
+      exclude_marked_in_sch: false
+      group_fields: []
+      sort_style: ref
+      use_aux_axis_as_origin: true
+      ignore_dnf: false
+      format: CSV
+      columns:
+        - field: References
+          name: Designator
+        - field: Footprint X
+          name: X-Loc
+        - field: Footprint Y
+          name: Y-Loc
+        - field: Footprint Side
+          name: Side
+        - field: Footprint Type
+          name: Type
+        - field: Value
+        - field: Footprint

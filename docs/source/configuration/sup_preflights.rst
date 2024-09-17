@@ -3,259 +3,34 @@
 Supported preflights
 ^^^^^^^^^^^^^^^^^^^^
 
--  **annotate_pcb**: :index:`: <pair: preflights; annotate_pcb>` [dict] Annotates the PCB according to physical coordinates.
-   This preflight modifies the PCB and schematic, use it only in revision control environments. |br|
-   Used to assign references according to footprint coordinates. |br|
-   The project must be fully annotated first.
+.. toctree::
+   :maxdepth: 1
 
-   -  Valid keys:
+   preflights/annotate_pcb
+   preflights/annotate_power
+   preflights/check_fields
+   preflights/check_zone_fills
+   preflights/draw_stackup
+   preflights/drc
+   preflights/erc
+   preflights/fill_zones
+   preflights/filters
+   preflights/set_text_variables
+   preflights/update_footprint
+   preflights/update_pcb_characteristics
+   preflights/update_qr
+   preflights/update_stackup
+   preflights/update_xml
 
-      -  ``bottom_main_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_main_ascending>` [boolean=true] Sort the main axis in ascending order for the bottom layer.
-         For X this is left to right and for Y top to bottom.
-      -  ``bottom_main_axis`` :index:`: <pair: preflight - annotate_pcb; bottom_main_axis>` [string='y'] [x,y] Use this axis as main sorting criteria for the bottom layer.
-      -  ``bottom_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; bottom_secondary_ascending>` [boolean=true] Sort the secondary axis in ascending order for the bottom layer.
-         For X this is left to right and for Y top to bottom.
-      -  ``bottom_start`` :index:`: <pair: preflight - annotate_pcb; bottom_start>` [number=101] First number for references at the bottom layer.
-         Use -1 to continue from the last top reference.
-      -  ``grid`` :index:`: <pair: preflight - annotate_pcb; grid>` [number=1.0] Grid size in millimeters.
-      -  ``top_main_ascending`` :index:`: <pair: preflight - annotate_pcb; top_main_ascending>` [boolean=true] Sort the main axis in ascending order for the top layer.
-         For X this is left to right and for Y top to bottom.
-      -  ``top_main_axis`` :index:`: <pair: preflight - annotate_pcb; top_main_axis>` [string='y'] [x,y] Use this axis as main sorting criteria for the top layer.
-      -  ``top_secondary_ascending`` :index:`: <pair: preflight - annotate_pcb; top_secondary_ascending>` [boolean=true] Sort the secondary axis in ascending order for the top layer.
-         For X this is left to right and for Y top to bottom.
-      -  ``top_start`` :index:`: <pair: preflight - annotate_pcb; top_start>` [number=1] First number for references at the top layer.
-      -  ``use_position_of`` :index:`: <pair: preflight - annotate_pcb; use_position_of>` [string='footprint'] [footprint,reference] Which coordinate is used.
+Supported deprecated preflights
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
--  **annotate_power**: :index:`: <pair: preflights; annotate_power>` [boolean=false] Annotates all power components.
-   This preflight modifies the schematic, use it only in revision control environments. |br|
-   Used to solve ERC problems when using filters that remove power reference numbers.
--  **check_zone_fills**: :index:`: <pair: preflights; check_zone_fills>` [boolean=false] Zones are filled before doing any operation involving PCB layers.
-   The original PCB remains unchanged. If you need to abort when the zone fill
-   creates significant changes to a layer use the CheckZoneFill internal template.
--  **draw_stackup**: :index:`: <pair: preflights; draw_stackup>` [boolean=False|dict] Draw the PCB stackup. Needs KiCad 7 or newer.
-   To specify the position and size of the drawing you can use two methods. |br|
-   You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options. |br|
-   But you can also draw a rectangle in your PCB with the size and layer you want. |br|
-   Then draw another thing inside the rectangle, select both and create a group
-   (right mouse button, then Grouping -> Group). Now edit the group and change its name
-   to *kibot_stackup*. After running this preflight the rectangle will contain the
-   stackup.
--  **drc**: :index:`: <pair: preflights; drc>` [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
-   You need a valid *fp-lib-table* installed. If not KiBot will try to temporarily install the template. |br|
-   This is a replacement for the *run_drc* preflight that needs KiCad 8 or newer. |br|
-   GUI exclusions and schematic parity are supported.
+.. toctree::
+   :maxdepth: 1
 
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: preflight - drc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=drc %x=according to format). Affected by global options.
-      -  ``all_track_errors`` :index:`: <pair: preflight - drc; all_track_errors>` [boolean=false] Report all the errors for all the tracks, not just the first.
-      -  ``dir`` :index:`: <pair: preflight - drc; dir>` [string=''] Sub-directory for the report.
-      -  ``dont_stop`` :index:`: <pair: preflight - drc; dont_stop>` [boolean=false] Continue even if we detect errors.
-      -  ``enabled`` :index:`: <pair: preflight - drc; enabled>` [boolean=true] Enable the check. This is the replacement for the boolean value.
-      -  ``filters`` :index:`: <pair: preflight - drc; filters>` [list(dict)] Used to manipulate the violations. Avoid using the *filters* preflight.
-
-         -  Valid keys:
-
-            -  ``change_to`` :index:`: <pair: preflight - drc - filters; change_to>` [string='ignore'] [error,warning,ignore] The action of the filter.
-               Changing to *ignore* is the default and is used to suppress a violation, but you can also change
-               it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
-               so you can revert a GUI exclusion.
-            -  ``error`` :index:`: <pair: preflight - drc - filters; error>` [string=''] Error id we want to exclude.
-            -  ``filter`` :index:`: <pair: preflight - drc - filters; filter>` [string=''] Name for the filter, for documentation purposes.
-            -  *filter_msg* :index:`: <pair: preflight - drc - filters; filter_msg>` Alias for filter.
-            -  ``regex`` :index:`: <pair: preflight - drc - filters; regex>` [string=''] Regular expression to match the text for the error we want to exclude.
-            -  *regexp* :index:`: <pair: preflight - drc - filters; regexp>` Alias for regex.
-
-      -  ``format`` :index:`: <pair: preflight - drc; format>` [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
-         You can specify multiple formats.
-
-      -  ``ignore_unconnected`` :index:`: <pair: preflight - drc; ignore_unconnected>` [boolean=false] Ignores the unconnected nets. Useful if you didn't finish the routing.
-      -  ``schematic_parity`` :index:`: <pair: preflight - drc; schematic_parity>` [boolean=true] Check if the PCB and the schematic are coincident.
-      -  ``units`` :index:`: <pair: preflight - drc; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - drc; warnings_as_errors>` [boolean=false] Warnings are considered errors, they still reported as errors, but consider it an error.
-
--  **erc**: :index:`: <pair: preflights; erc>` [boolean=false|dict] Runs the ERC (Electrical Rules Check). To ensure the schematic is electrically correct.
-   You need a valid *sym-lib-table* installed. If not KiBot will try to temporarily install the template. |br|
-   This is a replacement for the *run_erc* preflight that needs KiCad 8 or newer.
-
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: preflight - erc; output>` [string='%f-%i%I%v.%x'] Name for the generated archive (%i=erc %x=according to format). Affected by global options.
-      -  ``dir`` :index:`: <pair: preflight - erc; dir>` [string=''] Sub-directory for the report.
-      -  ``dont_stop`` :index:`: <pair: preflight - erc; dont_stop>` [boolean=false] Continue even if we detect errors.
-      -  ``enabled`` :index:`: <pair: preflight - erc; enabled>` [boolean=true] Enable the check. This is the replacement for the boolean value.
-      -  ``filters`` :index:`: <pair: preflight - erc; filters>` [list(dict)] Used to manipulate the violations. Avoid using the *filters* preflight.
-
-         -  Valid keys:
-
-            -  ``change_to`` :index:`: <pair: preflight - erc - filters; change_to>` [string='ignore'] [error,warning,ignore] The action of the filter.
-               Changing to *ignore* is the default and is used to suppress a violation, but you can also change
-               it to be an *error* or a *warning*. Note that violations excluded by KiCad are also analyzed,
-               so you can revert a GUI exclusion.
-            -  ``error`` :index:`: <pair: preflight - erc - filters; error>` [string=''] Error id we want to exclude.
-            -  ``filter`` :index:`: <pair: preflight - erc - filters; filter>` [string=''] Name for the filter, for documentation purposes.
-            -  *filter_msg* :index:`: <pair: preflight - erc - filters; filter_msg>` Alias for filter.
-            -  ``regex`` :index:`: <pair: preflight - erc - filters; regex>` [string=''] Regular expression to match the text for the error we want to exclude.
-            -  *regexp* :index:`: <pair: preflight - erc - filters; regexp>` Alias for regex.
-
-      -  ``format`` :index:`: <pair: preflight - erc; format>` [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
-         You can specify multiple formats.
-
-      -  ``units`` :index:`: <pair: preflight - erc; units>` [string='millimeters'] [millimeters,inches,mils] Units used for the positions. Affected by global options.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - erc; warnings_as_errors>` [boolean=false] Warnings are considered errors, they still reported as errors, but consider it an error.
-
--  **erc_warnings**: :index:`: <pair: preflights; erc_warnings>` [boolean=false] **Deprecated**, use the `warnings_as_errors` option from `run_erc`/`erc`.
-   Option for `run_erc`. ERC warnings are considered errors.
--  **fill_zones**: :index:`: <pair: preflights; fill_zones>` [boolean=false] Fill all zones again and save the PCB.
--  **filters**: :index:`: <pair: preflights; filters>` [list(dict)] A list of entries to filter out ERC/DRC messages when using *run_erc*/*run_drc*.
-   Avoid using it with the new *erc* and *drc* preflights. |br|
-   Note that ignored errors will become KiBot warnings (i.e. `(W058) ...`). |br|
-   To farther ignore these warnings use the `filters` option in the `global` section.
-
-   -  Valid keys:
-
-      -  ``error`` :index:`: <pair: preflight - filters; error>` [string=''] Error id we want to exclude.
-         A name for KiCad 6 or a number for KiCad 5, but always a string.
-      -  *error_number* :index:`: <pair: preflight - filters; error_number>` Alias for number.
-      -  ``filter`` :index:`: <pair: preflight - filters; filter>` [string=''] Name for the filter, for documentation purposes.
-      -  *filter_msg* :index:`: <pair: preflight - filters; filter_msg>` Alias for filter.
-      -  ``number`` :index:`: <pair: preflight - filters; number>` [number=0] Error number we want to exclude.
-         KiCad 5 only.
-      -  ``regex`` :index:`: <pair: preflight - filters; regex>` [string=''] Regular expression to match the text for the error we want to exclude.
-      -  *regexp* :index:`: <pair: preflight - filters; regexp>` Alias for regex.
-
--  **ignore_unconnected**: :index:`: <pair: preflights; ignore_unconnected>` [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`/`drc`.
-   Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing. |br|
-   It will also ignore KiCad 6 warnings when using `run_drc`.
--  **pcb_replace**: :index:`: <pair: preflights; pcb_replace>` [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
-   This is useful for KiCad 5, use `set_text_variables` when using KiCad 6. |br|
-   This preflight modifies the PCB. Even when a back-up is done use it carefully.
-
-   -  Valid keys:
-
-      -  ``date_command`` :index:`: <pair: preflight - pcb_replace; date_command>` [string=''] Command to get the date to use in the PCB.\\
-         ```git log -1 --format='%as' -- "$KIBOT_PCB_NAME"```\\
-         Will return the date in YYYY-MM-DD format.\\
-         ```date -d @`git log -1 --format='%at' -- "$KIBOT_PCB_NAME"` +%Y-%m-%d_%H-%M-%S```\\
-         Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
-         Important: on KiCad 6 the title block data is optional.
-         This command will work only if you have a date in the PCB/Schematic.
-      -  ``replace_tags`` :index:`: <pair: preflight - pcb_replace; replace_tags>` [dict|list(dict)] Tag or tags to replace.
-
-         -  Valid keys:
-
-            -  ``after`` :index:`: <pair: preflight - pcb_replace - replace_tags; after>` [string=''] Text to add after the output of `command`.
-            -  ``before`` :index:`: <pair: preflight - pcb_replace - replace_tags; before>` [string=''] Text to add before the output of `command`.
-            -  ``command`` :index:`: <pair: preflight - pcb_replace - replace_tags; command>` [string=''] Command to execute to get the text, will be used only if `text` is empty.
-               KIBOT_PCB_NAME variable is the name of the current PCB.
-            -  ``tag`` :index:`: <pair: preflight - pcb_replace - replace_tags; tag>` [string=''] Name of the tag to replace. Use `version` for a tag named `@version@`.
-            -  ``tag_delimiter`` :index:`: <pair: preflight - pcb_replace - replace_tags; tag_delimiter>` [string='@'] Character used to indicate the beginning and the end of a tag.
-               Don't change it unless you really know about KiCad's file formats.
-            -  ``text`` :index:`: <pair: preflight - pcb_replace - replace_tags; text>` [string=''] Text to insert instead of the tag.
-
-
--  **run_drc**: :index:`: <pair: preflights; run_drc>` [boolean=false|dict] Runs the DRC (Distance Rules Check). To ensure we have a valid PCB.
-   The report file name is controlled by the global output pattern (%i=drc %x=txt). |br|
-   Note that the KiCad 6+ *Test for parity between PCB and schematic* option is not supported. |br|
-   If you need to check the parity use the `update_xml` preflight. |br|
-   KiCad 6 introduced `warnings` they are currently counted be the `unconnected` counter of KiBot. |br|
-   This will change in the future. |br|
-   If you use DRC exclusions please consult the `drc_exclusions_workaround` global option.
-
-   -  Valid keys:
-
-      -  ``dir`` :index:`: <pair: preflight - run_drc; dir>` [string=''] Sub-directory for the report.
-      -  ``enabled`` :index:`: <pair: preflight - run_drc; enabled>` [boolean=true] Enable the DRC. This is the replacement for the boolean value.
-      -  ``ignore_unconnected`` :index:`: <pair: preflight - run_drc; ignore_unconnected>` [boolean=false] Ignores the unconnected nets. Useful if you didn't finish the routing.
-         It will also ignore KiCad 6 warnings.
-
--  **run_erc**: :index:`: <pair: preflights; run_erc>` [boolean=false|dict] (Deprecated for KiCad 8, use *erc*) Runs the ERC (Electrical Rules Check).
-   To ensure the schematic is electrically correct. |br|
-   The report file name is controlled by the global output pattern (%i=erc %x=txt).
-
-   -  Valid keys:
-
-      -  ``dir`` :index:`: <pair: preflight - run_erc; dir>` [string=''] Sub-directory for the report.
-      -  ``enabled`` :index:`: <pair: preflight - run_erc; enabled>` [boolean=true] Enable the ERC. This is the replacement for the boolean value.
-      -  ``warnings_as_errors`` :index:`: <pair: preflight - run_erc; warnings_as_errors>` [boolean=false] ERC warnings are considered errors.
-
--  **sch_replace**: :index:`: <pair: preflights; sch_replace>` [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
-   This is useful for KiCad 5, use `set_text_variables` when using KiCad 6. |br|
-   This preflight modifies the schematics. Even when a back-up is done use it carefully.
-
-   -  Valid keys:
-
-      -  ``date_command`` :index:`: <pair: preflight - sch_replace; date_command>` [string=''] Command to get the date to use in the SCH.\\
-         ```git log -1 --format='%as' -- "$KIBOT_SCH_NAME"```\\
-         Will return the date in YYYY-MM-DD format.\\
-         ```date -d @`git log -1 --format='%at' -- "$KIBOT_SCH_NAME"` +%Y-%m-%d_%H-%M-%S```\\
-         Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
-         Important: on KiCad 6 the title block data is optional.
-         This command will work only if you have a date in the SCH/Schematic.
-      -  ``replace_tags`` :index:`: <pair: preflight - sch_replace; replace_tags>` [dict|list(dict)] Tag or tags to replace.
-
-         -  Valid keys:
-
-            -  ``after`` :index:`: <pair: preflight - sch_replace - replace_tags; after>` [string=''] Text to add after the output of `command`.
-            -  ``before`` :index:`: <pair: preflight - sch_replace - replace_tags; before>` [string=''] Text to add before the output of `command`.
-            -  ``command`` :index:`: <pair: preflight - sch_replace - replace_tags; command>` [string=''] Command to execute to get the text, will be used only if `text` is empty.
-               KIBOT_SCH_NAME variable is the name of the current sheet.
-               KIBOT_TOP_SCH_NAME variable is the name of the top sheet.
-            -  ``tag`` :index:`: <pair: preflight - sch_replace - replace_tags; tag>` [string=''] Name of the tag to replace. Use `version` for a tag named `@version@`.
-            -  ``tag_delimiter`` :index:`: <pair: preflight - sch_replace - replace_tags; tag_delimiter>` [string='@'] Character used to indicate the beginning and the end of a tag.
-               Don't change it unless you really know about KiCad's file formats.
-            -  ``text`` :index:`: <pair: preflight - sch_replace - replace_tags; text>` [string=''] Text to insert instead of the tag.
-
-
--  **set_text_variables**: :index:`: <pair: preflights; set_text_variables>` [dict|list(dict)] Defines KiCad 6+ variables.
-   They are expanded using `${VARIABLE}`, and stored in the project file. |br|
-   This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6. |br|
-   The KiCad project file is modified. |br|
-
-.. warning::
-   don't use `-s all` or this preflight will be skipped
-.. .
-
-   -  Valid keys:
-
-      -  ``after`` :index:`: <pair: preflight - set_text_variables; after>` [string=''] Text to add after the output of `command`.
-      -  ``before`` :index:`: <pair: preflight - set_text_variables; before>` [string=''] Text to add before the output of `command`.
-      -  ``command`` :index:`: <pair: preflight - set_text_variables; command>` [string=''] Command to execute to get the text, will be used only if `text` is empty.
-         This command will be executed using the Bash shell.
-         Be careful about spaces in file names (i.e. use "$KIBOT_PCB_NAME").
-         The `KIBOT_PCB_NAME` environment variable is the PCB file and the
-         `KIBOT_SCH_NAME` environment variable is the schematic file.
-      -  ``expand_kibot_patterns`` :index:`: <pair: preflight - set_text_variables; expand_kibot_patterns>` [boolean=true] Expand %X patterns. The context is `schematic`.
-      -  ``name`` :index:`: <pair: preflight - set_text_variables; name>` [string=''] Name of the variable. The `version` variable will be expanded using `${version}`.
-      -  ``text`` :index:`: <pair: preflight - set_text_variables; text>` [string=''] Text to insert instead of the variable.
-      -  *variable* :index:`: <pair: preflight - set_text_variables; variable>` Alias for name.
-
--  **update_footprint**: :index:`: <pair: preflights; update_footprint>` [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
-   This is useful to replace logos using freshly created versions.
--  **update_pcb_characteristics**: :index:`: <pair: preflights; update_pcb_characteristics>` [boolean=False] Update the information in the Board Characteristics.
-   Starting with KiCad 7 you can paste a block containing board information using
-   *Place* -> *Add Board Characteristics*. But this information is static, so if
-   you modify anything related to it the block will be obsolete. |br|
-   This preflight tries to refresh the information.
--  **update_qr**: :index:`: <pair: preflights; update_qr>` [boolean=false] Update the QR codes.
-   Complements the `qr_lib` output. |br|
-   The KiCad 6 files and the KiCad 5 PCB needs manual update, generating a new library isn't enough.
--  **update_stackup**: :index:`: <pair: preflights; update_stackup>` [boolean=False] Update the information in the Stackup Table.
-   Starting with KiCad 7 you can paste a block containing board information using
-   *Place* -> *Stackup Table*. But this information is static, so if
-   you modify anything related to it the block will be obsolete. |br|
-   This preflight tries to refresh the information.
--  **update_xml**: :index:`: <pair: preflights; update_xml>` [boolean=false|dict] Update the XML version of the BoM (Bill of Materials).
-   To ensure our generated BoM is up to date. |br|
-   Note that this isn't needed when using the internal BoM generator (`bom`). |br|
-   You can compare the PCB and schematic netlists using it.
-
-   -  Valid keys:
-
-      -  **check_pcb_parity** :index:`: <pair: preflight - update_xml; check_pcb_parity>` [boolean=false] Check if the PCB and Schematic are synchronized.
-         This is equivalent to the *Test for parity between PCB and schematic* of the DRC dialog.
-         Not available for KiCad 5. **Important**: when using KiCad 6 and the *Exclude from BoM* attribute
-         these components won't be included in the generated XML, so we can't check its parity.
-      -  ``as_warnings`` :index:`: <pair: preflight - update_xml; as_warnings>` [boolean=false] Inform the problems as warnings and don't stop.
-      -  ``enabled`` :index:`: <pair: preflight - update_xml; enabled>` [boolean=true] Enable the update. This is the replacement for the boolean value.
-
+   preflights/erc_warnings
+   preflights/ignore_unconnected
+   preflights/pcb_replace
+   preflights/run_drc
+   preflights/run_erc
+   preflights/sch_replace

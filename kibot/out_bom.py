@@ -73,14 +73,14 @@ class BoMJoinField(Optionable):
         super().__init__()
         if field:
             self.field = field.lower()
-            self.text = None
-            self.text_before = ''
-            self.text_after = ''
+            self.text = self._text = None
+            self.text_before = self._text_before = ''
+            self.text_after = self._text_after = ''
             return
         self._unknown_is_error = True
         with document:
             self.field = ''
-            """ *Name of the field """
+            """ *{no_case} Name of the field """
             self.text = ''
             """ Text to use instead of a field. This option is incompatible with the `field` option.
                 Any space to separate it should be added in the text.
@@ -109,25 +109,24 @@ class BoMJoinField(Optionable):
         if self.field and self.text:
             raise KiPlotConfigurationError("You can't specify a `field` and a `text` in a join list ({})".
                                            format(str(self._tree)))
-        self.field = self.field.lower()
         if self.text_before is None:
             self.text_before = ''
         if self.text_after is None:
             self.text_after = ''
-        self.text = self.unescape(self.text)
-        self.text_before = self.unescape(self.text_before)
-        self.text_after = self.unescape(self.text_after)
+        self._text = self.unescape(self.text)
+        self._text_before = self.unescape(self.text_before)
+        self._text_after = self.unescape(self.text_after)
 
     def get_text(self, field_getter):
-        if self.text:
-            return self.text
+        if self._text:
+            return self._text
         value = field_getter(self.field)
         if not value:
             return None
-        separator = '' if self.text_before else ' '
-        return separator + self.text_before + value + self.text_after
+        separator = '' if self._text_before else ' '
+        return separator + self._text_before + value + self._text_after
 
-    def __repr__(self):
+    def __str__(self):
         if self.text:
             return '`{}`'.format(self.text)
         return '`{}`+{}+`{}`'.format(self.text_before, self.field, self.text_after)
@@ -153,6 +152,12 @@ class BoMColumns(Optionable):
         self._field_example = 'Row'
         self._name_example = 'Line'
 
+    def __str__(self):
+        txt = f'{self.name} ({self.field})' if self.name else self.field
+        if self.join:
+            txt += f' {self.join}'
+        return txt
+
     def config(self, parent):
         super().config(parent)
         if not self.field:
@@ -161,14 +166,7 @@ class BoMColumns(Optionable):
         field = self.field.lower()
         # Ensure this is None or a list
         # Also arrange it as field, cols...
-        if isinstance(self.join, type):
-            self.join = None
-        elif isinstance(self.join, str):
-            if self.join:
-                self.join = [field, BoMJoinField(self.join)]
-            else:
-                self.join = None
-        else:
+        if self.join:
             join = [field]
             for c in self.join:
                 if isinstance(c, str):
@@ -200,9 +198,11 @@ class RowColors(Optionable):
         self.validate_colors(['color'])
         if not self.description:
             raise KiPlotConfigurationError('You must add a description for a colored row')
-        if isinstance(self.filter, type):
-            raise KiPlotConfigurationError('You must provide a filter to match the rows')
         self.filter = BaseFilter.solve_filter(self.filter, 'colored rows')
+
+    def __str__(self):
+        desc = self.description if self.description else 'No description'
+        return f'`{desc}` ({self.color}) {self.filter}'
 
 
 class BoMLinkable(Optionable):
@@ -213,13 +213,13 @@ class BoMLinkable(Optionable):
             self.col_colors = True
             """ Use colors to show the field type """
             self.datasheet_as_link = ''
-            """ *Column with links to the datasheet """
+            """ *{no_case} Column with links to the datasheet """
             self.digikey_link = Optionable
-            """ [string|list(string)=''] Column/s containing Digi-Key part numbers, will be linked to web page """
+            """ [string|list(string)=''] {no_case} Column/s containing Digi-Key part numbers, will be linked to web page """
             self.mouser_link = Optionable
-            """ [string|list(string)=''] Column/s containing Mouser part numbers, will be linked to web page """
+            """ [string|list(string)=''] {no_case} Column/s containing Mouser part numbers, will be linked to web page """
             self.lcsc_link = Optionable
-            """ [boolean|string|list(string)=''] Column/s containing LCSC part numbers, will be linked to web page.
+            """ [boolean|string|list(string)=''] {no_case} Column/s containing LCSC part numbers, will be linked to web page.
                 Use **true** to copy the value indicated by the `field_lcsc_part` global option """
             self.generate_dnf = True
             """ *Generate a separated section for DNF (Do Not Fit) components """
@@ -239,33 +239,21 @@ class BoMLinkable(Optionable):
             self.extra_info = Optionable
             """ [string|list(string)=''] Information to put after the title and before the pcb and stats info """
             self.row_colors = RowColors
-            """ [list(dict)] Used to highlight rows using filters. Rows that match a filter can be colored.
+            """ [list(dict)=[]] Used to highlight rows using filters. Rows that match a filter can be colored.
                 Note that these rows won't have colored columns """
 
     def config(self, parent):
         super().config(parent)
-        # *_link
-        self.digikey_link = self.force_list(self.digikey_link, comma_sep=False, lower_case=True)
-        self.mouser_link = self.force_list(self.mouser_link, comma_sep=False, lower_case=True)
         if isinstance(self.lcsc_link, bool):
-            self.lcsc_link = self.field_lcsc_part if self.lcsc_link else ''
-        self.lcsc_link = self.force_list(self.lcsc_link, comma_sep=False, lower_case=True)
+            self.lcsc_link = [self.solve_field_name('_field_lcsc_part')] if self.lcsc_link else []
         # Logo
-        if isinstance(self.logo, type):
-            self.logo = ''
-        elif isinstance(self.logo, bool):
+        if isinstance(self.logo, bool):
             self.logo = '' if self.logo else None
         elif self.logo:
-            self.logo = os.path.abspath(self.logo)
+            if not os.path.isabs(self.logo):
+                self.logo = os.path.abspath(os.path.expandvars(os.path.expanduser(self.logo)))
             if not os.path.isfile(self.logo):
                 raise KiPlotConfigurationError('Missing logo file `{}`'.format(self.logo))
-        # Extra info lines
-        self.extra_info = Optionable.force_list(self.extra_info, comma_sep=False)
-        # Datasheet as link
-        self.datasheet_as_link = self.datasheet_as_link.lower()
-        # Row colors
-        if isinstance(self.row_colors, type):
-            self.row_colors = []
 
 
 class BoMHTML(BoMLinkable):
@@ -356,9 +344,9 @@ class BoMXLSX(BoMLinkable):
             """ *Enable KiCost worksheet creation.
                 Note: an example of how to use it on CI/CD can be found [here](https://github.com/set-soft/kicost_ci_test) """
             self.kicost_api_enable = Optionable
-            """ [string|list(string)=''] List of KiCost APIs to enable """
+            """ [string|list(string)=''] {comma_sep} List of KiCost APIs to enable """
             self.kicost_api_disable = Optionable
-            """ [string|list(string)=''] List of KiCost APIs to disable """
+            """ [string|list(string)=''] {comma_sep} List of KiCost APIs to disable """
             self.kicost_dist_desc = False
             """ Used to add a column with the distributor's description. So you can check this is the right component """
             self.kicost_config = ''
@@ -371,16 +359,15 @@ class BoMXLSX(BoMLinkable):
             """ *Enable Specs worksheet creation. Contains specifications for the components.
                 Works with only some KiCost APIs """
             self.specs_columns = BoMColumns
-            """ [list(dict)|list(string)] Which columns are included in the Specs worksheet. Use `References` for the
+            """ [list(dict)|list(string)=[]] Which columns are included in the Specs worksheet. Use `References` for the
                 references, 'Row' for the order and 'Sep' to separate groups at the same level. By default all are included.
                 Column names are distributor specific, the following aren't: '_desc', '_value', '_tolerance', '_footprint',
-                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size' """
+                '_power', '_current', '_voltage', '_frequency', '_temp_coeff', '_manf', '_size'.
+                Note that an empty list means all available specs, use `specs` options to disable it """
             self.logo_scale = 2
             """ Scaling factor for the logo. Note that this value isn't honored by all spreadsheet software """
 
     def process_columns_config(self, cols):
-        if isinstance(cols, type):
-            return (None, None, None, None, None)
         columns = []
         column_levels = []
         column_comments = []
@@ -426,33 +413,20 @@ class BoMXLSX(BoMLinkable):
             raise KiPlotConfigurationError('Missing KiCost configuration file `{}`'.format(self.kicost_config))
         if not self.kicost_config:
             self.kicost_config = None
-        # KiCost APIs
-        self.kicost_api_enable = Optionable.force_list(self.kicost_api_enable)
-        self.kicost_api_disable = Optionable.force_list(self.kicost_api_disable)
         # Specs columns
-        (self.s_columns, self.s_levels, self.s_comments, self.s_rename,
-         self.s_join) = self.process_columns_config(self.specs_columns)
+        if self.specs_columns:
+            (self.s_columns, self.s_levels, self.s_comments, self.s_rename,
+             self.s_join) = self.process_columns_config(self.specs_columns)
+        else:
+            self.s_columns = self.s_levels = self.s_comments = self.s_rename = self.s_join = None
 
 
 class ComponentAliases(Optionable):
     _default = DEFAULT_ALIASES
 
-    def __init__(self):
-        super().__init__()
-
 
 class GroupFields(Optionable):
     _default = ColumnList.DEFAULT_GROUPING + ['voltage', 'tolerance', 'current', 'power']
-
-    def __init__(self):
-        super().__init__()
-
-
-class NoConflict(Optionable):
-    _default = "['Config', 'Part']"
-
-    def __init__(self):
-        super().__init__()
 
 
 class Aggregate(Optionable):
@@ -469,6 +443,7 @@ class Aggregate(Optionable):
             """ Number of boards to build (components multiplier). Use negative to subtract """
             self.delimiter = ','
             """ Delimiter used for CSV files """
+        self._file_example = 'another_schematic.kicad_sch'
 
     def config(self, parent):
         super().config(parent)
@@ -477,34 +452,40 @@ class Aggregate(Optionable):
         if not self.name:
             self.name = os.path.splitext(os.path.basename(self.file))[0]
 
+    def __str__(self):
+        return f'{self.name} ({self.file})'
+
 
 class BoMOptions(BaseOptions):
     def __init__(self):
         with document:
             self.number = 1
             """ *Number of boards to build (components multiplier) """
-            self.variant = ''
-            """ Board variant, used to determine which components
-                are output to the BoM. """
+            self.variant = '_kibom_simple'
+            """ Board variant, used to determine which components are output to the BoM.
+                The `_kibom_simple` variant is a KiBoM variant without any filters and it provides some basic
+                compatibility with KiBoM. Note that this output has default filters that behaves like KiBoM.
+                The combination between the default for this option and the defaults for the filters provides
+                a behavior that mimics KiBoM default behavior """
             self.output = GS.def_global_output
             """ *filename for the output (%i=bom)"""
-            self.format = ''
-            """ *[HTML,CSV,TXT,TSV,XML,XLSX,HRTXT] format for the BoM.
-                Defaults to CSV or a guess according to the options.
+            self.format = 'Auto'
+            """ *[HTML,CSV,TXT,TSV,XML,XLSX,HRTXT,Auto] format for the BoM.
+                `Auto` defaults to CSV or a guess according to the options.
                 HRTXT stands for Human Readable TeXT """
             # Equivalent to KiBoM INI:
             self.ignore_dnf = True
             """ *Exclude DNF (Do Not Fit) components """
-            self.fit_field = 'Config'
-            """ Field name used for internal filters (not for variants) """
+            self.fit_field = 'config'
+            """ {no_case} Field name used for internal filters (not for variants) """
             self.use_alt = False
             """ Print grouped references in the alternate compressed style eg: R1-R7,R18 """
             self.columns = BoMColumns
-            """ *[list(dict)|list(string)] List of columns to display.
+            """ *[list(dict)|list(string)=?] List of columns to display.
                 Can be just the name of the field.
                 In addition to all user defined fields you have various special columns, consult :ref:`bom_columns` """
             self.cost_extra_columns = BoMColumns
-            """ [list(dict)|list(string)] List of columns to add to the global section of the cost.
+            """ [list(dict)|list(string)=[]] List of columns to add to the global section of the cost.
                 Can be just the name of the field """
             self.normalize_values = False
             """ *Try to normalize the R, L and C values, producing uniform units and prefixes """
@@ -513,16 +494,16 @@ class BoMOptions(BaseOptions):
             self.ref_separator = ' '
             """ Separator used for the list of references """
             self.html = BoMHTML
-            """ *[dict] Options for the HTML format """
+            """ *[dict={}] Options for the HTML format """
             self.xlsx = BoMXLSX
-            """ *[dict] Options for the XLSX format """
+            """ *[dict={}] Options for the XLSX format """
             self.csv = BoMCSV
-            """ *[dict] Options for the CSV, TXT and TSV formats """
+            """ *[dict={}] Options for the CSV, TXT and TSV formats """
             self.hrtxt = BoMTXT
-            """ *[dict] Options for the HRTXT formats """
+            """ *[dict={}] Options for the HRTXT formats """
             # * Filters
             self.pre_transform = Optionable
-            """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+            """ [string|list(string)='_null'] Name of the filter to transform fields before applying other filters.
                 This option is for simple cases, consider using a full variant for complex cases """
             self.exclude_filter = Optionable
             """ [string|list(string)='_mechanical'] Name of the filter to exclude components from BoM processing.
@@ -530,11 +511,11 @@ class BoMOptions(BaseOptions):
                 Please consult the built-in filters explanation to fully understand what is excluded by default.
                 This option is for simple cases, consider using a full variant for complex cases """
             self.dnf_filter = Optionable
-            """ [string|list(string)='_kibom_dnf'] Name of the filter to mark components as 'Do Not Fit'.
+            """ [string|list(string)='_kibom_dnf_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Fit'.
                 The default filter marks components with a DNF value or DNF in the Config field.
                 This option is for simple cases, consider using a full variant for complex cases """
             self.dnc_filter = Optionable
-            """ [string|list(string)='_kibom_dnc'] Name of the filter to mark components as 'Do Not Change'.
+            """ [string|list(string)='_kibom_dnc_CONFIG_FIELD'] Name of the filter to mark components as 'Do Not Change'.
                 The default filter marks components with a DNC value or DNC in the Config field.
                 This option is for simple cases, consider using a full variant for complex cases """
             # * Grouping criteria
@@ -545,7 +526,7 @@ class BoMOptions(BaseOptions):
             self.merge_both_blank = True
             """ When creating groups two components with empty/missing field will be interpreted as with the same value """
             self.group_fields = GroupFields
-            """ *[list(string)] List of fields used for sorting individual components into groups.
+            """ *[list(string)] {no_case} List of fields used for sorting individual components into groups.
                 Components which match (comparing *all* fields) will be grouped together.
                 Field names are case-insensitive.
                 For empty fields the behavior is defined by the `group_fields_fallbacks`, `merge_blank_fields` and
@@ -556,7 +537,7 @@ class BoMOptions(BaseOptions):
                 If empty: ['Part', 'Part Lib', 'Value', 'Footprint', 'Footprint Lib',
                 .          'Voltage', 'Tolerance', 'Current', 'Power'] is used """
             self.group_fields_fallbacks = Optionable
-            """ [list(string)] List of fields to be used when the fields in `group_fields` are empty.
+            """ [list(string)=[]] {no_case} List of fields to be used when the fields in `group_fields` are empty.
                 The first field in this list is the fallback for the first in `group_fields`, and so on """
             self.component_aliases = ComponentAliases
             """ [list(list(string))] A series of values which are considered to be equivalent for the part name.
@@ -574,13 +555,13 @@ class BoMOptions(BaseOptions):
                 Note that this implies that *1k 1%* is the same as *1k 5%*. If you really need to group using the
                 extra information split it in separated fields, add the fields to `group_fields` and disable
                 `merge_blank_fields` """
-            self.no_conflict = NoConflict
-            """ [list(string)] List of fields where we tolerate conflicts.
+            self.no_conflict = Optionable
+            """ [list(string)=?] {no_case} List of fields where we tolerate conflicts.
                 Use it to avoid undesired warnings.
                 By default the field indicated in `fit_field`, the field used for variants and
                 the field `part` are excluded """
             self.aggregate = Aggregate
-            """ [list(dict)] Add components from other projects.
+            """ [list(dict)=[]] Add components from other projects.
                 You can use CSV files, the first row must contain the names of the fields.
                 The `Reference` and `Value` are mandatory, in most cases `Part` is also needed.
                 The `Part` column should contain the name/type of the component. This is important for
@@ -593,9 +574,10 @@ class BoMOptions(BaseOptions):
             self.int_qtys = True
             """ Component quantities are always expressed as integers. Using the ceil() function """
             self.distributors = Optionable
-            """ [string|list(string)] Include this distributors list. Default is all the available """
+            """ [string|list(string)=[]] {comma_sep} Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
-            """ [string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
+            """ [string|list(string)=[]] {comma_sep} Exclude this distributors list.
+                They are removed after computing `distributors` """
             self.count_smd_tht = False
             """ Show the stats about how many of the components are SMD/THT. You must provide the PCB """
             self.units = 'millimeters'
@@ -610,9 +592,9 @@ class BoMOptions(BaseOptions):
             self.sort_style = 'type_value'
             """ *[type_value,type_value_ref,ref] Sorting criteria """
             self.footprint_populate_values = Optionable
-            """ [string|list(string)='no,yes'] Values for the `Footprint Populate` column """
+            """ [string|list(string)='no,yes'] {comma_sep} {L:2} Values for the `Footprint Populate` column """
             self.footprint_type_values = Optionable
-            """ [string|list(string)='SMD,THT,VIRTUAL'] Values for the `Footprint Type` column """
+            """ [string|list(string)='SMD,THT,VIRTUAL'] {comma_sep} {L:3} Values for the `Footprint Type` column """
             self.expand_text_vars = True
             """ Expand KiCad 6 text variables after applying all filters and variants.
                 This is done using a **_expand_text_vars** filter.
@@ -624,10 +606,8 @@ class BoMOptions(BaseOptions):
             self.exclude_marked_in_pcb = False
             """ Exclude components marked with *Exclude from BOM* in the PCB.
                 This is a KiCad 6 option """
-        self._format_example = 'CSV'
-        self._footprint_populate_values_example = 'no,yes'
-        self._footprint_type_values_example = 'SMD,THT,VIRTUAL'
         super().__init__()
+        self._no_conflict_example = ['Config', 'Part']
 
     @staticmethod
     def _get_columns():
@@ -639,15 +619,15 @@ class BoMOptions(BaseOptions):
 
     def _guess_format(self):
         """ Figure out the format """
-        if not self.format:
+        if self.format == 'Auto':
             # If we have HTML options generate an HTML
-            if not isinstance(self.html, type):
+            if self.get_user_defined('html'):
                 return 'html'
             # Same for XLSX
-            if not isinstance(self.xlsx, type):
+            if self.get_user_defined('xlsx'):
                 return 'xlsx'
             # Same for HRTXT
-            if not isinstance(self.hrtxt, type):
+            if self.get_user_defined('hrtxt'):
                 return 'hrtxt'
             # Default to a simple and common format: CSV
             return 'csv'
@@ -656,175 +636,127 @@ class BoMOptions(BaseOptions):
 
     def _normalize_variant(self):
         """ Replaces the name of the variant by an object handling it. """
-        self.variant = RegOutput.check_variant(self.variant)
-        if self.variant is None:
-            # If no variant is specified use the KiBoM variant class with basic functionality
+        if self.variant == '_kibom_simple':
+            # This is the default variant to get a basic KiBoM compatibility
+            # In particular: components that should go only to a particular variant will be excluded in this way
             self.variant = KiBoM()
             self.variant.config_field = self.fit_field
             self.variant.variant = []
             self.variant.name = 'default'
-            # Delegate any filter to the variant
-            self.variant.set_def_filters(self.exclude_filter, self.dnf_filter, self.dnc_filter, self.pre_transform)
-            self.exclude_filter = self.dnf_filter = self.dnc_filter = self.pre_transform = None
-            self.variant.config(self)  # Fill or adjust any detail
+            self.variant.config(self)
+            # Use our filters instead.
+            # If the user didn't specify them they have equivalent defaults to the ones we are removing
+            self.variant.clear_filters()
+            return
+        self.variant = RegOutput.check_variant(self.variant)
 
-    def process_columns_config(self, cols, valid_columns, extra_columns, add_all=True):
+    def process_columns_config(self, cols, valid_columns, extra_columns):
         column_rename = {}
         join = []
-        if isinstance(cols, type):
-            if not add_all:
-                return ([], [], [], column_rename, join)
-            # If none specified make a list with all the possible columns.
-            # Here are some exceptions:
-            # Ignore the part and footprint library, also sheetpath and the Reference in singular
-            ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L,
-                      ColumnList.COL_REFERENCE_L[:-1]]
-            if len(self.aggregate) == 0:
-                ignore.append(ColumnList.COL_SOURCE_BOM_L)
-                if self.number == 1:
-                    # For one board avoid COL_GRP_BUILD_QUANTITY
-                    ignore.append(ColumnList.COL_GRP_BUILD_QUANTITY_L)
-            # Exclude the particular columns
-            columns = [h for h in valid_columns if not h.lower() in ignore]
-            column_levels = [0]*len(columns)
-            column_comments = ['']*len(columns)
-        else:
-            columns = []
-            column_levels = []
-            column_comments = []
-            # Ensure the column names are valid.
-            # Also create the rename and join lists.
-            # Lower case available columns (to check if valid)
-            valid_columns_l = {c.lower(): c for c in valid_columns + extra_columns}
-            logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
-            # Create the different lists
-            for col in cols:
-                if isinstance(col, str):
-                    # Just a string, add to the list of used
-                    new_col = col
-                    new_col_l = new_col.lower()
-                    level = 0
-                    comment = ''
-                else:
-                    # A complete entry
-                    new_col = col.field
-                    new_col_l = new_col.lower()
-                    # A column rename
-                    if col.name:
-                        column_rename[new_col_l] = col.name
-                    # Attach other columns
-                    if col.join:
-                        join.append(col.join)
-                    level = col.level
-                    comment = col.comment
-                # Check this is a valid column
-                if new_col_l not in valid_columns_l:
-                    # The Field_Rename filter can change this situation:
-                    # raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
-                    logger.warning(W_BADFIELD+'Invalid column name `{}`. Valid columns are {}.'.
-                                   format(new_col, list(valid_columns_l.values())))
-                columns.append(new_col)
-                column_levels.append(level)
-                column_comments.append(comment)
+        columns = []
+        column_levels = []
+        column_comments = []
+        # Ensure the column names are valid.
+        # Also create the rename and join lists.
+        # Lower case available columns (to check if valid)
+        valid_columns_l = {c.lower(): c for c in valid_columns + extra_columns}
+        logger.debug("Valid columns: {} ({})".format(valid_columns, len(valid_columns)))
+        # Create the different lists
+        for col in cols:
+            if isinstance(col, str):
+                # Just a string, add to the list of used
+                new_col = col
+                new_col_l = new_col.lower()
+                level = 0
+                comment = ''
+            else:
+                # A complete entry
+                new_col = col.field
+                new_col_l = new_col.lower()
+                # A column rename
+                if col.name:
+                    column_rename[new_col_l] = col.name
+                # Attach other columns
+                if col.join:
+                    join.append(col.join)
+                level = col.level
+                comment = col.comment
+            # Check this is a valid column
+            if new_col_l not in valid_columns_l:
+                # The Field_Rename filter can change this situation:
+                # raise KiPlotConfigurationError('Invalid column name `{}`'.format(new_col))
+                logger.warning(W_BADFIELD+'Invalid column name `{}`. Valid columns are {}.'.
+                               format(new_col, list(valid_columns_l.values())))
+            columns.append(new_col)
+            column_levels.append(level)
+            column_comments.append(comment)
         return (columns, column_levels, column_comments, column_rename, join)
 
     def config(self, parent):
         super().config(parent)
-        self.format = self._guess_format()
+        self._format = self._guess_format()
         self._expand_id = 'bom'
-        self._expand_ext = 'txt' if self.format.lower() == 'hrtxt' else self.format.lower()
-        # HTML options
-        if self.format == 'html' and isinstance(self.html, type):
-            # If no options get the defaults
-            self.html = BoMHTML()
-            self.html.config(self)
-        # CSV options
-        if self.format in ['csv', 'tsv', 'txt'] and isinstance(self.csv, type):
-            # If no options get the defaults
-            self.csv = BoMCSV()
-            self.csv.config(self)
-        # HRTXT options
-        if self.format == 'hrtxt' and isinstance(self.hrtxt, type):
-            # If no options get the defaults
-            self.hrtxt = BoMTXT()
-            self.hrtxt.config(self)
-        # XLSX options
-        if self.format == 'xlsx' and isinstance(self.xlsx, type):
-            # If no options get the defaults
-            self.xlsx = BoMXLSX()
-            self.xlsx.config(self)
+        self._expand_ext = 'txt' if self._format == 'hrtxt' else self._format
+        # Variants, make it an object. Do it early because is needed by other initializations (i.e. title)
+        self._normalize_variant()
         # Do title %X and ${var} expansions on the BoMLinkable titles
         # Here because some variables needs our parent
-        if self.format == 'html' and self.html.title:
+        if self._format == 'html' and self.html.title:
             self.html.title = self.expand_filename_both(self.html.title, make_safe=False)
             self.html.extra_info = [self.expand_filename_both(t, make_safe=False) for t in self.html.extra_info]
-        if self.format == 'xlsx' and self.xlsx.title:
+        if self._format == 'xlsx' and self.xlsx.title:
             self.xlsx.title = self.expand_filename_both(self.xlsx.title, make_safe=False)
             self.xlsx.extra_info = [self.expand_filename_both(t, make_safe=False) for t in self.xlsx.extra_info]
-        # group_fields
-        if isinstance(self.group_fields, type):
-            self.group_fields = GroupFields.get_default()
-        else:
-            # Make the grouping fields lowercase
-            self.group_fields = [f.lower() for f in self.group_fields]
-        # group_fields_fallbacks
-        if isinstance(self.group_fields_fallbacks, type):
-            self.group_fields_fallbacks = []
-        else:
-            # Make the grouping fields lowercase
-            self.group_fields_fallbacks = [f.lower() for f in self.group_fields_fallbacks]
-        # Fill with None if needed
+        # Fill with empty if needed
         if len(self.group_fields_fallbacks) < len(self.group_fields):
-            self.group_fields_fallbacks.extend([None]*(len(self.group_fields)-len(self.group_fields_fallbacks)))
-        # component_aliases
-        if isinstance(self.component_aliases, type):
-            self.component_aliases = DEFAULT_ALIASES
+            self.group_fields_fallbacks.extend(['']*(len(self.group_fields)-len(self.group_fields_fallbacks)))
         # Filters
         self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
-        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
-        # Variants, make it an object
-        self._normalize_variant()
-        # Field names are handled in lowercase
-        self.fit_field = self.fit_field.lower()
+        self.dnf_filter = BaseFilter.solve_filter(KiBoM.fix_dnx_filter(self.dnf_filter, self.fit_field), 'dnf_filter')
+        self.dnc_filter = BaseFilter.solve_filter(KiBoM.fix_dnx_filter(self.dnc_filter, self.fit_field), 'dnc_filter')
         # Fields excluded from conflict warnings
-        no_conflict = set()
         if isinstance(self.no_conflict, type):
+            no_conflict = set()
             no_conflict.add(self.fit_field)
             no_conflict.add('part')
-            var_field = self.variant.get_variant_field()
+            var_field = self.variant.get_variant_field() if self.variant else None
             if var_field is not None:
-                no_conflict.add(var_field)
+                no_conflict.add(var_field.lower())
         else:
-            for field in self.no_conflict:
-                no_conflict.add(field.lower())
-        self.no_conflict = no_conflict
-        # Make sure aggregate is a list
-        if isinstance(self.aggregate, type):
-            self.aggregate = []
-        # List of distributors
-        self.distributors = Optionable.force_list(self.distributors)
-        self.no_distributors = Optionable.force_list(self.no_distributors)
-        # Column values
-        self.footprint_populate_values = Optionable.force_list(self.footprint_populate_values)
-        if not self.footprint_populate_values:
-            self.footprint_populate_values = ['no', 'yes']
-        if len(self.footprint_populate_values) != 2:
-            raise KiPlotConfigurationError("The `footprint_populate_values` must contain two values ({})".
-                                           format(self.footprint_populate_values))
-        self.footprint_type_values = Optionable.force_list(self.footprint_type_values)
-        if not self.footprint_type_values:
-            self.footprint_type_values = ['SMD', 'THT', 'VIRTUAL']
-        if len(self.footprint_type_values) != 3:
-            raise KiPlotConfigurationError("The `footprint_type_values` must contain three values ({})".
-                                           format(self.footprint_type_values))
+            no_conflict = set(self.no_conflict)
+        self._no_conflict = no_conflict
         # Columns
         (valid_columns, extra_columns) = self._get_columns()
-        (self.columns, self.column_levels, self.column_comments, self.column_rename,
-         self.join) = self.process_columns_config(self.columns, valid_columns, extra_columns)
-        (self.columns_ce, self.column_levels_ce, self.column_comments_ce, self.column_rename_ce,
-         self.join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns, add_all=False)
+        self.create_default_columns(valid_columns)
+        (self._columns, self._column_levels, self._column_comments, self._column_rename,
+         self._join) = self.process_columns_config(self.columns, valid_columns, extra_columns)
+        (self.columns_ce, self._column_levels_ce, self._column_comments_ce, self._column_rename_ce,
+         self._join_ce) = self.process_columns_config(self.cost_extra_columns, valid_columns, extra_columns)
+
+    def create_default_columns(self, valid_columns):
+        if not isinstance(self.columns, type):
+            # Something defined
+            return
+        # If none specified make a list with all the possible columns.
+        # Here are some exceptions:
+        # Ignore the part and footprint library, also sheetpath and the Reference in singular
+        ignore = [ColumnList.COL_PART_LIB_L, ColumnList.COL_FP_LIB_L, ColumnList.COL_SHEETPATH_L,
+                  ColumnList.COL_REFERENCE_L[:-1]]
+        if len(self.aggregate) == 0:
+            ignore.append(ColumnList.COL_SOURCE_BOM_L)
+            if self.number == 1:
+                # For one board avoid COL_GRP_BUILD_QUANTITY
+                ignore.append(ColumnList.COL_GRP_BUILD_QUANTITY_L)
+        # Exclude the particular columns
+        self.columns = []
+        for col in valid_columns:
+            if col.lower() in ignore:
+                continue
+            c = BoMColumns()
+            # Here we set the values from a fake tree, note that we don't set self._tree because this isn't from the YAML
+            c.reconfigure({'field': col}, self)
+            self.columns.append(c)
 
     def get_ref_index(self, header, fname):
         ref_n = ColumnList.COL_REFERENCE_L
@@ -932,10 +864,10 @@ class BoMOptions(BaseOptions):
             prj.source = os.path.basename(prj.file)
 
     def solve_logo(self):
-        if self.format == 'html':
+        if self._format == 'html':
             logo = self.html.logo
             w = self.html.logo_width
-        elif self.format == 'xlsx':
+        elif self._format == 'xlsx':
             logo = self.xlsx.logo
             w = self.xlsx.logo_width
         else:
@@ -949,14 +881,14 @@ class BoMOptions(BaseOptions):
         cmd = [self.ensure_tool('RSVG'), '-w', str(w), '-f', 'png', '-o', png, logo]
         run_command(cmd)
         self._old_logo = logo
-        if self.format == 'html':
+        if self._format == 'html':
             self.html.logo = png
-        elif self.format == 'xlsx':
+        elif self._format == 'xlsx':
             self.xlsx.logo = png
         return png
 
     def run(self, output):
-        format = self.format.lower()
+        format = self._format
         if format == 'xlsx':
             if self.xlsx.kicost:
                 self.ensure_tool('KiCost')
@@ -997,12 +929,16 @@ class BoMOptions(BaseOptions):
         apply_fitted_filter(comps, self.dnf_filter)
         apply_fixed_filter(comps, self.dnc_filter)
         # Apply the variant
-        comps = self.variant.filter(comps)
+        if self.variant:
+            comps = self.variant.filter(comps)
         # Now expand the text variables, the user can disable it and insert a customized filter
         # in the variant or even before.
         if self.expand_text_vars:
             comps = apply_pre_transform(comps, BaseFilter.solve_filter('_expand_text_vars', 'KiCad 6 text vars',
                                                                        is_transform=True))
+        # We will manipulate the aggregate list, so we use a copy
+        real_aggregate = self.aggregate
+        self.aggregate = real_aggregate.copy()
         # We add the main project to the aggregate list so do_bom sees a complete list
         base_sch = Aggregate()
         base_sch.file = GS.sch_file
@@ -1020,11 +956,12 @@ class BoMOptions(BaseOptions):
         except BoMError as e:
             raise KiPlotConfigurationError(str(e))
         finally:
+            self.aggregate = real_aggregate
             if tmp_png:
                 os.remove(tmp_png)
-                if self.format == 'html':
+                if self._format == 'html':
                     self.html.logo = self._old_logo
-                elif self.format == 'xlsx':
+                elif self._format == 'xlsx':
                     self.xlsx.logo = self._old_logo
         # Undo the reference prefix
         if self.ref_id:
@@ -1052,7 +989,7 @@ class BoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = BoMOptions
-            """ *[dict] Options for the `bom` output """
+            """ *[dict={}] Options for the `bom` output """
         self._sch_related = True
         self._category = 'Schematic/BoM'
 

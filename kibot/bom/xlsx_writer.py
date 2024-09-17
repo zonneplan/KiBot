@@ -372,13 +372,14 @@ def adjust_heights(worksheet, rows, max_width, head_size):
 
 
 def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle, compact=False):
+    vname = cfg.variant.name if cfg.variant else 'default'
     if len(cfg.aggregate) == 1:
         # Only one project
         rc = r_info_start
         if not cfg.xlsx.hide_pcb_info:
             prj = cfg.aggregate[0]
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Schematic:", prj.name)
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", vname)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Revision:", prj.sch.revision)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Date:", prj.sch.date)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
@@ -396,7 +397,7 @@ def write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_
         old_col1 = col1
         rc = r_info_start
         if not cfg.xlsx.hide_pcb_info:
-            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", cfg.variant.name)
+            rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "Variant:", vname)
             rc = add_info(worksheet, column_widths, rc, col1, fmt_info, "KiCad Version:", cfg.kicad_version)
             col1 += 2
         rc = r_info_start
@@ -440,15 +441,15 @@ def adapt_extra_cost_columns(cfg):
     user_fields = []
     for i, col in enumerate(cfg.columns_ce):
         data = {'field': col}
-        comment = cfg.column_comments_ce[i]
+        comment = cfg._column_comments_ce[i]
         if comment:
             data['comment'] = comment
-        level = cfg.column_levels_ce[i]
+        level = cfg._column_levels_ce[i]
         if level:
             data['level'] = level
         col = col.lower()
-        if col in cfg.column_rename_ce:
-            data['label'] = cfg.column_rename_ce[col]
+        if col in cfg._column_rename_ce:
+            data['label'] = cfg._column_rename_ce[col]
         user_fields.append(data)
     Spreadsheet.USER_FIELDS = user_fields
 
@@ -556,8 +557,8 @@ def adapt_column_names(cfg):
             new_id = KICOST_COLUMNS[id]
             v['label'] = new_id
             id = new_id.lower()
-        if id in cfg.column_rename:
-            v['label'] = cfg.column_rename[id]
+        if id in cfg._column_rename:
+            v['label'] = cfg._column_rename[id]
 
 
 def dis_enable_apis(api_options, cfg):
@@ -677,7 +678,7 @@ def _create_kicost_sheet(workbook, groups, image_data, fmt_title, fmt_info, fmt_
             part.kibot_group = g
             parts.append(part)
             # Process any "join" request
-            apply_join_requests(cfg.join_ce, part.fields, g.fields)
+            apply_join_requests(cfg._join_ce, part.fields, g.fields)
         # Fill the quantity members of the parts
         solve_parts_qtys(parts, multi_prj, prj_info)
         # Distributors
@@ -805,8 +806,8 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             # Title for this column
             column_widths[i] = len(row_headings[i]) + 10
             worksheet.write_string(row_count, i, row_headings[i], fmt_head)
-            if cfg.column_comments[i]:
-                worksheet.write_comment(row_count, i, cfg.column_comments[i])
+            if cfg._column_comments[i]:
+                worksheet.write_comment(row_count, i, cfg._column_comments[i])
 
         # Body
         row_count += 1
@@ -865,7 +866,7 @@ def write_xlsx(filename, groups, col_fields, head_names, cfg):
             write_info(cfg, r_info_start, worksheet, column_widths, col1, fmt_info, fmt_subtitle)
 
         # Adjust cols and rows
-        adjust_widths(worksheet, column_widths, max_width, cfg.column_levels)
+        adjust_widths(worksheet, column_widths, max_width, cfg._column_levels)
         adjust_heights(worksheet, rows, max_width, head_size)
 
         worksheet.freeze_panes(head_size+1, 0)

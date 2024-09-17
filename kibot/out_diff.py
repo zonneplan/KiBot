@@ -119,13 +119,12 @@ class DiffOptions(AnyDiffOptions):
         super().config(parent)
         self._expand_id = 'diff'+('_pcb' if self.pcb else '_sch')
         if self.new_type == 'multivar':
-            if isinstance(self.new, str):
-                raise KiPlotConfigurationError('`new` must be a list when using the `multivar` type')
             if len(self.new) < 2:
                 raise KiPlotConfigurationError('`new` must contain at least two variants when using the `multivar` type')
         else:
-            if isinstance(self.new, list):
+            if len(self.new) > 1:
                 raise KiPlotConfigurationError('`new` must be a single string for `{}` type'.format(self.new_type))
+            self.new = self.new[0] if len(self.new) else ''
         if self.old_type == 'multivar' and self.new_type != 'multivar':
             raise KiPlotConfigurationError("`old_type` can't be `multivar` when `new_type` isn't (`{}`)".format(self.new_type))
         self.validate_colors(['color_added', 'color_removed'])
@@ -448,7 +447,7 @@ class DiffOptions(AnyDiffOptions):
         return self.cache_output(name)
 
     def create_layers_incl(self, layers):
-        return self.save_layers_incl(Layer.solve(layers)) if self.pcb and not isinstance(layers, type) else None
+        return self.save_layers_incl(Layer.solve(layers)) if self.pcb else None
 
     def do_compare(self, old, old_type, new, new_type, name, name_ori):
         dir_name = os.path.dirname(name)
@@ -561,10 +560,11 @@ class Diff(BaseOutput):  # noqa: F821
         self._any_related = True
         with document:
             self.options = DiffOptions
-            """ *[dict] Options for the `diff` output """
+            """ *[dict={}] Options for the `diff` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
-                List of PCB layers to use. When empty all available layers are used.
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
+                of PCB layers to use. When empty all available layers are used.
+                If the list is empty all layers will be included.
                 Note that if you want to support adding/removing layers you should specify a list here """
 
     def config(self, parent):

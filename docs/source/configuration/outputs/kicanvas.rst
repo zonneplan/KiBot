@@ -20,48 +20,34 @@ Categories: **PCB/docs**, **Schematic/docs**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - kicanvas; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - kicanvas; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - kicanvas; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - kicanvas; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - kicanvas; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - kicanvas; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - kicanvas; options>` [dict] Options for the KiCanvas output.
-
-   -  Valid keys:
-
-      -  **local_script** :index:`: <pair: output - kicanvas - options; local_script>` [boolean=true] Download the script and use a copy.
-      -  **source** :index:`: <pair: output - kicanvas - options; source>` [string|list(string)] [schematic,pcb,project] Source to display.
-      -  ``controls`` :index:`: <pair: output - kicanvas - options; controls>` [string='full'] [full,basic,none] Which controls are displayed.
-      -  ``dnf_filter`` :index:`: <pair: output - kicanvas - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``download`` :index:`: <pair: output - kicanvas - options; download>` [boolean=true] Show the download button.
-      -  ``overlay`` :index:`: <pair: output - kicanvas - options; overlay>` [boolean=true] Show the overlay asking to click.
-      -  ``pre_transform`` :index:`: <pair: output - kicanvas - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``title`` :index:`: <pair: output - kicanvas - options; title>` [string=''] Text used to replace the sheet title. %VALUE expansions are allowed.
-         If it starts with `+` the text is concatenated.
-      -  ``url_script`` :index:`: <pair: output - kicanvas - options; url_script>` URL for the KiCanvas script.
-      -  ``variant`` :index:`: <pair: output - kicanvas - options; variant>` [string=''] Board variant to apply.
-
--  **output** :index:`: <pair: output - kicanvas; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=kicanvas, %x=html). Affected by global options.
+-  **options** :index:`: <pair: output - kicanvas; options>`  [:ref:`KiCanvasOptions parameters <KiCanvasOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the KiCanvas output.
+-  **output** :index:`: <pair: output - kicanvas; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=kicanvas, %x=html). Affected by global options.
 -  **type** :index:`: <pair: output - kicanvas; type>` 'kicanvas'
--  ``category`` :index:`: <pair: output - kicanvas; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - kicanvas; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - kicanvas; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - kicanvas; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - kicanvas; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - kicanvas; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - kicanvas; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - kicanvas; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - kicanvas; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - kicanvas; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - kicanvas; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - kicanvas; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - kicanvas; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - kicanvas; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+.. toctree::
+   :caption: Used dicts
+
+   KiCanvasOptions

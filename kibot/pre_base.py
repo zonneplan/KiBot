@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
 from shutil import rmtree
@@ -15,17 +15,15 @@ from .log import get_logger
 logger = get_logger(__name__)
 
 
-class BasePreFlight(Registrable):
+class BasePreFlight(Optionable, Registrable):
     _registered = {}
     _in_use = {}
     _options = {}
     _targets = None
     _configured = False
 
-    def __init__(self, name, value):
+    def __init__(self):
         super().__init__()
-        self._value = value
-        self._name = name
         self._sch_related = False
         self._pcb_related = False
         self._any_related = False    # True if we need an schematic OR a PCB
@@ -34,15 +32,25 @@ class BasePreFlight(Registrable):
         self._expand_ext = ''
         self._files_to_remove = []
         self._category = None
-        # Compatibility with outputs
-        self.name = name
-        self.comment = ''
+        self.type = self.__class__.__name__.lower()
 
-    def config(self):
+    # Compatibility with outputs for navigate_results
+    @property
+    def name(self):
+        return self.type
+
+    # Compatibility with outputs for navigate_results
+    @property
+    def comment(self):
+        return ''
+
+    def config(self, parent):
         """ Default configuration assumes this is just a boolean """
-        if not isinstance(self._value, bool):
-            raise KiPlotConfigurationError('must be boolean')
-        self._enabled = self._value
+        super().config(parent)
+        # If this is just a boolean copy the result to _enabled
+        main_value = getattr(self, self.type)
+        if isinstance(main_value, bool):
+            self._enabled = main_value
 
     @staticmethod
     def reset():
@@ -56,13 +64,33 @@ class BasePreFlight(Registrable):
         BasePreFlight._configured = False
 
     @staticmethod
+    def get_object_for(name, value=None):
+        obj = BasePreFlight._registered[name]()
+        assert name == obj.type
+        if value is None:
+            cur_doc, _, _ = obj.get_doc(name, no_basic=True)
+            _, _, def_val, _ = obj.get_valid_types(cur_doc, skip_extra=True)
+            assert def_val is not None, f'Missing default for `{name}`'
+            value = eval(def_val.capitalize())
+            if isinstance(value, bool):
+                # Create an object that is enabled
+                value = True
+        obj._value = value
+        obj.set_tree({name: value})
+        return obj
+
+    @staticmethod
     def add_preflight(o_pre):
-        BasePreFlight._in_use[o_pre._name] = o_pre
+        BasePreFlight._in_use[o_pre.type] = o_pre
 
     @staticmethod
     def add_preflights(pre):
         for p in pre:
-            BasePreFlight._in_use[p._name] = p
+            BasePreFlight._in_use[p.type] = p
+
+    @staticmethod
+    def remove_preflight(o_pre):
+        del BasePreFlight._in_use[o_pre.type]
 
     @staticmethod
     def get_preflight(name):
@@ -106,7 +134,7 @@ class BasePreFlight(Registrable):
             # Configure all of them
             for k, v in BasePreFlight._in_use.items():
                 logger.debug('Configuring preflight '+k)
-                v.config()
+                v.config(None)
         except KiPlotConfigurationError as e:
             GS.exit_with_error("In preflight `"+str(k)+"`: "+str(e), EXIT_BAD_CONFIG)
         BasePreFlight._configured = True
@@ -139,7 +167,7 @@ class BasePreFlight(Registrable):
     #     return self._enabled
 
     def __str__(self):
-        return "{}: {}".format(self._name, self._enabled)
+        return "{}: {}".format(self.type, self._enabled)
 
     def is_sch(self):
         """ True for preflights that needs the schematic """
@@ -156,10 +184,6 @@ class BasePreFlight(Registrable):
     def get_example():
         """ Returns a YAML value for the example config """
         return 'true'
-
-    @classmethod
-    def get_doc(cls):
-        return cls.__doc__, None
 
     def run(self):
         pass
@@ -204,17 +228,17 @@ class BasePreFlight(Registrable):
 
     def _find_subpcb(self):
         # Preflights doesn't have a variant, but we could have one global default
-        if hasattr(self, '_variant') and self._variant and self.variant._sub_pcb:
-            return self.variant._sub_pcb.name
+        if hasattr(self, '_variant') and self._variant and self._variant._sub_pcb:
+            return self._variant._sub_pcb.name
         return Optionable._find_global_subpcb()
 
     def ensure_tool(self, name):
         """ Looks for a mandatory dependency """
-        return GS.check_tool_dep(self._name, name, fatal=True)
+        return GS.check_tool_dep(self.type, name, fatal=True)
 
     def check_tool(self, name):
         """ Looks for a dependency """
-        return GS.check_tool_dep(self._name, name, fatal=False)
+        return GS.check_tool_dep(self.type, name, fatal=False)
 
     def add_extra_options(self, cmd, dir=None):
         """ KiAuto extra options (debug, record, etc.) """

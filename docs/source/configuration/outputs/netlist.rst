@@ -15,44 +15,33 @@ Type: ``netlist``
 
 Parameters:
 
--  **comment** :index:`: <pair: output - netlist; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - netlist; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - netlist; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - netlist; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - netlist; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - netlist; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - netlist; options>` [dict] Options for the `netlist` output.
-
-   -  Valid keys:
-
-      -  **format** :index:`: <pair: output - netlist - options; format>` [string='classic'] [classic,ipc] The `classic` format is the KiCad internal format, and is generated
-         from the schematic. The `ipc` format is the IPC-D-356 format, useful for PCB
-         testing, is generated from the PCB.
-      -  **output** :index:`: <pair: output - netlist - options; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=netlist/IPC-D-356, %x=net/d356). Affected by global options.
-      -  ``dnf_filter`` :index:`: <pair: output - netlist - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``pre_transform`` :index:`: <pair: output - netlist - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``variant`` :index:`: <pair: output - netlist - options; variant>` [string=''] Board variant to apply.
-         Used for sub-PCBs.
-
+-  **options** :index:`: <pair: output - netlist; options>`  [:ref:`NetlistOptions parameters <NetlistOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `netlist` output.
 -  **type** :index:`: <pair: output - netlist; type>` 'netlist'
--  ``category`` :index:`: <pair: output - netlist; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - netlist; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - netlist; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - netlist; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - netlist; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - netlist; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - netlist; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - netlist; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - netlist; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - netlist; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - netlist; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - netlist; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - netlist; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - netlist; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+.. toctree::
+   :caption: Used dicts
+
+   NetlistOptions

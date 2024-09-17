@@ -54,6 +54,12 @@ class FilesList(Optionable):
             self.dest = ''
             """ Destination directory inside the archive, empty means the same of the file """
 
+    def __str__(self):
+        txt = self.from_output if self.from_output else self.source
+        filter = f' (filter: `{self.filter}`)' if self.filter and self.filter != '.*' else ''
+        dest = f' -> {self.dest}' if self.dest else ''
+        return txt+filter+dest
+
 
 class CompressOptions(BaseOptions):
     ZIP_ALGORITHMS = {'auto': ZIP_DEFLATED,
@@ -76,7 +82,7 @@ class CompressOptions(BaseOptions):
             self.compression = 'auto'
             """ [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one """
             self.files = FilesList
-            """ *[list(dict)] Which files will be included """
+            """ *[list(dict)=[]] Which files will be included """
             self.move_files = False
             """ Move the files to the archive. In other words: remove the files after adding them to the archive """
             self.remove_files = None
@@ -89,8 +95,7 @@ class CompressOptions(BaseOptions):
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.files, type):
-            self.files = []
+        if not self.get_user_defined('files'):
             logger.warning(W_EMPTYZIP+'No files provided, creating an empty archive')
         self._expand_id = parent.name
         self._expand_ext = self.solve_extension()
@@ -237,10 +242,7 @@ class CompressOptions(BaseOptions):
                 if out is not None:
                     config_output(out)
                     if out.category:
-                        if isinstance(out.category, str):
-                            cats.add(out.category)
-                        else:
-                            cats.update(out.category)
+                        cats.update(out.category)
             else:
                 cats.add('Compress')
         return list(cats)
@@ -287,14 +289,14 @@ class Compress(BaseOutput):  # noqa: F821
         self.priority = 10
         with document:
             self.options = CompressOptions
-            """ *[dict] Options for the `compress` output """
+            """ *[dict={}] Options for the `compress` output """
         self._none_related = True
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
 
     def config(self, parent):
         super().config(parent)
-        if self.category is None and not isinstance(self.options, type):
+        if self.category is None and self.get_user_defined('options'):
             self.category = self.options.get_categories()
 
     def get_dependencies(self):

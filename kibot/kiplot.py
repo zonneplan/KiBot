@@ -10,6 +10,7 @@ Main KiBot code
 """
 from copy import deepcopy
 from collections import OrderedDict
+import gzip
 import os
 import re
 from sys import path as sys_path
@@ -25,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP,
-                   W_BADREF)
+                   W_BADREF, W_MULTIREF)
 from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -208,9 +209,13 @@ def load_board(pcb_file=None, forced=False):
         with hide_stderr():
             board = pcbnew.LoadBoard(pcb_file)
         if GS.global_invalidate_pcb_text_cache == 'yes' and GS.ki6:
+            # Workaround for unexpected KiCad behavior:
+            # https://gitlab.com/kicad/code/kicad/-/issues/14360
             logger.debug('Current PCB text variables cache: {}'.format(board.GetProperties().items()))
             logger.debug('Removing cached text variables')
             board.SetProperties(pcbnew.MAP_STRING_STRING())
+            # Save the PCB, so external tools also gets the reset, i.e. panelize, see #652
+            GS.save_pcb(pcb_file, board)
         if BasePreFlight.get_option('check_zone_fills'):
             GS.fill_zones(board)
         if GS.global_units and GS.ki6:
@@ -226,6 +231,12 @@ def load_board(pcb_file=None, forced=False):
                 if dr.GetClass().startswith('PCB_DIM_') and dr.GetUnitsMode() == pcbnew.DIM_UNITS_MODE_AUTOMATIC:
                     dr.SetUnitsMode(forced_units)
                     dr.Update()
+        if GS.ki8:
+            # KiCad 8.0.2 crazyness: hidden text affects scaling, even when not plotted
+            # So a PRL can affect the plot mechanism
+            # https://gitlab.com/kicad/code/kicad/-/issues/17958
+            # https://gitlab.com/kicad/code/kicad/-/commit/8184ed64e732ed0812831a13ebc04bd12e8d1d19
+            board.SetElementVisibility(pcbnew.LAYER_HIDDEN_TEXT, False)
         GS.board = board
     except OSError as e:
         GS.exit_with_error(['Error loading PCB file. Corrupted?', str(e)], CORRUPTED_PCB)
@@ -266,11 +277,13 @@ def load_any_sch(file, project, fatal=True, extra_msg=None):
     return sch
 
 
-def load_sch():
-    if GS.sch:  # Already loaded
+def load_sch(sch_file=None, forced=False):
+    if GS.sch is not None and not forced:  # Already loaded
         return
-    GS.check_sch()
-    GS.sch = load_any_sch(GS.sch_file, GS.sch_basename)
+    if not sch_file:
+        GS.check_sch()
+        sch_file = GS.sch_file
+    GS.sch = load_any_sch(sch_file, os.path.splitext(os.path.basename(sch_file))[0])
 
 
 def create_component_from_footprint(m, ref):
@@ -307,13 +320,7 @@ def create_component_from_footprint(m, ref):
     f.number = 3
     c.add_field(f)
     # Other fields
-    for name, val in GS.get_fields(m).items():
-        f = SchematicField()
-        f.name = name
-        f.value = val
-        f.number = -1
-        f.visible(False)
-        c.add_field(f)
+    copy_fields(c, m)
     c._solve_fields(None)
     try:
         c.split_ref()
@@ -322,6 +329,24 @@ def create_component_from_footprint(m, ref):
         logger.warning(f'{W_BADREF}Not including component `{ref}` in filters because it has a malformed reference')
         c = None
     return c
+
+
+class PadProperty(object):
+    pass
+
+
+def copy_fields(c, m):
+    for name, value in GS.get_fields(m).items():
+        if c.is_field(name.lower()):
+            # Already there
+            old = c.get_field_value(name)
+            if value and old != value:
+                logger.warning(f"{W_VALMISMATCH}{name} field mismatch for `{c.ref}` (SCH: `{old}` PCB: `{value}`)")
+                c.set_field(name, value)
+        else:
+            # New one
+            logger.debug(f'Adding {name} field to {c.ref} ({value})')
+            c.set_field(name, value)
 
 
 def get_board_comps_data(comps):
@@ -340,9 +365,13 @@ def get_board_comps_data(comps):
     for m in GS.get_modules():
         ref = m.GetReference()
         attrs = m.GetAttributes()
-        if ref not in comps_hash:
+        ref_in_hash = ref in comps_hash
+        if not ref_in_hash or not len(comps_hash[ref]):
             if not (attrs & MOD_BOARD_ONLY) and not ref.startswith('KiKit_'):
-                logger.warning(W_PCBNOSCH + '`{}` component in board, but not in schematic'.format(ref))
+                if not ref_in_hash:
+                    logger.warning(W_PCBNOSCH+f'`{ref}` component in board, but not in schematic')
+                else:
+                    logger.warning(W_MULTIREF+f'multiple `{ref}` components, not all operations will work')
             if not GS.global_include_components_from_pcb:
                 # v1.6.3 behavior
                 continue
@@ -350,44 +379,77 @@ def get_board_comps_data(comps):
             c = create_component_from_footprint(m, ref)
             if c is None:
                 continue
-            comps_hash[ref] = [c]
             comps.append(c)
-        for c in comps_hash[ref]:
-            new_value = m.GetValue()
-            if new_value != c.value and '${' not in c.value:
-                logger.warning(f"{W_VALMISMATCH}Value field mismatch for `{ref}` (SCH: `{c.value}` PCB: `{new_value}`)")
-            c.value = new_value
-            c.bottom = m.IsFlipped()
-            c.footprint_rot = m.GetOrientationDegrees()
-            center = GS.get_center(m)
-            c.footprint_x = center.x
-            c.footprint_y = center.y
-            (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
-            c.has_pcb_info = True
-            if GS.ki5:
-                # KiCad 5
-                if attrs == UI_SMD:
-                    c.smd = True
-                elif attrs == UI_VIRTUAL:
-                    c.virtual = True
-                else:
-                    c.tht = True
+        else:
+            # Take one with this ref. Note that more than one is not a normal situation
+            c = comps_hash[ref].pop()
+        new_value = m.GetValue()
+        if new_value != c.value and '${' not in c.value:
+            logger.warning(f"{W_VALMISMATCH}Value field mismatch for `{ref}` (SCH: `{c.value}` PCB: `{new_value}`)")
+        c.value = new_value
+        c.bottom = m.IsFlipped()
+        c.footprint_rot = m.GetOrientationDegrees()
+        center = GS.get_center(m)
+        c.footprint_x = center.x
+        c.footprint_y = center.y
+        (c.footprint_w, c.footprint_h) = GS.get_fp_size(m)
+        c.has_pcb_info = True
+        c.pad_properties = {}
+        if GS.global_use_pcb_fields:
+            copy_fields(c, m)
+        # Net
+        net_name = set()
+        net_class = set()
+        for pad in m.Pads():
+            net_name.add(pad.GetNetname())
+            net_class.add(pad.GetNetClassName())
+        c.net_name = ','.join(net_name)
+        c.net_class = ','.join(net_class)
+        if GS.ki5:
+            # KiCad 5
+            if attrs == UI_SMD:
+                c.smd = True
+            elif attrs == UI_VIRTUAL:
+                c.virtual = True
             else:
-                # KiCad 6
-                if attrs & MOD_SMD:
-                    c.smd = True
-                if attrs & MOD_THROUGH_HOLE:
-                    c.tht = True
-                if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
-                    c.virtual = True
-                if attrs & MOD_EXCLUDE_FROM_POS_FILES:
-                    c.in_pos = False
-                # The PCB contains another flag for the BoM
-                # I guess it should be in sync, but: why should somebody want to unsync it?
-                if attrs & MOD_EXCLUDE_FROM_BOM:
-                    c.in_bom_pcb = False
-                if attrs & MOD_BOARD_ONLY:
-                    c.in_pcb_only = True
+                c.tht = True
+        else:
+            # KiCad 6
+            if attrs & MOD_SMD:
+                c.smd = True
+            if attrs & MOD_THROUGH_HOLE:
+                c.tht = True
+            if attrs & MOD_VIRTUAL == MOD_VIRTUAL:
+                c.virtual = True
+            if attrs & MOD_EXCLUDE_FROM_POS_FILES:
+                c.in_pos = False
+            # The PCB contains another flag for the BoM
+            # I guess it should be in sync, but: why should somebody want to unsync it?
+            if attrs & MOD_EXCLUDE_FROM_BOM:
+                c.in_bom_pcb = False
+            if attrs & MOD_BOARD_ONLY:
+                c.in_pcb_only = True
+            look_for_type = (not c.smd) and (not c.tht)
+            for pad in m.Pads():
+                p = PadProperty()
+                center = pad.GetCenter()
+                p.x = center.x
+                p.y = center.y
+                p.fab_property = pad.GetProperty()
+                p.net = pad.GetNetname()
+                p.net_class = pad.GetNetClassName()
+                p.has_hole = pad.HasHole()
+                name = pad.GetNumber()
+                c.pad_properties[name] = p
+                # Try to figure out if this is THT or SMD when not specified
+                if look_for_type:
+                    if p.has_hole:
+                        # At least one THT, stop looking
+                        c.tht = True
+                        look_for_type = False
+                    elif name:
+                        # We have pad a valid pad, assume this is all SMD and keep looking
+                        c.smd = True
 
 
 def expand_comp_fields(c, env):
@@ -535,7 +597,7 @@ def look_for_output(name, op_name, parent, valids):
     return out
 
 
-def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop):
+def _generate_outputs(targets, invert, skip_pre, cli_order, no_priority, dont_stop):
     logger.debug("Starting outputs for board {}".format(GS.pcb_file))
     # Make a list of target outputs
     n = len(targets)
@@ -598,14 +660,14 @@ def _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority
             run_output(out, dont_stop)
 
 
-def generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop=False):
+def generate_outputs(targets, invert, skip_pre, cli_order, no_priority, dont_stop=False):
     setup_resources()
     prj = None
     if GS.global_restore_project:
         # Memorize the project content to restore it at exit
         prj = GS.read_pro()
     try:
-        _generate_outputs(outputs, targets, invert, skip_pre, cli_order, no_priority, dont_stop)
+        _generate_outputs(targets, invert, skip_pre, cli_order, no_priority, dont_stop)
     finally:
         # Restore the project file
         GS.write_pro(prj)
@@ -651,7 +713,7 @@ def get_pre_targets(targets, dependencies, is_pre):
             tg = pre.get_targets()
             if not tg:
                 continue
-            name = pre._name
+            name = pre.type
             targets[name] = [adapt_file_name(fn) for fn in tg]
             dependencies[name] = [adapt_file_name(fn) for fn in pre.get_dependencies()]
             is_pre.add(name)
@@ -947,6 +1009,27 @@ def discover_files(dest_dir):
     return fname
 
 
+def load_config(plot_config):
+    cr = CfgYamlReader()
+    outputs = None
+    try:
+        # The Python way ...
+        with gzip.open(plot_config, mode='rt') as cf_file:
+            try:
+                outputs = cr.read(cf_file)
+            except KiPlotConfigurationError as e:
+                config_error(str(e))
+    except OSError:
+        pass
+    if outputs is None:
+        with open(plot_config) as cf_file:
+            try:
+                outputs = cr.read(cf_file)
+            except KiPlotConfigurationError as e:
+                config_error(str(e))
+    return outputs
+
+
 def yaml_dump(f, tree):
     if version_str2tuple(yaml.__version__) < (3, 14):
         f.write(yaml.dump(tree))
@@ -1008,15 +1091,15 @@ def generate_one_example(dest_dir, types):
         needed_imports = {}
         # All the preflights
         preflights = {}
-        for n, cls in OrderedDict(sorted(BasePreFlight.get_registered().items())).items():
-            o = cls(n, None)
+        for n in sorted(BasePreFlight.get_registered().keys()):
+            o = BasePreFlight.get_object_for(n)
             if types and n not in types:
                 logger.debug('- {}, not selected (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
             if check_we_cant_use(o):
                 logger.debug('- {}, skipped (PCB: {} SCH: {})'.format(n, o.is_pcb(), o.is_sch()))
                 continue
-            tree = cls.get_conf_examples(n, layers)
+            tree = o.get_conf_examples(n, layers)
             if tree:
                 logger.debug('- {}, generated'.format(n))
                 preflights.update(tree)
@@ -1064,20 +1147,26 @@ def generate_one_example(dest_dir, types):
     return fname
 
 
+def reset_config():
+    # Outputs, groups, filters and variants
+    RegOutput.reset()
+    # Preflights
+    BasePreFlight.reset()
+
+
 def generate_targets(config_file):
     """ Generate all possible targets for the configuration file """
     # Reset the board and schematic
     GS.board = None
     GS.sch = None
     # Reset the list of outputs and preflights
-    RegOutput.reset()
-    BasePreFlight.reset()
+    reset_config()
     # Read the config file
     cr = CfgYamlReader()
     with open(config_file) as cf_file:
-        outputs = cr.read(cf_file)
+        cr.read(cf_file)
     # Do all the job
-    generate_outputs(outputs, [], False, None, False, False, dont_stop=True)
+    generate_outputs([], False, None, False, False, dont_stop=True)
 
 
 def _walk(path, depth):
@@ -1148,8 +1237,7 @@ def generate_examples(start_dir, dry, types):
         if not os.path.isdir(start_dir):
             GS.exit_with_error(f'Invalid dir {start_dir} to quick start', WRONG_ARGUMENTS)
     # Set default global options
-    glb = GS.class_for_global_opts()
-    glb.set_tree({})
+    glb = GS.set_global_options_tree({})
     glb.config(None)
     # Install the resources
     setup_resources()

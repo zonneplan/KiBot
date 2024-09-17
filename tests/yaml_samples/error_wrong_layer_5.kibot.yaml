@@ -20,7 +20,7 @@ outputs:
       drill_marks: small
       mirror_plot: false
       negative_plot: false
-      line_width: 0.01
+      line_width: 0.05
     layers:
       - layer: F.Cu
         description: 'Ok'

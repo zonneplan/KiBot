@@ -18,11 +18,9 @@ Here is an example of a *preflight* section:
 .. code:: yaml
 
    preflight:
-     run_erc: true
-     update_xml: true
-     run_drc: true
+     erc: true
+     drc: true
      check_zone_fills: true
-     ignore_unconnected: false
 
 
 
@@ -57,10 +55,16 @@ that doesn’t want to take the extra effort to solve some errors that
 aren’t in fact errors, just small violations made on purpose. In this
 case you could exclude some known errors.
 
-For this you must declare ``filters`` entry in the ``preflight``
-section. Then you can add as many ``filter`` entries as you want. Each
+KiCad 5 didn't have a mechanism to exclude errors. KiCad 6 introduced
+exclusion, but they failed to be honred when using the Python API.
+Starting with KiCad 8 you can use KiCad exclusions, but in some cases
+they fail, this is because they are very specific. KiBot filters are
+more generic and can solve cases where KiCad exclusions aren't enough.
+
+For this you must declare ``filters`` entry in the ``drc`` and/or ``erc``
+sections. Then you can add as many ``filter`` entries as you want. Each
 filter entry has an optional description and defines to which error type
-is applied (``number``) and a regular expression that the error must
+is applied (``error``) and a regular expression that the error must
 match to be ignored (``regex``). Like this:
 
 .. code:: yaml
@@ -114,5 +118,12 @@ Note that this will ignore the errors, but they will be reported as
 warnings. If you want to suppress these warnings take a look at
 :ref:`filter-kibot-warnings`
 
-**Important note**: this will create a file named *kibot_errors.filter*
-in the output directory.
+.. note::
+   The old ``run_drc`` and ``run_erc`` preflights used a
+   separated ``filters`` preflight. Avoid using it with the new ``drc`` and
+   ``erc`` preflights, they have its own ``filters`` option.
+
+.. note::
+   When using the old ``run_drc`` and ``run_erc``
+   preflights the ``filters`` preflight will create a file named
+   *kibot_errors.filter* in the output directory.

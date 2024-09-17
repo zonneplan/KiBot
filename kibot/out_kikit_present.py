@@ -21,7 +21,7 @@ import subprocess
 import sys
 from tempfile import TemporaryDirectory
 from .error import KiPlotConfigurationError
-from .misc import PCB_GENERATORS, RENDERERS, W_MORERES
+from .misc import PCB_GENERATORS, RENDERERS, W_MORERES, W_NODESC
 from .gs import GS
 from .kiplot import config_output, run_output, get_output_dir, load_board, run_command, configure_and_run
 from .optionable import BaseOptions, Optionable
@@ -116,10 +116,6 @@ class PresentBoards(Optionable):
             if out is None:
                 raise KiPlotConfigurationError('Unknown output `{}` selected in board {}'.
                                                format(self.pcb_from_output, self.name))
-
-    def fill_empty_values(self, parent):
-        # The defaults are good enough, but we need to attach to a parent
-        self._parent = parent
 
     def solve_file(self):
         return self.name, self.comment, self.pcb_file, self.front_image, self.back_image, self.gerbers
@@ -271,6 +267,11 @@ class PresentBoards(Optionable):
         # external
         return self.solve_external()
 
+    def __str__(self):
+        desc = self.comment if self.comment else 'No comment'
+        name = self.name if self.name else 'No name'
+        return f'`{desc}` ({name}) [{self.mode}]'
+
 
 class KiKit_PresentOptions(BaseOptions):
     def __init__(self):
@@ -279,9 +280,10 @@ class KiKit_PresentOptions(BaseOptions):
             """ *Name for a markdown file containing the main part of the page to be generated.
                 This is mandatory and is the description of your project.
                 You can embed the markdown code. If the text doesn't map to a file and contains
-                more than one line KiBot will assume this is the markdown """
+                more than one line KiBot will assume this is the markdown.
+                If empty KiBot will generate a silly text and a warning """
             self.boards = PresentBoards
-            """ [dict|list(dict)] One or more boards that compose your project.
+            """ [dict|list(dict)=[{}]] One or more boards that compose your project.
                 When empty we will use only the main PCB for the current project """
             self.resources = Optionable
             """ [string|list(string)='']  A list of file name patterns for additional resources to be included.
@@ -310,21 +312,16 @@ class KiKit_PresentOptions(BaseOptions):
     def config(self, parent):
         super().config(parent)
         # Validate the input file name
-        if not self.description:
-            raise KiPlotConfigurationError('You must specify an input markdown file using `description`')
-        if not os.path.isfile(self.description):
-            self.description = self.description.split('\n')
-            if len(self.description) == 1:
-                raise KiPlotConfigurationError('Missing description file `{}`'.format(self.description))
+        self._description = self.description
+        self._silly_desc = False
+        if not self._description:
+            self._description = f'# {GS.pcb_basename.capitalize()}\n\nA project without description\n'
+            self._silly_desc = True
+        if not os.path.isfile(self._description):
+            self._description = self._description.split('\n')
+            if len(self._description) == 1:
+                raise KiPlotConfigurationError('Missing description file `{}`'.format(self._description))
         # List of boards
-        if isinstance(self.boards, type):
-            a_board = PresentBoards()
-            a_board.fill_empty_values(self)
-            self.boards = [a_board]
-        elif isinstance(self.boards, PresentBoards):
-            self.boards = [self.boards]
-        # else ... we have a list of boards
-        self.resources = self.force_list(self.resources, comma_sep=False)
         if not self.name:
             self.name = GS.pcb_basename
         # Make sure the template exists
@@ -366,6 +363,8 @@ class KiKit_PresentOptions(BaseOptions):
     def run(self, dir_name):
         self.ensure_tool('markdown2')
         from .PcbDraw.present import boardpage
+        if self._silly_desc:
+            logger.warning(W_NODESC+'No project description, please provide one')
         # Generate missing images
         board = []
         temporals = []
@@ -373,16 +372,15 @@ class KiKit_PresentOptions(BaseOptions):
             for brd in self.boards:
                 board.append(brd.solve(temporals))
             # Support embedded markdown
-            if isinstance(self.description, list):
+            self._desc_file = self._description
+            if isinstance(self._desc_file, list):
                 tmp_md = _get_tmp_name('md')
                 with open(tmp_md, 'w') as f:
-                    f.writelines([ln+'\n' for ln in self.description])
-                self._description = tmp_md
+                    f.writelines([ln+'\n' for ln in self._desc_file])
+                self._desc_file = tmp_md
                 temporals.append(tmp_md)
-            else:
-                self._description = self.description
             try:
-                boardpage(dir_name, self._description, board, self.resources, self.template, self.repository, self.name,
+                boardpage(dir_name, self._desc_file, board, self.resources, self.template, self.repository, self.name,
                           self.get_git_command())
             except RuntimeError as e:
                 raise KiPlotConfigurationError('KiKit present error: '+str(e))
@@ -404,7 +402,7 @@ class KiKit_Present(BaseOutput):
         super().__init__()
         with document:
             self.options = KiKit_PresentOptions
-            """ *[dict] Options for the `kikit_present` output """
+            """ *[dict={}] Options for the `kikit_present` output """
         self._category = 'PCB/docs'
 
     def get_navigate_targets(self, out_dir):

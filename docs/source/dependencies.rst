@@ -12,9 +12,9 @@
 
 -  Mandatory
 
-`KiCad Automation tools <https://github.com/INTI-CMNB/KiAuto>`__ :index:`: <pair: dependency; KiCad Automation tools>`  v2.3.1 |image10| |PyPi dependency| |Auto-download|
+`KiCad Automation tools <https://github.com/INTI-CMNB/KiAuto>`__ :index:`: <pair: dependency; KiCad Automation tools>`  v2.3.2 |image10| |PyPi dependency| |Auto-download|
 
--  Mandatory for: `dxf_sch_print`, `gencad`, `hpgl_sch_print`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `ps_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`, `vrml`
+-  Mandatory for: `convert_pcb`, `dxf_sch_print`, `gencad`, `hpgl_sch_print`, `netlist`, `pdf_pcb_print`, `pdf_sch_print`, `ps_sch_print`, `render_3d`, `run_drc`, `run_erc`, `step`, `svg_pcb_print`, `svg_sch_print`, `update_xml`, `vrml`
 -  Optional to:
 
    -  Compare schematics for `diff` (v2.2.0)
@@ -63,7 +63,7 @@
 
 -  Mandatory for `ibom`
 
-`KiBoM <https://github.com/INTI-CMNB/KiBoM>`__ :index:`: <pair: dependency; KiBoM>`  v1.8.0 |image25| |Auto-download|
+`KiBoM <https://github.com/INTI-CMNB/KiBoM>`__ :index:`: <pair: dependency; KiBoM>`  v1.9.1 |image25| |Auto-download|
 
 -  Mandatory for `kibom`
 

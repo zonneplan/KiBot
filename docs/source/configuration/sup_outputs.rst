@@ -9,7 +9,7 @@ Notes:
 2. Aliases are listed in *italics*.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
 
    outputs/blender_export
    outputs/boardview

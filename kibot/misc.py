@@ -49,6 +49,7 @@ HPGL_SCH_PRINT = 33
 CORRUPTED_PRO = 34
 BLENDER_ERROR = 35
 WARN_AS_ERROR = 36
+CHECK_FIELD = 37
 error_level_to_name = ['NONE',
                        'INTERNAL_ERROR',
                        'WRONG_ARGUMENTS',
@@ -85,7 +86,8 @@ error_level_to_name = ['NONE',
                        'HPGL_SCH_PRINT',
                        'CORRUPTED_PRO',
                        'BLENDER_ERROR',
-                       'WARN_AS_ERROR'
+                       'WARN_AS_ERROR',
+                       'CHECK_FIELD'
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
@@ -310,6 +312,17 @@ W_INV3DLAYER = '(W150) '
 W_NEEDSK8 = '(W151) '
 W_NEEDSK7 = '(W152) '
 W_NEEDSK6 = '(W153) '
+W_UNKPADSH = '(W154) '
+W_NOFILES = '(W155) '
+W_NODESC = '(W156) '
+W_NOPAGES = '(W157) '
+W_NOLAYERS = '(W158) '
+W_NOPOPMD = '(W159) '
+W_NOQR = '(W160) '
+W_NOFOOTP = '(W161) '
+W_CHKFLD = '(W162) '
+W_ONMAC = '(W163) '
+W_MULTIREF = '(W164) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -483,6 +496,7 @@ DEFAULT_OFFSETS = [["^USB_C_Receptacle_XKB_U262-16XN-4BVC11", (0.0, -1.44)],
                    [r"^PinHeader_2x03_P1\.27mm_Vertical", (-1.27, -0.635)],
                    ]
 DEFAULT_OFFSET_FIELDS = ['JLCPCB Position Offset', 'JLCPosOffset']
+RE_LEN = re.compile(r'\{L:(\d+)\}')
 
 
 class Rect(object):
@@ -539,3 +553,37 @@ def read_png(file):
 
 def force_list(v):
     return v if v is None or isinstance(v, list) else [v]
+
+
+def typeof(v, cls, valid=None):
+    if isinstance(v, bool):
+        return 'boolean'
+    if isinstance(v, (int, float)):
+        return 'number'
+    if isinstance(v, str):
+        return 'string'
+    if isinstance(v, (dict, cls)):
+        return 'dict'
+    if isinstance(v, list):
+        if len(v) == 0:
+            if valid is not None:
+                return next(filter(lambda x: x.startswith('list('), valid), 'list(string)')
+            return 'list(string)'
+        return 'list({})'.format(typeof(v[0], cls))
+    return 'None'
+
+
+def pretty_list(items, short=False):
+    if not items:
+        return ''
+    if short:
+        if len(items) == 1:
+            return items[0].short_str()
+        return ', '.join((x.short_str() for x in items[:-1]))+' and '+items[-1].short_str()
+    return str(items[0]) if len(items) == 1 else ', '.join(map(str, items[:-1]))+' and '+str(items[-1])
+
+
+def try_int(value):
+    f_val = float(value)
+    i_val = int(f_val)
+    return i_val if i_val == f_val else f_val

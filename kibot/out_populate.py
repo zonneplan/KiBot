@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # No longer a dependency, now included.
 # Will be fixed when the code supports mistune 3 ... or never
@@ -15,7 +15,7 @@
 import os
 # Here we import the whole module to make monkeypatch work
 from .error import KiPlotConfigurationError
-from .misc import W_PCBDRAW, RENDERERS
+from .misc import W_PCBDRAW, RENDERERS, W_NOPOPMD
 from .gs import GS
 from .kiplot import run_output, look_for_output
 from .optionable import Optionable
@@ -23,6 +23,17 @@ from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 logger = log.get_logger()
+DUMMY_MD = """# Very basic populate example
+
+This is the board without components:
+
+- [[front | ]] Front side
+- [[back | ]] Back side
+
+Now you solder all the components for the front side
+
+- [[front | _kf(_none) ]] All components soldered
+"""
 
 
 def pcbdraw_warnings(tag, msg):
@@ -42,11 +53,12 @@ class PopulateOptions(VariantOptions):
             self.format = 'html'
             """ *[html,md] Format for the generated output """
             self.initial_components = Optionable
-            """ [string|list(string)=''] List of components soldered before the first step """
+            """ [string|list(string)=''] {comma_sep} List of components soldered before the first step """
             self.input = ''
             """ *Name of the input file describing the assembly. Must be a markdown file.
                 Note that the YAML section of the file will be skipped, all the needed information
-                comes from this output and the `renderer` output """
+                comes from this output and the `renderer` output, not from the YAML section.
+                When empty we use a dummy template, you should provide something better """
             self.imgname = 'img/populating_%d.%x'
             """ Pattern used for the image names. The `%d` is replaced by the image number.
                 The `%x` is replaced by the extension. Note that the format is selected by the
@@ -56,12 +68,8 @@ class PopulateOptions(VariantOptions):
     def config(self, parent):
         super().config(parent)
         # Validate the input file name
-        if not self.input:
-            raise KiPlotConfigurationError('You must specify an input markdown file')
-        if not os.path.isfile(self.input):
+        if self.input and not os.path.isfile(self.input):
             raise KiPlotConfigurationError('Missing input file `{}`'.format(self.input))
-        # Initial components
-        self.initial_components = Optionable.force_list(self.initial_components)
         # Validate the image pattern name
         if '%d' not in self.imgname:
             raise KiPlotConfigurationError('The image pattern must contain `%d` `{}`'.format(self.imgname))
@@ -113,10 +121,14 @@ class PopulateOptions(VariantOptions):
         # Check the renderer output is valid
         self._renderer = look_for_output(self.renderer, 'renderer', self._parent, RENDERERS)
         # Load the input content
-        try:
-            _, content = load_content(self.input)
-        except IOError:
-            raise KiPlotConfigurationError('Failed to load `{}`'.format(self.input))
+        if not self.input:
+            content = DUMMY_MD
+            logger.warning(W_NOPOPMD+f'No populate plan for `{self._parent.name}`, using a very simple one')
+        else:
+            try:
+                _, content = load_content(self.input)
+            except IOError:
+                raise KiPlotConfigurationError('Failed to load `{}`'.format(self.input))
         # Load the template
         if self.format == 'html':
             data_path = get_data_path()
@@ -159,5 +171,5 @@ class Populate(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PopulateOptions
-            """ *[dict] Options for the `populate` output """
+            """ *[dict={}] Options for the `populate` output """
         self._category = 'PCB/docs'

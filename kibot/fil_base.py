@@ -96,15 +96,15 @@ SIMP_FIL = {'_only_smd': {'comment': 'Internal filter for only SMD parts',
 
 class DummyFilter(Registrable):
     """ A filter that allows all """
-    def __init__(self):
+    def __init__(self, is_transform=False):
         super().__init__()
         self.name = 'Dummy'
         self.type = 'dummy'
         self.comment = 'A filter that does nothing'
-        self._is_transform = False
+        self._is_transform = is_transform
 
     def filter(self, comp):
-        return True
+        return None if self._is_transform else True
 
 
 class MultiFilter(Registrable):
@@ -188,6 +188,8 @@ def apply_exclude_filter(comps, filter):
         for c in comps:
             if c.included:
                 c.included = filter.filter(c)
+                if not c.included:
+                    logger.debugl(3, f'- {c.ref} excluded')
 
 
 def reset_filters(comps):
@@ -231,15 +233,15 @@ class BaseFilter(RegFilter):
         self._is_transform = False
         with document:
             self.name = ''
-            """ Used to identify this particular filter definition """
+            """ *Used to identify this particular filter definition """
             self.type = ''
             """ Type of filter """
             self.comment = ''
-            """ A comment for documentation purposes """
+            """ *A comment for documentation purposes """
 
     def config(self, parent):
         super().config(parent)
-        if self.name[0] == '_' and not self._internal:
+        if self.name and self.name.startswith('_') and not self._internal:
             raise KiPlotConfigurationError('Filter names starting with `_` are reserved ({})'.format(self.name))
 
     @staticmethod
@@ -303,7 +305,11 @@ class BaseFilter(RegFilter):
         return o_tree
 
     @staticmethod
-    def _create_internal_filter(name):
+    def _create_internal_filter(name, is_transform):
+        if name == '_null':
+            raise KiPlotConfigurationError("The `_null` filter can't be used in a filter chain")
+        if name == '_none':
+            return DummyFilter(is_transform)
         if name == IFILT_MECHANICAL:
             tree = BaseFilter._create_mechanical(name)
         elif name.startswith('_kibom_dn') and len(name) >= 10:
@@ -342,7 +348,9 @@ class BaseFilter(RegFilter):
         elif isinstance(names, str):
             # User provided, but only one, make a list
             if names == '_none':
-                return DummyFilter()
+                return DummyFilter(is_transform)
+            if names == '_null':
+                return None
             names = [names]
         # Here we should have a list of strings
         filters = []
@@ -358,7 +366,7 @@ class BaseFilter(RegFilter):
                 name = name[1:]
                 # '!' => always False
                 if not name:
-                    filters.append(NotFilter(DummyFilter()))
+                    filters.append(NotFilter(DummyFilter(is_transform)))
                     continue
             else:
                 invert = False
@@ -366,7 +374,7 @@ class BaseFilter(RegFilter):
             if RegOutput.is_filter(name):
                 fil = RegOutput.get_filter(name)
             else:  # Nope, can be created?
-                fil = BaseFilter._create_internal_filter(name)
+                fil = BaseFilter._create_internal_filter(name, is_transform)
                 if fil is None:
                     raise KiPlotConfigurationError("Unknown filter `{}` used for `{}`".format(name, target_name))
             if invert:
@@ -378,7 +386,7 @@ class BaseFilter(RegFilter):
                 filters.append(fil)
         # Finished collecting filters
         if not filters:
-            return DummyFilter()
+            return DummyFilter(is_transform)
         # If we need a `Logic` filter ensure that at least one in the list is `Logic`
         if not is_transform and not next(filter(lambda x: not x._is_transform, filters), False):
             raise KiPlotConfigurationError("At least one logic filter is needed for `{}`".format(target_name))
@@ -407,3 +415,6 @@ class FieldRename(Optionable):
         if not self.name:
             raise KiPlotConfigurationError("Missing or empty `name` in rename list ({})".format(str(self._tree)))
         self.field = self.field.lower()
+
+    def __str__(self):
+        return f'{self.field} -> {self.name}'

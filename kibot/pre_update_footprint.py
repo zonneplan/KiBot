@@ -4,8 +4,8 @@
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import GS
-from .error import KiPlotConfigurationError
 from .kicad.pcb import replace_footprints
+from .misc import W_NOFOOTP, pretty_list
 from .optionable import Optionable
 from .macros import macros, document, pre_class  # noqa: F401
 from .log import get_logger
@@ -15,24 +15,24 @@ logger = get_logger(__name__)
 
 @pre_class
 class Update_Footprint(BasePreFlight):  # noqa: F821
-    """ [string|list(string)=''] Updates footprints from the libs, you must provide one or more references to be updated.
-        This is useful to replace logos using freshly created versions """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+    """ Update Footprint
+        Updates footprints from the libs, you must provide one or more
+        references to be updated. This is useful to replace logos using freshly created versions """
+    def __init__(self):
+        super().__init__()
         self._pcb_related = True
+        with document:
+            self.update_footprint = Optionable
+            """ [string|list(string)=''] {comma_sep} One or more component references """
 
-    def config(self):
-        if not isinstance(self._value, list) and not isinstance(self._value, str):
-            raise KiPlotConfigurationError('must be string or list of strings')
-        if isinstance(self._value, list) and any((not isinstance(x, str) for x in self._value)):
-            raise KiPlotConfigurationError('all items in the list must be strings')
-        self._refs = Optionable.force_list(self._value)
-        if not self._refs:
-            raise KiPlotConfigurationError('nothing to update')
+    def __str__(self):
+        return f'{self.type} ({pretty_list(self.update_footprint)})'
 
     def get_example():
         """ Returns a YAML value for the example config """
-        return "QR1, QR2"
+        return "QR1,QR2"
 
     def apply(self):
-        replace_footprints(GS.pcb_file, {k: None for k in self._refs}, logger)
+        if not self.update_footprint:
+            logger.warning(W_NOFOOTP+'Nothing to update in `update_footprint`')
+        replace_footprints(GS.pcb_file, dict.fromkeys(self.update_footprint), logger)

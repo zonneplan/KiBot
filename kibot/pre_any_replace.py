@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2023 Salvador E. Tropea
-# Copyright (c) 2021-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
 import re
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
-from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS
+from .misc import FAILED_EXECUTE, W_EMPTREP, W_BADCHARS, pretty_list
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
@@ -38,12 +38,21 @@ class TagReplaceBase(Optionable):
             self.after = ''
             """ Text to add after the output of `command` """
         self._relax_check = False
+        self._tag_example = 'version'
 
     def config(self, parent):
         super().config(parent)
         if not self.tag:
             raise KiPlotConfigurationError("No tag to replace specified ({})".format(str(self._tree)))
         self.tag = self.tag_delimiter + re.escape(self.tag) + self.tag_delimiter
+
+    def __str__(self):
+        txt = self.tag_delimiter+self.tag+self.tag_delimiter
+        if self.text:
+            txt += f' -> `{self.text}`'
+        else:
+            txt += f' -> command(`{self.command}`)'
+        return txt
 
 
 class Base_ReplaceOptions(Optionable):
@@ -60,22 +69,10 @@ class Base_ReplaceOptions(Optionable):
                 Important: on KiCad 6 the title block data is optional.
                 This command will work only if you have a date in the PCB/Schematic """
             self.replace_tags = TagReplaceBase
-            """ [dict|list(dict)] Tag or tags to replace """
-
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.replace_tags, type):
-            self.replace_tags = []
-        elif isinstance(self.replace_tags, TagReplaceBase):
-            self.replace_tags = [self.replace_tags]
+            """ [dict|list(dict)=[]] Tag or tags to replace """
 
 
 class Base_Replace(BasePreFlight):  # noqa: F821
-    """ [dict] Replaces tags in the PCB/schematic. I.e. to insert the git hash or last revision date """
-    def __init__(self, name, value):
-        super().__init__(name, value)
-        self._context = ''  # PCB/SCH
-
     @classmethod
     def get_example(cls):
         """ Returns a YAML value for the example config """
@@ -86,12 +83,18 @@ class Base_Replace(BasePreFlight):  # noqa: F821
                 "\n        before: 'Git hash: <'"
                 "\n        after: '>'".format(cls._context, cls._context))
 
-    def replace(self, file):
+    def __str__(self):
+        res = self.type
+        main_value = getattr(self, self.type)
+        if len(main_value.replace_tags):
+            res += f' ({pretty_list([v.tag for v in main_value.replace_tags])})'
+        return res
+
+    def replace(self, file, o):
         logger.debug('Applying replacements to `{}`'.format(file))
         with open(file, 'rt') as f:
             content = f.read()
         os.environ['KIBOT_' + type(self)._context + '_NAME'] = file
-        o = self._value
         bash_command = None
         for r in o.replace_tags:
             text = r.text

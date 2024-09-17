@@ -104,9 +104,8 @@ class PCB2Blender_ToolsOptions(VariantOptions):
             self.sub_boards_stacked_prefix = 'stacked_'
             """ Prefix used for the stack files """
             self.show_components = Optionable
-            """ *[list(string)|string=all] [none,all] List of components to include in the pads list,
-                can be also a string for `none` or `all`. The default is `all`.
-                Ranges like *R5-R10* are supported """
+            """ *[list(string)|string='all'] [none,all,*] List of components to include in the pads list,
+                can be also a string for `none` or `all`. Ranges like *R5-R10* are supported """
         super().__init__()
         self._expand_id = 'pcb2blender'
         self._expand_ext = 'pcb3d'
@@ -116,13 +115,11 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         self._filters_to_expand = False
         # List of components
         self._show_all_components = False
-        if isinstance(self.show_components, str):
-            if self.show_components == 'all':
+        if len(self.show_components) == 1 and self.show_components[0] in {'all', 'none'}:
+            if self.show_components[0] == 'all':
                 self._show_all_components = True
-            self.show_components = []
-        elif isinstance(self.show_components, type):
-            # Default is all
-            self._show_all_components = True
+            else:  # if self.show_components[0] == 'none':
+                self.show_components = []
         else:  # a list
             self.show_components = self.solve_kf_filters(self.show_components)
 
@@ -329,6 +326,13 @@ class PCB2Blender_ToolsOptions(VariantOptions):
         self.undo_show_components()
 
     def get_targets(self, out_dir):
+        # Here we have an interesting case:
+        # We are listing the pads, but this needs variants applied.
+        # Otherwise a transform filter could invalidate the generated list.
+        # So we need to apply the variants.
+        self.load_list_components()
+        self.apply_show_components()
+        self.filter_pcb_components(do_3D=True)
         files = []
         if self.board_bounds_create:
             files.append(os.path.join(out_dir, self.board_bounds_dir, self.board_bounds_file))
@@ -351,6 +355,8 @@ class PCB2Blender_ToolsOptions(VariantOptions):
                     files.append(os.path.join(subdir, self.sub_boards_stacked_prefix+stacked.name))
             else:
                 files.append(dir_name)
+        self.unfilter_pcb_components(do_3D=True)
+        self.undo_show_components()
         return files
 
 
@@ -369,4 +375,4 @@ class PCB2Blender_Tools(BaseOutput):  # noqa: F821
         self._category = 'PCB/3D/Auxiliar'
         with document:
             self.options = PCB2Blender_ToolsOptions
-            """ *[dict] Options for the `pcb2blender_tools` output """
+            """ *[dict={}] Options for the `pcb2blender_tools` output """

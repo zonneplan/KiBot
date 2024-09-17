@@ -906,6 +906,7 @@ class SchematicComponent(object):
         self.has_pcb_info = False
         self.qty = 1
         self.annotation_error = False
+        self.net_name = self.net_class = ''
         # Position offset i.e. from the rotation filter
         self.pos_offset_x = self.pos_offset_y = None
         # KiCad 5 PCB flags (mutually exclusive)
@@ -958,8 +959,9 @@ class SchematicComponent(object):
         f.value = value
         f.number = self.get_free_field_number()
         f.visible(bool(visible))
-        f.x = self.x
-        f.y = self.y
+        if hasattr(self, 'x'):
+            f.x = self.x
+            f.y = self.y
         self.add_field(f)
         return True, f
 
@@ -1073,10 +1075,11 @@ class SchematicComponent(object):
     def split_ref(self, f=None):
         m = SchematicComponent.ref_re.match(self.ref)
         if not m:
+            pos = f'(@ {self.x},{self.y})' if hasattr(self, 'x') else ''
             if f:
-                raise SchFileError('Malformed component reference', self.ref, f)
+                raise SchFileError(f'Malformed component reference {pos}', self.ref, f)
             else:
-                raise SchError('Malformed component reference `{}`'.format(self.ref))
+                raise SchError(f'Malformed component reference `{self.ref}` {pos}')
         self.ref_prefix, self.ref_suffix = m.groups()
 
     @staticmethod

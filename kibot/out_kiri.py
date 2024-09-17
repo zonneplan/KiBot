@@ -21,7 +21,11 @@ Dependencies:
 """
 import datetime
 import glob
-import pwd
+try:
+    # Not available on Windows?!
+    import pwd
+except Exception:
+    pass
 import os
 from shutil import copy2, rmtree
 from subprocess import CalledProcessError
@@ -101,7 +105,7 @@ class KiRiOptions(AnyDiffOptions):
 
     def create_layers_incl(self, layers):
         self.incl_file = None
-        if isinstance(layers, type):
+        if not layers:
             self._solved_layers = None
             return False
         self.save_layers_incl(Layer.solve(layers))
@@ -354,10 +358,10 @@ class KiRi(BaseOutput):  # noqa: F821
         self._both_related = True
         with document:
             self.options = KiRiOptions
-            """ *[dict] Options for the `diff` output """
+            """ *[dict={}] Options for the `diff` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
-                List of PCB layers to use. When empty all available layers are used.
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
+                of PCB layers to use. When empty all available layers are used.
                 Note that if you want to support adding/removing layers you should specify a list here """
 
     @staticmethod

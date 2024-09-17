@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from copy import deepcopy
 import math
 import os
 import re
 from shutil import rmtree
+from .bom.columnlist import ColumnList
 from .gs import GS
 from .kicad.pcb import replace_footprints
 from .kiplot import load_sch, get_board_comps_data
@@ -74,13 +75,14 @@ class BaseOutput(RegOutput):
             self.run_by_default = True
             """ When enabled this output will be created when no specific outputs are requested """
             self.disable_run_by_default = ''
-            """ [string|boolean] Use it to disable the `run_by_default` status of other output.
+            """ [string|boolean=''] Use it to disable the `run_by_default` status of other output.
                 Useful when this output extends another and you don't want to generate the original.
                 Use the boolean true value to disable the output you are extending """
             self.output_id = ''
             """ Text to use for the %I expansion content. To differentiate variations of this output """
             self.category = Optionable
-            """ [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+            """ [string|list(string)=''] {comma_sep} The category for this output. If not specified an internally defined
+                category is used.
                 Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
                 The categories are currently used for `navigate_results` """
             self.priority = 50
@@ -167,15 +169,8 @@ class BaseOutput(RegOutput):
                 raise KiPlotConfigurationError('Unknown output `{}` in `disable_run_by_default`'.format(to_dis))
         if self.dir[0] == '+':
             self.dir = (GS.global_dir if GS.global_dir is not None else './') + self.dir[1:]
-        if getattr(self, 'options', None) and isinstance(self.options, type):
-            # No options, get the defaults
-            self.options = self.options()
-            # Configure them using an empty tree
-            self.options.config(self)
-        self.category = self.force_list(self.category)
         if not self.category:
-            self.category = self._category
-        self.groups = self.force_list(self.groups, comma_sep=False)
+            self.category = self.force_list(self._category)
 
     def expand_dirname(self, out_dir):
         return self.options.expand_filename_both(out_dir, is_sch=self._sch_related)
@@ -237,11 +232,16 @@ class BoMRegex(Optionable):
             """ Match if the field doesn't exists, no regex applied. Not affected by `invert` """
             self.invert = False
             """ Invert the regex match result """
+        self._column_example = ColumnList.COL_REFERENCE
 
     def config(self, parent):
         super().config(parent)
         if not self.column:
             raise KiPlotConfigurationError("Missing or empty `column` in field regex ({})".format(str(self._tree)))
+
+    def __str__(self):
+        invert = '!' if self.invert else ''
+        return f'{self.column} {invert}`{self.regex}`'
 
 
 class VariantOptions(BaseOptions):
@@ -251,16 +251,16 @@ class VariantOptions(BaseOptions):
             self.variant = ''
             """ Board variant to apply """
             self.dnf_filter = Optionable
-            """ [string|list(string)='_none'] Name of the filter to mark components as not fitted.
+            """ [string|list(string)='_null'] Name of the filter to mark components as not fitted.
                 A short-cut to use for simple cases where a variant is an overkill """
             self.pre_transform = Optionable
-            """ [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
+            """ [string|list(string)='_null'] Name of the filter to transform fields before applying other filters.
                 A short-cut to use for simple cases where a variant is an overkill """
         super().__init__()
         self._comps = None
         self._sub_pcb = None
-        self.undo_3d_models = {}
-        self.undo_3d_models_rep = {}
+        self._undo_3d_models = {}
+        self._undo_3d_models_rep = {}
         self._highlight_3D_file = None
         self._highlighted_3D_components = None
 
@@ -279,6 +279,18 @@ class VariantOptions(BaseOptions):
         if not self._comps:
             return None
         return {c.ref: c for c in self._comps}
+
+    def get_refs_hash_multi(self):
+        """ This version allows having multiple components with the same reference.
+            Is useful for things like a panel """
+        if not self._comps:
+            return None
+        comps_hash = {}
+        for c in self._comps:
+            cur_list = comps_hash.get(c.ref, [])
+            cur_list.append(c)
+            comps_hash[c.ref] = cur_list
+        return comps_hash
 
     def get_fitted_refs(self):
         """ List of fitted and included components """
@@ -395,7 +407,7 @@ class VariantOptions(BaseOptions):
     def remove_paste_and_glue(self, board, comps_hash):
         """ Remove from solder paste layers the filtered components. """
         if comps_hash is None or not (GS.global_remove_solder_paste_for_dnp or GS.global_remove_adhesive_for_dnp or
-                                      GS.remove_solder_mask_for_dnp):
+                                      GS.global_remove_solder_mask_for_dnp):
             return
         logger.debug('Removing paste, mask and/or glue')
         exclude = LSET()
@@ -470,11 +482,11 @@ class VariantOptions(BaseOptions):
                     if found:
                         logger.debugl(3, '- Removed mask from '+ref)
         # Store the data to undo the above actions
-        self.old_layers = old_layers
-        self.old_fadhes = old_fadhes
-        self.old_badhes = old_badhes
-        self.old_fmask = old_fmask
-        self.old_bmask = old_bmask
+        self._old_layers = old_layers
+        self._old_fadhes = old_fadhes
+        self._old_badhes = old_badhes
+        self._old_fmask = old_fmask
+        self._old_bmask = old_bmask
         self._fadhes = fadhes
         self._badhes = badhes
         self._fmask = fmask
@@ -491,27 +503,28 @@ class VariantOptions(BaseOptions):
                 c = comps_hash.get(ref, None)
                 if c and c.included and not c.fitted:
                     logger.debugl(3, '- Restoring paste/mask for '+ref)
-                    restore = self.old_layers.pop(0)
+                    restore = self._old_layers.pop(0)
                     for p in m.Pads():
                         pad_layers = p.GetLayerSet()
                         res = restore.pop(0)
                         pad_layers.ParseHex(res, len(res))
                         p.SetLayerSet(pad_layers)
         if GS.global_remove_adhesive_for_dnp:
-            for gi in self.old_fadhes:
+            for gi in self._old_fadhes:
                 gi.SetLayer(self._fadhes)
-            for gi in self.old_badhes:
+            for gi in self._old_badhes:
                 gi.SetLayer(self._badhes)
         if GS.global_remove_solder_mask_for_dnp:
-            for gi in self.old_fmask:
+            for gi in self._old_fmask:
                 gi.SetLayer(self._fmask)
-            for gi in self.old_bmask:
+            for gi in self._old_bmask:
                 gi.SetLayer(self._bmask)
 
     def remove_fab(self, board, comps_hash):
         """ Remove from Fab the excluded components. """
         if comps_hash is None:
             return
+        logger.debug('Removing from Fab')
         ffab = board.GetLayerID('F.Fab')
         bfab = board.GetLayerID('B.Fab')
         old_ffab = []
@@ -521,6 +534,7 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c is not None and not c.included:
+                logger.debugl(3, '- Removed Fab drawings from '+ref)
                 # Remove any graphical item in the *.Fab layers
                 for gi in m.GraphicalItems():
                     l_gi = gi.GetLayer()
@@ -546,7 +560,7 @@ class VariantOptions(BaseOptions):
 
     def replace_3D_models(self, models, new_model, c):
         """ Changes the 3D model using a provided model.
-            Stores changes in self.undo_3d_models_rep """
+            Stores changes in self._undo_3d_models_rep """
         logger.debug('Changing 3D models for '+c.ref)
         # Get the model references
         models_l = []
@@ -567,7 +581,7 @@ class VariantOptions(BaseOptions):
         for i, m3d in enumerate(models_l):
             replaced.append(m3d.m_Filename)
             m3d.m_Filename = new_model[i]
-        self.undo_3d_models_rep[c.ref] = replaced
+        self._undo_3d_models_rep[c.ref] = replaced
         # Push the models back
         for model in reversed(models_l):
             models.append(model)
@@ -581,18 +595,18 @@ class VariantOptions(BaseOptions):
             while not models.empty():
                 models_l.append(models.pop())
             # Fix any changed path
-            replaced = self.undo_3d_models_rep.get(m.GetReference())
+            replaced = self._undo_3d_models_rep.get(m.GetReference())
             for i, m3d in enumerate(models_l):
-                if m3d.m_Filename in self.undo_3d_models:
-                    m3d.m_Filename = self.undo_3d_models[m3d.m_Filename]
+                if m3d.m_Filename in self._undo_3d_models:
+                    m3d.m_Filename = self._undo_3d_models[m3d.m_Filename]
                 if replaced:
                     m3d.m_Filename = replaced[i]
             # Push the models back
             for model in reversed(models_l):
                 models.append(model)
         # Reset the list of changes
-        self.undo_3d_models = {}
-        self.undo_3d_models_rep = {}
+        self._undo_3d_models = {}
+        self._undo_3d_models_rep = {}
 
     def remove_3D_models(self, board, comps_hash):
         """ Removes 3D models for excluded or not fitted components.
@@ -740,6 +754,8 @@ class VariantOptions(BaseOptions):
             models = m.Models()
             m_pos = m.GetPosition()
             rot = m.GetOrientationDegrees()
+            if m.IsFlipped():
+                rot = 180-rot
             # Measure the courtyard
             bbox = self.get_crtyd_bbox(board, m)
             if bbox.x1 is not None:
@@ -759,7 +775,7 @@ class VariantOptions(BaseOptions):
             if extra_debug:
                 logger.debug(f'Highlight for {ref}')
                 logger.debug(f' - Position {ToMM(m_pos.x)}, {ToMM(m_pos.y)}')
-                logger.debug(f' - Orientation {rot}')
+                logger.debug(f' - Orientation {rot} (Flipped: {m.IsFlipped()})')
                 logger.debug(f' - Center {ToMM(m_cen.x)} {ToMM(m_cen.y)}')
                 logger.debug(f' - w,h {ToMM(w)}, {ToMM(h)}')
             # Compute the offset
@@ -768,6 +784,8 @@ class VariantOptions(BaseOptions):
             rrot = math.radians(rot)
             # KiCad coordinates are inverted in the Y axis
             off_y = -off_y
+            if m.IsFlipped():
+                off_x = -off_x
             # Apply the component rotation
             off_xp = off_x*math.cos(rrot)+off_y*math.sin(rrot)
             off_yp = -off_x*math.sin(rrot)+off_y*math.cos(rrot)
@@ -817,25 +835,25 @@ class VariantOptions(BaseOptions):
     def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
         if not self.will_filter_pcb_components():
             return False
-        self.comps_hash = self.get_refs_hash()
+        self._comps_hash = self.get_refs_hash()
         if self._sub_pcb:
-            self._sub_pcb.apply(self.comps_hash)
+            self._sub_pcb.apply(self._comps_hash)
         if self._comps:
             if do_2D:
-                self.apply_footprint_variants(GS.board, self.comps_hash)
-                self.cross_modules(GS.board, self.comps_hash)
-                self.remove_paste_and_glue(GS.board, self.comps_hash)
+                self.apply_footprint_variants(GS.board, self._comps_hash)
+                self.cross_modules(GS.board, self._comps_hash)
+                self.remove_paste_and_glue(GS.board, self._comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                    self.remove_fab(GS.board, self.comps_hash)
+                    self.remove_fab(GS.board, self._comps_hash)
                 # Copy any change in the schematic fields to the PCB properties
                 # I.e. the value of a component so it gets updated in the *.Fab layer
                 # Also useful for iBoM that can read the sch fields from the PCB
-                self.sch_fields_to_pcb(GS.board, self.comps_hash)
+                self.sch_fields_to_pcb(GS.board, self._comps_hash)
             if do_3D:
                 # Disable the models that aren't for this variant
                 self.apply_3D_variant_aspect(GS.board)
                 # Remove the 3D models for not fitted components (also rename)
-                self.remove_3D_models(GS.board, self.comps_hash)
+                self.remove_3D_models(GS.board, self._comps_hash)
                 # Highlight selected components
                 self.highlight_3D_models(GS.board, highlight)
         return True
@@ -843,22 +861,22 @@ class VariantOptions(BaseOptions):
     def unfilter_pcb_components(self, do_3D=False, do_2D=True):
         if not self.will_filter_pcb_components():
             return
-        if do_2D and self.comps_hash:
-            self.uncross_modules(GS.board, self.comps_hash)
-            self.restore_paste_and_glue(GS.board, self.comps_hash)
+        if do_2D and self._comps_hash:
+            self.uncross_modules(GS.board, self._comps_hash)
+            self.restore_paste_and_glue(GS.board, self._comps_hash)
             if hasattr(self, 'hide_excluded') and self.hide_excluded:
-                self.restore_fab(GS.board, self.comps_hash)
+                self.restore_fab(GS.board, self._comps_hash)
             # Restore the PCB properties and values
             self.restore_sch_fields_to_pcb(GS.board)
-        if do_3D and self.comps_hash:
+        if do_3D and self._comps_hash:
             # Undo the removing (also rename)
-            self.restore_3D_models(GS.board, self.comps_hash)
+            self.restore_3D_models(GS.board, self._comps_hash)
             # Re-enable the modules that aren't for this variant
             self.apply_3D_variant_aspect(GS.board, enable=True)
             # Remove the highlight 3D object
             self.unhighlight_3D_models(GS.board)
         if self._sub_pcb:
-            self._sub_pcb.revert(self.comps_hash)
+            self._sub_pcb.revert(self._comps_hash)
 
     def set_title(self, title, sch=False):
         self.old_title = None
@@ -887,7 +905,7 @@ class VariantOptions(BaseOptions):
     def sch_fields_to_pcb(self, board, comps_hash):
         """ Change the module/footprint data according to the filtered fields.
             iBoM can parse it. """
-        self.sch_fields_to_pcb_bkp = {}
+        self._sch_fields_to_pcb_bkp = {}
         has_GetFPIDAsString = False
         first = True
         for m in GS.get_modules_board(board):
@@ -906,7 +924,7 @@ class VariantOptions(BaseOptions):
                 m.SetValue(fields['Value'])
                 if has_GetFPIDAsString:
                     m.SetFPIDAsString(fields['Footprint'])
-                self.sch_fields_to_pcb_bkp[ref] = (old_value, old_fields, old_fp)
+                self._sch_fields_to_pcb_bkp[ref] = (old_value, old_fields, old_fp)
         self._has_GetFPIDAsString = has_GetFPIDAsString
 
     def restore_sch_fields_to_pcb(self, board):
@@ -914,7 +932,7 @@ class VariantOptions(BaseOptions):
         has_GetFPIDAsString = self._has_GetFPIDAsString
         for m in GS.get_modules_board(board):
             ref = m.GetReference()
-            data = self.sch_fields_to_pcb_bkp.get(ref, None)
+            data = self._sch_fields_to_pcb_bkp.get(ref, None)
             if data is not None:
                 m.SetValue(data[0])
                 if has_GetFPIDAsString:
@@ -1049,7 +1067,7 @@ class VariantOptions(BaseOptions):
         if self._files_to_remove:
             self.remove_temporals()
 
-    def run(self, output_dir):
+    def load_list_components(self):
         """ Makes the list of components available """
         self._files_to_remove = []
         if not self.dnf_filter and not self.variant and not self.pre_transform:
@@ -1069,12 +1087,15 @@ class VariantOptions(BaseOptions):
             self._sub_pcb = self.variant._sub_pcb
         self._comps = comps
 
+    def run(self, output_dir):
+        self.load_list_components()
+
     # The following 5 members are used by 2D and 3D renderers
     def setup_renderer(self, components, active_components):
         """ Setup the options to use it as a renderer """
         self._show_all_components = False
         self._filters_to_expand = False
-        self.highlight = self.solve_kf_filters([c for c in active_components if c])
+        self._highlight = self.solve_kf_filters([c for c in active_components if c])
         self.show_components = [c for c in components if c]
         if self.show_components:
             self._show_components_raw = self.show_components
@@ -1084,7 +1105,7 @@ class VariantOptions(BaseOptions):
         """ Save the current renderer settings """
         self.old_filters_to_expand = self._filters_to_expand
         self.old_show_components = self.show_components
-        self.old_highlight = self.highlight
+        self.old_highlight = self._highlight
         self.old_dir = self._parent.dir
         self.old_done = self._parent._done
 
@@ -1092,7 +1113,7 @@ class VariantOptions(BaseOptions):
         """ Restore the renderer settings """
         self._filters_to_expand = self.old_filters_to_expand
         self.show_components = self.old_show_components
-        self.highlight = self.old_highlight
+        self._highlight = self.old_highlight
         self._parent.dir = self.old_dir
         self._parent._done = self.old_done
 
@@ -1142,9 +1163,8 @@ class PcbMargin(Optionable):
 
     @staticmethod
     def solve(margin):
-        if isinstance(margin, type):
-            return (0, 0, 0, 0)
         if isinstance(margin, PcbMargin):
-            return (GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom))
+            return ((GS.from_mm(margin.left), GS.from_mm(margin.right), GS.from_mm(margin.top), GS.from_mm(margin.bottom)),
+                    margin)
         margin = GS.from_mm(margin)
-        return (margin, margin, margin, margin)
+        return (margin, margin, margin, margin), margin

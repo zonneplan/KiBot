@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -15,7 +15,7 @@ import os
 import re
 from subprocess import run, PIPE
 from .error import KiPlotConfigurationError
-from .misc import FAILED_EXECUTE, W_EMPTREP
+from .misc import FAILED_EXECUTE, W_EMPTREP, pretty_list
 from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .gs import GS
@@ -50,6 +50,15 @@ class KiCadVariable(Optionable):
             """ Text to add after the output of `command` """
             self.expand_kibot_patterns = True
             """ Expand %X patterns. The context is `schematic` """
+        self._name_example = 'version'
+
+    def __str__(self):
+        txt = '${'+self.name+'}'
+        if self.text:
+            txt += f' -> `{self.text}`'
+        else:
+            txt += f' -> command(`{self.command}`)'
+        return txt
 
     def config(self, parent):
         super().config(parent)
@@ -57,41 +66,22 @@ class KiCadVariable(Optionable):
             raise KiPlotConfigurationError("Missing variable name ({})".format(str(self._tree)))
 
 
-class Set_Text_VariablesOptions(Optionable):
-    """ A list of KiCad variables """
+@pre_class
+class Set_Text_Variables(BasePreFlight):  # noqa: F821
+    """ Set Text Variables
+        Defines KiCad 6+ variables.
+        They are expanded using `${VARIABLE}`, and stored in the project file.
+        This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6 or newer.
+        The KiCad project file is modified.
+        Warning:     don't use `-s all` or this preflight will be skipped """
     def __init__(self):
         super().__init__()
         with document:
-            self.variables = KiCadVariable
-            """ [dict|list(dict)] Variables """
+            self.set_text_variables = KiCadVariable
+            """ [dict|list(dict)=[]] One or more variable definition """
 
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.variables, type):
-            self.variables = []
-        elif isinstance(self.variables, KiCadVariable):
-            self.variables = [self.variables]
-
-
-@pre_class
-class Set_Text_Variables(BasePreFlight):  # noqa: F821
-    """ [dict|list(dict)] Defines KiCad 6+ variables.
-        They are expanded using `${VARIABLE}`, and stored in the project file.
-        This preflight replaces `pcb_replace` and `sch_replace` when using KiCad 6.
-        The KiCad project file is modified.
-        Warning: don't use `-s all` or this preflight will be skipped """
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def config(self):
-        f = Set_Text_VariablesOptions()
-        f.set_tree({'variables': self._value})
-        f.config(self)
-        self._value = f.variables
-
-    @classmethod
-    def get_doc(cls):
-        return cls.__doc__, KiCadVariable
+    def __str__(self):
+        return f'{self.type} ({pretty_list([v.name for v in self.set_text_variables])})'
 
     @classmethod
     def get_example(cls):
@@ -102,7 +92,7 @@ class Set_Text_Variables(BasePreFlight):  # noqa: F821
                 "\n      after: '>'")
 
     def apply(self):
-        o = self._value
+        o = self.set_text_variables
         if len(o) == 0:
             return
         if GS.ki5:

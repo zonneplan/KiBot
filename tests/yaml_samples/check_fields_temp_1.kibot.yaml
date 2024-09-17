@@ -1,0 +1,18 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+preflight:
+  check_fields:
+    - field: Temp
+      regex: '(-?\d+).+?(?:-?\d+).*'
+      numeric_condition: '<='
+      numeric_reference: -10
+      severity: warning
+      severity_missing: skip
+    - field: Temp
+      regex: '(?:-?\d+).+?(-?\d+).*'
+      numeric_condition: '>='
+      numeric_reference: 85
+      severity: info
+      severity_no_match: skip

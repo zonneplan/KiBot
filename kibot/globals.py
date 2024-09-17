@@ -68,7 +68,7 @@ class Environment(Optionable):
             """ Also define legacy versions of the variables.
                 Useful when using KiCad 6+ and some libs uses old KiCad 5 names """
             self.extra_os = OSVariables
-            """ [list(dict)] Extra variables to export as OS environment variables.
+            """ [list(dict)=[]] Extra variables to export as OS environment variables.
                 Note that you can also define them using `- NAME: VALUE` """
 
     def define_k5_vars(self, defs):
@@ -120,12 +120,11 @@ class Environment(Optionable):
                 v = expand_env(v, env, os.environ)
                 logger.debug('- {} = "{}"'.format(n, v))
                 os.environ[n] = v
-        if isinstance(self.extra_os, list):
-            for v in self.extra_os:
-                if v.name in os.environ:
-                    logger.warning(W_ENVEXIST+"Overwriting {} environment variable".format(v.name))
-                logger.debug('- {} = "{}"'.format(v.name, v.value))
-                os.environ[v.name] = v.value
+        for v in self.extra_os:
+            if v.name in os.environ:
+                logger.warning(W_ENVEXIST+"Overwriting {} environment variable".format(v.name))
+            logger.debug('- {} = "{}"'.format(v.name, v.value))
+            os.environ[v.name] = v.value
 
 
 class KiCadAlias(Optionable):
@@ -151,13 +150,37 @@ class KiCadAlias(Optionable):
             raise KiPlotConfigurationError("Missing variable name ({})".format(str(self._tree)))
 
 
+class FieldTolerance(Optionable):
+    _default = ['tolerance', 'tol']
+
+
+class FieldVoltage(Optionable):
+    _default = ['voltage', 'v']
+
+
+class FieldPackage(Optionable):
+    _default = ['package', 'pkg']
+
+
+class FieldTempCoef(Optionable):
+    _default = ['temp_coef', 'tmp_coef']
+
+
+class FieldPower(Optionable):
+    _default = ['power', 'pow']
+
+
+class FieldCurrent(Optionable):
+    _default = ['current', 'i']
+
+
 class Globals(FiltersOptions):
     """ Global options """
     def __init__(self):
         super().__init__()
         with document:
             self.aliases_for_3d_models = KiCadAlias
-            """ [list(dict)] List of aliases for the 3D models (KiCad 6).
+            """ [list(dict)=[]] List of aliases for the 3D models (KiCad 6).
                 KiCad stores 3D aliases with the user settings, not locally.
                 This makes impossible to create self contained projects.
                 You can define aliases here to workaround this problem.
@@ -192,9 +215,9 @@ class Globals(FiltersOptions):
             """ Disable the use of environment and text variables as 3D models aliases """
             self.drc_exclusions_workaround = False
             """ KiCad 6 introduced DRC exclusions. They are stored in the project but ignored by the Python API.
-                This is reported as bug number 11562 (https://gitlab.com/kicad/code/kicad/-/issues/11562).
+                This problem affects KiCad 6 and 7.
                 If you really need exclusions enable this option, this will use the GUI version of the DRC (slower).
-                Current KiCad version is 6.0.7 and the bug is still there """
+                Note that this isn't needed for KiCad 8 and the `drc` preflight """
             self.drill_size_increment = 0.05
             """ This is the difference between drill tools in millimeters.
                 A manufacturer with 0.05 of increment has drills for 0.1, 0.15, 0.2, 0.25, etc. """
@@ -281,14 +304,15 @@ class Globals(FiltersOptions):
             self.out_dir = ''
             """ Base output dir, same as command line `--out-dir` """
             self.environment = Environment
-            """ [dict] Used to define environment variables used by KiCad.
+            """ [dict={}] Used to define environment variables used by KiCad.
                 The values defined here are exported as environment variables and has
                 more precedence than KiCad paths defined in the GUI.
                 You can make reference to any OS environment variable using `${VARIABLE}`.
                 The KIPRJMOD is also available for expansion """
             self.field_lcsc_part = ''
             """ The name of the schematic field that contains the part number for the LCSC/JLCPCB distributor.
-                When empty KiBot will try to discover it """
+                When empty KiBot will try to discover it.
+                You can use `_field_lcsc_part` as field name to use it in most places """
             self.allow_blind_buried_vias = True
             """ Allow the use of buried vias. This value is only used for KiCad 7+.
                 For KiCad 5 and 6 use the design rules settings, stored in the project """
@@ -307,14 +331,6 @@ class Globals(FiltersOptions):
                 this flag """
             self.colored_tht_resistors = True
             """ Try to add color bands to the 3D models of KiCad THT resistors """
-            self.field_tolerance = Optionable
-            """ [string|list(string)] Name/s of the field/s used for the tolerance.
-                Used while creating colored resistors and for the value split filter.
-                The default is ['tolerance', 'tol'] """
-            self.default_resistor_tolerance = 20
-            """ When no tolerance is specified we use this value.
-                Note that I know 5% is a common default, but technically speaking 20% is the default.
-                Used while creating colored resistors """
             self.cache_3d_resistors = False
             """ Use a cache for the generated 3D models of colored resistors.
                 Will save time, but you could need to remove the cache if you need to regenerate them """
@@ -326,26 +342,38 @@ class Globals(FiltersOptions):
                 which is used by the KiBot docker images, on other OSs *your mileage may vary* """
             self.use_os_env_for_expand = True
             """ In addition to KiCad text variables also use the OS environment variables when expanding `${VARIABLE}` """
-            self.field_voltage = Optionable
+            self.field_tolerance = FieldTolerance
+            """ [string|list(string)] Name/s of the field/s used for the tolerance.
+                Used while creating colored resistors and for the value split filter.
+                You can use `_field_tolerance` as field name to use it in most places """
+            self.default_resistor_tolerance = 20
+            """ When no tolerance is specified we use this value.
+                Note that I know 5% is a common default, but technically speaking 20% is the default.
+                Used while creating colored resistors """
+            self.field_voltage = FieldVoltage
             """ [string|list(string)] Name/s of the field/s used for the voltage raiting.
                 Used for the value split filter.
-                The default is ['voltage', 'v'] """
-            self.field_package = Optionable
+                You can use `_field_voltage` as field name to use it in most places """
+            self.field_package = FieldPackage
             """ [string|list(string)] Name/s of the field/s used for the package, not footprint.
                 I.e. 0805, SOT-23, etc. Used for the value split filter.
-                The default is ['package', 'pkg'] """
-            self.field_temp_coef = Optionable
+                You can use `_field_package` as field name to use it in most places """
+            self.field_temp_coef = FieldTempCoef
             """ [string|list(string)] Name/s of the field/s used for the temperature coefficient.
                 I.e. X7R, NP0, etc. Used for the value split filter.
-                The default is ['temp_coef', 'tmp_coef'] """
-            self.field_power = Optionable
+                You can use `_field_temp_coef` as field name to use it in most places """
+            self.field_power = FieldPower
             """ [string|list(string)] Name/s of the field/s used for the power raiting.
                 Used for the value split filter.
-                The default is ['power', 'pow'] """
+                You can use `_field_power` as field name to use it in most places """
+            self.field_current = FieldCurrent
+            """ [string|list(string)] Name/s of the field/s used for the current raiting.
+                You can use `_field_current` as field name to use it in most places """
             self.invalidate_pcb_text_cache = 'auto'
             """ [auto,yes,no] Remove any cached text variable in the PCB. This is needed in order to force a text
                 variables update when using `set_text_variables`. You might want to disable it when applying some
                 changes to the PCB and create a new copy to send to somebody without changing the cached values.
+                Note that it will save the PCB with the cache erased.
                 The `auto` value will remove the cached values only when using `set_text_variables` """
             self.git_diff_strategy = 'worktree'
             """ [worktree,stash] When computing a PCB/SCH diff it configures how do we preserve the current
@@ -353,11 +381,14 @@ class Globals(FiltersOptions):
                 The *stash* mechanism uses *git stash push/pop* to save the current changes. Using *worktree*
                 is the preferred mechanism """
             self.layer_defaults = Layer
-            """ [list(dict)] Used to indicate the default suffix and description for the layers.
+            """ [list(dict)=[]] Used to indicate the default suffix and description for the layers.
                 Note that the name for the layer must match exactly, no aliases """
             self.include_components_from_pcb = True
             """ Include components that are only in the PCB, not in the schematic, for filter and variants processing.
                 Note that version 1.6.3 and older ignored them """
+            self.use_pcb_fields = True
+            """ When a PCB is processed also use fields defined in the PCB, for filter and variants processing.
+                This is available for KiCad 8 and newer """
             self.allow_component_ranges = True
             """ Allow using ranges like *R5-R20* in the `show_components` and `highlight` options.
                 If you have references that looks like a range you should disable this option """
@@ -365,7 +396,7 @@ class Globals(FiltersOptions):
             """ String used for *yes*. Currently used by the **update_pcb_characteristics** preflight """
             self.str_no = 'no'
             """ String used for *no*. Currently used by the **update_pcb_characteristics** preflight """
-        self.set_doc('filters', " [list(dict)] KiBot warnings to be ignored ")
+        self.set_doc('filters', " [list(dict)=[]] KiBot warnings to be ignored ")
         self._filter_what = 'KiBot warnings'
         self.filters = FilterOptionsKiBot
         self._unknown_is_error = True
@@ -473,11 +504,11 @@ class Globals(FiltersOptions):
         if GS.ki6 and GS.pcb_file and os.path.isfile(GS.pcb_file):
             self.get_stack_up()
         super().config(parent)
-        self.field_tolerance = Optionable.force_list(self.field_tolerance, default=['tolerance', 'tol'])
-        self.field_voltage = Optionable.force_list(self.field_voltage, default=['voltage', 'v'])
-        self.field_package = Optionable.force_list(self.field_package, default=['package', 'pkg'])
-        self.field_temp_coef = Optionable.force_list(self.field_temp_coef, default=['temp_coef', 'tmp_coef'])
-        self.field_power = Optionable.force_list(self.field_power, default=['power', 'pow'])
+        self.field_tolerance = Optionable.force_list(self.field_tolerance)
+        self.field_voltage = Optionable.force_list(self.field_voltage)
+        self.field_package = Optionable.force_list(self.field_package)
+        self.field_temp_coef = Optionable.force_list(self.field_temp_coef)
+        self.field_power = Optionable.force_list(self.field_power)
         # Transfer options to the GS globals
         for option in filter(lambda x: x[0] != '_', self.__dict__.keys()):
             gl = 'global_'+option
@@ -506,9 +537,9 @@ class Globals(FiltersOptions):
                 GS.global_silk_screen_color_top = GS.global_silk_screen_color
             if not GS.global_silk_screen_color_bottom:
                 GS.global_silk_screen_color_bottom = GS.global_silk_screen_color
-        set_filters(self.unparsed)
+        set_filters(self.filters)
         # 3D models aliases
-        if isinstance(self.aliases_for_3d_models, list):
+        if self.aliases_for_3d_models:
             KiConf.init(GS.pcb_file or GS.sch_file)
             logger.debug('Adding 3D models aliases from global config')
             for alias in self.aliases_for_3d_models:

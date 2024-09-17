@@ -61,3 +61,19 @@ outputs:
     dir: BoM
     options:
       variant: 'bla bla'
+
+  - name: 'report'
+    comment: "Report"
+    type: report
+
+  - name: 'report_v1'
+    comment: "Report for variant t1_v1"
+    type: report
+    options:
+      variant: t1_v1
+
+  - name: 'report_v2'
+    comment: "Report for variant t1_v2"
+    type: report
+    options:
+      variant: t1_v2

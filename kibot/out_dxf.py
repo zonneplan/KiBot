@@ -60,4 +60,4 @@ class DXF(AnyLayer):
         self._category = 'PCB/export'
         with document:
             self.options = DXFOptions
-            """ *[dict] Options for the `dxf` output """
+            """ *[dict={}] Options for the `dxf` output """

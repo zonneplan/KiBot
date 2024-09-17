@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -38,26 +38,20 @@ class SCH_ReplaceOptions(Base_ReplaceOptions):
 
 @pre_class
 class SCH_Replace(Base_Replace):  # noqa: F821
-    """ [dict] Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
+    """ SCH Replace (**Deprecated**)
+        Replaces tags in the schematic. I.e. to insert the git hash or last revision date.
         This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
         This preflight modifies the schematics. Even when a back-up is done use it carefully """
     _context = 'SCH'
 
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def config(self):
-        o = SCH_ReplaceOptions()
-        o.set_tree(self._value)
-        o.config(self)
-        self._value = o
-
-    @classmethod
-    def get_doc(cls):
-        return cls.__doc__, SCH_ReplaceOptions
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.sch_replace = SCH_ReplaceOptions
+            """ [dict={}] Options for the `sch_replace` preflight """
 
     def apply(self):
-        o = self._value
+        o = self.sch_replace
         if o.date_command:
             # Convert it into another replacement
             t = TagReplaceSCH()
@@ -75,6 +69,6 @@ class SCH_Replace(Base_Replace):  # noqa: F821
         load_sch()
         os.environ['KIBOT_TOP_SCH_NAME'] = GS.sch_file
         for file in GS.sch.get_files():
-            self.replace(file)
+            self.replace(file, o)
         # Force the schematic reload
         GS.sch = None

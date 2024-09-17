@@ -116,9 +116,6 @@ class PcbDrawStyle(Optionable):
 class PcbDrawRemap(Optionable):
     """ This class accepts a free form dict.
         No validation is done. """
-    def __init__(self):
-        super().__init__()
-
     def config(self, parent):
         pass
 
@@ -136,11 +133,16 @@ class PcbDrawResistorRemap(Optionable):
             """ *Value to use for `ref` """
             self.value = None
             """ {val} """
+        self._ref_example = 'R1'
+        self._val_example = '10k'
 
     def config(self, parent):
         super().config(parent)
         if not self.ref or not self.val:
             raise KiPlotConfigurationError("The resistors remapping must specify a `ref` and a `val`")
+
+    def __str__(self):
+        return f'{self.ref} -> {self.val}'
 
 
 class PcbDrawRemapComponents(Optionable):
@@ -160,27 +162,37 @@ class PcbDrawRemapComponents(Optionable):
             """ *Component to use (from `lib`) """
             self.component = None
             """ {comp} """
+        self._ref_example = 'D1'
+        self._lib_example = 'LEDs'
+        self._comp_example = 'LED-5MM_green'
 
     def config(self, parent):
         super().config(parent)
         if not self.ref or not self.lib or not self.comp:
             raise KiPlotConfigurationError("The component remapping must specify a `ref`, a `lib` and a `comp`")
 
+    def __str__(self):
+        return f'{self.ref} -> {self.lib}:{self.comp}'
+
+
+class PcbDrawLibs(Optionable):
+    _default = ['KiCAD-base']
+
 
 class PcbDrawOptions(VariantOptions):
     def __init__(self):
         with document:
             self.style = PcbDrawStyle
-            """ *[string|dict] PCB style (colors). An internal name, the name of a JSON file or the style options """
-            self.libs = Optionable
-            """ [list(string)=[]] List of libraries """
+            """ *[string|dict={}] PCB style (colors). An internal name, the name of a JSON file or the style options """
+            self.libs = PcbDrawLibs
+            """ [list(string)] List of libraries """
             self.placeholder = False
             """ Show placeholder for missing components """
             self.remap = PcbDrawRemap
-            """ [dict|None] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+            """ [dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
                 Use `remap_components` instead """
             self.remap_components = PcbDrawRemapComponents
-            """ [list(dict)] Replacements for PCB references using specified components.
+            """ [list(dict)=[]] Replacements for PCB references using specified components.
                 Replaces `remap` with type check """
             self.no_drillholes = False
             """ Do not make holes transparent """
@@ -192,7 +204,7 @@ class PcbDrawOptions(VariantOptions):
             """ [list(string)=[]] List of components to highlight. Filter expansion is also allowed here,
                 see `show_components` """
             self.show_components = Optionable
-            """ *[list(string)|string=none] [none,all] List of components to draw, can be also a string for none or all.
+            """ *[list(string)|string='none'] [none,all,*] List of components to draw, can be also a string for none or all.
                 The default is none.
                 There two ways of using this option, please consult the `add_to_variant` option.
                 You can use `_kf(FILTER)` as an element in the list to get all the components that pass the filter.
@@ -218,7 +230,7 @@ class PcbDrawOptions(VariantOptions):
             self.output = GS.def_global_output
             """ *Name for the generated file """
             self.margin = PcbMargin
-            """ [number|dict] Margin around the generated image [mm].
+            """ [number|dict=0] Margin around the generated image [mm].
                 Using a number the margin is the same in the four directions """
             self.outline_width = 0.15
             """ [0,10] Width of the trace to draw the PCB border [mm].
@@ -226,9 +238,9 @@ class PcbDrawOptions(VariantOptions):
             self.show_solderpaste = True
             """ Show the solder paste layers """
             self.resistor_remap = PcbDrawResistorRemap
-            """ [list(dict)] List of resistors to be remapped. You can change the value of the resistors here """
+            """ [list(dict)=[]] List of resistors to be remapped. You can change the value of the resistors here """
             self.resistor_flip = Optionable
-            """ [string|list(string)=''] List of resistors to flip its bands """
+            """ [string|list(string)=''] {comma_sep} List of resistors to flip its bands """
             self.size_detection = 'kicad_edge'
             """ [kicad_edge,kicad_all,svg_paths] Method used to detect the size of the resulting image.
                 The `kicad_edge` method uses the size of the board as reported by KiCad,
@@ -251,37 +263,22 @@ class PcbDrawOptions(VariantOptions):
             if isinstance(bot, bool):
                 self.bottom = bot
         super().config(parent)
-        # Libs
-        if isinstance(self.libs, type):
-            self.libs = ['KiCAD-base']
-        # else:
-        #    self.libs = ','.join(self.libs)
         # V-CUTS layer
         self._vcuts_layer = Layer.solve(self.vcuts_layer)[0]._id if self.vcuts else 41
         # Highlight
-        if isinstance(self.highlight, type):
-            self.highlight = None
-        else:
-            self.highlight = self.solve_kf_filters(self.highlight)
+        self._highlight = self.solve_kf_filters(self.highlight)
         # Margin
-        self.margin = PcbMargin.solve(self.margin)
+        self._margin, self.margin = PcbMargin.solve(self.margin)
         # Filter
-        if isinstance(self.show_components, type):
-            # Default option is 'none'
-            self.show_components = None
-        elif isinstance(self.show_components, str):
-            if self.show_components == 'none':
+        if len(self.show_components) == 1 and self.show_components[0] in {'all', 'none'}:
+            if self.show_components[0] == 'none':
                 self.show_components = None
-            else:  # self.show_components == 'all'
+            else:  # if self.show_components[0] == 'all':
                 # Empty list: means we don't filter
                 self.show_components = []
         else:  # A list
             self.show_components = self.solve_kf_filters(self.show_components)
-        # Resistors remap/flip
-        if isinstance(self.resistor_remap, type):
-            self.resistor_remap = []
-        self.resistor_flip = Optionable.force_list(self.resistor_flip)
-        # Remap
+        # Resistors Remap
         self._remap = {}
         if isinstance(self.remap, PcbDrawRemap):
             for ref, v in self.remap._tree.items():
@@ -292,17 +289,15 @@ class PcbDrawOptions(VariantOptions):
                     self._remap[ref] = tuple(lib_comp)
                 else:
                     raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))
-        if isinstance(self.remap_components, list):
-            for mapping in self.remap_components:
-                self._remap[mapping.ref] = (mapping.lib, mapping.comp)
+        elif isinstance(self.remap, str) and self.remap != 'None':
+            raise KiPlotConfigurationError(f"Unknown `{self.remap}` option")
+        for mapping in self.remap_components:
+            self._remap[mapping.ref] = (mapping.lib, mapping.comp)
         # Style
-        if isinstance(self.style, type):
-            # Apply the global defaults
-            style = PcbDrawStyle()
-            style.config(self)
-            self.style = style.to_dict()
-        elif isinstance(self.style, PcbDrawStyle):
-            self.style = self.style.to_dict()
+        if isinstance(self.style, PcbDrawStyle):
+            self._style = self.style.to_dict()
+        else:
+            self._style = self.style
         self._expand_id = 'bottom' if self.bottom else 'top'
         self._expand_ext = self.format
 
@@ -412,8 +407,8 @@ class PcbDrawOptions(VariantOptions):
         else:
             logger.debug('Using all components')
 
-        if self.highlight is not None:
-            highlight_set = set(self.expand_filtered_components(self.highlight))
+        if self._highlight:
+            highlight_set = set(self.expand_filtered_components(self._highlight))
             plot_components.highlight = lambda ref: ref in highlight_set
         return plot_components
 
@@ -447,13 +442,13 @@ class PcbDrawOptions(VariantOptions):
             plotter.libs = self.libs
             plotter.render_back = self.bottom
             plotter.mirror = self.mirror
-            plotter.margin = self.margin
+            plotter.margin = self._margin
             plotter.svg_precision = self.svg_precision
-            if self.style:
-                if isinstance(self.style, str):
-                    plotter.resolve_style(self.style)
+            if self._style:
+                if isinstance(self._style, str):
+                    plotter.resolve_style(self._style)
                 else:
-                    plotter.style = self.style
+                    plotter.style = self._style
             plotter.plot_plan = [PlotSubstrate(drill_holes=not self.no_drillholes, outline_width=mm2ki(self.outline_width))]
             if self.show_solderpaste:
                 plotter.plot_plan.append(PlotPaste())
@@ -535,7 +530,7 @@ class PcbDraw(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PcbDrawOptions
-            """ *[dict] Options for the `pcbdraw` output """
+            """ *[dict={}] Options for the `pcbdraw` output """
         self._category = 'PCB/docs'
 
     def get_dependencies(self):

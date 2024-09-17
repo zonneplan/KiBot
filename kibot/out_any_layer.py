@@ -11,7 +11,7 @@ from pcbnew import (GERBER_JOBFILE_WRITER, PLOT_CONTROLLER, IsCopperLayer, F_Cu,
                     PLOT_FORMAT_GERBER, PLOT_FORMAT_POST, PLOT_FORMAT_DXF, PLOT_FORMAT_PDF, PLOT_FORMAT_SVG, LSEQ, LSET)
 from .optionable import Optionable
 from .out_base import BaseOutput, VariantOptions
-from .error import PlotError, KiPlotConfigurationError
+from .error import PlotError
 from .layer import Layer
 from .gs import GS
 from .misc import W_NOLAYER, KICAD_VERSION_7_0_1, MISSING_TOOL, AUTO_SCALE
@@ -38,6 +38,9 @@ class CustomReport(Optionable):
             self.content = ''
             """ Content for the report. Use ``${basename}`` for the project name without extension.
                 Use ``${filename(LAYER)}`` for the file corresponding to LAYER """
+
+    def __str__(self):
+        return self.output
 
 
 class AnyLayerOptions(VariantOptions):
@@ -74,7 +77,7 @@ class AnyLayerOptions(VariantOptions):
             self.edge_cut_extension = ''
             """ Used to configure the edge cuts layer extension for Protel mode. Include the dot """
             self.custom_reports = CustomReport
-            """ [list(dict)] A list of customized reports for the manufacturer """
+            """ [list(dict)=[]] A list of customized reports for the manufacturer """
             self.sketch_pads_on_fab_layers = False
             r""" Draw only the outline of the pads on the \*.Fab layers (KiCad 6+) """
             self.sketch_pad_line_width = 0.1
@@ -89,8 +92,6 @@ class AnyLayerOptions(VariantOptions):
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.custom_reports, type):
-            self.custom_reports = []
         self.sketch_pad_line_width = GS.from_mm(self.sketch_pad_line_width)
 
     def _configure_plot_ctrl(self, po, output_dir):
@@ -298,14 +299,8 @@ class AnyLayer(BaseOutput):
         super().__init__()
         with document:
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
-                List of PCB layers to plot """
-
-    def config(self, parent):
-        super().config(parent)
-        # We need layers
-        if isinstance(self.layers, type):
-            raise KiPlotConfigurationError("Missing `layers` list")
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
+                of PCB layers to plot """
 
     def get_targets(self, out_dir):
         return self.options.get_targets(out_dir, self.layers)

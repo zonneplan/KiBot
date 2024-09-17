@@ -135,6 +135,8 @@ def get_prefix_simple(prefix):
 
 
 def get_prefix(val, prefix):
+    if val == 0:
+        return 0, 0
     pow = get_prefix_simple(prefix)
     # Try to normalize it
     while val >= 1000.0 and pow < MAX_POW_PREFIX:

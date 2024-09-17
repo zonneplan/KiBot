@@ -19,7 +19,7 @@ outputs:
       drill_marks: small
       mirror_plot: false
       negative_plot: false
-      line_width: 0.01
+      line_width: 0.02
     layers:
       - layer: F.Cu
         suffix: F_Cu
@@ -36,7 +36,7 @@ outputs:
       drill_marks: full
       mirror_plot: true
       negative_plot: true
-      line_width: 0.01
+      line_width: 0.03
     layers:
       - layer: B.Cu
         suffix: B_Cu

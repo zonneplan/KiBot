@@ -6,6 +6,7 @@
 import os
 import re
 import requests
+from .optionable import Optionable
 from .out_base import VariantOptions
 from .fil_base import DummyFilter
 from .error import KiPlotConfigurationError
@@ -14,6 +15,9 @@ from .gs import GS
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 logger = log.get_logger()
+SUBDIRS = {'C': 'Capacitors', 'R': 'Resistors', 'L': 'Inductors', 'U': 'Integrated_Circuits', 'J': 'Connectors',
+           'D': 'Diodes', 'Q': 'Transistors', 'Y': 'Crystals', 'BZ': 'Buzzers', 'FL': 'Filters', 'JP': 'Jumpers',
+           'M': 'Motors', 'K': 'Relays', 'HS': 'Heat_Sinks', 'F': 'Fuses', 'AE': 'Antennas'}
 
 
 def is_url(ds):
@@ -31,6 +35,12 @@ class Download_Datasheets_Options(VariantOptions):
             self.output = '${VALUE}.pdf'
             """ Name used for the downloaded datasheet.
                 `${FIELD}` will be replaced by the FIELD content """
+            self.classify = False
+            """ Use the reference to classify the components in different sub-dirs.
+                In this way C7 will go into a Capacitors sub-dir, R3 into Resistors, etc """
+            self.classify_extra = Optionable
+            """ [string_dict={}] Extra reference associations used to classify the references.
+                They are pairs `Reference prefix` -> `Sub-dir` """
             self.dnf = False
             """ Include the DNF components """
             self.repeated = False
@@ -55,6 +65,10 @@ class Download_Datasheets_Options(VariantOptions):
         return None
 
     def download(self, c, ds, dir, name, known):
+        if self.classify:
+            subdir = self.classify_extra.get(c.ref_prefix, SUBDIRS.get(c.ref_prefix, 'Miscellaneous'))
+            os.makedirs(os.path.join(dir, subdir), exist_ok=True)
+            name = os.path.join(subdir, name)
         dest = os.path.join(dir, name)
         logger.debug('To download: {} -> {}'.format(ds, dest))
         if name in self._downloaded:
@@ -131,7 +145,7 @@ class Download_Datasheets_Options(VariantOptions):
             if ds and is_url(ds):
                 known = self._urls.get(ds, None)
                 if known is None or self.repeated:
-                    name = self.out_name(c)
+                    name = self.out_name(c)  # Here to simplify the tests
                     name = self.download(c, ds, output_dir, name, known)
                     if known is None:
                         self._urls[ds] = name
@@ -162,7 +176,7 @@ class Download_Datasheets(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = Download_Datasheets_Options
-            """ *[dict] Options for the `download_datasheets` output """
+            """ *[dict={}] Options for the `download_datasheets` output """
         self._sch_related = True
         self._category = 'Schematic/docs'
 

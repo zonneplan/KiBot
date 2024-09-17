@@ -385,13 +385,15 @@ def test_help_output_plugin_1(test_dir, monkeypatch):
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
-        ctx.run(extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out(r'- Undocumented')
-    assert ctx.search_out('Description: No description')
-    assert ctx.search_out('Type: .?test.?')
-    assert ctx.search_out('nothing')
-    assert ctx.search_out('chocolate')
-    assert ctx.search_out('`not_documented`: Undocumented')
+        ctx.run(ret_val=1, extra=['--help-output', 'test'], no_verbose=True, no_out_dir=True, no_yaml_file=True,
+                no_board_file=True)
+        assert ctx.search_err(r'Undocumented option: .not_documented')
+#     assert ctx.search_out(r'- Undocumented')
+#     assert ctx.search_out('Description: No description')
+#     assert ctx.search_out('Type: .?test.?')
+#     assert ctx.search_out('nothing')
+#     assert ctx.search_out('chocolate')
+#     assert ctx.search_out('`not_documented`: Undocumented')
     ctx.clean_up()
 
 
@@ -416,7 +418,7 @@ def test_help_output_plugin_3(test_dir, monkeypatch):
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
         ctx.run(extra=['--help-preflights'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out(r'- \*\*pre_test\*\*: Undocumented')
+    assert ctx.search_out(['- Pre Test', 'A preflight just for testing purposes', r'- \*\*`pre_test`\*\*'])
     ctx.clean_up()
 
 
@@ -426,8 +428,9 @@ def test_help_output_plugin_4(test_dir, monkeypatch):
     with monkeypatch.context() as m:
         m.setenv("HOME", os.path.join(ctx.get_board_dir(), '../..'))
         logging.debug('HOME='+os.environ['HOME'])
-        ctx.run(extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
-    assert ctx.search_out(r'- \*\*filter_test\*\*: Undocumented')
+        ctx.run(ret_val=1, extra=['--help-filters'], no_verbose=True, no_out_dir=True, no_yaml_file=True, no_board_file=True)
+    assert ctx.search_err(r'Undocumented option: .foo')
+    # assert ctx.search_out(r'- \*\*filter_test\*\*: Undocumented')
     ctx.clean_up()
 
 
@@ -1983,6 +1986,7 @@ def test_present_3(test_dir):
     ctx.expect_out_file_d(['boards/light_control-back.png', 'boards/light_control-front.png',
                            'boards/light_control-gerbers.png', 'boards/light_control.kicad_pcb',
                            'css/styles.css', 'index.html'])
+    ctx.search_err('No project description')
     ctx.clean_up(keep_project=True)
 
 
@@ -2044,4 +2048,13 @@ def test_only_pcb_bad_ref(test_dir):
     ctx = context.TestContext(test_dir, prj, 'simple_position_dummy_filter', '')
     ctx.run()
     ctx.search_err('Not including component')
+    ctx.clean_up()
+
+
+def test_report_variant_t1(test_dir):
+    prj = 'kibom-variante'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_var_t1_csv', '')
+    ctx.run()
+    ctx.search_in_file(prj+'-report.txt', [r'|\s+Total\s+|\s+40\s+|\s+52'])
+    ctx.search_in_file(prj+'-report_(V1).txt', [r'|\s+Total\s+|\s+4\s+|\s+5\.'])
     ctx.clean_up()

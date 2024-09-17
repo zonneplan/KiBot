@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -34,26 +34,20 @@ class PCB_ReplaceOptions(Base_ReplaceOptions):
 
 @pre_class
 class PCB_Replace(Base_Replace):  # noqa: F821
-    """ [dict] Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
+    """ PCB Replace (**Deprecated**)
+        Replaces tags in the PCB. I.e. to insert the git hash or last revision date.
         This is useful for KiCad 5, use `set_text_variables` when using KiCad 6.
         This preflight modifies the PCB. Even when a back-up is done use it carefully """
     _context = 'PCB'
 
-    def __init__(self, name, value):
-        super().__init__(name, value)
-
-    def config(self):
-        o = PCB_ReplaceOptions()
-        o.set_tree(self._value)
-        o.config(self)
-        self._value = o
-
-    @classmethod
-    def get_doc(cls):
-        return cls.__doc__, PCB_ReplaceOptions
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.pcb_replace = PCB_ReplaceOptions
+            """ [dict={}] Options for the `pcb_replace` preflight """
 
     def apply(self):
-        o = self._value
+        o = self.pcb_replace
         if o.date_command:
             # Convert it into another replacement
             t = TagReplacePCB()
@@ -63,6 +57,6 @@ class PCB_Replace(Base_Replace):  # noqa: F821
             t.after = '")'
             t._relax_check = True
             o.replace_tags.append(t)
-        self.replace(GS.pcb_file)
+        self.replace(GS.pcb_file, o)
         # Force the schematic reload
         GS.board = None

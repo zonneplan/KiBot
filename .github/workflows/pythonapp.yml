@@ -1,4 +1,4 @@
-# This workflow will install Python dependencies, run tests and lint with a single version of Python.
+# This workflow will install Python dependencies, run tests and lint with a single version of Python
 # For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
 
 name: Regression tests
@@ -51,13 +51,19 @@ jobs:
         rm -f tests/.local
         ##### Experimental stuff:
         ## Remove KiAuto
-        dpkg --remove --force-all kiauto
+        #dpkg --remove --force-all kiauto
         ## Install KiAuto@master
-        curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip
-        unzip pp.zip
-        pip3 install ${PIP_OPS} KiAuto-master/
+        #curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip
+        #unzip pp.zip
+        #pip3 install ${PIP_OPS} KiAuto-master/
         ## Clean the downloaded stuff
-        rm -rf KiAuto-master/ pp.zip
+        #rm -rf KiAuto-master/ pp.zip
+        ## Install KiDiff@master
+        #curl https://codeload.github.com/INTI-CMNB/KiDiff/zip/refs/heads/master --output pp.zip
+        #unzip pp.zip
+        #pip3 install ${PIP_OPS} KiDiff-master/
+        ## Clean the downloaded stuff
+        #rm -rf KiDiff-master/ pp.zip
         ## Check what we got
         #echo $PATH
         #ls -la /usr/bin/*_do || true
@@ -86,6 +92,7 @@ jobs:
       with:
         name: Test_Coverage_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         path: .coverage.*
+        include-hidden-files: true
     - name: Collect coverage ${{ matrix.ki_release }}
       run: |
         python3-coverage combine
@@ -100,6 +107,7 @@ jobs:
         name: Test_Output_${{ matrix.ki_release }}_${{ matrix.w_tests }}
         # Important! empty directories are skipped!!!!
         path: output
+        include-hidden-files: true
     - name: Upload Coverage
       # Don't mix stable coverage with development coverage
       # if: ${{ (github.ref == 'refs/heads/dev') && (matrix.ki_release != 'ki8') }}
@@ -183,6 +191,7 @@ jobs:
       with:
         name: Test_Coverage_Independent
         path: .coverage.*
+        include-hidden-files: true
     - name: Collect coverage independent
       run: |
         python3-coverage combine
@@ -195,6 +204,7 @@ jobs:
         name: Test_Output_Independent
         # Important! empty directories are skipped!!!!
         path: output
+        include-hidden-files: true
     - name: Upload Coverage
       # Don't mix stable coverage with development coverage
       # if: github.ref == 'refs/heads/dev'
@@ -282,6 +292,7 @@ jobs:
       with:
         name: Test_Coverage_combined
         path: htmlcov
+        include-hidden-files: true
 
   coveralls:
     name: Finish Coveralls

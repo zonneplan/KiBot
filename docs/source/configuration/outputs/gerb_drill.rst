@@ -16,59 +16,33 @@ Category: **PCB/fabrication/drill**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - gerb_drill; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - gerb_drill; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - gerb_drill; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - gerb_drill; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - gerb_drill; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - gerb_drill; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - gerb_drill; options>` [dict] Options for the `gerb_drill` output.
-
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: output - gerb_drill - options; output>` [string='%f-%i%I%v.%x'] name for the drill file, KiCad defaults if empty (%i='PTH_drill'). Affected by global options.
-      -  ``dnf_filter`` :index:`: <pair: output - gerb_drill - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``map`` :index:`: <pair: output - gerb_drill - options; map>` [dict|string] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
-         Not generated unless a format is specified.
-
-         -  Valid keys:
-
-            -  **output** :index:`: <pair: output - gerb_drill - options - map; output>` [string='%f-%i%I%v.%x'] Name for the map file, KiCad defaults if empty (%i='PTH_drill_map'). Affected by global options.
-            -  ``type`` :index:`: <pair: output - gerb_drill - options - map; type>` [string='pdf'] [hpgl,ps,gerber,dxf,svg,pdf] Format for a graphical drill map.
-
-      -  ``npth_id`` :index:`: <pair: output - gerb_drill - options; npth_id>` [string] Force this replacement for %i when generating NPTH files.
-      -  ``pre_transform`` :index:`: <pair: output - gerb_drill - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``pth_id`` :index:`: <pair: output - gerb_drill - options; pth_id>` [string] Force this replacement for %i when generating PTH and unified files.
-      -  ``report`` :index:`: <pair: output - gerb_drill - options; report>` [dict|string] Name of the drill report. Not generated unless a name is specified.
-
-         -  Valid keys:
-
-            -  ``filename`` :index:`: <pair: output - gerb_drill - options - report; filename>` [string=''] Name of the drill report. Not generated unless a name is specified.
-               (%i='drill_report' %x='txt').
-
-      -  ``use_aux_axis_as_origin`` :index:`: <pair: output - gerb_drill - options; use_aux_axis_as_origin>` [boolean=false] Use the auxiliary axis as origin for coordinates.
-      -  ``variant`` :index:`: <pair: output - gerb_drill - options; variant>` [string=''] Board variant to apply.
-         Used for sub-PCBs.
-
+-  **options** :index:`: <pair: output - gerb_drill; options>`  [:ref:`Gerb_DrillOptions parameters <Gerb_DrillOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `gerb_drill` output.
 -  **type** :index:`: <pair: output - gerb_drill; type>` 'gerb_drill'
--  ``category`` :index:`: <pair: output - gerb_drill; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - gerb_drill; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - gerb_drill; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - gerb_drill; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - gerb_drill; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - gerb_drill; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - gerb_drill; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - gerb_drill; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - gerb_drill; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - gerb_drill; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - gerb_drill; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - gerb_drill; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - gerb_drill; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - gerb_drill; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+.. toctree::
+   :caption: Used dicts
+
+   Gerb_DrillOptions

@@ -1,0 +1,11 @@
+# Example KiBot config file
+kibot:
+  version: 1
+
+outputs:
+  - name: 'report_testpoints'
+    comment: "Report for the testpoints"
+    type: report
+    output_id: _testpoints
+    options:
+      template: testpoints

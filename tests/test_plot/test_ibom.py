@@ -69,16 +69,17 @@ def test_ibom_fail(test_dir):
 
 
 def test_ibom_all_ops(test_dir):
-    prj = 'bom'
+    prj = 'bom_adhes'
     ctx = context.TestContext(test_dir, prj, 'ibom_all_ops', BOM_DIR, add_cfg_kmajor=True)
     ctx.run()
-    ctx.expect_out_file_d(IBOM_OUT)
+    out_file = IBOM_OUT.replace('bom-', prj+'-')
+    ctx.expect_out_file_d(out_file)
     # These options are transferred as defaults:
-    ctx.search_in_file_d(IBOM_OUT, [r'"dark_mode": true',
+    ctx.search_in_file_d(out_file, [r'"dark_mode": true',
                                     r'"show_pads": false',
                                     r'"show_fabrication": true',
                                     r'"show_silkscreen": false',
-                                    r'"highlight_pin1": "all"',
+                                    r'"highlight_pin1": "selected"',
                                     r'"redraw_on_drag": false',
                                     r'"board_rotation": 18.0',  # 90/5
                                     r'"offset_back_rotation": true',

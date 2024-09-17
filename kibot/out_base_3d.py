@@ -444,7 +444,7 @@ class Base3DOptions(VariantOptions):
         self.source_models.add(replace)
         old_name = m3d.m_Filename
         new_name = self.wrl_name(replace, force_wrl) if not is_copy_mode else rename_function(rename_data, replace)
-        self.undo_3d_models[new_name] = old_name
+        self._undo_3d_models[new_name] = old_name
         m3d.m_Filename = new_name
         self.models_replaced = True
 
@@ -452,7 +452,7 @@ class Base3DOptions(VariantOptions):
         """ Check we have the 3D models.
             Inform missing models.
             Try to download the missing models
-            Stores changes in self.undo_3d_models_rep """
+            Stores changes in self._undo_3d_models_rep """
         self.models_replaced = False
         # Load KiCad configuration so we can expand the 3D models path
         KiConf.init(GS.pcb_file)
@@ -586,7 +586,7 @@ class Base3DOptionsWithHL(Base3DOptions):
     def __init__(self):
         with document:
             self.show_components = Optionable
-            """ *[list(string)|string=all] [none,all] List of components to draw, can be also a string for `none` or `all`.
+            """ *[list(string)|string='all'] [none,all,*] List of components to draw, can be also a string for `none` or `all`.
                 Ranges like *R5-R10* are supported.
                 Unlike the `pcbdraw` output, the default is `all` """
             self.highlight = Optionable
@@ -603,26 +603,21 @@ class Base3DOptionsWithHL(Base3DOptions):
         # List of components
         self._show_all_components = False
         self._show_components_raw = self.show_components
-        if isinstance(self.show_components, str):
-            if self.show_components == 'all':
+        if len(self.show_components) == 1 and self.show_components[0] in {'all', 'none'}:
+            if self.show_components[0] == 'all':
                 self._show_all_components = True
-            self.show_components = []
-        elif isinstance(self.show_components, type):
-            # Default is all
-            self._show_all_components = True
+            else:  # if self.show_components[0] == 'none':
+                self.show_components = []
         else:  # a list
             self.show_components = self.solve_kf_filters(self.show_components)
         # Highlight
-        if isinstance(self.highlight, type):
-            self.highlight = None
-        else:
-            self.highlight = self.solve_kf_filters(self.highlight)
+        self._highlight = self.solve_kf_filters(self.highlight)
 
     def copy_options(self, ref):
         """ Copy its options from another similar object """
         super().copy_options(ref)
         self.show_components = ref.show_components
-        self.highlight = ref.highlight
+        self._highlight = ref._highlight
         self.highlight_padding = ref.highlight_padding
         self.highlight_on_top = ref.highlight_on_top
         self._filters_to_expand = ref._filters_to_expand

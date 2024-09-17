@@ -6,8 +6,9 @@
 from .error import SchError
 from ..error import KiPlotConfigurationError
 from .sexpdata import Symbol, Sep, SExpData, load
-TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
-               'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
+# Sections we must separate to make it readable
+# TO_SEPARATE = {'kicad_pcb', 'general', 'title_block', 'layers', 'setup', 'pcbplotparams', 'net_class', 'module',
+#                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
 
 
 class Point(object):
@@ -25,7 +26,7 @@ def make_separated(sexp):
     """ Add separators to make the file more readable """
     if not isinstance(sexp, list):
         return sexp
-    if not isinstance(sexp[0], Symbol) or sexp[0].value() not in TO_SEPARATE:
+    if not isinstance(sexp[0], Symbol):  # or sexp[0].value() not in TO_SEPARATE: sometimes produces huge lines
         return sexp
     separated = []
     for s in sexp:

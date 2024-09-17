@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # The algorithm is from KiCost project (https://github.com/xesscorp/KiCost)
 # Description: Implements the KiCost variants mechanism.
@@ -9,10 +9,15 @@ import re
 from .gs import GS
 from .misc import IFILT_KICOST_RENAME, IFILT_KICOST_DNP
 from .fil_base import BaseFilter
+from .optionable import Optionable
 from .macros import macros, document, variant_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+
+
+class KiCostPreTransform(Optionable):
+    _default = ['_var_rename_kicost', IFILT_KICOST_RENAME]
 
 
 @variant_class
@@ -35,6 +40,9 @@ class KiCost(BaseVariant):  # noqa: F821
             """ Valid separators for variants in the variant field.
                 Each character is a valid separator.
                 Only supported internally, don't use it if you plan to use KiCost """
+        self.fix_doc('pre_transform')
+        self.pre_transform = KiCostPreTransform
+        self.fix_doc('dnf_filter', IFILT_KICOST_DNP)
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """
@@ -42,10 +50,9 @@ class KiCost(BaseVariant):  # noqa: F821
 
     def config(self, parent):
         super().config(parent)
-        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform',
-                                                     ['_var_rename_kicost', IFILT_KICOST_RENAME], is_transform=True)
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter', IFILT_KICOST_DNP)
+        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
         if not self.separators:
             self.separators = ' '

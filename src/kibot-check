@@ -385,8 +385,8 @@ deps = '{\
                 "output": "kibom",\
                 "version": [\
                     1,\
-                    8,\
-                    0\
+                    9,\
+                    1\
                 ]\
             }\
         ],\
@@ -404,7 +404,7 @@ deps = '{\
         "extra_arch": null,\
         "extra_deb": null,\
         "help_option": "--version",\
-        "importance": 150004,\
+        "importance": 160004,\
         "in_debian": false,\
         "is_kicad_plugin": false,\
         "is_python": false,\
@@ -589,6 +589,17 @@ deps = '{\
                     2,\
                     1,\
                     0\
+                ]\
+            },\
+            {\
+                "desc": null,\
+                "mandatory": true,\
+                "max_version": null,\
+                "output": "convert_pcb",\
+                "version": [\
+                    2,\
+                    3,\
+                    2\
                 ]\
             },\
             {\
@@ -1384,8 +1395,8 @@ def check_tool_binary_python(name):
 
 
 def check_tool_binary_local(name):
-    home = os.environ.get('HOME') or os.environ.get('username')
-    if home is None:
+    home = os.path.expanduser('~')
+    if not home:
         return None
     home_bin = os.path.join(home, '.local', 'share', 'kibot', 'bin')
     full_name = os.path.join(home_bin, name)
@@ -1691,7 +1702,7 @@ if args.show_paths:
     print('  '+os.__file__)
     print('  '+str(which('python3')))
 # KiCad
-home = None
+home = os.path.expanduser('~')
 try:
     import pcbnew
     kicad_ok = True
@@ -1714,8 +1725,7 @@ try:
         kicad_plugins_dirs.append(os.path.join(kicad_conf_path, 'scripting'))
         kicad_plugins_dirs.append(os.path.join(kicad_conf_path, 'scripting', 'plugins'))
     # ~/.kicad_plugins and ~/.kicad
-    if 'HOME' in os.environ:
-        home = os.environ['HOME']
+    if home:
         kicad_plugins_dirs.append(os.path.join(home, '.kicad_plugins'))
         kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting'))
         kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting', 'plugins'))
@@ -1754,7 +1764,10 @@ if kicad_ok:
             if kicad_version[0] >= 6 and home:
                 # KiCad 6.0 PCM
                 ver_dir = str(kicad_version[0])+'.'+str(kicad_version[1])
-                local_share = os.path.join(home, '.local', 'share', 'kicad', ver_dir)
+                if system == 'Linux':
+                    local_share = os.path.join(home, '.local', 'share', 'kicad', ver_dir)
+                else:
+                    local_share = os.path.join(home, 'Documents', 'KiCad', ver_dir)
                 kicad_plugins_dirs.append(os.path.join(local_share, 'scripting'))
                 kicad_plugins_dirs.append(os.path.join(local_share, 'scripting', 'plugins'))
                 kicad_plugins_dirs.append(os.path.join(local_share, '3rdparty', 'plugins'))  # KiCad 6.0 PCM
@@ -1866,9 +1879,9 @@ elif which('pip'):
 if not os_ok:
     print(sev2color(4)+'* KiBot is currently tested under Linux')
     if system == 'Darwin':
-        print('  MacOSX should be supported for KiCad 6.x')
+        print('  MacOSX should be supported for KiCad 6.x or newer')
     elif system == 'Windows':
-        print('  Windows may work with some limitations for KiCad 6.x')
+        print('  Windows may work with some limitations for KiCad 6.x or newer')
         print('  Consider using a docker image, Windows docker can run Linux images (using virtualization)')
         print('  You can also try WSL (Windows Subsystem for Linux)')
     else:

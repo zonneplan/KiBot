@@ -4,21 +4,25 @@
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .misc import W_DEPR
-from .macros import macros, pre_class  # noqa: F401
+from .macros import macros, document, pre_class  # noqa: F401
 from .log import get_logger
 logger = get_logger(__name__)
 
 
 @pre_class
 class Ignore_Unconnected(BasePreFlight):  # noqa: F821
-    """ [boolean=false] **Deprecated**, use the `ignore_unconnected` option from `run_drc`/`drc`.
+    """ Ignore Unconnected (**Deprecated**)
         Option for `run_drc`. Ignores the unconnected nets. Useful if you didn't finish the routing.
-        It will also ignore KiCad 6 warnings when using `run_drc` """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+        It will also ignore KiCad 6 warnings when using `run_drc`.
+        Use the `ignore_unconnected` option from `run_drc`/`drc` instead """
+    def __init__(self):
+        super().__init__()
+        with document:
+            self.ignore_unconnected = False
+            """ Enable this preflight """
 
-    def config(self):
-        super().config()
+    def config(self, parent):
+        super().config(parent)
         logger.warning(W_DEPR+'The `ignore_unconnected` preflight is deprecated, use the `ignore_unconnected` option')
 
     def get_example():

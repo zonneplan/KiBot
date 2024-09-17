@@ -51,7 +51,7 @@ pytest-3 --log-cli-level debug
 import pytest
 import os
 from . import context
-from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, BOM_ERROR, WRONG_ARGUMENTS)
+from kibot.misc import (EXIT_BAD_CONFIG, PLOT_ERROR, WRONG_ARGUMENTS)
 PRJ = 'fail-project'
 
 
@@ -283,12 +283,13 @@ def test_out_needs_type(test_dir):
 #     ctx.clean_up()
 
 
-@pytest.mark.indep
-def test_no_layers(test_dir):
-    ctx = context.TestContext(test_dir, '3Rs', 'error_no_layers')
-    ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing .?layers.? list")
-    ctx.clean_up()
+# Now we interpret it as "all"
+# @pytest.mark.indep
+# def test_no_layers(test_dir):
+#     ctx = context.TestContext(test_dir, '3Rs', 'error_no_layers')
+#     ctx.run(EXIT_BAD_CONFIG)
+#     assert ctx.search_err("Missing .?layers.? list")
+#     ctx.clean_up()
 
 
 @pytest.mark.indep
@@ -368,7 +369,7 @@ def test_error_wrong_type_1(test_dir):
     """ run_drc = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_1')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?run_drc.?: must be boolean")
+    assert ctx.search_err("In preflight .?run_drc.?: (.*)not .?number.?")
     ctx.clean_up(keep_project=True)
 
 
@@ -377,7 +378,7 @@ def test_error_wrong_type_2(test_dir):
     """ ignore_unconnected = string """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_2')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?ignore_unconnected.?: must be boolean")
+    assert ctx.search_err("In preflight .?ignore_unconnected.?: (.*)must be a boolean")
     ctx.clean_up(keep_project=True)
 
 
@@ -386,7 +387,7 @@ def test_error_wrong_type_3(test_dir):
     """ run_erc = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_3')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?run_erc.?: must be boolean")
+    assert ctx.search_err("In preflight .?run_erc.?: (.*)must be any")
     ctx.clean_up(keep_project=True)
 
 
@@ -395,7 +396,7 @@ def test_error_wrong_type_4(test_dir):
     """ update_xml = number """
     ctx = context.TestContextSCH(test_dir, 'bom', 'error_pre_wrong_type_4')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?update_xml.?: must be boolean")
+    assert ctx.search_err("In preflight .?update_xml.?: (.*)must be any of")
     ctx.clean_up(keep_project=True)
 
 
@@ -404,7 +405,7 @@ def test_error_wrong_type_5(test_dir):
     """ check_zone_fills = number """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_wrong_type_5')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("In preflight .?check_zone_fills.?: must be boolean")
+    assert ctx.search_err("In preflight .?check_zone_fills.?: (.*)must be a boolean")
     ctx.clean_up(keep_project=True)
 
 
@@ -459,8 +460,9 @@ def test_error_bom_column(test_dir):
 @pytest.mark.indep
 def test_error_bom_no_columns(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_bom_column')
-    ctx.run(BOM_ERROR, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(), 'bom_no_xml'+context.KICAD_SCH_EXT)])
-    assert ctx.search_err("Failed to get the column names")
+    ctx.run(EXIT_BAD_CONFIG, no_board_file=True, extra=['-e', os.path.join(ctx.get_board_dir(),
+            'bom_no_xml'+context.KICAD_SCH_EXT)])
+    assert ctx.search_err("can't verify the field names")
     ctx.clean_up(keep_project=True)
 
 
@@ -485,7 +487,7 @@ def test_error_wrong_boolean(test_dir):
 def test_error_gerber_precision(test_dir):
     ctx = context.TestContext(test_dir, PRJ, 'error_gerber_precision')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(".?gerber_precision.? must be 4.5 or 4.6")
+    assert ctx.search_err(".?gerber_precision.? must be any of")
     ctx.clean_up(keep_project=True)
 
 
@@ -501,8 +503,8 @@ def test_error_wrong_drill_marks_1(test_dir):
 def test_error_print_pcb_no_layer(test_dir):
     prj = 'bom'
     ctx = context.TestContext(test_dir, prj, 'error_print_pcb_no_layer')
-    ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err("Missing .?layers.? list")
+    ctx.run()  # EXIT_BAD_CONFIG Now allowed
+    assert ctx.search_err("No layers specified for")
     ctx.clean_up()
 
 
@@ -806,7 +808,7 @@ def test_pre_list_instead_of_dict(test_dir):
     """ Extend an undefined output """
     ctx = context.TestContext(test_dir, PRJ, 'error_pre_list_instead_of_dict_issue_360')
     ctx.run(EXIT_BAD_CONFIG)
-    assert ctx.search_err(r"Found .*list.* instead of dict")
+    assert ctx.search_err(r"must be a dict(.*)list")
     ctx.clean_up(keep_project=True)
 
 
@@ -879,4 +881,22 @@ def test_download_datasheets_no_output(test_dir):
     ctx = context.TestContext(test_dir, 'bom', 'error_download_datasheets_no_output')
     ctx.run(EXIT_BAD_CONFIG)
     assert ctx.search_err(r"Empty `output`")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_line_width_min(test_dir):
+    """ line_width < min """
+    ctx = context.TestContext(test_dir, 'bom', 'error_wrong_line_width_min')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`line_width` outside its range ")
+    ctx.clean_up(keep_project=True)
+
+
+@pytest.mark.indep
+def test_line_width_max(test_dir):
+    """ line_width > max """
+    ctx = context.TestContext(test_dir, 'bom', 'error_wrong_line_width_max')
+    ctx.run(EXIT_BAD_CONFIG)
+    assert ctx.search_err(r"`line_width` outside its range ")
     ctx.clean_up(keep_project=True)

@@ -72,7 +72,7 @@ class Netlist(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = NetlistOptions
-            """ *[dict] Options for the `netlist` output """
+            """ *[dict={}] Options for the `netlist` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

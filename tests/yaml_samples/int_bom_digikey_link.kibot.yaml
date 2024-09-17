@@ -11,7 +11,7 @@ outputs:
       html:
         digikey_link: 'digikey#'
         mouser_link: 'mouser#'
-        lcsc_link: 'LCSC#'
+        lcsc_link: true
       output: '%f.%x'
       columns:
         - References

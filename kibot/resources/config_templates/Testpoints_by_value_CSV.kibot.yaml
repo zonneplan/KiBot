@@ -1,0 +1,9 @@
+# Testpoints selected by value
+kibot:
+  version: 1
+
+import:
+  - file: Testpoints_by_value
+    definitions:
+      _KIBOT_IMPORT_ID: '_csv'
+      _KIBOT_TESTPOINTS_FORMAT: CSV

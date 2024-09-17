@@ -92,7 +92,7 @@ def compare_components(c1, c2, cfg):
     for i, field in enumerate(cfg.group_fields):
         # Check if we have a fallback
         field_alt = cfg.group_fields_fallbacks[i]
-        if field_alt is not None:
+        if field_alt:
             # Check if we have an empty field
             c1_value = c1.get_field_value(field)
             c2_value = c2.get_field_value(field)
@@ -295,7 +295,7 @@ class ComponentGroup(object):
         else:
             # Config contains variant information, which is different for each component
             # Part can be one of the defined aliases
-            if field not in self.cfg.no_conflict:
+            if field not in self.cfg._no_conflict:
                 logger.warning(W_FIELDCONF + "Field conflict: ({refs}) [{name}] : '{flds}' <- '{fld}' (in {ref})".format(
                     refs=self.get_refs(),
                     name=field,
@@ -350,6 +350,13 @@ class ComponentGroup(object):
         if comp.virtual:
             type = 2
         self.fields[ColumnList.COL_FP_TYPE_L] = footprint_type_values[type]
+        if comp.smd:
+            type = footprint_type_values[0]
+        elif comp.tht:
+            type = footprint_type_values[1]
+        else:
+            type = ''
+        self.fields[ColumnList.COL_FP_TYPE_NV_L] = type
         self.fields[ColumnList.COL_FP_FIT_L] = footprint_populate_values[comp.fitted]
         self.fields[ColumnList.COL_FP_XS_L] = "{:.4f}".format(comp.footprint_w * conv)
         self.fields[ColumnList.COL_FP_YS_L] = "{:.4f}".format(comp.footprint_h * conv)
@@ -357,6 +364,8 @@ class ComponentGroup(object):
         self.fields[ColumnList.COL_SHEETPATH_L] = comp.sheet_path_h
         if not self.fields[ColumnList.COL_DESCRIPTION_L]:
             self.fields[ColumnList.COL_DESCRIPTION_L] = comp.desc
+        self.fields[ColumnList.COL_NET_NAME_L] = comp.net_name
+        self.fields[ColumnList.COL_NET_CLASS_L] = comp.net_class
 
     def get_row(self, columns):
         """ Return a dict of the KiCad data based on the supplied columns """
@@ -364,7 +373,7 @@ class ComponentGroup(object):
         for key in columns:
             val = self.get_field(key)
             # Join fields (appending to current value)
-            for join_l in self.cfg.join:
+            for join_l in self.cfg._join:
                 # Each list is "target, source..." so we need at least 2 elements
                 elements = len(join_l)
                 target = join_l[0]
@@ -454,7 +463,7 @@ def group_components(cfg, components):
         if decimal_point == '.':
             decimal_point = None
     # Determine if we need information from the PCB
-    uses_fp_info = len(set(ColumnList.COLUMNS_FP_L).intersection({c.lower() for c in cfg.columns})) != 0
+    uses_fp_info = len(set(ColumnList.COLUMNS_FP_L).intersection({c.lower() for c in cfg._columns})) != 0
     # Coordinates origin for XYRS
     x_origin = 0.0
     y_origin = 0.0
@@ -542,5 +551,5 @@ def do_bom(file_name, ext, comps, cfg):
             prj.total_str = smd_tht(cfg, prj.comp_total, prj.comp_total_smd, prj.comp_total_tht)
             prj.fitted_str = smd_tht(cfg, prj.comp_fitted, prj.comp_fitted_smd, prj.comp_fitted_tht)
     # Create the BoM
-    write_bom(file_name, ext, groups, cfg.columns, cfg)
+    write_bom(file_name, ext, groups, cfg._columns, cfg)
     cfg.number = number

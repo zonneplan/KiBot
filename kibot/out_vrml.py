@@ -73,7 +73,7 @@ class VRMLOptions(Base3DOptionsWithHL):
         command = self.ensure_tool('KiAuto')
         super().run(name)
         self.apply_show_components()
-        board_name = self.filter_components(highlight=set(self.expand_kf_components(self.highlight)), force_wrl=True)
+        board_name = self.filter_components(highlight=set(self.expand_kf_components(self._highlight)), force_wrl=True)
         self.undo_show_components()
         cmd = [command, 'export_vrml', '--output_name', os.path.basename(name), '-U', self.model_units]
         if self.dir_models:
@@ -109,7 +109,7 @@ class VRML(BaseOutput):  # noqa: F821
         self._category = 'PCB/3D'
         with document:
             self.options = VRMLOptions
-            """ *[dict] Options for the `vrml` output """
+            """ *[dict={}] Options for the `vrml` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

@@ -46,7 +46,7 @@ class IBoMOptions(VariantOptions):
             self.hide_silkscreen = False
             """ Hide silkscreen by default """
             self.highlight_pin1 = False
-            """ [boolean|none,all,selected] Highlight pin1 by default """
+            """ [boolean|string=false] [none,all,selected] Highlight pin1 by default """
             self.no_redraw_on_drag = False
             """ Do not redraw pcb on drag by default """
             self.board_rotation = 0
@@ -213,7 +213,10 @@ class IBoMOptions(VariantOptions):
             self.blacklist += ','
         self.blacklist += to_remove
         # Convert attributes into options
-        for k, v in self.get_attrs_gen():
+        # Note: here we should use self, instead of a template, but this is currently safer
+        template = IBoMOptions()
+        for k, v in template.get_attrs_gen():
+            v = getattr(self, k)
             if not v or k in ['output', 'variant', 'dnf_filter', 'pre_transform', 'hide_excluded', 'forced_name']:
                 continue
             if k == 'offset_back_rotation' and version < (2, 5, 0, 2):
@@ -231,8 +234,8 @@ class IBoMOptions(VariantOptions):
                 raise CalledProcessError(1, cmd, cmd_output)
         except CalledProcessError as e:
             GS.exit_with_error(f'Failed to create BoM, error {e.returncode}', BOM_ERROR, e,
-                               ("'PCB_SHAPE' object has no attribute 'GetAngle'",
-                                "Update Interactive HTML BoM your version doesn't support KiCad 6 files"))
+                               [("'PCB_SHAPE' object has no attribute 'GetAngle'",
+                                "Update Interactive HTML BoM your version doesn't support KiCad 6 files")])
         finally:
             if net_dir:
                 logger.debug('Removing temporal variant dir `{}`'.format(net_dir))
@@ -255,7 +258,7 @@ class IBoM(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = IBoMOptions
-            """ *[dict] Options for the `ibom` output """
+            """ *[dict={}] Options for the `ibom` output """
         self._category = ['Schematic/BoM', 'PCB/fabrication/assembly']
 
     def get_dependencies(self):

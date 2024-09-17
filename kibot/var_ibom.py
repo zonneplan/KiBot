@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020 Salvador E. Tropea
-# Copyright (c) 2020 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the IBoM variants mechanism.
 from .optionable import Optionable
@@ -26,9 +26,10 @@ class IBoM(BaseVariant):  # noqa: F821
             self.variant_field = 'Config'
             """ Name of the field that stores board variant for component """
             self.variants_blacklist = Optionable
-            """ [string|list(string)=''] List of board variants to exclude from the BOM """
+            """ [string|list(string)=[]] {comma_sep} List of board variants to exclude from the BOM """
             self.variants_whitelist = Optionable
-            """ [string|list(string)=''] List of board variants to include in the BOM """
+            """ [string|list(string)=[]] {comma_sep} List of board variants to include in the BOM """
+        self.fix_doc('exclude_filter', IFILT_MECHANICAL)
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """
@@ -40,8 +41,6 @@ class IBoM(BaseVariant):  # noqa: F821
         self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', IFILT_MECHANICAL)
         self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter')
         self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter')
-        self.variants_blacklist = self.force_list(self.variants_blacklist)
-        self.variants_whitelist = self.force_list(self.variants_whitelist)
 
     def skip_component(self, c):
         """ Skip components that doesn't belong to this variant. """
@@ -64,11 +63,11 @@ class IBoM(BaseVariant):  # noqa: F821
         self.variants_blacklist = [v.lower() for v in self.variants_blacklist]
         # Apply to all the components
         for c in comps:
-            logger.debug("{} {} {}".format(c.ref, c.fitted, c.included))
+            logger.debug("- Check {} fitted {} included {}".format(c.ref, c.fitted, c.included))
             if not (c.fitted and c.included):
                 # Don't check if we already discarded it
                 continue
             c.fitted = not self.skip_component(c)
             if not c.fitted and GS.debug_level > 2:
-                logger.debug('ref: {} value: {} -> False'.format(c.ref, c.value))
+                logger.debug(f'  fitted -> False (value: {c.value})')
         return comps

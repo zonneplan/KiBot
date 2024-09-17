@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
 # License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
@@ -13,6 +13,7 @@ Dependencies:
 """
 import os
 from .gs import GS
+from .misc import W_NOQR
 from .optionable import BaseOptions, Optionable
 from .error import KiPlotConfigurationError
 from .kicad.pcb import save_pcb_from_sexp
@@ -82,6 +83,9 @@ class QRCodeOptions(Optionable):
         super().config(parent)
         self.layer = 'F.SilkS' if self.layer == 'silk' else 'F.Cu'
 
+    def __str__(self):
+        return f'`{self.name} "{self.text}" ({self.size_sch}/{self.size_pcb} {self.size_units}) [{self.layer}]'
+
 
 class QR_LibOptions(BaseOptions):
     def __init__(self):
@@ -96,15 +100,13 @@ class QR_LibOptions(BaseOptions):
             self.use_sch_dir = True
             """ Generate the libs relative to the schematic/PCB dir """
             self.qrs = QRCodeOptions
-            """ *[list(dict)] QR codes to include in the library """
+            """ *[dict|list(dict)=[{}]] QR codes to include in the library """
         super().__init__()
         self._expand_id = 'qr'
         self._expand_ext = 'lib'
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.qrs, type):
-            raise KiPlotConfigurationError("You must specify at least one QR code")
         names = set()
         for qr in self.qrs:
             if qr.name in names:
@@ -459,6 +461,8 @@ class QR_LibOptions(BaseOptions):
         global qrcodegen
         if qrcodegen is None:
             qrcodegen = self.ensure_tool('QRCodeGen')
+        if not self.get_user_defined('qrs'):
+            logger.warning(W_NOQR+'Using a default QR configuration, please provide one')
         # Now we are sure we have qrcodegen
         QR_ECCS = {'low': qrcodegen.QrCode.Ecc.LOW,
                    'medium': qrcodegen.QrCode.Ecc.MEDIUM,
@@ -527,7 +531,7 @@ class QR_Lib(BaseOutput):  # noqa: F821
         self.priority = 90
         with document:
             self.options = QR_LibOptions
-            """ *[dict] Options for the `boardview` output """
+            """ *[dict={}] Options for the `boardview` output """
         self._both_related = True
         self._update_mode = False
         # The help is inherited and already mentions the default priority

@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022 Salvador E. Tropea
-# Copyright (c) 2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .gs import (GS)
 from .kiplot import load_sch
 from .misc import W_NOANNO
-from .macros import macros, pre_class  # noqa: F401
+from .macros import macros, document, pre_class  # noqa: F401
 from .log import get_logger
 
 logger = get_logger(__name__)
@@ -14,12 +14,16 @@ logger = get_logger(__name__)
 
 @pre_class
 class Annotate_Power(BasePreFlight):  # noqa: F821
-    """ [boolean=false] Annotates all power components.
+    """ Annotate Power
+        Annotates all power components.
         This preflight modifies the schematic, use it only in revision control environments.
         Used to solve ERC problems when using filters that remove power reference numbers """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+    def __init__(self):
+        super().__init__()
         self._sch_related = True
+        with document:
+            self.annotate_power = False
+            """ Enable this preflight """
 
     def annotate_ki5(self):
         """ Annotate power components for KiCad 5 """

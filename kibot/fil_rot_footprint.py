@@ -64,6 +64,7 @@ class Regex(Optionable):
             self.offset_x = offset_x
         if offset_y is not None:
             self.offset_y = offset_y
+        self._regex_example = '^TSSOP-'
 
     def __str__(self):
         res = f'{self.field} matches {self.regex} =>'
@@ -83,6 +84,14 @@ class Regex(Optionable):
         # if self.angle == 0.0 and self.offset_x == 0.0 and self.offset_y == 0.0:
         #    raise KiPlotConfigurationError(f"Rule for `{self.field}` field without any adjust")
         self.field = self.solve_field_name(self.field).lower()
+
+
+class RotFields(Optionable):
+    _default = DEFAULT_ROT_FIELDS
+
+
+class OffsetFields(Optionable):
+    _default = DEFAULT_OFFSET_FIELDS
 
 
 @filter_class
@@ -109,28 +118,28 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             """ The original component rotation for components in the bottom is mirrored before applying
                 the adjust so you get `(180 - component rot + angle)`. This is used by JLCPCB """
             self.rotations = Optionable
-            """ [list(list(string))] A list of pairs regular expression/rotation.
+            """ [list(list(string))=[]] A list of pairs regular expression/rotation.
                 Footprints matching the regular expression will be rotated the indicated angle.
                 The angle matches the matthewlai/JLCKicadTools plugin specs """
             self.offsets = Optionable
-            """ [list(list(string))] A list of pairs regular expression/offset.
+            """ [list(list(string))=[]] A list of pairs regular expression/offset.
                 Footprints matching the regular expression will be moved the specified offset.
                 The offset must be two numbers separated by a comma. The first is the X offset.
                 The signs matches the matthewlai/JLCKicadTools plugin specs """
             self.rotations_and_offsets = Regex
-            """ [list(dict)] A list of rules to match components and specify the rotation and offsets.
+            """ [list(dict)=[]] A list of rules to match components and specify the rotation and offsets.
                 This is a more flexible version of the `rotations` and `offsets` options.
                 Note that this list has more precedence """
             self.skip_bottom = False
             """ Do not rotate components on the bottom """
             self.skip_top = False
             """ Do not rotate components on the top """
-            self.rot_fields = Optionable
-            """ [string|list(string)='JLCPCB Rotation Offset,JLCRotOffset'] List of fields that can contain a rotation offset.
+            self.rot_fields = RotFields
+            """ [string|list(string)] {comma_sep} List of fields that can contain a rotation offset.
                 The optional fields can contain a counter-clockwise orientation offset in degrees.
                 This concept is from the bennymeg/JLC-Plugin-for-KiCad tool """
-            self.offset_fields = Optionable
-            """ [string|list(string)='JLCPCB Position Offset,JLCPosOffset'] List of fields that can contain a position offset.
+            self.offset_fields = OffsetFields
+            """ [string|list(string)] {comma_sep} List of fields that can contain a position offset.
                 The optional fields can contain a comma separated x,y position offset.
                 This concept is from the bennymeg/JLC-Plugin-for-KiCad tool """
             self.bennymeg_mode = True
@@ -147,38 +156,35 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
         self._rot = []
         self._offset = []
         # The main list first
-        if isinstance(self.rotations_and_offsets, list):
-            for v in self.rotations_and_offsets:
-                v.regex = compile(v.regex)
-                if v.apply_angle:
-                    self._rot.append(v)
-                if v.apply_offset:
-                    self._offset.append(v)
+        for v in self.rotations_and_offsets:
+            v.regex = compile(v.regex)
+            if v.apply_angle:
+                self._rot.append(v)
+            if v.apply_offset:
+                self._offset.append(v)
         # List of rotations
-        if isinstance(self.rotations, list):
-            for r in self.rotations:
-                if len(r) != 2:
-                    raise KiPlotConfigurationError("Each regex/angle pair must contain exactly two values, not {} ({})".
-                                                   format(len(r), r))
-                try:
-                    angle = float(r[1])
-                except ValueError:
-                    raise KiPlotConfigurationError("The second value in the regex/angle pairs must be a number, not {}".
-                                                   format(r[1]))
-                self._rot.append(Regex(regex=compile(r[0]), angle=angle))
+        for r in self.rotations:
+            if len(r) != 2:
+                raise KiPlotConfigurationError("Each regex/angle pair must contain exactly two values, not {} ({})".
+                                               format(len(r), r))
+            try:
+                angle = float(r[1])
+            except ValueError:
+                raise KiPlotConfigurationError("The second value in the regex/angle pairs must be a number, not {}".
+                                               format(r[1]))
+            self._rot.append(Regex(regex=compile(r[0]), angle=angle))
         # List of offsets
-        if isinstance(self.offsets, list):
-            for r in self.offsets:
-                if len(r) != 2:
-                    raise KiPlotConfigurationError("Each regex/offset pair must contain exactly two values, not {} ({})".
-                                                   format(len(r), r))
-                try:
-                    offset_x = float(r[1].split(",")[0])
-                    offset_y = float(r[1].split(",")[1])
-                except ValueError:
-                    raise KiPlotConfigurationError("The second value in the regex/offset pairs must be two numbers "
-                                                   f"separated by a comma, not {r[1]}")
-                self._offset.append(Regex(regex=compile(r[0]), offset_x=offset_x, offset_y=offset_y))
+        for r in self.offsets:
+            if len(r) != 2:
+                raise KiPlotConfigurationError("Each regex/offset pair must contain exactly two values, not {} ({})".
+                                               format(len(r), r))
+            try:
+                offset_x = float(r[1].split(",")[0])
+                offset_y = float(r[1].split(",")[1])
+            except ValueError:
+                raise KiPlotConfigurationError("The second value in the regex/offset pairs must be two numbers "
+                                               f"separated by a comma, not {r[1]}")
+            self._offset.append(Regex(regex=compile(r[0]), offset_x=offset_x, offset_y=offset_y))
         if self.extend:
             for regex_str, angle in DEFAULT_ROTATIONS:
                 self._rot.append(Regex(regex=compile(regex_str), angle=angle))
@@ -193,8 +199,6 @@ class Rot_Footprint(BaseFilter):  # noqa: F821
             logger.debug('Final offsets list:')
             for r in self._offset:
                 logger.debug(r)
-        self.rot_fields = self.force_list(self.rot_fields, default=DEFAULT_ROT_FIELDS)
-        self.offset_fields = self.force_list(self.offset_fields, default=DEFAULT_OFFSET_FIELDS)
 
     def apply_rotation_angle(self, comp, angle, bennymeg_mode=False):
         old_footprint_rot = comp.footprint_rot

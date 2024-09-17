@@ -16,11 +16,11 @@ Usage:
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
   kibot [-v...] [-c PLOT_CONFIG] [--banner N] [-E DEF] ... [--only-names]
-         --list-variants
+        [--sub-pcbs] --list-variants
   kibot [-v...] [-b BOARD] [-d OUT_DIR] [-p | -P] [--banner N] --example
   kibot [-v...] [--start PATH] [-d OUT_DIR] [--dry] [--banner N]
          [-t, --type TYPE]... --quick-start
-  kibot [-v...] [--rst] --help-filters
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-filters
   kibot [-v...] [--markdown|--json|--rst] --help-dependencies
   kibot [-v...] [--rst] --help-global-options
   kibot [-v...] --help-list-offsets
@@ -28,8 +28,8 @@ Usage:
   kibot [-v...] --help-list-rotations
   kibot [-v...] --help-output=HELP_OUTPUT
   kibot [-v...] [--rst] [-d OUT_DIR] --help-outputs
-  kibot [-v...] [--rst] --help-preflights
-  kibot [-v...] [--rst] --help-variants
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-preflights
+  kibot [-v...] [--rst] [-d OUT_DIR] --help-variants
   kibot [-v...] --help-banners
   kibot [-v...] [--rst] --help-errors
   kibot -h | --help
@@ -72,6 +72,7 @@ Options:
   -P, --copy-and-expand            As -p but expand the list of layers
   -q, --quiet                      Remove information logs
   -s PRE, --skip-pre PRE           Skip preflights, comma separated or `all`
+  --sub-pcbs                       When listing variants also include sub-PCBs
   -v, --verbose                    Show debugging information
   -V, --version                    Show program's version number and exit
   -w, --no-warn LIST               Exclude the mentioned warnings (comma sep)
@@ -104,7 +105,6 @@ Help options:
 """
 from datetime import datetime
 from glob import glob
-import gzip
 import locale
 import os
 import platform
@@ -133,14 +133,14 @@ if os.environ.get('KIAUS_USE_NIGHTLY'):  # pragma: no cover (nightly)
 from .banner import get_banner, BANNERS
 from .gs import GS
 from . import dep_downloader
-from .misc import EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN
+from .misc import (EXIT_BAD_ARGS, W_VARCFG, NO_PCBNEW_MODULE, W_NOKIVER, hide_stderr, TRY_INSTALL_CHECK, W_ONWIN,
+                   FAILED_EXECUTE, W_ONMAC)
 from .pre_base import BasePreFlight
-from .error import KiPlotConfigurationError, config_error
-from .config_reader import (CfgYamlReader, print_outputs_help, print_output_help, print_preflights_help, create_example,
-                            print_filters_help, print_global_options_help, print_dependencies, print_variants_help,
-                            print_errors, print_list_rotations, print_list_offsets)
+from .config_reader import (print_outputs_help, print_output_help, print_preflights_help, create_example, print_filters_help,
+                            print_global_options_help, print_dependencies, print_variants_help, print_errors,
+                            print_list_rotations, print_list_offsets)
 from .kiplot import (generate_outputs, load_actions, config_output, generate_makefile, generate_examples, solve_schematic,
-                     solve_board_file, solve_project_file, check_board_file)
+                     solve_board_file, solve_project_file, check_board_file, exec_with_retry, load_config)
 from .registrable import RegOutput
 GS.kibot_version = __version__
 
@@ -168,6 +168,7 @@ def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_gro
     pf = BasePreFlight.get_in_use_objs()
     groups = RegOutput.get_groups()
     if pf and not only_groups:
+        BasePreFlight.configure_all()
         logger.info('Available pre-flights:')
         for c in pf:
             logger.info('- '+str(c))
@@ -203,7 +204,7 @@ def list_pre_and_outs(logger, outputs, do_config, only_names, only_pre, only_gro
         logger.info("")
 
 
-def list_variants(logger, only_names):
+def list_variants(logger, only_names, sub_pcbs):
     variants = RegOutput.get_variants()
     if not variants:
         if not only_names:
@@ -211,11 +212,20 @@ def list_variants(logger, only_names):
         return
     if only_names:
         for name in sorted(variants.keys()):
-            logger.info(name)
+            v = variants[name]
+            if sub_pcbs and v.sub_pcbs:
+                for s in v.sub_pcbs:
+                    logger.info(f'{name}[{s.name}]')
+            else:
+                logger.info(name)
         return
     logger.info("Available variants: 'comment/description' (name) [type]")
     for name in sorted(variants.keys()):
         logger.info('- '+str(variants[name]))
+        v = variants[name]
+        if sub_pcbs and v.sub_pcbs:
+            for s in v.sub_pcbs:
+                logger.info(f'  - {s.name}')
 
 
 def solve_config(a_plot_config, quiet=False):
@@ -329,14 +339,17 @@ def detect_kicad():
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting'))
     GS.kicad_plugins_dirs.append(os.path.join(GS.kicad_conf_path, 'scripting', 'plugins'))
     # ~/.kicad_plugins and ~/.kicad
-    if 'HOME' in os.environ:
-        home = os.environ['HOME']
+    home = os.path.expanduser('~')
+    if home:
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad_plugins'))
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting'))
         GS.kicad_plugins_dirs.append(os.path.join(home, '.kicad', 'scripting', 'plugins'))
         if GS.kicad_version_major >= 6:
             ver_dir = str(GS.kicad_version_major)+'.'+str(GS.kicad_version_minor)
-            local_share = os.path.join(home, '.local', 'share', 'kicad', ver_dir)
+            if GS.on_macos or GS.on_windows:
+                local_share = os.path.join(home, 'Documents', 'KiCad', ver_dir)
+            else:
+                local_share = os.path.join(home, '.local', 'share', 'kicad', ver_dir)
             GS.kicad_plugins_dirs.append(os.path.join(local_share, 'scripting'))
             GS.kicad_plugins_dirs.append(os.path.join(local_share, 'scripting', 'plugins'))
             GS.kicad_plugins_dirs.append(os.path.join(local_share, '3rdparty', 'plugins'))   # KiCad 6.0 PCM
@@ -365,7 +378,8 @@ def parse_global_redef(args):
 class SimpleFilter(object):
     def __init__(self, num, regex=''):
         self.number = num
-        self.regex = re.compile(regex)
+        self._regex = re.compile(regex)
+        self.regex = regex
         self.error = ''
 
 
@@ -402,6 +416,31 @@ def detect_windows():  # pragma: no cover (Windows)
     logger.warning(W_ONWIN+'Running on Windows, this is experimental, please report any problem')
 
 
+def detect_macos():  # pragma: no cover (Darwin)
+    if platform.system() != 'Darwin':
+        return
+    # Note: We assume this is the Python from KiCad, but we should check it ...
+    GS.on_macos = True
+    logger.warning(W_ONMAC+'Running on macOS, this is experimental, please report any problem')
+
+
+def check_needs_convert():
+    """ Try to convert Altium PCBs to KiCad.
+        If successful just use the converted file. """
+    if GS.pcb_file is None:
+        return False
+    ext = os.path.splitext(GS.pcb_fname)[1]
+    if ext.lower() != '.pcbdoc':
+        return False
+    command = GS.check_tool_dep('convert_pcb', 'KiAuto')
+    new_name = GS.pcb_basename+'.kicad_pcb'
+    cmd = [command, 'convert', '-o', new_name, GS.pcb_file, GS.pcb_dir]
+    cmd, _ = GS.add_extra_options(cmd)
+    exec_with_retry(cmd, FAILED_EXECUTE)
+    GS.set_pcb(os.path.join(GS.pcb_dir, new_name))
+    return True
+
+
 def main():
     set_locale()
     ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
@@ -424,8 +463,9 @@ def main():
     apply_warning_filter(args)
     log.stop_on_warnings = args.stop_on_warnings
     # Now we have the debug level set we can check (and optionally inform) KiCad info
-    detect_kicad()
     detect_windows()
+    detect_macos()
+    detect_kicad()
     debug_arguments(args)
 
     # Force iBoM to avoid the use of graphical stuff
@@ -508,28 +548,13 @@ def main():
         GS.set_pcb(solve_board_file('.', args.board_file))
         # Determine the project file
         GS.set_pro(solve_project_file())
+        check_needs_convert()
 
     # Parse preprocessor defines
     parse_defines(args)
 
     # Read the config file
-    cr = CfgYamlReader()
-    outputs = None
-    try:
-        # The Python way ...
-        with gzip.open(plot_config, mode='rt') as cf_file:
-            try:
-                outputs = cr.read(cf_file)
-            except KiPlotConfigurationError as e:
-                config_error(str(e))
-    except OSError:
-        pass
-    if outputs is None:
-        with open(plot_config) as cf_file:
-            try:
-                outputs = cr.read(cf_file)
-            except KiPlotConfigurationError as e:
-                config_error(str(e))
+    outputs = load_config(plot_config)
 
     # Is just "list the available targets"?
     if args.list:
@@ -538,7 +563,7 @@ def main():
         sys.exit(0)
 
     if args.list_variants:
-        list_variants(logger, args.only_names)
+        list_variants(logger, args.only_names, args.sub_pcbs)
         sys.exit(0)
 
     if args.makefile:
@@ -546,7 +571,7 @@ def main():
         generate_makefile(args.makefile, plot_config, outputs)
     else:
         # Do all the job (preflight + outputs)
-        generate_outputs(outputs, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,
+        generate_outputs(args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,
                          dont_stop=args.dont_stop)
     # Print total warnings
     logger.log_totals()

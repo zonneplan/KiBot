@@ -19,7 +19,7 @@ from .gs import GS
 from .kiplot import run_command, config_output, register_xmp_import
 from .layer import Layer
 from .misc import W_PANELEMPTY, KIKIT_UNIT_ALIASES, W_KEEPTMP
-from .optionable import PanelOptions
+from .optionable import PanelOptions, Optionable
 from .out_base import VariantOptions
 from .registrable import RegOutput
 from .macros import macros, document, output_class  # noqa: F401
@@ -65,17 +65,17 @@ class PanelizePage(PanelOptions):
             """ [tl,tr,bl,br,mt,mb,ml,mr,c] Point of the panel to be placed at given position. Can be one of tl, tr, bl, br
                 (corners), mt, mb, ml, mr (middle of sides), c (center). The anchors refer to the panel outline """
             self.posx = '50%'
-            """ [number|string] The X position of the panel on the page. Can be expressed as a page size percentage """
+            """ [number|string='50%'] The X position of the panel on the page. Can be expressed as a page size percentage """
             self.pos_x = None
             """ {posx} """
             self.posy = 20
-            """ [number|string] The Y position of the panel on the page. Can be expressed as a page size percentage """
+            """ [number|string=20] The Y position of the panel on the page. Can be expressed as a page size percentage """
             self.pos_y = None
             """ {posy} """
             self.width = 297
-            """ [number|string] Width for the `custom` paper size """
+            """ [number|string=297] Width for the `custom` paper size """
             self.height = 210
-            """ [number|string] Height for the `custom` paper size """
+            """ [number|string=210] Height for the `custom` paper size """
         super().__init__()
 
     def config(self, parent):
@@ -90,13 +90,13 @@ class PanelizeLayout(PanelOptionsWithPlugin):
             self.type = 'grid'
             """ [grid,plugin] In the plugin type only `code` and `arg` are relevant """
             self.hspace = 0
-            """ [number|string] Specify the horizontal gap between the boards """
+            """ [number|string=0] Specify the horizontal gap between the boards """
             self.vspace = 0
-            """ [number|string] Specify the vertical gap between the boards """
-            self.space = None
-            """ [number|string] Specify the gap between the boards, overwrites `hspace` and `vspace` """
+            """ [number|string=0] Specify the vertical gap between the boards """
+            self.space = 0
+            """ [number|string=0] Specify the gap between the boards, overwrites `hspace` and `vspace` """
             self.rotation = 0
-            """ [number|string] Rotate the boards before placing them in the panel """
+            """ [number|string=0] Rotate the boards before placing them in the panel """
             self.renamenet = 'Board_{n}-{orig}'
             """ A pattern by which to rename the nets. You can use {n} and {orig} to get the board number and original name """
             self.rename_net = None
@@ -121,12 +121,12 @@ class PanelizeLayout(PanelOptionsWithPlugin):
                 cols: Rotate boards by 180° on every next column.
                 rowsCols: Rotate boards by 180° based on a chessboard pattern """
             self.vbackbone = 0
-            """ [number|string] The width of vertical backbone (0 means no backbone). The backbone does not increase the
+            """ [number|string=0] The width of vertical backbone (0 means no backbone). The backbone does not increase the
                 spacing of the boards """
             self.v_back_bone = None
             """ {vbackbone} """
             self.hbackbone = 0
-            """ [number|string] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
+            """ [number|string=0] The width of horizontal backbone (0 means no backbone). The backbone does not increase the
                 spacing of the boards """
             self.h_back_bone = None
             """ {hbackbone} """
@@ -160,7 +160,7 @@ class PanelizeLayout(PanelOptionsWithPlugin):
 
     def config(self, parent):
         super().config(parent)
-        if self.space:
+        if self.get_user_defined('space'):
             self.hspace = self.vspace = self.space
         self.add_units(('vbackbone', 'hbackbone', 'hspace', 'vspace', 'space'))
         self.add_angle(('rotation', ))
@@ -177,25 +177,25 @@ class PanelizeTabs(PanelOptionsWithPlugin):
                 Annotation: Add tabs based on PCB annotations.
                 Plugin: Uses an external python function, only `code` and `arg` are relevant """
             self.vwidth = 3
-            """ [number|string] The width of tabs in the vertical direction. Used for *fixed* and *spacing* """
+            """ [number|string=3] The width of tabs in the vertical direction. Used for *fixed* and *spacing* """
             self.hwidth = 3
-            """ [number|string] The width of tabs in the horizontal direction. Used for *fixed* and *spacing* """
-            self.width = None
-            """ [number|string] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
+            """ [number|string=3] The width of tabs in the horizontal direction. Used for *fixed* and *spacing* """
+            self.width = 3
+            """ [number|string=3] The width of tabs in both directions. Overrides both `vwidth` and `hwidth`.
                 Used for *fixed*, *spacing*, *corner* and *annotation* """
             self.vcount = 1
             """ Number of tabs in the vertical direction. Used for *fixed* """
             self.hcount = 1
             """ Number of tabs in the horizontal direction. Used for *fixed* """
             self.mindistance = 0
-            """ [number|string] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
+            """ [number|string=0] Minimal spacing between the tabs. If there are too many tabs, their count is reduced.
                 Used for *fixed* """
             self.min_distance = None
             """ {mindistance} """
             self.spacing = 10
-            """ [number|string] The maximum spacing of the tabs. Used for *spacing* """
+            """ [number|string=10] The maximum spacing of the tabs. Used for *spacing* """
             self.cutout = 1
-            """ [number|string] When your design features open pockets on the side, this parameter specifies extra cutout
+            """ [number|string=1] When your design features open pockets on the side, this parameter specifies extra cutout
                 depth in order to ensure that a sharp corner of the pocket can be milled. Used for *full* """
             self.patchcorners = True
             """ The full tabs are appended to the nearest flat face of the PCB. If the PCB has sharp corners, you want to
@@ -211,7 +211,7 @@ class PanelizeTabs(PanelOptionsWithPlugin):
 
     def config(self, parent):
         super().config(parent)
-        if self.width:
+        if self.get_user_defined('width'):
             self.vwidth = self.hwidth = self.width
         self.add_units(('vwidth', 'hwidth', 'width', 'mindistance', 'spacing', 'cutout'))
 
@@ -223,28 +223,28 @@ class PanelizeCuts(PanelOptionsWithPlugin):
             """ *[none,mousebites,vcuts,layer,plugin] Layer: When KiKit reports it cannot perform cuts, you can render the cuts
                 into a layer with this option to understand what's going on. Shouldn't be used for the final design """
             self.drill = 0.5
-            """ [number|string] Drill size used for the *mousebites* """
+            """ [number|string=0.5] Drill size used for the *mousebites* """
             self.spacing = 0.8
-            """ [number|string] The spacing of the holes used for the *mousebites* """
+            """ [number|string=0.8] The spacing of the holes used for the *mousebites* """
             self.offset = 0
-            """ [number|string] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
+            """ [number|string=0] Specify the *mousebites* and *vcuts* offset, positive offset puts the cuts into the board,
                 negative puts the cuts into the tabs """
             self.prolong = 0
-            """ [number|string] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
+            """ [number|string=0] Distance for tangential prolongation of the cuts (to cut through the internal corner fillets
                 caused by milling). Used for *mousebites* and *layer* """
             self.clearance = 0
-            """ [number|string] Specify clearance for copper around V-cuts """
+            """ [number|string=0] Specify clearance for copper around V-cuts """
             self.cutcurves = False
             """ Specify if curves should be approximated by straight cuts (e.g., for cutting tabs on circular boards).
                 Used for *vcuts* """
             self.cut_curves = None
             """ {cutcurves} """
             self.linewidth = 0.3
-            """ [number|string] Line width to plot cuts with """
+            """ [number|string=0.3] Line width to plot cuts with """
             self.line_width = None
             """ {linewidth} """
             self.textthickness = 0.3
-            """ [number|string] Text thickness for width """
+            """ [number|string=0.3] Text thickness for width """
             self.text_thickness = None
             """ {textthickness} """
             self.textsize = 2
@@ -252,15 +252,15 @@ class PanelizeCuts(PanelOptionsWithPlugin):
             self.text_size = None
             """ {textsize} """
             self.endprolongation = 3
-            """ [number|string] Prolongation on the end of V-CUT without text """
+            """ [number|string=3] Prolongation on the end of V-CUT without text """
             self.end_prolongation = None
             """ {endprolongation} """
             self.textprolongation = 3
-            """ [number|string] Prolongation of the text size of V-CUT """
+            """ [number|string=3] Prolongation of the text size of V-CUT """
             self.text_prolongation = None
             """ {textprolongation} """
             self.textoffset = 3
-            """ [number|string] Text offset from the V-CUT """
+            """ [number|string=3] Text offset from the V-CUT """
             self.text_offset = None
             """ {textoffset} """
             self.template = 'V-CUT'
@@ -289,56 +289,56 @@ class PanelizeFraming(PanelOptionsWithPlugin):
             the boards have just a milled slot around their perimeter.
             Plugin: Uses an external python function, only `code` and `arg` are relevant """
             self.hspace = 2
-            """ [number|string] Specify the horizontal space between PCB and the frame/rail """
+            """ [number|string=2] Specify the horizontal space between PCB and the frame/rail """
             self.vspace = 2
-            """ [number|string] Specify the vertical space between PCB and the frame/rail """
-            self.space = None
-            """ [number|string] Specify the space between PCB and the frame/rail. Overrides `hspace` and `vspace` """
+            """ [number|string=2] Specify the vertical space between PCB and the frame/rail """
+            self.space = 2
+            """ [number|string=2] Specify the space between PCB and the frame/rail. Overrides `hspace` and `vspace` """
             self.width = 5
-            """ [number|string] Specify with of the rails or frame """
+            """ [number|string=5] Specify with of the rails or frame """
             self.fillet = 0
-            """ [number|string] Specify radius of fillet frame corners """
+            """ [number|string=0] Specify radius of fillet frame corners """
             self.chamfer = 0
-            """ [number|string] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
+            """ [number|string=0] Specify the size of chamfer frame corners. You can also separately specify `chamferwidth`
                 and `chamferheight` to create a non 45 degrees chamfer """
             self.chamferwidth = 0
             """ [number|string] Width of the chamfer frame corners, used for non 45 degrees chamfer """
             self.chamfer_width = None
             """ {chamferwidth} """
             self.chamferheight = 0
-            """ [number|string] Height of the chamfer frame corners, used for non 45 degrees chamfer """
+            """ [number|string=0] Height of the chamfer frame corners, used for non 45 degrees chamfer """
             self.chamfer_height = None
             """ {chamferheight} """
             self.mintotalheight = 0
-            """ [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
+            """ [number|string=0] If needed, add extra material to the rail or frame to meet the minimal requested size.
                 Useful for services that require minimal panel size """
             self.min_total_height = None
             """ {mintotalheight} """
             self.mintotalwidth = 0
-            """ [number|string] If needed, add extra material to the rail or frame to meet the minimal requested size.
+            """ [number|string=0] If needed, add extra material to the rail or frame to meet the minimal requested size.
                 Useful for services that require minimal panel size """
             self.min_total_width = None
             """ {mintotalwidth} """
             self.maxtotalheight = 10000
-            """ [number|string] Maximal height of the panel """
+            """ [number|string=10000] Maximal height of the panel """
             self.max_total_height = None
             """ {maxtotalheight} """
             self.maxtotalwidth = 10000
-            """ [number|string] Maximal width of the panel """
+            """ [number|string=10000] Maximal width of the panel """
             self.max_total_width = None
             """ {maxtotalwidth} """
             self.cuts = 'both'
             """ [none,both,v,h] Specify whether to add cuts to the corners of the frame for easy removal.
                 Used for *frame* """
             self.slotwidth = 2
-            """ [number|string] Width of the milled slot for *tightframe* """
+            """ [number|string=2] Width of the milled slot for *tightframe* """
             self.slot_width = None
             """ {slotwidth} """
         super().__init__()
 
     def config(self, parent):
         super().config(parent)
-        if self.space:
+        if self.get_user_defined('space'):
             self.hspace = self.vspace = self.space
         self.add_units(('hspace', 'vspace', 'space', 'width', 'fillet', 'chamfer', 'mintotalwidth', 'mintotalheight',
                         'slotwidth', 'chamferwidth', 'chamferheight'))
@@ -350,15 +350,15 @@ class PanelizeTooling(PanelOptionsWithPlugin):
             self.type = 'none'
             """ *[none,3hole,4hole,plugin] Add none, 3 or 4 holes to the (rail/frame of) the panel """
             self.hoffset = 0
-            """ [number|string] Horizontal offset from panel edges """
+            """ [number|string=0] Horizontal offset from panel edges """
             self.voffset = 0
-            """ [number|string] Vertical offset from panel edges """
+            """ [number|string=0] Vertical offset from panel edges """
             self.size = 1.152
-            """ [number|string] Diameter of the holes """
+            """ [number|string=1.152] Diameter of the holes """
             self.paste = False
             """ If True, the holes are included in the paste layer (therefore they appear on the stencil) """
             self.soldermaskmargin = 0
-            """ [number|string] Solder mask expansion/margin. Use 1.3mm for JLCPCB """
+            """ [number|string=0] Solder mask expansion/margin. Use 1.3mm for JLCPCB """
             self.solder_mask_margin = None
             """ {soldermaskmargin} """
         super().__init__()
@@ -374,15 +374,15 @@ class PanelizeFiducials(PanelOptions):
             self.type = 'none'
             """ *[none,3fid,4fid,plugin] Add none, 3 or 4 fiducials to the (rail/frame of) the panel """
             self.hoffset = 0
-            """ [number|string] Horizontal offset from panel edges """
+            """ [number|string=0] Horizontal offset from panel edges """
             self.voffset = 0
-            """ [number|string] Vertical offset from panel edges """
+            """ [number|string=0] Vertical offset from panel edges """
             self.coppersize = 1
-            """ [number|string] Diameter of the copper spot """
+            """ [number|string=1] Diameter of the copper spot """
             self.copper_size = None
             """ {coppersize} """
             self.opening = 1
-            """ [number|string] Diameter of the solder mask opening """
+            """ [number|string=1] Diameter of the solder mask opening """
             self.paste = False
             """ Include the fiducials in the paste layer (therefore they appear on the stencil) """
         super().__init__()
@@ -410,21 +410,21 @@ class PanelizeText(PanelOptions):
             """ [tl,tr,bl,br,mt,mb,ml,mr,c] Origin of the text. Can be one of tl, tr, bl, br (corners), mt, mb, ml, mr
                 (middle of sides), c (center). The anchors refer to the panel outline """
             self.hoffset = 0
-            """ [number|string] Specify the horizontal offset from anchor. Respects KiCAD coordinate system """
+            """ [number|string=0] Specify the horizontal offset from anchor. Respects KiCAD coordinate system """
             self.voffset = 0
-            """ [number|string] Specify the vertical offset from anchor. Respects KiCAD coordinate system """
+            """ [number|string=0] Specify the vertical offset from anchor. Respects KiCAD coordinate system """
             self.orientation = 0
-            """ [number|string] Specify the orientation (angle) """
+            """ [number|string=0] Specify the orientation (angle) """
             self.width = 1.5
-            """ [number|string] Width of the characters (the same parameters as KiCAD uses) """
+            """ [number|string=1.5] Width of the characters (the same parameters as KiCAD uses) """
             self.height = 1.5
-            """ [number|string] Height of the characters (the same parameters as KiCAD uses) """
+            """ [number|string=1.5] Height of the characters (the same parameters as KiCAD uses) """
             self.hjustify = 'center'
             """ [left,right,center] Horizontal justification of the text """
             self.vjustify = 'center'
             """ [left,right,center] Vertical justification of the text """
             self.thickness = 0.3
-            """ [number|string] Stroke thickness """
+            """ [number|string=0.3] Stroke thickness """
             self.layer = 'F.SilkS'
             """ Specify text layer """
             self.plugin = ''
@@ -448,23 +448,23 @@ class PanelizeCopperfill(PanelOptions):
             self.type = 'none'
             """ *[none,solid,hatched,hex] How to fill non-board areas of the panel with copper """
             self.clearance = 0.5
-            """ [number|string] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
+            """ [number|string=0.5] Extra clearance from the board perimeters. Suitable for, e.g., not filling the tabs with
                 copper """
             self.edgeclearance = 0.5
-            """ [number|string] Specifies clearance between the fill and panel perimeter """
+            """ [number|string=0.5] Specifies clearance between the fill and panel perimeter """
             self.edge_clearance = None
             """ {edgeclearance} """
-            self.layers = 'F.Cu,B.Cu'
-            """ [string|list(string)] List of layers to fill. Can be a comma-separated string.
+            self.layers = Optionable
+            """ [string|list(string)='F.Cu,B.Cu'] {comma_sep} List of layers to fill. Can be a comma-separated string.
                 Using *all* means all external copper layers """
             self.width = 1
-            """ [number|string] The width of the hatched strokes """
+            """ [number|string=1] The width of the hatched strokes """
             self.spacing = 1
-            """ [number|string] The space between the hatched strokes or hexagons """
+            """ [number|string=1] The space between the hatched strokes or hexagons """
             self.orientation = 45
-            """ [number|string] The orientation of the hatched strokes """
+            """ [number|string=45] The orientation of the hatched strokes """
             self.diameter = 7
-            """ [number|string] Diameter of hexagons """
+            """ [number|string=7] Diameter of hexagons """
             self.threshold = 15
             """ Remove fragments smaller than threshold. Expressed as a percentage """
         super().__init__()
@@ -474,9 +474,9 @@ class PanelizeCopperfill(PanelOptions):
         self.add_units(('width', 'spacing', 'clearance', 'edgeclearance', 'diameter'))
         self.add_angle(('orientation', ))
         self.threshold = str(self.threshold)+'%'
-        if not isinstance(self.layers, str) or self.layers != 'all':
-            if isinstance(self.layers, str):
-                self.layers = self.layers.split(',')
+        if len(self.layers) == 1 and self.layers[0] == 'all':
+            self.layers = 'all'
+        else:
             res = Layer.solve(self.layers)
             self.layers = ','.join([la.layer for la in res])
 
@@ -489,12 +489,12 @@ class PanelizePost(PanelOptions):
             self.copperfill = False
             """ Fill tabs and frame with copper (e.g., to save etchant or to increase rigidity of flex-PCB panels) """
             self.millradius = 0
-            """ [number|string] Simulate the milling operation (add fillets to the internal corners).
+            """ [number|string=0] Simulate the milling operation (add fillets to the internal corners).
                 Specify mill radius (usually 1 mm). 0 radius disables the functionality """
             self.mill_radius = None
             """ {millradius} """
             self.millradiusouter = 0
-            """ [number|string] Like `millradius`, but modifies only board outer counter.
+            """ [number|string=0] Like `millradius`, but modifies only board outer counter.
                 No internal features of the board are affected """
             self.mill_radius_outer = None
             """ {millradiusouter} """
@@ -526,7 +526,7 @@ class PanelizePost(PanelOptions):
             self.dimensions = False
             """ Draw dimensions with the panel size. """
             self.edgewidth = 0.1
-            """ [number|string] Specify line width for the Edge.Cuts of the panel """
+            """ [number|string=0.1] Specify line width for the Edge.Cuts of the panel """
             self.edge_width = None
             """ {edgewidth} """
         super().__init__()
@@ -564,15 +564,15 @@ class PanelizeSource(PanelOptions):
             self.stack = 'inherit'
             """ [inherit,2layer,4layer,6layer] Used to reduce the number of layers used for the panel """
             self.tolerance = 1
-            """ [number|string] Extra space around the PCB reported size to be included. Used for *auto* and *annotation* """
+            """ [number|string=1] Extra space around the PCB reported size to be included. Used for *auto* and *annotation* """
             self.tlx = 0
-            """ [number|string] Top left X coordinate of the rectangle used. Used for *rectangle* """
+            """ [number|string=0] Top left X coordinate of the rectangle used. Used for *rectangle* """
             self.tly = 0
-            """ [number|string] Top left Y coordinate of the rectangle used. Used for *rectangle* """
+            """ [number|string=0] Top left Y coordinate of the rectangle used. Used for *rectangle* """
             self.brx = 0
-            """ [number|string] Bottom right X coordinate of the rectangle used. Used for *rectangle* """
+            """ [number|string=0] Bottom right X coordinate of the rectangle used. Used for *rectangle* """
             self.bry = 0
-            """ [number|string] Bottom right Y coordinate of the rectangle used. Used for *rectangle* """
+            """ [number|string=0] Bottom right Y coordinate of the rectangle used. Used for *rectangle* """
             self.ref = ''
             """ Reference for the kikit:Board footprint used to select the contour. Used for *annotation* """
         super().__init__()
@@ -591,35 +591,35 @@ class PanelizeConfig(PanelOptions):
             self.extends = ''
             """ A configuration to use as base for this one. Use the following format: `OUTPUT_NAME[CFG_NAME]` """
             self.page = PanelizePage
-            """ *[dict] Sets page size on the resulting panel and position the panel in the page """
+            """ *[dict=null] Sets page size on the resulting panel and position the panel in the page """
             self.layout = PanelizeLayout
-            """ *[dict] Layout used for the panel """
+            """ *[dict=null] Layout used for the panel """
             self.tabs = PanelizeTabs
-            """ *[dict] Style of the tabs used to join the PCB copies """
+            """ *[dict=null] Style of the tabs used to join the PCB copies """
             self.cuts = PanelizeCuts
-            """ *[dict] Specify how to perform the cuts on the tabs separating the board """
+            """ *[dict=null] Specify how to perform the cuts on the tabs separating the board """
             self.framing = PanelizeFraming
-            """ *[dict] Specify the frame around the boards """
+            """ *[dict=null] Specify the frame around the boards """
             self.tooling = PanelizeTooling
-            """ *[dict] Used to add tooling holes to the (rail/frame of) the panel """
+            """ *[dict=null] Used to add tooling holes to the (rail/frame of) the panel """
             self.fiducials = PanelizeFiducials
-            """ *[dict] Used to add fiducial marks to the (rail/frame of) the panel """
+            """ *[dict=null] Used to add fiducial marks to the (rail/frame of) the panel """
             self.text = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.text2 = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.text3 = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.text4 = PanelizeText
-            """ [dict] Used to add text to the panel """
+            """ [dict=null] Used to add text to the panel """
             self.copperfill = PanelizeCopperfill
-            """ [dict] Fill non-board areas of the panel with copper """
+            """ [dict=null] Fill non-board areas of the panel with copper """
             self.post = PanelizePost
-            """ [dict] Finishing touches to the panel """
+            """ [dict=null] Finishing touches to the panel """
             self.debug = PanelizeDebug
-            """ [dict] Debug options """
+            """ [dict=null] Debug options """
             self.source = PanelizeSource
-            """ [dict] Used to adjust details of which part of the PCB is panelized """
+            """ [dict=null] Used to adjust details of which part of the PCB is panelized """
             self.expand_text = True
             """ Expand text variables and KiBot %X markers in text objects """
         super().__init__()
@@ -635,10 +635,12 @@ class PanelizeConfig(PanelOptions):
         if name_is_number:
             raise KiPlotConfigurationError("Don't use a number as name, this can be confused with an index ({})".
                                            format(self.name))
-        # Make None all things not specified
-        for k, v in self.get_attrs_gen():
-            if isinstance(v, type):
-                setattr(self, k, None)
+
+    def __str__(self):
+        txt = f'`{self.name}`'
+        if self.extends:
+            txt += f' (extends: {self.extends})'
+        return txt
 
 
 class PanelizeOptions(VariantOptions):
@@ -649,7 +651,7 @@ class PanelizeOptions(VariantOptions):
             self.output = GS.def_global_output
             """ *Filename for the output (%i=panel, %x=kicad_pcb) """
             self.configs = PanelizeConfig
-            """ *[list(dict)|list(string)|string] One or more configurations used to create the panel.
+            """ *[list(dict)|list(string)|string=[]] One or more configurations used to create the panel.
                 Use a string to include an external configuration, i.e. `myDefault.json`.
                 You can also include a preset using `:name`, i.e. `:vcuts`.
                 Use a dict to specify the options using the KiBot YAML file """
@@ -747,10 +749,7 @@ class PanelizeOptions(VariantOptions):
             list(map(self.solve_extends, filter(lambda x: 'extends' in x, configs)))
         super().config(parent)
         self.units = KIKIT_UNIT_ALIASES.get(self.units, self.units)
-        if isinstance(self.configs, type):
-            logger.warning(W_PANELEMPTY+'Generating a panel with default options, not very useful')
-            self.configs = []
-        elif isinstance(self.configs, str):
+        if isinstance(self.configs, str):
             self.configs = [self.configs]
         for c, cfg in enumerate(self.configs):
             if isinstance(cfg, str):
@@ -791,6 +790,8 @@ class PanelizeOptions(VariantOptions):
         cmd_kikit, version = self.ensure_tool_get_ver('KiKit')
         if GS.ki5 and version >= (1, 1, 0):
             raise KiPlotConfigurationError("Installed KiKit doesn't support KiCad 5")
+        if not self.get_user_defined('configs'):
+            logger.warning(W_PANELEMPTY+'Generating a panel with default options, not very useful')
         super().run(output)
         fname = self.save_tmp_board_if_variant(new_title=self.title, do_3D=True)
         # Create the command
@@ -846,7 +847,7 @@ class Panelize(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PanelizeOptions
-            """ *[dict] Options for the `Panelize` output """
+            """ *[dict={}] Options for the `Panelize` output """
         self._category = 'PCB/fabrication'
 
     @staticmethod

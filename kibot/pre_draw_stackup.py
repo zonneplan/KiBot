@@ -22,7 +22,7 @@ class SUColumns(Optionable):
         super().__init__()
         self._unknown_is_error = True
         with document:
-            self.type = ''
+            self.type = 'drawing'
             """ *[gerber,drawing,description,thickness] The gerber column contains the
                 file names for the gerber files. Is usable only when a gerber output is
                 provided.
@@ -38,7 +38,9 @@ class SUColumns(Optionable):
             self.side = 'auto'
             """ [auto,right,left] Side for the dimension used for the *thickness* type.
                 When using *auto* the side is detected looking for a *drawing* column """
-        self._type_example = 'drawing'
+
+    def __str__(self):
+        return f'{self.type} {self.width} {self.side}'
 
 
 class DrawStackupOptions(Optionable):
@@ -71,9 +73,9 @@ class DrawStackupOptions(Optionable):
             """ *Name of the output used to generate the gerbers. This is needed only when you
                 want to include the *gerber* column, containing the gerber file names """
             self.columns = SUColumns
-            """ *[list(dict)|list(string)] List of columns to display.
+            """ *[list(dict)|list(string)=?] List of columns to display.
                 Can be just the name of the column.
-                Available columns are *gerber*, *drawing* and *description*.
+                Available columns are *gerber*, *drawing*, *thickness* and *description*.
                 When empty KiBot will add them in the above order, skipping the *gerber* if not available """
         super().__init__()
         self._unknown_is_error = True
@@ -261,6 +263,7 @@ def draw_thickness(g, x, y, w, font_h, first, last, layer, right=True):
     y1 = int(y+(first+0.5)*font_h)
     y2 = int(y+(last+0.5)*font_h)
     dim = pcbnew.PCB_DIM_ALIGNED(GS.board, pcbnew.PCB_DIM_ALIGNED_T)
+    dim.SetLayer(layer)
     pos = dim.GetStart()
     pos.x = x1
     pos.y = y1
@@ -392,6 +395,7 @@ def update_drawing_group(g, pos_x, pos_y, width, height, tlayer, border, gerber,
 
 
 def update_drawing(ops, parent):
+    load_board()
     gerber = look_for_output(ops.gerber, 'gerber', parent, {'gerber'}) if ops.gerber else None
     if gerber:
         targets, _, _ = get_output_targets(ops.gerber, parent)
@@ -419,7 +423,8 @@ def update_drawing(ops, parent):
 
 @pre_class
 class Draw_Stackup(BasePreFlight):  # noqa: F821
-    """ [boolean=False|dict] Draw the PCB stackup. Needs KiCad 7 or newer.
+    """ Draw Stackup
+        Draw the PCB stackup. Needs KiCad 7 or newer.
         To specify the position and size of the drawing you can use two methods.
         You can specify it using the *pos_x*, *pos_y*, *width*, *height* and *layer* options.
         But you can also draw a rectangle in your PCB with the size and layer you want.
@@ -427,15 +432,26 @@ class Draw_Stackup(BasePreFlight):  # noqa: F821
         (right mouse button, then Grouping -> Group). Now edit the group and change its name
         to *kibot_stackup*. After running this preflight the rectangle will contain the
         stackup """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+    def __init__(self):
+        super().__init__()
         self._pcb_related = True
+        with document:
+            self.draw_stackup = DrawStackupOptions
+            """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
-    def config(self):
-        o = DrawStackupOptions()
-        o.set_tree({'enabled': self._value} if isinstance(self._value, bool) else self._value)
-        o.config(self)
-        self._value = o
+    def __str__(self):
+        v = self.draw_stackup
+        if isinstance(v, bool):
+            return super().__str__()
+        return f'{self.type}: {v.enabled} ({[c.type for c in v._columns]})'
+
+    def config(self, parent):
+        super().config(parent)
+        if isinstance(self.draw_stackup, bool):
+            self._value = DrawStackupOptions()
+            self._value.config(self)
+        else:
+            self._value = self.draw_stackup
 
     def apply(self):
         if not GS.ki7:
@@ -443,5 +459,4 @@ class Draw_Stackup(BasePreFlight):  # noqa: F821
         if not GS.stackup:
             raise KiPlotConfigurationError('Unable to find the stackup information')
         if update_drawing(self._value, self):
-            GS.make_bkp(GS.pcb_file)
-            GS.board.Save(GS.pcb_file)
+            GS.save_pcb()

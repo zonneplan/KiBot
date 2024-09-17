@@ -11,7 +11,6 @@ Dependencies:
 """
 from .gs import GS
 from .out_any_pcb_print import Any_PCB_PrintOptions
-from .error import KiPlotConfigurationError
 from .misc import FONT_HELP_TEXT
 from .macros import macros, document, output_class  # noqa: F401
 from .layer import Layer
@@ -42,15 +41,12 @@ class PDF_PCB_Print(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PDF_PCB_PrintOptions
-            """ *[dict] Options for the `pdf_pcb_print` output """
+            """ *[dict={}] Options for the `pdf_pcb_print` output """
             self.layers = Layer
-            """ *[list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
-                List of PCB layers to include in the PDF """
+            """ *[list(dict)|list(string)|string='all'] [all,selected,copper,technical,user,inners,outers,*] List
+                of PCB layers to include in the PDF """
         self._category = 'PCB/docs'
 
     def config(self, parent):
         super().config(parent)
-        # We need layers
-        if isinstance(self.layers, type):
-            raise KiPlotConfigurationError("Missing `layers` list")
         self.options.set_layers(self.layers)

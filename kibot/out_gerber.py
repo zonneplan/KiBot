@@ -12,7 +12,6 @@ from .kiplot import register_xmp_import
 from .misc import FONT_HELP_TEXT
 from .optionable import Optionable
 from .out_any_layer import AnyLayer, AnyLayerOptions
-from .error import KiPlotConfigurationError
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -31,8 +30,8 @@ class GerberOptions(AnyLayerOptions):
             """ *Subtract the solder mask from the silk screen """
             self.use_protel_extensions = False
             """ *Use legacy Protel file extensions """
-            self._gerber_precision = 4.6
-            """ This the gerber coordinate format, can be 4.5 or 4.6 """
+            self.gerber_precision = 4.6
+            """ [4.5;4.6] This is the gerber coordinate format, can be 4.5 or 4.6 """
             self.create_gerber_job_file = True
             """ *Creates a file with information about all the generated gerbers.
                 You can use it in gerbview to load all gerbers at once """
@@ -51,16 +50,6 @@ class GerberOptions(AnyLayerOptions):
         self._plot_format = PLOT_FORMAT_GERBER
         if GS.global_output is not None:
             self.gerber_job_file = GS.global_output
-
-    @property
-    def gerber_precision(self):
-        return self._gerber_precision
-
-    @gerber_precision.setter
-    def gerber_precision(self, val):
-        if val != 4.5 and val != 4.6:
-            raise KiPlotConfigurationError("`gerber_precision` must be 4.5 or 4.6")
-        self._gerber_precision = val
 
     def _configure_plot_ctrl(self, po, output_dir):
         super()._configure_plot_ctrl(po, output_dir)
@@ -113,7 +102,7 @@ class Gerber(AnyLayer):
         super().__init__()
         with document:
             self.options = GerberOptions
-            """ *[dict] Options for the `gerber` output """
+            """ *[dict={}] Options for the `gerber` output """
         self._category = 'PCB/fabrication/gerber'
 
     @staticmethod

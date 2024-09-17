@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Note: the algorithm used to detect the PCB outline is adapted from KiKit project.
 from itertools import chain
@@ -107,6 +107,12 @@ class SubPCBOptions(PanelOptions):
             self.center_result = True
             """ Move the resulting PCB to the center of the page.
                 You can disable it only for the internal tool, KiKit should always do it """
+        self._name_example = 'a_sub_pcb'
+        self._reference_example = 'BRD1'
+
+    def __str__(self):
+        res = self.name+' '
+        return res+(self.reference if self.reference else f'({self.tlx},{self.tly}) ({self.brx},{self.bry})')
 
     def is_zero(self, val):
         return isinstance(val, (int, float)) and val == 0
@@ -120,11 +126,9 @@ class SubPCBOptions(PanelOptions):
            self.is_zero(self.bry)):
             raise KiPlotConfigurationError('No reference or rectangle specified for {} sub-PCB'.format(self.name))
         self.add_units(('tlx', 'tly', 'brx', 'bry', 'tolerance'), self.units, convert=True)
-        self.board_rect = GS.create_eda_rect(self._tlx, self._tly, self._brx, self._bry)
         if not self._tolerance and GS.ki5:
             # KiCad 5 workaround: rounding issues generate 1 fm of error. So we change to 2 fm tolerance.
             self._tolerance = 2
-        self.board_rect.Inflate(int(self._tolerance))
 
     def get_separate_source(self):
         if self.reference:
@@ -178,7 +182,7 @@ class SubPCBOptions(PanelOptions):
             if with_width:
                 width = m.GetWidth()
                 m.SetWidth(0)
-            if not self.board_rect.Contains(m.GetBoundingBox()):
+            if not self._board_rect.Contains(m.GetBoundingBox()):
                 GS.board.Remove(m)
                 self._removed.append(m)
             if with_width:
@@ -190,14 +194,14 @@ class SubPCBOptions(PanelOptions):
             We also check their position, not their BBox. """
         for m in iter:
             ref = m.GetReference()
-            if not self.board_rect.Contains(m.GetPosition()) or (self.strip_annotation and ref == self.reference):
+            if not self._board_rect.Contains(m.GetPosition()) or (self.strip_annotation and ref == self.reference):
                 GS.board.Remove(m)
                 self._removed.append(m)
                 if comps_hash:
                     self._excl_by_sub_pcb.add(ref)
 
     def remove_outside(self, comps_hash):
-        """ Remove footprints, drawings, text and zones outside `board_rect` rectangle.
+        """ Remove footprints, drawings, text and zones outside `_board_rect` rectangle.
             Keep them in a list to restore later. """
         self._removed = []
         self._remove_modules(GS.get_modules(), comps_hash)
@@ -299,7 +303,7 @@ class SubPCBOptions(PanelOptions):
         paper_center_x = GS.from_mm(pcb.paper_w/2)
         paper_center_y = GS.from_mm(pcb.paper_h/2)
         # Compute the offset to make it centered
-        self._moved = self.board_rect.GetCenter()
+        self._moved = self._board_rect.GetCenter()
         self._moved.x = paper_center_x-self._moved.x
         self._moved.y = paper_center_y-self._moved.y
         self.move_objects()
@@ -307,11 +311,13 @@ class SubPCBOptions(PanelOptions):
     def apply(self, comps_hash):
         """ Apply the sub-PCB selection. """
         self._excl_by_sub_pcb = set()
+        self._board_rect = GS.create_eda_rect(self._tlx, self._tly, self._brx, self._bry)
+        self._board_rect.Inflate(int(self._tolerance))
         if self.tool == 'internal':
             if self.reference:
                 # Get the rectangle containing the board edge pointed by the reference
-                self.board_rect = self.search_reference_rect(self.reference)
-                self.board_rect.Inflate(int(self._tolerance))
+                self._board_rect = self.search_reference_rect(self.reference)
+                self._board_rect.Inflate(int(self._tolerance))
             # Using a rectangle
             self.remove_outside(comps_hash)
             # Center the PCB
@@ -319,6 +325,8 @@ class SubPCBOptions(PanelOptions):
         else:
             # Using KiKit:
             self.separate_board(comps_hash)
+        # This can't be cloned
+        self._board_rect = None
 
     def unload_board(self, comps_hash):
         # Undo the sub-PCB: just reload the PCB
@@ -364,32 +372,27 @@ class BaseVariant(RegVariant):
             """ Text to use as the replacement for %v expansion """
             # * Filters
             self.pre_transform = Optionable
-            """ [string|list(string)=''] Name of the filter to transform fields before applying other filters.
+            """ [string|list(string)='_null'] Name of the filter to transform fields before applying other filters.
                 Use '_var_rename' to transform VARIANT:FIELD fields.
                 Use '_var_rename_kicost' to transform kicost.VARIANT:FIELD fields.
                 Use '_kicost_rename' to apply KiCost field rename rules """
             self.exclude_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to exclude components from BoM processing.
+            """ [string|list(string)='_null'] Name of the filter to exclude components from BoM processing.
                 Use '_mechanical' for the default KiBoM behavior """
             self.dnf_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as 'Do Not Fit'.
+            """ [string|list(string)='_null'] Name of the filter to mark components as 'Do Not Fit'.
                 Use '_kibom_dnf' for the default KiBoM behavior.
                 Use '_kicost_dnp'' for the default KiCost behavior """
             self.dnc_filter = Optionable
-            """ [string|list(string)=''] Name of the filter to mark components as 'Do Not Change'.
+            """ [string|list(string)='_null'] Name of the filter to mark components as 'Do Not Change'.
                 Use '_kibom_dnc' for the default KiBoM behavior """
             self.sub_pcbs = SubPCBOptions
-            """ [list(dict)] Used for multi-board workflows as defined by KiKit.
+            """ [list(dict)=[]] Used for multi-board workflows as defined by KiKit.
                 I don't recommend using it, for detail read
                 [this](https://github.com/INTI-CMNB/KiBot/tree/master/docs/1_SCH_2_part_PCBs).
                 But if you really need it you can define the sub-PCBs here.
                 Then you just use *VARIANT[SUB_PCB_NAME]* instead of just *VARIANT* """
         self._sub_pcb = None
-
-    def config(self, parent):
-        super().config(parent)
-        if isinstance(self.sub_pcbs, type):
-            self.sub_pcbs = []
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """
@@ -398,6 +401,13 @@ class BaseVariant(RegVariant):
     def matches_variant(self, text):
         """ This is a generic match mechanism used by variants that doesn't really have a matching mechanism """
         return self.name.lower() == text.lower()
+
+    def fix_doc(self, name, value=None):
+        what = '_null'
+        if value is None:
+            value = ''
+            what = "='"+what+"'"
+        self.set_doc(name, self.get_doc_simple(name).replace(what, value))
 
     def filter(self, comps):
         # Apply all the filters

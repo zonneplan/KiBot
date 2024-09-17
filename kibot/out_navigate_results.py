@@ -295,9 +295,7 @@ class Navigate_ResultsOptions(BaseOptions):
     def config(self, parent):
         super().config(parent)
         # Logo
-        if isinstance(self.logo, type):
-            self.logo = ''
-        elif isinstance(self.logo, bool):
+        if isinstance(self.logo, bool):
             self.logo = '' if self.logo else None
         elif self.logo:
             self.logo = os.path.abspath(self.logo)
@@ -315,9 +313,7 @@ class Navigate_ResultsOptions(BaseOptions):
             self._logo_w = self._logo_h = 0
             self._logo_data = ''
         # Title URL
-        if isinstance(self.title_url, type):
-            self.title_url = ''
-        elif isinstance(self.title_url, bool):
+        if isinstance(self.title_url, bool):
             self.title_url = '' if self.title_url else None
 
     def add_to_tree(self, cat, out, o_tree):
@@ -639,7 +635,7 @@ class Navigate_ResultsOptions(BaseOptions):
                 # Skip outputs that aren't generated in a regular run
                 continue
             config_output(o)
-            cat = force_list(o.category)
+            cat = o.category
             if cat is None:
                 continue
             for c in cat:
@@ -783,7 +779,7 @@ class Navigate_Results(BaseOutput):  # noqa: F821
         self.priority = 10
         with document:
             self.options = Navigate_ResultsOptions
-            """ *[dict] Options for the `navigate_results` output """
+            """ *[dict={}] Options for the `navigate_results` output """
         # The help is inherited and already mentions the default priority
         self.fix_priority_help()
         self._any_related = True

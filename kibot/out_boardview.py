@@ -6,8 +6,9 @@
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/whitequark/kicad-boardview
 import re
-from pcbnew import SHAPE_POLY_SET
+from pcbnew import SHAPE_POLY_SET, PAD_SHAPE_CIRCLE
 from .gs import GS
+from .misc import UI_SMD, UI_VIRTUAL
 from .out_base import VariantOptions
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
@@ -42,7 +43,7 @@ def natural_sort_key(s):
                        for text in re.compile('([0-9]+)').split(s)])
 
 
-def convert(pcb, brd):
+def convert_brd(pcb, brd, do_sort):
     # Board outline
     outlines = SHAPE_POLY_SET()
     if GS.ki5:
@@ -87,8 +88,10 @@ def convert(pcb, brd):
 
     # Parts
     module_list = GS.get_modules()
+    if do_sort:
+        module_list = sorted(module_list, key=lambda mod: mod.GetReference())
     modules = []
-    for m in sorted(module_list, key=lambda mod: mod.GetReference()):
+    for m in module_list:
         if not skip_module(m):
             modules.append(m)
 
@@ -128,8 +131,10 @@ def convert(pcb, brd):
 
     # Nails
     module_list = GS.get_modules()
+    if do_sort:
+        module_list = sorted(module_list, key=lambda mod: mod.GetReference())
     testpoints = []
-    for m in sorted(module_list, key=lambda mod: mod.GetReference()):
+    for m in module_list:
         if not skip_module(m, tp=True):
             pads_list = m.Pads()
             for pad in sorted(pads_list, key=lambda pad: natural_sort_key(pad.GetName())):
@@ -148,21 +153,130 @@ def convert(pcb, brd):
     brd.write("\n")
 
 
+def get_type_name(m):
+    if GS.ki5:
+        attrs = m.GetAttributes()
+        if attrs == UI_SMD:
+            return 'SMD'
+        if attrs == UI_VIRTUAL:
+            return 'VIRTUAL'
+        return 'THT'
+    return m.GetTypeName()
+
+
+def convert_bvr(pcb, bvr):
+    bvr.write("BVRAW_FORMAT_3\n")
+
+    outlines = SHAPE_POLY_SET()
+    if GS.ki5:
+        pcb.GetBoardPolygonOutlines(outlines, "")
+        outline = outlines.Outline(0)
+        outline_points = [outline.Point(n) for n in range(outline.PointCount())]
+    else:
+        pcb.GetBoardPolygonOutlines(outlines)
+        outline = outlines.Outline(0)
+        outline_points = [outline.GetPoint(n) for n in range(outline.GetPointCount())]
+    max((p.x for p in outline_points))
+    outline_maxy = max((p.y for p in outline_points))
+
+    module_list = GS.get_modules()
+    modules = []
+    for module in module_list:
+        if not skip_module(module):
+            modules.append(module)
+
+        ref = module.GetReference()
+        flipped = module.IsFlipped()
+        side = "B" if flipped else "T"
+        mount = get_type_name(module)
+        pads_list = module.Pads()
+
+        bvr.write("\n")
+        bvr.write(f"PART_NAME {ref}\n")
+        bvr.write(f"   PART_SIDE {side}\n")
+        bvr.write("   PART_ORIGIN 0.000 0.000\n")
+        bvr.write(f"   PART_MOUNT {mount}\n")
+        bvr.write("\n")
+
+        for pad in sorted(pads_list, key=lambda pad: natural_sort_key(pad.GetName())):
+            pin_num = pad.GetName() if GS.ki5 else pad.GetNumber()
+            net = pad.GetNetname()
+            pad_bbox = pad.GetBoundingBox()
+            pad_size = pad.GetSize()
+
+            x_center = (pad_bbox.GetLeft() + pad_bbox.GetRight()) / 2
+            y_center = (pad_bbox.GetTop() + pad_bbox.GetBottom()) / 2
+            x = coord(x_center)
+            y = y_coord(outline_maxy, y_center, flipped)
+
+            if flipped:
+                y = coord(outline_maxy - y_center)
+
+            if pad.GetShape() == PAD_SHAPE_CIRCLE:
+                radius = coord(pad_size.x / 1.6)
+            else:
+                smaller_dimension = min(pad_size.x, pad_size.y)
+                radius = coord(smaller_dimension / 1.6)
+
+            bvr.write(f"   PIN_ID {ref}-{pin_num}\n")
+            bvr.write(f"      PIN_NUMBER {pin_num}\n")
+            bvr.write(f"      PIN_NAME {pin_num}\n")
+            bvr.write(f"      PIN_SIDE {side}\n")
+            bvr.write(f"      PIN_ORIGIN {x} {y}\n")
+            bvr.write(f"      PIN_RADIUS {radius}\n")
+            bvr.write(f"      PIN_NET {net}\n")
+            bvr.write("      PIN_TYPE 2\n")
+            bvr.write("      PIN_COMMENT\n")
+            bvr.write("   PIN_END\n")
+            bvr.write("\n")
+
+        bvr.write("PART_END\n")
+        bvr.write("\n")
+
+        first_point = outline_points[0]
+        outline_pts = ""
+
+    for point in outline_points:
+        x = coord(point.x)
+        y = y_coord(outline_maxy, point.y, False)
+        outline_pts += (f"{x} {y} ")
+
+    x = coord(first_point.x)
+    y = y_coord(outline_maxy, first_point.y, False)
+    outline_pts += (f"{x} {y}")
+
+    bvr.write("OUTLINE_POINTS ")
+    bvr.write(outline_pts)
+
+
 class BoardViewOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
-            """ *Filename for the output (%i=boardview, %x=brd) """
+            """ *Filename for the output (%i=boardview, %x=brd/brv) """
+            self.sorted = True
+            """ Sort components by reference. Disable this option to get a file closer to what
+                kicad-boardview generates """
+            self.format = 'BRD'
+            """ [BRD,BVR] Format used for the generated file. The BVR file format is bigger but keeps
+                more information, like alphanumeric pin names """
         super().__init__()
         self._expand_id = 'boardview'
         self._expand_ext = 'brd'
         self.help_only_sub_pcbs()
 
+    def config(self, parent):
+        super().config(parent)
+        self._expand_ext = self.format.lower()
+
     def run(self, output):
         super().run(output)
         self.filter_pcb_components()
         with open(output, 'wt') as f:
-            convert(GS.board, f)
+            if self.format == 'BRD':
+                convert_brd(GS.board, f, self.sorted)
+            else:
+                convert_bvr(GS.board, f)
         self.unfilter_pcb_components()
 
     def get_targets(self, out_dir):
@@ -180,7 +294,7 @@ class BoardView(BaseOutput):  # noqa: F821
         self._category = ['PCB/repair', 'PCB/fabrication/assembly']
         with document:
             self.options = BoardViewOptions
-            """ *[dict] Options for the `boardview` output """
+            """ *[dict={}] Options for the `boardview` output """
 
     @staticmethod
     def get_conf_examples(name, layers):

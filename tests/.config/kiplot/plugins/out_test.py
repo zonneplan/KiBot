@@ -26,7 +26,7 @@ class Test(BaseOutput):  # noqa: F821
         logger.debug('Creating a test')
         with document:
             self.options = TestOptions
-            """ [dict] Options for the `test` output """  # pragma: no cover
+            """ [dict={}] Options for the `test` output """  # pragma: no cover
 
     def run(self, output_dir):
         logger.debug("Running test plug-in with "+output_dir)

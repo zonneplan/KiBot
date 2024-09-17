@@ -5,13 +5,12 @@
 # Project: KiBot (formerly KiPlot)
 """ Base class for output options """
 import difflib
-import inspect
 import os
 import re
 from re import compile
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS
+from .misc import W_UNKOPS, DISTRIBUTORS_STUBS, DISTRIBUTORS_STUBS_SEPS, typeof, RE_LEN
 from . import log
 
 logger = log.get_logger()
@@ -22,10 +21,6 @@ for n in range(1, 10):
     PATTERNS_DEP.append('%C'+str(n))
 
 
-def do_filter(v):
-    return inspect.isclass(v) or not (callable(v) or isinstance(v, (dict, list)))
-
-
 def _cl(text):
     """ Eliminates dangerous characters from the text """
     return re.sub(r'[\\\/\?%\*:|"<>]', '_', text)
@@ -34,8 +29,9 @@ def _cl(text):
 class Optionable(object):
     """ A class to validate and hold configuration outputs/options.
         Is configured from a dict and the collected values are stored in its attributes. """
-    _str_values_re = compile(r"string=.*\] \[([^\]]+)\]")
-    _num_range_re = compile(r"number=.*\] \[(-?\d+),(-?\d+)\]")
+    _str_values_re = compile(r"string.*\](?:\[.*\])* \[([^\]]+)\]")
+    _num_range_re = compile(r"number.*\](?:\[.*\])* \[(-?[\d\.]+),(-?[\d\.]+)\]")
+    _num_values_re = compile(r"number.*\](?:\[.*\])* \[([^\]]+)\]")
     _default = None
 
     _color_re = re.compile(r"#("+HEX_DIGIT+"){3}$")
@@ -63,15 +59,43 @@ class Optionable(object):
                     logger.debug('Using global `{}`=`{}`'.format(var, glb))
 
     @staticmethod
-    def _check_str(key, val, doc):
+    def _promote_str_to_list(val, doc, valid):
+        if 'list(string)' not in valid or val == '_null':
+            return val, False
+        # Promote strings to list of strings
+        if not val:
+            return [], True
+        if ',' in val and '{comma_sep}' in doc:
+            return [v.strip() for v in val.split(',')], True
+        return [val], True
+
+    @staticmethod
+    def _check_str(key, val, doc, valid):
         if not isinstance(val, str):
             raise KiPlotConfigurationError("Option `{}` must be a string".format(key))
+        new_val, is_list = Optionable._promote_str_to_list(val, doc, valid)
+        if '{no_case}' in doc:
+            new_val = new_val.lower() if not is_list else [v.lower() for v in new_val]
         # If the docstring specifies the allowed values in the form [v1,v2...] enforce it
         m = Optionable._str_values_re.search(doc)
         if m:
-            vals = m.group(1).split(',')
-            if val not in vals:
-                raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
+            vals = [v.strip() for v in m.group(1).split(',')]
+            if '*' not in vals:
+                if not is_list:
+                    wrong = val not in vals
+                else:
+                    for v in new_val:
+                        if v not in vals:
+                            wrong = True
+                            val = v
+                            break
+                    else:
+                        wrong = False
+                if wrong:
+                    raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
+        if is_list:
+            Optionable._check_list_len(key, new_val, doc)
+        return new_val
 
     @staticmethod
     def _check_num(key, val, doc):
@@ -84,11 +108,28 @@ class Optionable(object):
             max = float(m.group(2))
             if val < min or val > max:
                 raise KiPlotConfigurationError("Option `{}` outside its range [{},{}]".format(key, min, max))
+            return
+        m = Optionable._num_values_re.search(doc)
+        if m:
+            vals = [float(v) for v in m.group(1).split(';')]
+            if val not in vals and '*' not in vals:
+                raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(key, vals, val))
 
     @staticmethod
     def _check_bool(key, val):
         if not isinstance(val, bool):
             raise KiPlotConfigurationError("Option `{}` must be true/false".format(key))
+
+    @staticmethod
+    def _check_list_len(k, v, doc):
+        m = re.search(RE_LEN, doc)
+        if m:
+            items = int(m.group(1))
+            if len(v) != items:
+                raise KiPlotConfigurationError(f"The `{k}` must contain {items} values ({v})")
+
+    def get_doc_simple(self, name):
+        return getattr(self, '_help_'+name)
 
     def get_doc(self, name, no_basic=False):
         try:
@@ -96,12 +137,15 @@ class Optionable(object):
         except AttributeError:
             return None, name, False
         if doc[0] == '{':
-            alias = doc[1:-1]
-            return getattr(self, '_help_'+alias).strip(), alias, True
+            is_alias = True
+            name = doc[1:-1]
+            doc = getattr(self, '_help_'+name).strip()
+        else:
+            is_alias = False
         if no_basic and doc[0] == '*':
             # Remove the 'basic' indicator
             doc = doc[1:]
-        return doc, name, False
+        return doc, name, is_alias
 
     def is_basic_option(self, name):
         help, _, _ = self.get_doc(name)
@@ -114,21 +158,53 @@ class Optionable(object):
     def set_doc(self, name, text):
         setattr(self, '_help_'+name, text)
 
-    @staticmethod
-    def _typeof(v):
-        if isinstance(v, bool):
-            return 'boolean'
-        if isinstance(v, (int, float)):
-            return 'number'
-        if isinstance(v, str):
-            return 'string'
-        if isinstance(v, dict):
-            return 'dict'
-        if isinstance(v, list):
-            if len(v) == 0:
-                return 'list(string)'
-            return 'list({})'.format(Optionable._typeof(v[0]))
-        return 'None'
+    def get_valid_types(self, doc, skip_extra=False):
+        assert doc[0] == '[', doc[0]+'\n'+str(self.__dict__)
+        # Separate the valid types for this key
+        sections = doc[1:].split('] ')
+        valid = sections[0].split('|')
+        real_help = ' '+'] '.join([x for x in sections[1:] if x[0] != '['])
+        # Remove the XXXX=Value
+        def_val = None
+        if '=' in valid[-1]:
+            res = valid[-1].split('=')
+            valid[-1] = res[0]
+            def_val = '='.join(res[1:])
+        validation = []
+        if not skip_extra:
+            for v in valid:
+                if v == 'number' or v == 'list(number)':
+                    m = Optionable._num_range_re.search(doc)
+                    if m:
+                        min = float(m.group(1))
+                        if int(min) == min:
+                            min = int(min)
+                        max = float(m.group(2))
+                        if int(max) == max:
+                            max = int(max)
+                        validation.append((min, max))
+                        continue
+                    m = Optionable._num_values_re.search(doc)
+                    if m:
+                        validation.append(('C', m.group(1).split(';')))
+                        continue
+                if v == 'string' or v == 'list(string)':
+                    m = Optionable._str_values_re.search(doc)
+                    if m:
+                        validation.append([v.strip() for v in m.group(1).split(',')])
+                        continue
+                validation.append(None)
+        return valid, validation, def_val, real_help
+
+    def check_string_dict(self, v_type, valid, k, v):
+        if v_type != 'dict' or 'string_dict' not in valid:
+            return False
+        # A particular case for dict
+        for key, value in v.items():
+            if not isinstance(value, str):
+                raise KiPlotConfigurationError(f"Key `{key}` of option `{k}` must be a string, not"
+                                               f" `{typeof(value,Optionable)}`")
+        return True
 
     def _perform_config_mapping(self):
         """ Map the options to class attributes """
@@ -150,32 +226,29 @@ class Optionable(object):
                 continue
             # Check the data type
             cur_doc, alias, is_alias = self.get_doc(k, no_basic=True)
+            assert cur_doc[0] == '[', cur_doc[0]
+            # Separate the valid types for this key
+            valid, _, def_val, real_help = self.get_valid_types(cur_doc, skip_extra=True)
+            if isinstance(v, type):
+                # An optionable
+                v.set_default(def_val)
             cur_val = getattr(self, alias)
-            if cur_doc[0] == '[':
-                # Separate the valid types for this key
-                valid = cur_doc[1:].split(']')[0].split('|')
-                # Remove the XXXX=Value
-                if '=' in valid[-1]:
-                    valid[-1] = valid[-1].split('=')[0]
-                # Get the type used by the user as a string
-                v_type = Optionable._typeof(v)
-                if v_type not in valid:
-                    # Not a valid type for this key
-                    if v_type == 'None':
-                        raise KiPlotConfigurationError("Empty option `{}`".format(k))
-                    if len(valid) == 1:
-                        raise KiPlotConfigurationError("Option `{}` must be a {} not `{}`".format(k, valid[0], v_type))
-                    else:
-                        raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(k, valid, v_type))
-            else:
-                valid = None
-                v_type = Optionable._typeof(cur_val)
+            # Get the type used by the user as a string
+            v_type = typeof(v, Optionable, valid)
+            if v_type not in valid and not self.check_string_dict(v_type, valid, k, v):
+                # Not a valid type for this key
+                if v_type == 'None':
+                    raise KiPlotConfigurationError("Empty option `{}`".format(k))
+                if len(valid) == 1:
+                    raise KiPlotConfigurationError("Option `{}` must be a {} not `{}`".format(k, valid[0], v_type))
+                else:
+                    raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".format(k, valid, v_type))
             if v_type == 'boolean':
                 Optionable._check_bool(k, v)
             elif v_type == 'number':
                 Optionable._check_num(k, v, cur_doc)
             elif v_type == 'string':
-                Optionable._check_str(k, v, cur_doc)
+                v = Optionable._check_str(k, v, cur_doc, valid)
             elif isinstance(cur_val, type):
                 # A class, so we need more information i.e. "[dict|string]"
                 if valid is not None:
@@ -189,26 +262,35 @@ class Optionable(object):
                     elif isinstance(v, dict):
                         # Dicts are solved using Optionable classes
                         new_val = v
-                        # Create an object for the valid class
-                        v = cur_val()
-                        # Delegate the validation to the object
-                        v.set_tree(new_val)
-                        v.config(self)
+                        if 'string_dict' not in valid:
+                            # Create an object for the valid class
+                            v = cur_val()
+                            # Delegate the validation to the object
+                            v.set_tree(new_val)
+                            v.config(self)
+                            # Promote to a list if possible
+                            if 'list(dict)' in valid:
+                                v = [v]
                     elif isinstance(v, list):
                         new_val = []
+                        filtered_valid = [t[5:-1] for t in valid if t.startswith('list(')]
+                        no_case = '{no_case}' in cur_doc
                         for element in v:
-                            e_type = 'list('+Optionable._typeof(element)+')'
-                            if e_type not in valid:
+                            e_type = typeof(element, Optionable)
+                            if e_type not in filtered_valid:
                                 raise KiPlotConfigurationError("Option `{}` must be any of {} not `{}`".
-                                                               format(element, valid, e_type))
+                                                               format(element, filtered_valid, e_type))
                             if isinstance(element, dict):
                                 nv = cur_val()
                                 nv.set_tree(element)
                                 nv.config(self)
                                 new_val.append(nv)
                             else:
+                                if no_case and isinstance(element, str):
+                                    element = element.lower()
                                 new_val.append(element)
                         v = new_val
+                        self._check_list_len(k, v, cur_doc)
             # Seems to be ok, map it
             dest_name = alias if is_alias else k
             setattr(self, dest_name, v)
@@ -226,22 +308,87 @@ class Optionable(object):
     def set_tree(self, tree):
         self._tree = tree
 
+    def do_defaults(self):
+        """ Assign the defaults to complex data types """
+        for k, v in self.get_attrs_gen():
+            if not isinstance(v, type):
+                # We only process things that points to its class (Optionable)
+                continue
+            if self.get_user_defined(k):
+                # If the user assigned a value skip it
+                continue
+            cur_doc, alias, is_alias = self.get_doc(k, no_basic=True)
+            if is_alias:
+                # Aliases ignored
+                continue
+            valid, _, def_val, real_help = self.get_valid_types(cur_doc, skip_extra=True)
+            if def_val is None:
+                # Use the class default, used for complex cases
+                self.configure_from_default(k)
+                continue
+            new_val = None
+            # TODO: Merge with adapt_default
+            if def_val == '?':
+                # The local config will creat something useful
+                continue
+            elif def_val == '{}':
+                if 'string_dict' in valid:
+                    new_val = {}
+                else:
+                    # The default initialization for the class
+                    new_val = v()
+                    new_val.config(self)
+            elif def_val == '[{}]':
+                # The default initialization for the class
+                new_val = v()
+                new_val.config(self)
+                new_val = [new_val]
+            elif def_val == '[]':
+                # An empty list
+                new_val = []
+            elif def_val == 'true':
+                new_val = True
+            elif def_val == 'false':
+                new_val = False
+            elif def_val == 'null':
+                # Explicit None
+                new_val = None
+            elif def_val[0] == "'":
+                # String
+                new_val, _ = self._promote_str_to_list(def_val[1:-1], real_help, valid)
+            elif def_val[0] in {'-', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0'}:
+                new_val = float(def_val)
+            else:
+                assert new_val is not None, f'{self} {k} {def_val}'
+            logger.debugl(3, f'Configuring from default: {k} -> {new_val}')
+            setattr(self, k, new_val)
+
     def config(self, parent):
         self._parent = parent
+        old_configured = self._configured
         if self._tree and not self._configured:
             self._perform_config_mapping()
-            self._configured = True
+        self._configured = True
+        if not old_configured:
+            self.do_defaults()
         if self._output_multiple_files and ('%i' not in self.output or '%x' not in self.output):
             raise KiPlotConfigurationError('The output pattern must contain %i and %x, otherwise file names will collide')
 
+    def reconfigure(self, tree, parent=None):
+        """ Configures an already configured object """
+        # We need to reset the members that indicates which class is used for them
+        self.__init__()
+        # self._configured = False  done by __init__()
+        self.set_tree(tree)
+        self.config(parent if parent is not None else (self._parent if hasattr(self, '_parent') else None))
+
     def get_attrs_for(self):
         """ Returns all attributes """
-        return dict(inspect.getmembers(self, do_filter))
+        return dict(vars(self).items())
 
     def get_attrs_gen(self):
         """ Returns a (key, val) iterator on public attributes """
-        attrs = self.get_attrs_for()
-        return ((k, v) for k, v in attrs.items() if k[0] != '_')
+        return filter(lambda k: k[0][0] != '_', vars(self).items())
 
     @staticmethod
     def _find_global_variant():
@@ -440,6 +587,28 @@ class Optionable(object):
     def get_default(cls):
         return cls._default
 
+    def configure_from_default(self, member):
+        """ Initializes the `member` using its default value.
+            The `member` should be assigned with the class used for it """
+        v = getattr(self, member)
+        default = v.get_default()
+        assert default is not None, f'Missing default for {member} in {self}'
+        if isinstance(default, dict):
+            o = v()
+            o.set_tree(default)
+            o.config(self)
+            default = o
+        elif isinstance(default, list) and isinstance(default[0], dict):
+            res = []
+            for item in default:
+                o = v()
+                o.set_tree(item)
+                o.config(self)
+                res.append(o)
+            default = res
+        logger.debugl(3, f'Configuring from default: {member} -> {default}')
+        setattr(self, member, default)
+
     def validate_color_str(self, color):
         return self._color_re.match(color) or self._color_re_a.match(color)
 
@@ -525,11 +694,26 @@ class Optionable(object):
 
     @staticmethod
     def solve_field_name(field, empty_when_none=False):
-        if field != '_field_lcsc_part':
+        if field[:7] != '_field_':
             return field
-        logger.debug('Looking for LCSC field name')
-        field = Optionable._solve_field_name(field, empty_when_none)
-        logger.debug('Using {} as LCSC field name'.format(field))
+        rest = field[7:]
+        if rest == 'current':
+            return GS.global_field_current[0] if GS.global_field_current else field
+        if rest == 'lcsc_part':
+            logger.debug('Looking for LCSC field name')
+            field = Optionable._solve_field_name(field, empty_when_none)
+            logger.debug('Using {} as LCSC field name'.format(field))
+            return field
+        if rest == 'package':
+            return GS.global_field_package[0] if GS.global_field_package else field
+        if rest == 'power':
+            return GS.global_field_power[0] if GS.global_field_power else field
+        if rest == 'temp_coef':
+            return GS.global_field_temp_coef[0] if GS.global_field_temp_coef else field
+        if rest == 'tolerance':
+            return GS.global_field_tolerance[0] if GS.global_field_tolerance else field
+        if rest == 'voltage':
+            return GS.global_field_voltage[0] if GS.global_field_voltage else field
         return field
 
 

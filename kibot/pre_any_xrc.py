@@ -17,8 +17,8 @@ from .optionable import Optionable
 from .pre_base import BasePreFlight
 from .pre_filters import FilterOptions, FiltersOptions
 from .macros import macros, document  # noqa: F401
-from .log import get_logger
-logger = get_logger(__name__)
+from . import log
+logger = log.get_logger(__name__)
 UNITS_2_KICAD = {'millimeters': 'mm', 'inches': 'in', 'mils': 'mils'}
 
 
@@ -49,28 +49,34 @@ class ERCOptions(FiltersOptions):
             self.output = GS.def_global_output
             """ *Name for the generated archive (%i=erc %x=according to format) """
             self.format = Optionable
-            """ [string|list(string)='HTML'][RPT,HTML,CSV,JSON] Format/s used for the report.
+            """ [string|list(string)='HTML'] [RPT,HTML,CSV,JSON] {comma_sep} Format/s used for the report.
                 You can specify multiple formats """
             self.warnings_as_errors = False
-            """ Warnings are considered errors, they still reported as errors, but consider it an error """
+            """ Warnings are considered errors, they still reported as warnings """
             self.dont_stop = False
             """ Continue even if we detect errors """
             self.units = 'millimeters'
             """ [millimeters,inches,mils] Units used for the positions. Affected by global options """
+            self.force_english = True
+            """ Force english messages. KiCad 8.0.4 introduced translation, breaking filters for previous versions.
+                Disable it if you prefer using the system wide language """
+            self.category = Optionable
+            """ [string|list(string)=''] {comma_sep} The category for this preflight. If not specified an internally defined
+                category is used.
+                Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
+                The categories are currently used for `navigate_results` """
         super().__init__()
         self.filters = FilterOptionsXRC
-        self.set_doc('filters', " [list(dict)] Used to manipulate the violations. Avoid using the *filters* preflight")
+        self.set_doc('filters', " [list(dict)=[]] Used to manipulate the violations. Avoid using the *filters* preflight")
         self._unknown_is_error = True
         self._format_example = 'HTML,RPT'
 
     def config(self, parent):
         super().config(parent)
-        self.format = Optionable.force_list(self.format)
         if not self.format:
             self.format = ['HTML']
-        for f in self.format:
-            if f not in {'RPT', 'HTML', 'CSV', 'JSON'}:
-                raise KiPlotConfigurationError(f'unkwnown format `{f}`')
+        if not self.category:
+            self.category = self.force_list(parent._category)
 
 
 class DRCOptions(ERCOptions):
@@ -88,26 +94,27 @@ class DRCOptions(ERCOptions):
 
 
 class XRC(BasePreFlight):
-    def __init__(self, name, value, cls):
-        super().__init__(name, value)
+    def __init__(self, cls):
+        super().__init__()
         self._opts_cls = cls
 
-    def config(self):
-        if isinstance(self._value, bool):
-            f = self._opts_cls()
-            f.enabled = self._value
-            f.format = ['HTML']
-        elif isinstance(self._value, dict):
-            f = self._opts_cls()
-            f.set_tree(self._value)
-            f.config(self)
-        else:
-            raise KiPlotConfigurationError('must be boolean or dict')
+    def __str__(self):
+        return f'{self.type}: {self._enabled} ({self._format})'
+
+    def config(self, parent):
+        super().config(parent)
+        ops = self.erc if self._sch_related else self.drc
+        if isinstance(ops, bool):
+            new_ops = self._opts_cls()
+            new_ops.enabled = ops
+            new_ops.format = ['HTML']
+            new_ops.filters = []
+            ops = new_ops
         # Transfer the options to this class
-        for k, v in dict(f.get_attrs_gen()).items():
+        for k, v in dict(ops.get_attrs_gen()).items():
             setattr(self, '_'+k, v)
-        self._format = f.format
-        self._filters = None if isinstance(f.filters, type) else f.unparsed
+        self._format = ops.format
+        self._filters = ops.filters
         self._expand_ext = self._format[0].lower()
         self.dir = self._dir
 
@@ -292,7 +299,14 @@ class XRC(BasePreFlight):
         # Run the xRC from the CLI
         cmd = self.get_command(output)
         logger.info(f'- Running the {nm}')
+        # Introduced in 8.0.4: translated messages
+        if self._force_english:
+            old_lang = os.environ.get('LANG')
+            if old_lang:
+                os.environ['LANG'] = 'en'
         run_command(cmd)
+        if self._force_english and old_lang:
+            os.environ['LANG'] = old_lang
         # Read the result
         with open(output, 'rt') as f:
             raw = f.read()
@@ -318,9 +332,19 @@ class XRC(BasePreFlight):
             # Write it to the output file
             with open(output, 'wt') as f:
                 f.write(res)
+        # Sanity check
+        if self._dont_stop and self.c_warn and log.stop_on_warnings:
+            logger.error("Inconsistent options, asked to don't stop, but also to stop on warnings")
         # Report the result
-        self.report('error', self.c_err, data)
+        revert_stop_on_warnings = False
+        if self.c_warn and log.stop_on_warnings:
+            revert_stop_on_warnings = True
+            log.stop_on_warnings = False
         self.report('warning', self.c_warn, data)
+        if revert_stop_on_warnings:
+            log.stop_on_warnings = True
+            logger.check_warn_stop()
+        self.report('error', self.c_err, data)
         # Check the final status
         error_level = -1 if self._dont_stop else err
         if self.c_err:

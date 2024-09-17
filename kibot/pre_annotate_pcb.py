@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 from .error import PlotError
 from .gs import GS
@@ -119,24 +119,22 @@ def sort_key(ops, obj, top=True):
 
 @pre_class
 class Annotate_PCB(BasePreFlight):  # noqa: F821
-    """ [dict] Annotates the PCB according to physical coordinates.
+    """ Annotate PCB
+        Annotates the PCB according to physical coordinates.
         This preflight modifies the PCB and schematic, use it only in revision control environments.
         Used to assign references according to footprint coordinates.
         The project must be fully annotated first """
-    def __init__(self, name, value):
-        super().__init__(name, value)
+    def __init__(self):
+        super().__init__()
         self._sch_related = True
         self._pcb_related = True
+        with document:
+            self.annotate_pcb = Annotate_PCBOptions
+            """ [dict={}]  Options for the `annotate_pcb` preflight """
 
-    def config(self):
-        o = Annotate_PCBOptions()
-        o.set_tree(self._value)
-        o.config(self)
-        self._value = o
-
-    @classmethod
-    def get_doc(cls):
-        return cls.__doc__, Annotate_PCBOptions
+    def __str__(self):
+        v = self.annotate_pcb
+        return f'{self.type} (top: {v.top_main_axis}/{v.top_start} bot: {v.bottom_main_axis}/{v.bottom_start})'
 
     def get_example():
         """ Returns a YAML value for the example config """
@@ -180,7 +178,7 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
                         o.ref = c.ref_prefix+str(new_ref_suffix)
 
     def run(self):
-        o = self._value
+        o = self.annotate_pcb
         #
         # PCB part
         #
@@ -228,8 +226,7 @@ class Annotate_PCB(BasePreFlight):  # noqa: F821
                 changes[old_ref] = m.new_ref_suffix
             m.footprint.SetReference(new_ref)
         logger.debug('- Saving PCB')
-        GS.make_bkp(GS.pcb_file)
-        GS.board.Save(GS.pcb_file)
+        GS.save_pcb()
         #
         # SCH part
         #

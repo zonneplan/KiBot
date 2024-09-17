@@ -7,6 +7,9 @@ globals:
 
 preflight:
   run_drc: true
+  set_text_variables:
+    - name: 'DUMMY'
+      text: 'foobar'
   filters:
     - filter_msg: 'Ignore unconnected pad 2 of C4'
       error: unconnected_items

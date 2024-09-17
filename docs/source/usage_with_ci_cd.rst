@@ -84,6 +84,10 @@ ghcr.io/inti-cmnb/kicad5_auto_full:dev    git code     5.1.9
 ghcr.io/inti-cmnb/kicad6_auto_full:dev    git code     6.0.11
 ghcr.io/inti-cmnb/kicad7_auto_full:dev    git code     7.0.11
 ghcr.io/inti-cmnb/kicad8_auto_full:dev    git code     8.x
+ghcr.io/inti-cmnb/kicad5_auto_full:1.7.0  1.7.0        5.1.9
+ghcr.io/inti-cmnb/kicad6_auto_full:1.7.0  1.7.0        6.0.11
+ghcr.io/inti-cmnb/kicad7_auto_full:1.7.0  1.7.0        7.0.11
+ghcr.io/inti-cmnb/kicad8_auto_full:1.7.0  1.7.0        8.0.4
 ghcr.io/inti-cmnb/kicad5_auto_full:1.6.5  1.6.5        5.1.9
 ghcr.io/inti-cmnb/kicad6_auto_full:1.6.5  1.6.5        6.0.11
 ghcr.io/inti-cmnb/kicad7_auto_full:1.6.5  1.6.5        7.0.11
@@ -257,6 +261,10 @@ v2_1_6_5    2   1.6.5        5.1.9
 v2_k6_1_6_5 2   1.6.5        6.0.11
 v2_k7_1_6_5 2   1.6.5        7.0.11
 v2_k8_1_6_5 2   1.6.5        8.0.1
+v2_1_7_0    2   1.7.0        5.1.9
+v2_k6_1_7_0 2   1.7.0        6.0.11
+v2_k7_1_7_0 2   1.7.0        7.0.11
+v2_k8_1_7_0 2   1.7.0        8.0.4
 v2          2   last release 5.1.9
 v2_k6       2   last release 6.0.11
 v2_k7       2   last release 7.0.11

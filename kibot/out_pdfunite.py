@@ -35,6 +35,11 @@ class FilesList(Optionable):
             self.filter = r'.*\.pdf'
             """ A regular expression that source files must match """
 
+    def __str__(self):
+        txt = self.from_output if self.from_output else self.source
+        filter = f' (filter: `{self.filter}`)' if self.filter and self.filter != '.*' else ''
+        return txt+filter
+
 
 class PDFUniteOptions(BaseOptions):
     def __init__(self):
@@ -42,7 +47,7 @@ class PDFUniteOptions(BaseOptions):
             self.output = GS.def_global_output
             """ *Name for the generated PDF (%i=name of the output %x=pdf) """
             self.outputs = FilesList
-            """ *[list(dict)] Which files will be included """
+            """ *[list(dict)=[]] Which files will be included """
             self.use_external_command = False
             """ Use the `pdfunite` tool instead of PyPDF2 Python module """
         super().__init__()
@@ -50,7 +55,7 @@ class PDFUniteOptions(BaseOptions):
 
     def config(self, parent):
         super().config(parent)
-        if isinstance(self.outputs, type):
+        if not self.outputs:
             KiPlotConfigurationError('Nothing to join')
         self._expand_id = parent.name
 
@@ -140,7 +145,7 @@ class PDFUnite(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = PDFUniteOptions
-            """ *[dict] Options for the `pdfunite` output """
+            """ *[dict={}] Options for the `pdfunite` output """
         self._none_related = True
 
     def get_dependencies(self):

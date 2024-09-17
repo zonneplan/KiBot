@@ -86,6 +86,7 @@ class GS(object):
     kibot_version = None
     n = datetime.now()
     on_windows = False
+    on_macos = False
     kicad_version = ''
     kicad_conf_path = None
     kicad_share_path = None
@@ -137,6 +138,9 @@ class GS(object):
     def_global_output = '%f-%i%I%v.%x'
     # The class that controls the global options
     class_for_global_opts = None
+    # The last tree we used to configure it
+    globals_tree = {}
+    # Global options
     global_allow_component_ranges = None
     global_always_warn_about_paste_pads = None
     global_cache_3d_resistors = None
@@ -157,6 +161,7 @@ class GS(object):
     global_edge_plating = None
     global_extra_pth_drill = None
     global_field_3D_model = None
+    global_field_current = None
     global_field_lcsc_part = None
     global_field_package = None
     global_field_power = None
@@ -171,6 +176,7 @@ class GS(object):
     global_kiauto_wait_start = None
     global_layer_defaults = None
     global_include_components_from_pcb = None
+    global_use_pcb_fields = None
     #  This value will overwrite GS.def_global_output if defined
     #  Classes supporting global "output" option must call super().__init__()
     #  after defining its own options to allow Optionable do the overwrite.
@@ -574,10 +580,13 @@ class GS(object):
 
     @staticmethod
     def get_pcb_and_pro_names(name):
+        n = os.path.splitext(name)[0]
         if GS.ki5:
-            return [name, name.replace('kicad_pcb', 'pro')]
-        return [name, name.replace('kicad_pcb', 'kicad_pro'), name.replace('kicad_pcb', 'kicad_prl'),
-                name.replace('kicad_pcb', 'kicad_pro-bak'), name.replace('kicad_pcb', 'kicad_prl-bak')]
+            return [name, n+'.pro']
+        # All possible names, not just the ones that exist, they could be created in the process
+        # When removing we check they actually exist
+        return [name, n+'.kicad_pro', n+'.kicad_pro-bak', n+'.kicad_prl', n+'.kicad_prl-bak', n+'.kicad_dru',
+                n+'.kicad_dru-bak']
 
     @staticmethod
     def remove_pcb_and_pro(name):
@@ -978,3 +987,24 @@ class GS(object):
     @staticmethod
     def mkdtemp(mod):
         return tempfile.mkdtemp(prefix='tmp-kibot-'+mod+'-')
+
+    @staticmethod
+    def set_global_options_tree(tree):
+        glb = GS.class_for_global_opts()
+        glb.set_tree(tree)
+        GS.globals_tree = tree
+        return glb
+
+    @staticmethod
+    def save_pcb(pcb_file=None, board=None):
+        if pcb_file is None:
+            pcb_file = GS.pcb_file
+        if board is None:
+            board = GS.board
+        GS.make_bkp(pcb_file)
+        # KiCad likes to write the project every time we save the PCB
+        # But KiCad doesn't read the exclusions, so they get lost
+        # As a workaround we restore the project, there is no need to change it
+        prj = GS.read_pro()
+        board.Save(pcb_file)
+        GS.write_pro(prj)

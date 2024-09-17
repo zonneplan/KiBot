@@ -11,6 +11,7 @@ KiCad v5/6/7/8 Worksheet format.
 A basic implementation of the .kicad_wks file format.
 Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 """
+from base64 import b64decode
 import io
 from struct import unpack
 from pcbnew import (wxPoint, wxSize, FromMM, wxPointMM)
@@ -410,6 +411,12 @@ class WksBitmap(WksDrawing):
             for c in range(len(i)-1):
                 v = _check_symbol_str(i, c+1, self.c_name+' pngdata', 'data')
                 self.data += bytes([int(c, 16) for c in v.split(' ') if c])
+        elif i_type == 'data':
+            # New on KiCad 8, not documented 2024/05/22
+            self.data = ''
+            for c in range(len(i)-1):
+                self.data += i[c+1]
+            self.data = b64decode(self.data)
         else:
             super().parse_specific_args(i_type, i, items, offset)
 
@@ -418,12 +425,42 @@ class WksBitmap(WksDrawing):
         # Make a list to be added to the SVG output
         p.images.append(e)
 
+    def parse_png(e):
+        s = e.data
+        offset = 8
+        ppi = 300
+        w = h = -1
+        if s[0:8] != b'\x89PNG\r\n\x1a\n':
+            raise WksError('Image is not a PNG')
+        logger.debugl(2, 'Parsing PNG chunks')
+        while offset < len(s):
+            size, type = unpack('>L4s', s[offset:offset+8])
+            logger.debugl(2, f'- Chunk {type} ({size})')
+            if type == b'IHDR':
+                w, h = unpack('>LL', s[offset+8:offset+16])
+                logger.debugl(2, f'  - Size {w}x{h}')
+            elif type == b'pHYs':
+                dpi_w, dpi_h, units = unpack('>LLB', s[offset+8:offset+17])
+                if dpi_w != dpi_h:
+                    raise WksError(f'PNG with different resolution for X and Y ({dpi_w} {dpi_h})')
+                if units != 1:
+                    raise WksError(f'PNG with unknown units ({units})')
+                ppi = dpi_w/(100/2.54)
+                logger.debugl(2, f'  - PPI {ppi} ({dpi_w} {dpi_h} {units})')
+                break
+            elif type == b'IEND':
+                break
+            offset += size+12
+        if w == -1:
+            raise WksError('Broken PNG, no IHDR chunk')
+        return w, h, ppi
+
     def add_to_svg(e, svg, p, svg_precision):
         # Note: we compute all in KiCad IUs, and then apply a scale for the SVG
+        w, h, ppi = e.parse_png()
         s = e.data
-        w, h = unpack('>LL', s[16:24])
         # For KiCad 300 dpi is 1:1 scale
-        dpi = 300/e.scale
+        dpi = ppi/e.scale
         # Convert pixels to mm and then to KiCad units
         w = FromMM(w/dpi*25.4)
         h = FromMM(h/dpi*25.4)

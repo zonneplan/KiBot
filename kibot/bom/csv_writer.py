@@ -67,7 +67,7 @@ def write_stats(writer, cfg, ops, write_sep):
             writer.writerow(["Project info:"])
             write_sep()
             writer.writerow(["Schematic:", prj.name])
-            writer.writerow(["Variant:", cfg.variant.name])
+            writer.writerow(["Variant:", cfg.variant.name if cfg.variant else 'default'])
             writer.writerow(["Revision:", prj.sch.revision])
             writer.writerow(["Date:", prj.sch.date])
             writer.writerow(["KiCad Version:", cfg.kicad_version])
@@ -87,7 +87,7 @@ def write_stats(writer, cfg, ops, write_sep):
             prj = cfg.aggregate[0]
             writer.writerow(["Project info:"])
             write_sep()
-            writer.writerow(["Variant:", cfg.variant.name])
+            writer.writerow(["Variant:", cfg.variant.name if cfg.variant else 'default'])
             writer.writerow(["KiCad Version:", cfg.kicad_version])
             write_sep()
         if not ops.hide_stats_info:

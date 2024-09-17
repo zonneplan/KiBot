@@ -41,6 +41,8 @@ class ColumnList:
     COL_FP_SIDE_L = COL_FP_SIDE.lower()
     COL_FP_TYPE = 'Footprint Type'
     COL_FP_TYPE_L = COL_FP_TYPE.lower()
+    COL_FP_TYPE_NV = 'Footprint Type NV'
+    COL_FP_TYPE_NV_L = COL_FP_TYPE_NV.lower()
     COL_FP_FIT = 'Footprint Populate'
     COL_FP_FIT_L = COL_FP_FIT.lower()
     COL_FP_XS = 'Footprint X-Size'
@@ -59,6 +61,10 @@ class ColumnList:
     COL_ROW_NUMBER_L = COL_ROW_NUMBER.lower()
     COL_STATUS = 'Status'
     COL_STATUS_L = COL_STATUS.lower()
+    COL_NET_NAME = 'Net Name'
+    COL_NET_NAME_L = COL_NET_NAME.lower()
+    COL_NET_CLASS = 'Net Class'
+    COL_NET_CLASS_L = COL_NET_CLASS.lower()
 
     # Default columns for groups
     COL_GRP_QUANTITY = 'Quantity Per PCB'
@@ -114,9 +120,12 @@ class ColumnList:
         COL_FP_ROT,
         COL_FP_SIDE,
         COL_FP_TYPE,
+        COL_FP_TYPE_NV,
         COL_FP_FIT,
         COL_FP_XS,
         COL_FP_YS,
+        COL_NET_NAME,
+        COL_NET_CLASS,
     ]
 
     # Default columns

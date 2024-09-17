@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the KiBoM and IBoM filters.
 from re import compile, IGNORECASE
@@ -14,13 +14,6 @@ from .out_base import BoMRegex
 from . import log
 
 logger = log.get_logger()
-
-
-class DNFList(Optionable):
-    _default = DNF
-
-#     def __init__(self):
-#         super().__init__()
 
 
 @filter_class
@@ -37,16 +30,16 @@ class Generic(BaseFilter):  # noqa: F821
             self.invert = False
             """ Invert the result of the filter """
             self.include_only = BoMRegex
-            """ [list(dict)] A series of regular expressions used to include parts.
+            """ [list(dict)=[]] A series of regular expressions used to include parts.
                 If there are any regex defined here, only components that match against ANY of them will be included.
                 Column/field names are case-insensitive.
                 If empty this rule is ignored """
             self.exclude_any = BoMRegex
-            """ [list(dict)] A series of regular expressions used to exclude parts.
+            """ [list(dict)=[]] A series of regular expressions used to exclude parts.
                 If a component matches ANY of these, it will be excluded.
                 Column names are case-insensitive  """
-            self.keys = DNFList
-            """ [string|list(string)=dnf_list] [dnc_list,dnf_list] List of keys to match.
+            self.keys = Optionable
+            """ [string|list(string)='dnf_list'] [dnc_list,dnf_list,*] List of keys to match.
                 The `dnf_list` and `dnc_list` internal lists can be specified as strings """
             self.exclude_value = False
             """ Exclude components if their 'Value' is any of the keys """
@@ -62,7 +55,7 @@ class Generic(BaseFilter):  # noqa: F821
             self.exclude_empty_val = False
             """ Exclude components with empty 'Value' """
             self.exclude_refs = Optionable
-            """ [list(string)] List of references to be excluded.
+            """ [list(string)=[]] List of references to be excluded.
                 Use R* for all references with R prefix """
             self.exclude_all_hash_ref = False
             """ Exclude all components with a reference starting with # """
@@ -94,32 +87,21 @@ class Generic(BaseFilter):  # noqa: F821
     def config(self, parent):
         super().config(parent)
         # include_only
-        if isinstance(self.include_only, type):
-            self.include_only = None
-        else:
-            for r in self.include_only:
-                r.column = self._fix_field(r.column)
-                r.regex = compile(r.regex, flags=IGNORECASE)
+        for r in self.include_only:
+            r.column = self._fix_field(r.column)
+            r.regex = compile(r.regex, flags=IGNORECASE)
         # exclude_any
-        if isinstance(self.exclude_any, type):
-            self.exclude_any = None
-        else:
-            for r in self.exclude_any:
-                r.column = self._fix_field(r.column)
-                r.regex = compile(r.regex, flags=IGNORECASE)
+        for r in self.exclude_any:
+            r.column = self._fix_field(r.column)
+            r.regex = compile(r.regex, flags=IGNORECASE)
         # keys
-        if isinstance(self.keys, type):
-            self.keys = DNF
-        elif isinstance(self.keys, str):
-            self.keys = DNF if self.keys == 'dnf_list' else DNC
+        if len(self.keys) == 1 and self.keys[0] in {'dnf_list', 'dnc_list'}:
+            self._keys = DNF if self.keys[0] == 'dnf_list' else DNC
         else:
             # Ensure lowercase
-            self.keys = [v.lower() for v in self.keys]
+            self._keys = [v.lower() for v in self.keys]
         # Config field must be lowercase
         self.config_field = self.config_field.lower()
-        # exclude_refs
-        if isinstance(self.exclude_refs, type):
-            self.exclude_refs = None
 
     def test_reg_include(self, c):
         """ Reject components that doesn't match the provided regex.
@@ -141,7 +123,7 @@ class Generic(BaseFilter):  # noqa: F821
                 res = not res
             if res:
                 if GS.debug_level > 1:
-                    logger.debug("Including '{ref}': Field '{field}' ({value}) matched '{re}'".format(
+                    logger.debug("- Including '{ref}': Field '{field}' ({value}) matched '{re}'".format(
                                  ref=c.ref, field=reg.column, value=field_value, re=reg.regex))
                 # Found a match
                 return True
@@ -202,13 +184,13 @@ class Generic(BaseFilter):  # noqa: F821
         if self.exclude_refs and (comp.ref in self.exclude_refs or comp.ref_prefix+'*' in self.exclude_refs):
             return exclude
         # All stuff where keys are involved
-        if self.keys:
+        if self._keys:
             # Exclude components if their 'Value' is any of the keys
-            if self.exclude_value and value in self.keys:
+            if self.exclude_value and value in self._keys:
                 return exclude
             # Exclude components if a field is named as any of the keys
             if self.exclude_field:
-                for k in self.keys:
+                for k in self._keys:
                     if k in comp.dfields:
                         return exclude
             # Exclude components containing a key value in the config field.
@@ -220,10 +202,10 @@ class Generic(BaseFilter):  # noqa: F821
                         opts = config.split(sep)
                         # Try with all the extracted values
                         for opt in opts:
-                            if opt.strip() in self.keys:
+                            if opt.strip() in self._keys:
                                 return exclude
                 else:  # No separator
-                    if config in self.keys:
+                    if config in self._keys:
                         return exclude
         # Regular expressions
         if not self.test_reg_include(comp):

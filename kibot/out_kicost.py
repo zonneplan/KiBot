@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2021-2022 Salvador E. Tropea
-# Copyright (c) 2021-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2021-2024 Salvador E. Tropea
+# Copyright (c) 2021-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -40,11 +40,18 @@ class Aggregate(Optionable):
             self.board_qty = None
             """ {number} """
         self._category = 'Schematic/BoM'
+        self._file_example = 'netlist.xml'
 
     def config(self, parent):
         super().config(parent)
         if not self.file:
             raise KiPlotConfigurationError("Missing or empty `file` in aggregate list ({})".format(str(self._tree)))
+
+    def __str__(self):
+        txt = self.file
+        if self.variant.strip():
+            txt += ' ({self.variant)'
+        return txt+f' x{self.number}'
 
 
 class KiCostOptions(VariantOptions):
@@ -59,30 +66,36 @@ class KiCostOptions(VariantOptions):
             self.show_cat_url = False
             """ Include the catalogue links in the catalogue code """
             self.distributors = Optionable
-            """ *[string|list(string)] Include this distributors list. Default is all the available """
+            """ *[string|list(string)=[]] Include this distributors list. Default is all the available """
             self.no_distributors = Optionable
-            """ *[string|list(string)] Exclude this distributors list. They are removed after computing `distributors` """
+            """ *[string|list(string)=[]] Exclude this distributors list. They are removed after computing `distributors` """
             self.currency = Optionable
-            """ *[string|list(string)=USD] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
+            """ *[string|list(string)='USD'] Currency priority. Use ISO4217 codes (i.e. USD, EUR) """
             self.group_fields = Optionable
-            """ [string|list(string)] List of fields that can be different for a group.
+            """ [string|list(string)=[]] {comma_sep} List of fields that can be different for a group.
                 Parts with differences in these fields are grouped together, but displayed individually """
             self.split_extra_fields = Optionable
-            """ [string|list(string)] Declare part fields to include in multipart split process """
+            """ [string|list(string)=[]] {comma_sep} Declare part fields to include in multipart split process """
             self.ignore_fields = Optionable
-            """ [string|list(string)] List of fields to be ignored """
+            """ [string|list(string)=[]] {comma_sep} List of fields to be ignored """
             self.fields = Optionable
-            """ [string|list(string)] List of fields to be added to the global data section """
+            """ [string|list(string)=[]] {comma_sep} List of fields to be added to the global data section """
             self.translate_fields = FieldRename
-            """ [list(dict)] Fields to rename (KiCost option, not internal filters) """
+            """ [list(dict)=[]] Fields to rename (KiCost option, not internal filters) """
             self.kicost_variant = ''
             """ Regular expression to match the variant field (KiCost option, not internal variants) """
             self.aggregate = Aggregate
-            """ [list(dict)] Add components from other projects """
+            """ [list(dict)=[]] Add components from other projects """
             self.number = 100
             """ *Number of boards to build (components multiplier) """
             self.board_qty = None
             """ {number} """
+            self.kicost_config = ''
+            """ KiCost configuration file. It contains the keys for the different distributors APIs.
+                The regular KiCost config is used when empty.
+                Important for CI/CD environments: avoid exposing your API secrets!
+                To understand how to achieve this, and also how to make use of the cache please visit the
+                [kicost_ci_test](https://github.com/set-soft/kicost_ci_test) repo """
 
         super().__init__()
         self.add_to_doc('variant', WARNING_MIX)
@@ -92,7 +105,6 @@ class KiCostOptions(VariantOptions):
 
     @staticmethod
     def _validate_dis(val):
-        val = Optionable.force_list(val)
         for v in val:
             if v not in DISTRIBUTORS:
                 logger.warning(W_UNKDIST+'Unknown distributor `{}`'.format(v))
@@ -100,7 +112,6 @@ class KiCostOptions(VariantOptions):
 
     @staticmethod
     def _validate_cur(val):
-        val = Optionable.force_list(val)
         for v in val:
             if v not in ISO_CURRENCIES:
                 logger.warning(W_UNKCUR+'Unknown currency `{}`'.format(v))
@@ -113,22 +124,13 @@ class KiCostOptions(VariantOptions):
         self.distributors = self._validate_dis(self.distributors)
         self.no_distributors = self._validate_dis(self.no_distributors)
         self.currency = self._validate_cur(self.currency)
-        self.group_fields = Optionable.force_list(self.group_fields)
-        self.split_extra_fields = Optionable.force_list(self.split_extra_fields)
-        self.ignore_fields = Optionable.force_list(self.ignore_fields)
-        self.fields = Optionable.force_list(self.fields)
         # Adapt translate_fields to its use
-        if isinstance(self.translate_fields, type):
-            self.translate_fields = []
         if self.translate_fields:
             translate_fields = []
             for f in self.translate_fields:
                 translate_fields.append(f.field)
                 translate_fields.append(f.name)
             self.translate_fields = translate_fields
-        # Make sure aggregate is a list
-        if isinstance(self.aggregate, type):
-            self.aggregate = []
 
     def get_targets(self, out_dir):
         return [self.expand_filename(out_dir, self.output, self._expand_id, self._expand_ext)]
@@ -211,6 +213,12 @@ class KiCostOptions(VariantOptions):
         if self.translate_fields:
             cmd.append('--translate_fields')
             cmd.extend(self.translate_fields)
+        # Config specified by the user
+        if self.kicost_config:
+            cfg_name = os.path.expanduser(self.kicost_config)
+            if not os.path.isfile(cfg_name):
+                raise KiPlotConfigurationError(f"Missing config file: `{cfg_name}`")
+            cmd.extend(['--config', ])
         # Run the command
         try:
             run_command(cmd, err_msg='Failed to create costs spreadsheet, error {ret}', err_lvl=BOM_ERROR)
@@ -232,4 +240,4 @@ class KiCost(BaseOutput):  # noqa: F821
         self._sch_related = True
         with document:
             self.options = KiCostOptions
-            """ *[dict] Options for the `kicost` output """
+            """ *[dict={}] Options for the `kicost` output """

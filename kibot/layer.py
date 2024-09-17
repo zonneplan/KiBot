@@ -151,6 +151,7 @@ class Layer(Optionable):
                 A default can be specified using the `layer_defaults` global option """
         self._unknown_is_error = True
         self._protel_extension = None
+        self._layer_example = 'F.Cu'
 
     def config(self, parent):
         super().config(parent)
@@ -282,14 +283,14 @@ class Layer(Optionable):
         Layer._pcb_layers = {GS.board.GetLayerName(id): id for id in GS.board.GetEnabledLayers().Seq()}
 
     def get_default_suffix(self):
-        if GS.global_layer_defaults and not isinstance(GS.global_layer_defaults, type):
+        if GS.global_layer_defaults:
             layer = next(filter(lambda x: x.layer == self.layer, GS.global_layer_defaults), None)
             if layer and layer.suffix:
                 return layer.suffix
         return self.layer.replace('.', '_')
 
     def get_default_description(self):
-        if GS.global_layer_defaults and not isinstance(GS.global_layer_defaults, type):
+        if GS.global_layer_defaults:
             layer = next(filter(lambda x: x.layer == self.layer, GS.global_layer_defaults), None)
             if layer and layer.description:
                 return layer.description

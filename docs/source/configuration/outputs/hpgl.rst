@@ -16,88 +16,36 @@ Category: **PCB/docs**
 
 Parameters:
 
--  **comment** :index:`: <pair: output - hpgl; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - hpgl; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - hpgl; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - hpgl; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **layers** :index:`: <pair: output - hpgl; layers>` [list(dict)|list(string)|string] [all,selected,copper,technical,user,inners,outers]
-   List of PCB layers to plot.
-
-   -  Valid keys:
-
-      -  ``description`` :index:`: <pair: output - hpgl - layers; description>` [string=''] A description for the layer, for documentation purposes.
-         A default can be specified using the `layer_defaults` global option.
-      -  ``layer`` :index:`: <pair: output - hpgl - layers; layer>` [string=''] Name of the layer. As you see it in KiCad.
-      -  ``suffix`` :index:`: <pair: output - hpgl - layers; suffix>` [string=''] Suffix used in file names related to this layer. Derived from the name if not specified.
-         A default can be specified using the `layer_defaults` global option.
-
--  **name** :index:`: <pair: output - hpgl; name>` [string=''] Used to identify this particular output definition.
+-  **layers** :index:`: <pair: output - hpgl; layers>`  [:ref:`Layer parameters <Layer>`] [:ref:`list(dict) <list(dict)>` | :ref:`list(string) <list(string)>` | :ref:`string <string>`] (default: ``'all'``) (choices: "all", "selected", "copper", "technical", "user", "inners", "outers") (also accepts any string) List
+   of PCB layers to plot.
+-  **name** :index:`: <pair: output - hpgl; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - hpgl; options>` [dict] Options for the `hpgl` output.
-
-   -  Valid keys:
-
-      -  **output** :index:`: <pair: output - hpgl - options; output>` [string='%f-%i%I%v.%x'] Output file name, the default KiCad name if empty.
-         IMPORTANT! KiCad will always create the file using its own name and then we can rename it.
-         For this reason you must avoid generating two variants at the same directory when one of
-         them uses the default KiCad name. Affected by global options.
-      -  **plot_sheet_reference** :index:`: <pair: output - hpgl - options; plot_sheet_reference>` [boolean=false] Include the frame and title block. Only available for KiCad 6+ and you get a poor result
-         (i.e. always the default worksheet style, also problems expanding text variables).
-         The `pcb_print` output can do a better job for PDF, SVG, PS, EPS and PNG outputs.
-      -  ``custom_reports`` :index:`: <pair: output - hpgl - options; custom_reports>` [list(dict)] A list of customized reports for the manufacturer.
-
-         -  Valid keys:
-
-            -  ``content`` :index:`: <pair: output - hpgl - options - custom_reports; content>` [string=''] Content for the report. Use ``${basename}`` for the project name without extension.
-               Use ``${filename(LAYER)}`` for the file corresponding to LAYER.
-            -  ``output`` :index:`: <pair: output - hpgl - options - custom_reports; output>` [string='Custom_report.txt'] File name for the custom report.
-
-      -  ``dnf_filter`` :index:`: <pair: output - hpgl - options; dnf_filter>` [string|list(string)='_none'] Name of the filter to mark components as not fitted.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``drill_marks`` :index:`: <pair: output - hpgl - options; drill_marks>` [string='full'] [none,small,full] What to use to indicate the drill places, can be none, small or full (for real scale).
-      -  ``edge_cut_extension`` :index:`: <pair: output - hpgl - options; edge_cut_extension>` [string=''] Used to configure the edge cuts layer extension for Protel mode. Include the dot.
-      -  ``exclude_edge_layer`` :index:`: <pair: output - hpgl - options; exclude_edge_layer>` [boolean=true] Do not include the PCB edge layer.
-      -  ``exclude_pads_from_silkscreen`` :index:`: <pair: output - hpgl - options; exclude_pads_from_silkscreen>` [boolean=false] Do not plot the component pads in the silk screen (KiCad 5.x only).
-      -  ``force_plot_invisible_refs_vals`` :index:`: <pair: output - hpgl - options; force_plot_invisible_refs_vals>` [boolean=false] Include references and values even when they are marked as invisible.
-      -  ``individual_page_scaling`` :index:`: <pair: output - hpgl - options; individual_page_scaling>` [boolean=true] Tell KiCad to apply the scaling for each layer as a separated entity.
-         Disabling it the pages are coherent and can be superposed.
-      -  ``inner_extension_pattern`` :index:`: <pair: output - hpgl - options; inner_extension_pattern>` [string=''] Used to change the Protel style extensions for inner layers.
-         The replacement pattern can contain %n for the inner layer number and %N for the layer number.
-         Example '.g%n'.
-      -  ``mirror_plot`` :index:`: <pair: output - hpgl - options; mirror_plot>` [boolean=false] Plot mirrored.
-      -  ``pen_number`` :index:`: <pair: output - hpgl - options; pen_number>` [number=1] [1,16] Pen number.
-      -  ``pen_speed`` :index:`: <pair: output - hpgl - options; pen_speed>` [number=20] [1,99] Pen speed.
-      -  ``pen_width`` :index:`: <pair: output - hpgl - options; pen_width>` [number=15] [0,100] Pen diameter in MILS, useful to fill areas. However, it is in mm in HPGL files.
-      -  ``plot_footprint_refs`` :index:`: <pair: output - hpgl - options; plot_footprint_refs>` [boolean=true] Include the footprint references.
-      -  ``plot_footprint_values`` :index:`: <pair: output - hpgl - options; plot_footprint_values>` [boolean=true] Include the footprint values.
-      -  ``pre_transform`` :index:`: <pair: output - hpgl - options; pre_transform>` [string|list(string)='_none'] Name of the filter to transform fields before applying other filters.
-         A short-cut to use for simple cases where a variant is an overkill.
-
-      -  ``scaling`` :index:`: <pair: output - hpgl - options; scaling>` [number=0] Scale factor (0 means autoscaling).
-      -  ``sketch_pad_line_width`` :index:`: <pair: output - hpgl - options; sketch_pad_line_width>` [number=0.1] Line width for the sketched pads [mm], see `sketch_pads_on_fab_layers` (KiCad 6+)
-         Note that this value is currently ignored by KiCad (6.0.9).
-      -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - hpgl - options; sketch_pads_on_fab_layers>` [boolean=false] Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
-      -  ``sketch_plot`` :index:`: <pair: output - hpgl - options; sketch_plot>` [boolean=false] Don't fill objects, just draw the outline.
-      -  ``tent_vias`` :index:`: <pair: output - hpgl - options; tent_vias>` [boolean=true] Cover the vias.
-      -  ``uppercase_extensions`` :index:`: <pair: output - hpgl - options; uppercase_extensions>` [boolean=false] Use uppercase names for the extensions.
-      -  ``variant`` :index:`: <pair: output - hpgl - options; variant>` [string=''] Board variant to apply.
-
+-  **options** :index:`: <pair: output - hpgl; options>`  [:ref:`HPGLOptions parameters <HPGLOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `hpgl` output.
 -  **type** :index:`: <pair: output - hpgl; type>` 'hpgl'
--  ``category`` :index:`: <pair: output - hpgl; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - hpgl; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - hpgl; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - hpgl; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - hpgl; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - hpgl; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - hpgl; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - hpgl; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - hpgl; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - hpgl; priority>` [number=50] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - hpgl; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - hpgl; priority>` [:ref:`number <number>`] (default: ``50``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - hpgl; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - hpgl; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+.. toctree::
+   :caption: Used dicts
+
+   HPGLOptions
+   Layer

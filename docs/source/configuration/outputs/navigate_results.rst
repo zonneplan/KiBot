@@ -14,47 +14,33 @@ Type: ``navigate_results``
 
 Parameters:
 
--  **comment** :index:`: <pair: output - navigate_results; comment>` [string=''] A comment for documentation purposes. It helps to identify the output.
--  **dir** :index:`: <pair: output - navigate_results; dir>` [string='./'] Output directory for the generated files.
+-  **comment** :index:`: <pair: output - navigate_results; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes. It helps to identify the output.
+-  **dir** :index:`: <pair: output - navigate_results; dir>` [:ref:`string <string>`] (default: ``'./'``) Output directory for the generated files.
    If it starts with `+` the rest is concatenated to the default dir.
--  **name** :index:`: <pair: output - navigate_results; name>` [string=''] Used to identify this particular output definition.
+-  **name** :index:`: <pair: output - navigate_results; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular output definition.
    Avoid using `_` as first character. These names are reserved for KiBot.
--  **options** :index:`: <pair: output - navigate_results; options>` [dict] Options for the `navigate_results` output.
-
-   -  Valid keys:
-
-      -  **link_from_root** :index:`: <pair: output - navigate_results - options; link_from_root>` [string=''] The name of a file to create at the main output directory linking to the home page.
-      -  **output** :index:`: <pair: output - navigate_results - options; output>` [string='%f-%i%I%v.%x'] Filename for the output (%i=html, %x=navigate). Affected by global options.
-      -  ``header`` :index:`: <pair: output - navigate_results - options; header>` [boolean=true] Add a header containing information for the project.
-      -  ``logo`` :index:`: <pair: output - navigate_results - options; logo>` [string|boolean=''] PNG file to use as logo, use false to remove.
-         The KiBot logo is used by default.
-
-      -  ``logo_url`` :index:`: <pair: output - navigate_results - options; logo_url>` [string='https://github.com/INTI-CMNB/KiBot/'] Target link when clicking the logo.
-      -  ``nav_bar`` :index:`: <pair: output - navigate_results - options; nav_bar>` [boolean=true] Add a side navigation bar to quickly access to the outputs.
-      -  ``skip_not_run`` :index:`: <pair: output - navigate_results - options; skip_not_run>` [boolean=false] Skip outputs with `run_by_default: false`.
-      -  ``title`` :index:`: <pair: output - navigate_results - options; title>` [string=''] Title for the page, when empty KiBot will try using the schematic or PCB title.
-         If they are empty the name of the project, schematic or PCB file is used.
-         You can use %X values and KiCad variables here.
-      -  ``title_url`` :index:`: <pair: output - navigate_results - options; title_url>` [string|boolean=''] Target link when clicking the title, use false to remove.
-         KiBot will try with the origin of the current git repo when empty.
-
-
+-  **options** :index:`: <pair: output - navigate_results; options>`  [:ref:`Navigate_ResultsOptions parameters <Navigate_ResultsOptions>`] [:ref:`dict <dict>`] (default: empty dict, default values used) Options for the `navigate_results` output.
 -  **type** :index:`: <pair: output - navigate_results; type>` 'navigate_results'
--  ``category`` :index:`: <pair: output - navigate_results; category>` [string|list(string)=''] The category for this output. If not specified an internally defined category is used.
+-  ``category`` :index:`: <pair: output - navigate_results; category>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] The category for this output. If not specified an internally defined
+   category is used.
    Categories looks like file system paths, i.e. **PCB/fabrication/gerber**.
    The categories are currently used for `navigate_results`.
 
--  ``disable_run_by_default`` :index:`: <pair: output - navigate_results; disable_run_by_default>` [string|boolean] Use it to disable the `run_by_default` status of other output.
+-  ``disable_run_by_default`` :index:`: <pair: output - navigate_results; disable_run_by_default>` [:ref:`string <string>` | :ref:`boolean <boolean>`] (default: ``''``) Use it to disable the `run_by_default` status of other output.
    Useful when this output extends another and you don't want to generate the original.
    Use the boolean true value to disable the output you are extending.
--  ``extends`` :index:`: <pair: output - navigate_results; extends>` [string=''] Copy the `options` section from the indicated output.
+-  ``extends`` :index:`: <pair: output - navigate_results; extends>` [:ref:`string <string>`] (default: ``''``) Copy the `options` section from the indicated output.
    Used to inherit options from another output of the same type.
--  ``groups`` :index:`: <pair: output - navigate_results; groups>` [string|list(string)=''] One or more groups to add this output. In order to catch typos
+-  ``groups`` :index:`: <pair: output - navigate_results; groups>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) One or more groups to add this output. In order to catch typos
    we recommend to add outputs only to existing groups. You can create an empty group if
    needed.
 
--  ``output_id`` :index:`: <pair: output - navigate_results; output_id>` [string=''] Text to use for the %I expansion content. To differentiate variations of this output.
--  ``priority`` :index:`: <pair: output - navigate_results; priority>` [number=10] [0,100] Priority for this output. High priority outputs are created first.
+-  ``output_id`` :index:`: <pair: output - navigate_results; output_id>` [:ref:`string <string>`] (default: ``''``) Text to use for the %I expansion content. To differentiate variations of this output.
+-  ``priority`` :index:`: <pair: output - navigate_results; priority>` [:ref:`number <number>`] (default: ``10``) (range: 0 to 100) Priority for this output. High priority outputs are created first.
    Internally we use 10 for low priority, 90 for high priority and 50 for most outputs.
--  ``run_by_default`` :index:`: <pair: output - navigate_results; run_by_default>` [boolean=true] When enabled this output will be created when no specific outputs are requested.
+-  ``run_by_default`` :index:`: <pair: output - navigate_results; run_by_default>` [:ref:`boolean <boolean>`] (default: ``true``) When enabled this output will be created when no specific outputs are requested.
 
+.. toctree::
+   :caption: Used dicts
+
+   Navigate_ResultsOptions

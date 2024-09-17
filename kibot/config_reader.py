@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2023 Salvador E. Tropea
-# Copyright (c) 2020-2023 Instituto Nacional de Tecnología Industrial
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
 # Copyright (c) 2018 John Beard
-# License: GPL-3.0
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://github.com/johnbeard/kiplot
 """
@@ -24,7 +24,7 @@ import textwrap
 from .error import KiPlotConfigurationError, config_error
 from .misc import (NO_YAML_MODULE, EXIT_BAD_ARGS, EXAMPLE_CFG, WONT_OVERWRITE, W_NOOUTPUTS, W_UNKOUT, W_NOFILTERS,
                    W_NOVARIANTS, W_NOGLOBALS, TRY_INSTALL_CHECK, W_NOPREFLIGHTS, W_NOGROUPS, W_NEWGROUP, error_level_to_name,
-                   DEFAULT_ROTATIONS, DEFAULT_OFFSETS, W_EXTRADOCS)
+                   DEFAULT_ROTATIONS, DEFAULT_OFFSETS, W_EXTRADOCS, RE_LEN)
 from .gs import GS
 from .registrable import RegOutput, RegVariant, RegFilter, RegDependency
 from .pre_base import BasePreFlight
@@ -273,7 +273,7 @@ class CfgYamlReader(object):
                 raise KiPlotConfigurationError("Unknown preflight: `{}`".format(k))
             try:
                 logger.debug("Parsing preflight "+k)
-                o_pre = BasePreFlight.get_class_for(k)(k, v)
+                o_pre = BasePreFlight.get_object_for(k, v)
             except KiPlotConfigurationError as e:
                 raise KiPlotConfigurationError("In preflight '"+k+"': "+str(e))
             preflights.append(o_pre)
@@ -292,8 +292,7 @@ class CfgYamlReader(object):
                 update_dict(gb, self.imported_globals)
             logger.debug("Global options + imported: {}".format(gb))
         # Parse all keys inside it
-        glb = GS.class_for_global_opts()
-        glb.set_tree(gb)
+        glb = GS.set_global_options_tree(gb)
         try:
             glb.config(None)
         except KiPlotConfigurationError as e:
@@ -355,9 +354,9 @@ class CfgYamlReader(object):
                 i_pres += self._parse_preflights(data['preflight'])
             if pre is not None:
                 for p in i_pres:
-                    if p._name in pre:
+                    if p.type in pre:
                         sel_pres.append(p)
-                        pre.remove(p._name)
+                        pre.remove(p.type)
                 for p in pre:
                     logger.warning(W_UNKOUT+"can't import `{}` preflight from `{}` (missing)".format(p, fn_rel))
             else:
@@ -366,7 +365,7 @@ class CfgYamlReader(object):
                 if explicit_pres:
                     logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
             else:
-                logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, [c._name for c in sel_pres]))
+                logger.debug('Preflights loaded from `{}`: {}'.format(fn_rel, [c.type for c in sel_pres]))
         if pre is None and explicit_pres and 'preflight' not in data:
             logger.warning(W_NOPREFLIGHTS+"No preflights found in `{}`".format(fn_rel))
         return sel_pres
@@ -691,6 +690,8 @@ class CfgYamlReader(object):
         """
         collected_definitions = [{}]
         data = self.load_yaml(fstream, collected_definitions)
+        if not isinstance(data, dict):
+            raise KiPlotConfigurationError(f"Wrong configuration, must be a dict, not {type(data)}")
         # Analyze the version
         # Currently just checks for v1
         v1 = data.get('kiplot', None)
@@ -753,7 +754,8 @@ class CfgYamlReader(object):
         outs = RegOutput.get_outputs()
         for o in outs:
             for g in o._groups:
-                if not RegOutput.add_to_group(o.name, g):
+                existing, _ = RegOutput.add_out_to_group(o, g)
+                if not existing:
                     grps = list(RegOutput.get_group_names())
                     grps.remove(g)
                     best_matches = difflib.get_close_matches(g, grps)
@@ -792,9 +794,62 @@ def trim(docstring):
     return trimmed
 
 
-def print_output_options(name, cl, indent, context=None, skip_keys=False):
+def process_help_data_type(obj, help, v):
+    valid, validations, def_val, real_help = obj.get_valid_types(help)
+    if rst_mode:
+        new_data_type = '['+' | '.join((f':ref:`{v} <{v}>`' for v in valid))+']'
+    else:
+        new_data_type = '['+' | '.join(valid)+']'
+    if def_val:
+        if def_val == '?':
+            new_data_type += ' (default: computed for your project)'
+        elif def_val == '{}':
+            new_data_type += ' (default: empty dict, default values used)'
+        elif def_val == '[{}]':
+            new_data_type += ' (default: list with one empty dict, default values used)'
+        else:
+            new_data_type += f' (default: ``{def_val}``)'
+    elif isinstance(v, type):
+        def_val = v.get_default()
+        if def_val:
+            new_data_type += f' (default: ``{def_val}``)'
+    real_help = real_help.replace('{comma_sep}', '[:ref:`comma separated <comma_sep>`]')
+    real_help = real_help.replace('{no_case} ', '[:ref:`case insensitive <no_case>`]')
+    real_help = re.sub(RE_LEN, r'(must contain \1 elements)', real_help, count=1)
+    string_added = False
+    number_added = False
+    for tp, validation in zip(valid, validations):
+        if validation is None:
+            continue
+        if not string_added and 'string' in tp:
+            string_added = True
+            any_str = False
+            if validation[-1] == '*':
+                validation = validation[:-1]
+                any_str = True
+            new_data_type += ' (choices: "'+'", "'.join(validation)+'")'
+            if any_str:
+                new_data_type += ' (also accepts any string)'
+        elif not number_added and 'number' in tp:
+            number_added = True
+            if validation[0] == 'C':
+                new_data_type += ' (choices: '+', '.join(validation[1])+')'
+            else:
+                new_data_type += f' (range: {validation[0]} to {validation[1]})'
+    help = new_data_type+real_help
+    return help, 'dict' in valid or 'list(dict)' in valid
+
+
+def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_options=None, force_is_basic=False,
+                         separate_files=False, id=''):
     ind_str = indent*' '
-    obj = cl()
+    sub_pages = set()
+    try:
+        obj = cl()
+    except TypeError as e:
+        if re.search(r'missing 2 required(.*)name(.*)value', str(e)):
+            config_error(f"Wong constructor for `{name}`, please migrate any plug-in ({e})")
+        raise
     num_opts = 0 if not skip_keys else 1
     ind_size = 3 if rst_mode else 2
     ind_base_sp = '- '
@@ -802,11 +857,13 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         ind_base_sp = ' '*ind_size+ind_base_sp
     if rst_mode:
         ind_base_sp += ' '
-    for k, v in sorted(obj.get_attrs_gen(), key=lambda x: not obj.is_basic_option(x[0])):
+    for k, v in sorted(obj.get_attrs_gen(), key=lambda x: (not obj.is_basic_option(x[0]), x[0])):
         if k == 'type':
             if indent == ind_size:
                 # Type is fixed for an output
                 continue
+        if skip_options and k in skip_options:
+            continue
         if not num_opts:
             # We found one, put the title
             if rst_mode:
@@ -820,7 +877,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         if k == 'type' and not indent:
             help = f"*'{name}'"
             dot = False
-        is_basic = False
+        is_basic = force_is_basic
         if help and help[0] == '*':
             help = help[1:]
             is_basic = True
@@ -832,16 +889,21 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
         else:
             entry = '``{}``: ' if rst_mode else '`{}`: '
         entry = ind_base_sp+entry
-        if help is None:
-            help = 'Undocumented'
-            logger.non_critical_error(f'Undocumented option: `{k}`')
+        assert help is not None, f'Undocumented option: `{k}`'
+        if not is_alias and k != 'type':
+            assert help[0] == '[', f'Missing option data type: `{k}`: {help}'
+            help, has_dict = process_help_data_type(obj, help, v)
+        else:
+            has_dict = False
         lines = help.split('\n')
         preface = ind_str+entry.format(k)
         if rst_mode and context:
             # Index entry
             preface = preface[:-2] + f' :index:`: <pair: {context}; {k}>` '
+        if separate_files and isinstance(v, type) and has_dict:
+            preface += f" [:ref:`{v.__name__} parameters <{v.__name__+id}>`] "
         clines = len(lines)
-        print('{}{}{}'.format(preface, adapt_text(lines[0].strip()), '.' if clines == 1 and dot else ''))
+        print(preface+adapt_text(lines[0].strip()+('.' if clines == 1 and dot else '')))
         if rst_mode:
             if skip_keys:
                 ind_help = (indent+ind_size)*' '
@@ -872,7 +934,7 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
                 if in_list:
                     in_list = False
                     print()
-            print('{}{}'.format(ind_help+adapt_text(text), '.' if ln+1 == clines else ''))
+            print(ind_help+adapt_text(text+('.' if ln+1 == clines else '')))
         num_opts = num_opts+1
         if isinstance(v, type):
             new_context = context
@@ -881,9 +943,28 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False):
             i = indent+ind_size
             if not skip_keys:
                 i += ind_size
-            print_output_options('', v, i, new_context)
+            if separate_files and has_dict:
+                dest = os.path.relpath(os.path.join(GS.out_dir, f'{v.__name__}.rst'))
+                f = open(dest, 'wt')
+                ori = sys.stdout
+                sys.stdout = f
+                i = 0
+                title = f'{v.__name__} parameters'
+                sub_pages.add(v.__name__)
+                print(f".. _{v.__name__+id}:\n\n")
+                print(title)
+                print('~'*len(title)+'\n')
+            print_output_options('', v, i, new_context, separate_files=separate_files, skip_keys=separate_files)
+            if separate_files and has_dict:
+                sys.stdout = ori
+                f.close()
     if rst_mode:
         print()
+    if sub_pages:
+        print('.. toctree::')
+        print('   :caption: Used dicts\n')
+        for p in sorted(sub_pages):
+            print('   '+p)
     # if num_opts == 0:
     #     print(ind_str+'  - No available options')
 
@@ -918,7 +999,7 @@ def print_one_out_help(details, n, o):
             f.write('\nParameters:\n\n')
             ori = sys.stdout
             sys.stdout = f
-            print_output_options(n, o, 0, 'output - '+n, skip_keys=True)
+            print_output_options(n, o, 0, 'output - '+n, skip_keys=True, separate_files=True)
             sys.stdout = ori
     elif details:
         print('- '+lines[0])
@@ -949,7 +1030,7 @@ def print_outputs_help(rst, details=False):
         print('2. Aliases are listed in *italics*.')
         if split:
             print('\n.. toctree::')
-            print('   :maxdepth: 2\n')
+            print('   :maxdepth: 1\n')
     for n, o in OrderedDict(sorted(outs.items())).items():
         if details:
             if split:
@@ -965,11 +1046,11 @@ def print_output_help(name):
     print_one_out_help(True, name, RegOutput.get_class_for(name))
 
 
-def make_title(rst, tp, n, sub='^'):
+def make_title(rst, tp, n, sub='^', skip_warning=False):
     global rst_mode
     rst_mode = rst
     logger.debug('{} supported {}'.format(n, tp))
-    if rst:
+    if rst and not skip_warning:
         print(RST_WARNING)
     title = 'Supported '+tp
     print(title)
@@ -980,39 +1061,102 @@ def make_title(rst, tp, n, sub='^'):
     return 2, ''
 
 
-def print_preflights_help(rst):
-    prefs = BasePreFlight.get_registered()
-    ind_size, extra = make_title(rst, 'preflights', len(prefs))
-    for n, o in OrderedDict(sorted(prefs.items())).items():
-        help, options = o.get_doc()
-        if help is None:
-            help = 'Undocumented'
+def _print_preflights_help(rst, deprecated=False):
+    prefs = list(BasePreFlight.get_registered().keys())
+    name = 'preflights'
+    if deprecated:
+        name = 'deprecated '+name
+    ind_size, extra = make_title(rst, name, len(prefs), skip_warning=deprecated)
+    split = GS.out_dir_in_cmd_line and rst_mode
+    ind = ' '*ind_size
+    if split:
+        print('.. toctree::')
+        print('   :maxdepth: 1\n')
+    for n in sorted(prefs):
+        o = BasePreFlight.get_class_for(n)
+        if deprecated and 'Deprecated' not in o.__doc__:
+            continue
+        elif not deprecated and 'Deprecated' in o.__doc__:
+            continue
+        lines = trim(o.__doc__)
+        if split:
+            print(f'   preflights/{n}')
+            dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
+            f = open(dest, 'wt')
+            ori = sys.stdout
+            sys.stdout = f
+            print(RST_WARNING)
+            name2 = n.replace('_', ' ').capitalize() if not len(lines) else lines[0]
+            print(f'.. index::\n   pair: {name2}; {n}\n')
+            print(name2)
+            print('~'*len(name2))
+            print()
+            if len(lines):
+                t, r = reformat_text('\n'.join(lines[1:]), 0)
+                print(t)
+                print(r)
+                print()
         else:
-            help, rest = reformat_text(help, ind_size)
-            if rest:
-                help += '\n'+rest
-        index = f':index:`: <pair: preflights; {n}>` ' if rst else ''
-        print(f'- {extra}**{n}**: {index}{help}.')
-        if options:
-            print_output_options(n, options, ind_size, 'preflight - '+n)
+            print(f'- {lines[0]}')
+            print(f'{ind}- {extra}Description: '+adapt_text(lines[1]))
+            if rst_mode:
+                f, r = reformat_text('\n'.join(lines[1:]), ind_size*2)
+                print(r)
+            else:
+                for ln in range(2, len(lines)):
+                    print('                 '+adapt_text(lines[ln]))
+        print_output_options(n, o, ind_size, 'preflight - '+n, skip_options={'comment', 'name'}, skip_keys=True,
+                             force_is_basic=True, separate_files=split)
+        if split:
+            sys.stdout = ori
+            f.close()
+
+
+def print_preflights_help(rst):
+    _print_preflights_help(rst)
+    print()
+    _print_preflights_help(rst, deprecated=True)
 
 
 def print_variants_help(rst):
     from .var_base import BaseVariant
     vars = BaseVariant.get_registered()
     ind_size, extra = make_title(rst, 'variants', len(vars))
+    split = GS.out_dir_in_cmd_line and rst_mode
+    if split:
+        print('.. toctree::')
+        print('   :maxdepth: 1\n')
     for n, o in OrderedDict(sorted(vars.items())).items():
         help = o.__doc__
         if help is None:
-            help = 'Undocumented'
-            title = ''
+            help = ''
+            title = 'Undocumented'
         else:
             title, help = reformat_text(help, ind_size)
             title = f'(**{title}**)'
         if rst:
             title = f'{title} :index:`. <pair: variant; {n}>`'
-        print(f'- {extra}**{n}**: {title}\n\n{help}.')
-        print_output_options(n, o, ind_size, 'variant - '+n)
+        if split:
+            print(f'   variants/{n}')
+            dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
+            f = open(dest, 'wt')
+            ori = sys.stdout
+            sys.stdout = f
+            print(RST_WARNING)
+            name2 = n.replace('_', ' ').capitalize() if not help else f'**{n}** {title}'
+            print(f'.. index::\n   pair: {name2}; {n}\n')
+            print(name2)
+            print('~'*len(name2))
+            print()
+            if help:
+                print(help)
+                print()
+        else:
+            print(f'- {extra}**{n}**: {title}\n\n{help}.')
+        print_output_options(n, o, ind_size, 'variant - '+n, separate_files=split, skip_keys=True)
+        if split:
+            sys.stdout = ori
+            f.close()
 
 
 def adapt_text(text):
@@ -1041,6 +1185,12 @@ def adapt_text(text):
                     t.append('.. warning::')
                     in_warning = True
                     ln = ln[:indent]+ln[indent+9:]
+                if 'Important: ' in ln:
+                    indent = ln.index('Important: ')
+                    t.append('')
+                    t.append('.. note::')
+                    in_warning = True
+                    ln = ln[:indent]+ln[indent+11:]
                 t.append(ln)
             if in_warning:
                 t.append('.. ')
@@ -1069,19 +1219,41 @@ def reformat_text(txt, ind_size):
 def print_filters_help(rst):
     filters = RegFilter.get_registered()
     ind_size, extra = make_title(rst, 'filters', len(filters))
+    split = GS.out_dir_in_cmd_line and rst_mode
+    ' '*ind_size
+    if split:
+        print('.. toctree::')
+        print('   :maxdepth: 1\n')
     for n, o in OrderedDict(sorted(filters.items())).items():
         help = o.__doc__
         if help is None:
             help = ''
             title = 'Undocumented'
         else:
-            title, help = reformat_text(help, ind_size)
-            title = f'(**{title}**)'
-
-        print(f'- {extra}**{n}**: {title}')
-        if help:
-            print(f'{help}.')
-        print_output_options(n, o, ind_size, 'filter - '+n)
+            title, help = reformat_text(help.strip()+'.', ind_size)
+        if split:
+            print(f'   filters/{n}')
+            dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
+            f = open(dest, 'wt')
+            ori = sys.stdout
+            sys.stdout = f
+            print(RST_WARNING)
+            name2 = n.replace('_', ' ').capitalize() if not help else title
+            print(f'.. index::\n   pair: {name2}; {n}\n')
+            print(name2)
+            print('~'*len(name2))
+            print()
+            if help:
+                print(help)
+                print()
+        else:
+            print(f'- {extra}**{n}**: {title}')
+            if help:
+                print(help)
+        print_output_options(n, o, ind_size, 'filter - '+n, separate_files=split, id='_fi', skip_keys=True)
+        if split:
+            sys.stdout = ori
+            f.close()
 
 
 def print_global_options_help(rst):
@@ -1105,7 +1277,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
     first = True
     if po:
         obj.read_vals_from_po(po)
-    for k, _ in obj.get_attrs_gen():
+    for k, _ in sorted(obj.get_attrs_gen(), key=lambda x: x[0]):
         help, alias, is_alias = obj.get_doc(k, no_basic=True)
         if is_alias:
             f.write(ind_str+'# `{}` is an alias for `{}`\n'.format(k, alias))
@@ -1115,7 +1287,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
             for hl in help_lines:
                 # Dots at the beginning are replaced by spaces.
                 # Used to keep indentation.
-                hl = hl.strip()
+                hl = hl.strip().replace('=?]', '=computed for your project]')
                 if hl[0] == '.':
                     for i in range(1, len(hl)):
                         if hl[i] != '.':
@@ -1132,13 +1304,15 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
         elif isinstance(val, bool):
             val = str(val).lower()
         if isinstance(val, type):
+            default = val.get_default()
             if val.__name__ == 'Optionable' and help and '=' in help_lines[0]:
                 # Get the text after =
                 txt = help_lines[0].split('=')[1]
                 # Get the text before the space, without the ]
                 txt = txt.split()[0][:-1]
                 f.write(ind_str+'{}: {}\n'.format(k, txt))
-            elif val.get_default():
+            elif default and not (isinstance(default, dict) or
+                                  (isinstance(default, list) and isinstance(default[0], dict))):
                 f.write(ind_str+'{}: {}\n'.format(k, val.get_default()))
             else:
                 if is_list and first:
@@ -1173,13 +1347,19 @@ def create_example(pcb_file, out_dir, copy_options, copy_expand):
         f.write("# You should take portions of this example and edit the options to make\n")
         f.write("# them suitable for your use.\n")
         f.write("# This file is useful to know all the available options.\n")
+        f.write("# Try using `--quick-start` for a functional example.\n")
         f.write('kibot:\n  version: 1\n')
         # Preflights
         f.write('\npreflight:\n')
         prefs = BasePreFlight.get_registered()
         for n, o in OrderedDict(sorted(prefs.items())).items():
-            if o.__doc__:
-                lines = trim(o.__doc__.rstrip()+'.')
+            lines = trim(o.__doc__+'.')
+            for ln in lines:
+                f.write('  # '+ln.rstrip()+'\n')
+            obj = BasePreFlight.get_object_for(n)
+            help, _, _ = obj.get_doc(n)
+            if help:
+                lines = trim(help.rstrip()+'.')
                 for ln in lines:
                     f.write('  # '+ln.rstrip()+'\n')
             example = o.get_example()

@@ -142,6 +142,7 @@ def test_dep_gs(test_dir, caplog, monkeypatch):
 
 # @pytest.mark.xfail(True, reason="URL down", run=True, raises=AssertionError)
 # https://imagemagick.org/archive/binaries/magick
+# @pytest.mark.skip
 @pytest.mark.slow
 @pytest.mark.indep
 def test_dep_convert(test_dir, caplog, monkeypatch):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Description: Implements the KiBoM variants mechanism.
 from .optionable import Optionable
@@ -22,59 +22,40 @@ class KiBoM(BaseVariant):  # noqa: F821
         +VARIANT includes the component only if we are using this variant """
     def __init__(self):
         super().__init__()
-        self._def_pre_transform = None
-        self._def_exclude_filter = None
-        self._def_dnf_filter = None
-        self._def_dnc_filter = None
         with document:
             self.config_field = 'Config'
             """ Name of the field used to classify components """
             self.variant = Optionable
-            """ [string|list(string)=''] Board variant(s) """
+            """ [string|list(string)=[]] {comma_sep} Board variant(s) """
         self.fix_doc('exclude_filter', IFILT_MECHANICAL)
         self.fix_doc('dnf_filter', '_kibom_dnf_CONFIG_FIELD')
         self.fix_doc('dnc_filter', '_kibom_dnc_CONFIG_FIELD')
-
-    def fix_doc(self, name, value):
-        d, _, _ = self.get_doc(name)
-        d = d.replace("''", "'"+value+"'")
-        self.set_doc(name, d)
 
     def get_variant_field(self):
         """ Returns the name of the field used to determine if the component belongs to the variant """
         return self.config_field
 
-    def set_def_filters(self, exclude_filter, dnf_filter, dnc_filter, pre_transform):
-        """ Filters delegated to the variant """
-        self._def_exclude_filter = exclude_filter
-        self._def_dnf_filter = dnf_filter
-        self._def_dnc_filter = dnc_filter
-        self._def_pre_transform = pre_transform
+    def clear_filters(self):
+        """ Remove any filter """
+        self.exclude_filter = self.dnf_filter = self.dnc_filter = self.pre_transform = None
+
+    @staticmethod
+    def fix_dnx_filter(name, config_field):
+        if isinstance(name, list):
+            name = name[0]
+        if name.startswith('_kibom_dn') and name.endswith('_CONFIG_FIELD'):
+            return name[:11]+config_field
+        return name
 
     def config(self, parent):
         # Now we can let the parent initialize the filters
         super().config(parent)
         # Variants, ensure a lowercase list
-        self.variant = [v.lower() for v in self.force_list(self.variant)]
-        # Filters priority:
-        # 1) Defined here
-        # 2) Delegated from the output format
-        # 3) KiBoM default behavior
-        # pre_transform
-        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', self._def_pre_transform,
-                                                     is_transform=True)
-        # exclude_filter
-        if not self._def_exclude_filter:
-            self._def_exclude_filter = IFILT_MECHANICAL
-        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter', self._def_exclude_filter)
-        # dnf_filter
-        if not self._def_dnf_filter:
-            self._def_dnf_filter = '_kibom_dnf_'+self.config_field
-        self.dnf_filter = BaseFilter.solve_filter(self.dnf_filter, 'dnf_filter', self._def_dnf_filter)
-        # dnc_filter
-        if not self._def_dnc_filter:
-            self._def_dnc_filter = '_kibom_dnc_'+self.config_field
-        self.dnc_filter = BaseFilter.solve_filter(self.dnc_filter, 'dnc_filter', self._def_dnc_filter)
+        self.variant = [v.lower() for v in self.variant]
+        self.pre_transform = BaseFilter.solve_filter(self.pre_transform, 'pre_transform', is_transform=True)
+        self.exclude_filter = BaseFilter.solve_filter(self.exclude_filter, 'exclude_filter')
+        self.dnf_filter = BaseFilter.solve_filter(self.fix_dnx_filter(self.dnf_filter, self.config_field), 'dnf_filter')
+        self.dnc_filter = BaseFilter.solve_filter(self.fix_dnx_filter(self.dnc_filter, self.config_field), 'dnc_filter')
         # Config field must be lowercase
         self.config_field = self.config_field.lower()
 

@@ -32,6 +32,8 @@ root_logger = None
 visual_level = None
 debug_level = 0
 stop_on_warnings = False
+record_error_msgs = False
+recorded_error_msgs = []
 
 
 def get_logger(name=None, indent=None):
@@ -63,6 +65,20 @@ def set_filters(f):
     if f:
         global filters
         filters = f+filters
+
+
+def start_recording_error_msgs():
+    recorded_error_msgs.append([])
+
+
+def stop_recording_error_msgs(joined=True):
+    return '\n'.join(recorded_error_msgs.pop()) if joined else recorded_error_msgs.pop()
+
+
+def push_error_msg(msg):
+    if not len(recorded_error_msgs):
+        return
+    recorded_error_msgs[-1].append(msg)
 
 
 class MyLogger(logging.Logger):
@@ -99,7 +115,7 @@ class MyLogger(logging.Logger):
                 else:
                     number = int(num_str)
                 for f in filters:
-                    if (f.number == number or f.error == id) and f.regex.search(buf):
+                    if (f.number == number or f.error == id) and f._regex.search(buf):
                         MyLogger.n_filtered += 1
                         return
         MyLogger.warn_cnt += 1
@@ -109,6 +125,14 @@ class MyLogger(logging.Logger):
         else:
             super().warning(buf, **kwargs)
         self.check_warn_stop()
+
+    def error(self, msg, *args, **kwargs):
+        buf = str(msg)
+        push_error_msg(buf)
+        if sys.version_info >= (3, 8):
+            super().error(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
+        else:
+            super().error(buf, **kwargs)
 
     def check_warn_stop(self):
         if stop_on_warnings:

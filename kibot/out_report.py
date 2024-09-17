@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2022-2023 Salvador E. Tropea
-# Copyright (c) 2022-2023 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2022-2024 Salvador E. Tropea
+# Copyright (c) 2022-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 """
 Dependencies:
@@ -15,15 +15,16 @@ Dependencies:
     extra_arch: ['texlive-core']
     comments: 'In CI/CD environments: the `kicad_auto_test` docker image contains it.'
 """
+import math
 import os
 import re
 import pcbnew
 
 from .gs import GS
-from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT,
+from .misc import (UI_SMD, UI_VIRTUAL, MOD_THROUGH_HOLE, MOD_SMD, MOD_EXCLUDE_FROM_POS_FILES, W_WRONGEXT, W_UNKPADSH,
                    W_WRONGOAR, W_ECCLASST, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED, VIATYPE_MICROVIA, W_BLINDVIAS, W_MICROVIAS)
 from .registrable import RegOutput
-from .out_base import BaseOptions
+from .out_base import VariantOptions
 from .error import KiPlotConfigurationError
 from .kiplot import config_output, run_command
 from .dep_downloader import get_dep_data
@@ -175,15 +176,20 @@ def list_nice(names):
     return res[2:]
 
 
-class ReportOptions(BaseOptions):
+class PadProperty(object):
+    pass
+
+
+class ReportOptions(VariantOptions):
     def __init__(self):
         with document:
             self.output = GS.def_global_output
             """ *Output file name (%i='report', %x='txt') """
             self.template = 'full'
-            """ *Name for one of the internal templates (full, full_svg, simple) or a custom template file.
+            """ *[full,full_svg,simple,testpoints,*] Name for one of the internal templates or a custom template file.
                 Environment variables and ~ are allowed.
-                Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`) """
+                Note: when converting to PDF PanDoc can fail on some Unicode values (use `simple_ASCII`).
+                Note: the testpoint variables uses the `testpoint` fabrication attribute of pads """
             self.convert_from = 'markdown'
             """ Original format for the report conversion. Current templates are `markdown`. See `do_convert` """
             self.convert_to = 'pdf'
@@ -202,6 +208,14 @@ class ReportOptions(BaseOptions):
             """ When computing the Eurocircuits category: Final holes sizes smaller or equal to this given
                 diameter can be reduced to accommodate the correct annular ring values.
                 Use 0 to disable it """
+            self.alloy_specific_gravity = 7.4
+            """ Specific gravity of the alloy used for the solder paste, in g/cm3. Used to compute solder paste usage """
+            self.flux_specific_gravity = 1.0
+            """ Specific gravity of the flux used for the solder paste, in g/cm3. Used to compute solder paste usage """
+            self.solder_paste_metal_amount = 87.75
+            """ [0,100] Amount of metal in the solder paste (percentage). Used to compute solder paste usage """
+            self.stencil_thickness = 0.12
+            """ Stencil thickness in mm. Used to compute solder paste usage """
         super().__init__()
         self._expand_id = 'report'
         self._expand_ext = 'txt'
@@ -220,7 +234,7 @@ class ReportOptions(BaseOptions):
         if self.template.endswith('_ASCII'):
             self.template = self.template[:-6]
             self.to_ascii = True
-        if self.template.lower() in ('full', 'simple', 'full_svg'):
+        if self.template.lower() in ('full', 'simple', 'full_svg', 'testpoints'):
             self.template = os.path.abspath(os.path.join(GS.get_resource_path('report_templates'),
                                             'report_'+self.template.lower()+'.txt'))
         if not os.path.isabs(self.template):
@@ -375,6 +389,34 @@ class ReportOptions(BaseOptions):
         text = ''
         for s in images:
             context = {'path': s[0], 'comment': s[1], 'new_line': '\n'}
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_nets_without_testpoint(self, line):
+        """ Replace iterator for the `nets_without_testpoint` context """
+        text = ''
+        for s in self._nets_without_testpoint:
+            context = {'net': s}
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_nets_with_one_testpoint(self, line):
+        """ Replace iterator for the `nets_with_one_testpoint` context """
+        text = ''
+        for n, pads in self._nets_with_tp.items():
+            if len(pads) > 1:
+                continue
+            context = {'net': n, 'pad': pads[0]}
+            text += self.do_replacements(line, context)
+        return text
+
+    def context_nets_with_many_testpoints(self, line):
+        """ Replace iterator for the `nets_with_many_testpoints` context """
+        text = ''
+        for n, pads in self._nets_with_tp.items():
+            if len(pads) == 1:
+                continue
+            context = {'net': n, 'pads': ", ".join(pads)}
             text += self.do_replacements(line, context)
         return text
 
@@ -581,7 +623,9 @@ class ReportOptions(BaseOptions):
         is_pure_smd, is_not_virtual = self.get_attr_tests()
         npth_attrib = 3 if GS.ki5 else pcbnew.PAD_ATTRIB_NPTH
         min_oar = GS.from_mm(0.1)
+        pad_properties = []
         for m in modules:
+            ref = m.GetReference()
             layer = m.GetLayer()
             if layer == top_layer:
                 if is_pure_smd(m):
@@ -595,6 +639,13 @@ class ReportOptions(BaseOptions):
                     self.bot_tht += 1
             pads = m.Pads()
             for pad in pads:
+                # Pad properties
+                if not GS.ki5:
+                    p = PadProperty()
+                    p.fab_property = pad.GetProperty()
+                    p.net = pad.GetNetname()
+                    p.name = ref+'.'+pad.GetNumber()
+                    pad_properties.append(p)
                 dr = pad.GetDrillSize()
                 if not dr.x:
                     continue
@@ -727,6 +778,108 @@ class ReportOptions(BaseOptions):
         ###########################################################
         self._track_sizes = board.GetTrackWidthList()
         self._tracks_defined = set(self._track_sizes)
+        ###########################################################
+        # Solder paste stats
+        # https://www.indium.com/blog/calculating-solder-paste-usage.php#ixzz246lOB9HY
+        # https://github.com/mfussi/kicad-solderpaste-usage
+        ###########################################################
+        self.paste_pads_front = self.paste_pads_bottom = 0
+        self.paste_pads_front_area = self.paste_pads_bottom_area = 0
+        for m in modules:
+            for pad in m.Pads():
+                on_top = pad.IsOnLayer(pcbnew.F_Paste)
+                on_bottom = pad.IsOnLayer(pcbnew.B_Paste)
+                if not on_top and not on_bottom:
+                    continue
+                shape = pad.GetShape()
+                size = pad.GetSize()
+                if GS.ki6:
+                    area = GS.to_mm(GS.to_mm(pad.GetEffectivePolygon().Area()))
+                elif shape == pcbnew.PAD_SHAPE_CIRCLE:
+                    radius = GS.to_mm(size.x/2)
+                    area = math.pi*radius*radius
+                elif shape == pcbnew.PAD_SHAPE_RECT:
+                    area = GS.to_mm(size.x)*GS.to_mm(size.y)
+                elif shape == pcbnew.PAD_SHAPE_OVAL:
+                    if size.x > size.y:
+                        dia_major = GS.to_mm(size.x)
+                        dia_minor = GS.to_mm(size.y)
+                    else:
+                        dia_major = GS.to_mm(size.y)
+                        dia_minor = GS.to_mm(size.x)
+                    area = dia_major*dia_minor
+                    # Adjust the area, here the dia_minor is the diameter for a circle
+                    area -= (1-math.pi/4)*dia_minor*dia_minor
+                elif shape == pcbnew.PAD_SHAPE_TRAPEZOID:
+                    delta = pad.GetDelta()
+                    if delta.x:
+                        a = GS.to_mm(size.y-delta.y)
+                        b = GS.to_mm(size.y+delta.y)
+                        h = GS.to_mm(size.x)
+                    else:
+                        a = GS.to_mm(size.x-delta.x)
+                        b = GS.to_mm(size.x+delta.x)
+                        h = GS.to_mm(size.y)
+                    area = a*b/2*h
+                elif shape == pcbnew.PAD_SHAPE_ROUNDRECT:
+                    area = GS.to_mm(size.x)*GS.to_mm(size.y)
+                    # Adjust the corners area
+                    radius = GS.to_mm(pad.GetRoundRectCornerRadius())
+                    # Taking the 4 corners:
+                    # - We computed a square: 2*radius*2*radius = 4*radius
+                    # - But we should compute a circle: PI*radius*radius
+                    area -= (4-math.pi)*radius*radius
+                # Introduced in KiCad 6, so we can use GetEffectivePolygon
+                # elif shape == pcbnew.PAD_SHAPE_CHAMFERED_RECT:
+                #     area = GS.to_mm(size.x)*GS.to_mm(size.y)
+                #     sz = pad.GetChamferRectRatio()*GS.to_mm(min(size.x, size.y))
+                #     corners = pad.GetChamferPositions()
+                #     n_corners = 1 if corners & 1 else 0
+                #     n_corners += 1 if corners & 2 else 0
+                #     n_corners += 1 if corners & 4 else 0
+                #     n_corners += 1 if corners & 8 else 0
+                #     area -= n_corners*sz*sz/2
+                elif shape == pcbnew.PAD_SHAPE_CUSTOM:
+                    poly = pad.GetCustomShapeAsPolygon()
+                    area = GS.to_mm(GS.to_mm(poly.Area()))
+                else:
+                    logger.warning(f"{W_UNKPADSH}Unknown shape for pad `{pad.GetNumber()}` of `{m.GetReference()}` " +
+                                   get_pad_info(pad))
+                if on_top:
+                    self.paste_pads_front += 1
+                    self.paste_pads_front_area += area
+                else:
+                    self.paste_pads_bottom += 1
+                    self.paste_pads_bottom_area += area
+        self._paste_pads_front_vol = self.paste_pads_front_area * self.stencil_thickness
+        self._paste_pads_bottom_vol = self.paste_pads_bottom_area * self.stencil_thickness
+        amount_of_metal = self.solder_paste_metal_amount/100.0
+        # Greely Formula
+        self.solder_paste_gravity = ((self.alloy_specific_gravity * self.flux_specific_gravity) /
+                                     (((1.0 - amount_of_metal) * self.alloy_specific_gravity) +
+                                     (amount_of_metal * self.flux_specific_gravity)))
+        self.solder_paste_front = (self._paste_pads_front_vol / 100.0) * self.solder_paste_gravity
+        self.solder_paste_bottom = (self._paste_pads_bottom_vol / 100.0) * self.solder_paste_gravity
+        self.paste_pads = self.paste_pads_front + self.paste_pads_bottom
+        self.paste_pads_area = self.paste_pads_front_area + self.paste_pads_bottom_area
+        self.solder_paste = self.solder_paste_front + self.solder_paste_bottom
+        ###########################################################
+        # Testpoints report
+        ###########################################################
+        nets = GS.board.GetNetsByName()
+        self.testpoint_pads = 0
+        self.total_pads = len(pad_properties)
+        nets_with_tp = {}
+        for p in pad_properties:
+            if p.fab_property == pcbnew.PAD_PROP_TESTPOINT:
+                self.testpoint_pads += 1
+                nets_with_tp[p.net] = nets_with_tp.get(p.net, [])+[p.name]
+        cnd = GS.board.GetConnectivity()
+        self.total_nets = cnd.GetNetCount()
+        self.nets_with_testpoint = len(nets_with_tp)
+        self.testpoint_coverage = (self.nets_with_testpoint/self.total_nets)*100 if self.total_nets else 0
+        self._nets_without_testpoint = [str(n) for n in nets.keys() if str(n) and str(n) not in nets_with_tp]
+        self._nets_with_tp = nets_with_tp
 
     def eval_conditional(self, line):
         context = {k: getattr(self, k) for k in dir(self) if k[0] != '_' and not callable(getattr(self, k))}
@@ -823,6 +976,7 @@ class ReportOptions(BaseOptions):
         run_command(cmd)
 
     def run(self, fname):
+        super().run(fname)
         self.pcb_material = GS.global_pcb_material
         self.solder_mask_color = GS.global_solder_mask_color
         self.solder_mask_color_top = GS.global_solder_mask_color_top
@@ -840,7 +994,10 @@ class ReportOptions(BaseOptions):
         self.impedance_controlled = GS.global_impedance_controlled
         self.stackup = 'yes' if GS.stackup else ''
         self._stackup = GS.stackup if GS.stackup else []
+        filtered = self.filter_pcb_components()
         self.collect_data(GS.board)
+        if filtered:
+            self.unfilter_pcb_components()
         base_dir = os.path.dirname(fname)
         # Collect the PCB layers and schematic prints
         self._layer_pdfs = []
@@ -892,7 +1049,7 @@ class Report(BaseOutput):  # noqa: F821
         super().__init__()
         with document:
             self.options = ReportOptions
-            """ *[dict] Options for the `report` output """
+            """ *[dict={}] Options for the `report` output """
         self._category = 'PCB/docs'
 
     @staticmethod

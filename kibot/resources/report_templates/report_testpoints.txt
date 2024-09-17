@@ -1,0 +1,23 @@
+# Testpoints
+
+Total pads: ${total_pads}
+Total testpoints: ${testpoint_pads}
+Total Nets: ${total_nets}
+
+- With testpoint: ${nets_with_testpoint}
+
+TestPoint coverage: ${%5.2f,testpoint_coverage} %
+
+
+## Nets without testpoint
+
+#nets_without_testpoint:- ${net}
+
+## Nets with one testpoint
+
+#nets_with_one_testpoint:- ${net}: ${pad}
+
+## Nets with more than one testpoint
+
+#nets_with_many_testpoints:- ${net}: ${pads}
+

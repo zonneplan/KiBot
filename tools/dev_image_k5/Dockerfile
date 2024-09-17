@@ -13,16 +13,17 @@ RUN     dpkg --remove kicost kibot && \
 	curl https://codeload.github.com/hildogjr/KiCost/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
 	pip3 install KiCost-master/ && \
-	apt-get -y remove curl unzip python3-pip && \
 	rm -rf KiCost-master pp.zip && \
+	dpkg --remove kidiff kiauto && \
+	curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip && \
+	unzip pp.zip && \
+	pip3 install KiAuto-master/ && \
+	rm -rf KiAuto-master/ pp.zip && \
+	curl https://codeload.github.com/INTI-CMNB/KiDiff/zip/refs/heads/master --output pp.zip && \
+	unzip pp.zip && \
+	pip3 install KiDiff-master/ && \
+	rm -rf KiDiff-master/ pp.zip && \
 	rm -rf /var/lib/apt/lists/*
-
-# kidiff depends on KiAuto
-# 	dpkg --remove kiauto && \
-# 	curl https://codeload.github.com/INTI-CMNB/KiAuto/zip/refs/heads/master --output pp.zip && \
-# 	unzip pp.zip && \
-# 	pip3 install KiAuto-master/ && \
-# 	rm -rf KiAuto-master/ pp.zip && \
 
 ARG repo_hash
 ENV KIBOT_REPO_HASH=$repo_hash

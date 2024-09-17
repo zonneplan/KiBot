@@ -8,7 +8,6 @@ outputs:
     type: kikit_present
     dir: Present/Files
     options:
-      description: 'tests/data/silly_project.md'
       boards:
         mode: file
         comment: This is a comment
