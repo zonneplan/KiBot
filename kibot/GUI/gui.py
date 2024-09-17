@@ -398,8 +398,9 @@ class DictPanel(wx.Panel):
             return False
         self.editing = obj
         self.pre_edit(obj)
+        name = self.dict_type+'.'+obj.type
         if edit_dict(self, obj, None, None, title=self.dict_type.capitalize()+" "+str(obj), validator=self.validate,
-                     can_remove=self.can_remove_first_level):
+                     can_remove=self.can_remove_first_level, name=name):
             self.mark_edited()
             self.lbox.SetString(index, str(obj))
             return True

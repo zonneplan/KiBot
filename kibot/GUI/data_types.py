@@ -882,10 +882,12 @@ class EditDict(InjectDialog):
         b_sizer.Add(middle_sizer, gh.SIZER_FLAGS_1)
 
         # Standard Ok/Cancel button
-        b_sizer.Add(ok_cancel(self, self.OnOK, domain=w_name), gh.SIZER_FLAGS_0)
+        b_sizer.Add(ok_cancel(self, self.OnOK, domain=w_name, help=True), gh.SIZER_FLAGS_0)
 
         # Resize things when the collapsible panes change their state
         self.Bind(wx.EVT_COLLAPSIBLEPANE_CHANGED, self.OnResize)
+        # Help for the dict
+        self.but_help.Bind(wx.EVT_BUTTON, self.OnHelp)
 
         # Add the main sizer to the dialog
         self.SetSizer(b_sizer)
@@ -910,6 +912,13 @@ class EditDict(InjectDialog):
         min_scroller_size = wx.Size(min(self.scrl_sizer.MinSize.width, max_usable_width),
                                     min(self.scrl_sizer.MinSize.height, max_usable_height))
         self.scrollWindow.SetSizeHints(min_scroller_size, wx.Size(min_scroller_size.width, -1))
+
+    def OnHelp(self, event):
+        name = self.GetName()
+        name = name.replace('.dict', '')
+        logger.error(name)
+        # https://kibot.readthedocs.io/en/latest/configuration/outputs/blender_export.html
+        # https://kibot.readthedocs.io/en/latest/configuration/outputs/BlenderCameraOptions.html
 
     def OnResize(self, event):
         self.compute_scroll_hints()
