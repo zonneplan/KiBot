@@ -14,12 +14,13 @@ KiBot (formerly KiPlot)
 - If you are looking for the GitHub Actions documentation, and you already know how
   to use KiBot, or want a quick start, read: :ref:`usage-of-github-actions`
 
-**New on v1.7.0**
+**New on v1.8.0**
 
-- New preflights: erc, drc, update_footprint, draw_stackup, update_pcb_characteristics and update_stackup
-- New global variables: str_yes/str_no
-- New internal template: ExportProject
-- Now the *var_rename* and *var_rename_kicost* filters can be used to change footprints using variants.
+- New preflight: check_fields
+- New filters: separate_pins and _null
+- New global variables: use_pcb_fields and field_current
+- New internal templates: Testpoints_by_attr, Testpoints_by_attr_CSV, Testpoints_by_attr_HTML, Testpoints_by_value, Testpoints_by_value_CSV and Testpoints_by_value_HTML
+- Testpoints report
 - Better KiCad 8 support
 
 .. toctree::
