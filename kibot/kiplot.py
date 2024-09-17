@@ -1164,9 +1164,9 @@ def generate_targets(config_file):
     # Read the config file
     cr = CfgYamlReader()
     with open(config_file) as cf_file:
-        outputs = cr.read(cf_file)
+        cr.read(cf_file)
     # Do all the job
-    generate_outputs(outputs, [], False, None, False, False, dont_stop=True)
+    generate_outputs([], False, None, False, False, dont_stop=True)
 
 
 def _walk(path, depth):
