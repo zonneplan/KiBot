@@ -11,12 +11,14 @@ import platform
 import sys
 import tempfile
 import threading
+import webbrowser
 import yaml
 from .. import __version__, __copyright__, __url__, __email__
 from .. import log
 from ..config_reader import get_doc_lines
 from ..gs import GS
 from ..kiplot import config_output, load_board, load_sch, load_config, reset_config, generate_outputs
+from ..misc import BASE_HELP
 from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
 from .data_types import edit_dict, create_new_optionable
@@ -95,34 +97,37 @@ class MainDialog(InjectDialog):
         main_sizer.Add(self.notebook, gh.SIZER_FLAGS_1)
 
         # Pages for the notebook
-        self.main = MainPanel(self.notebook, self, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority)
+        self.main = MainPanel(self.notebook, self, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority,
+                              'introduction.html')
         self.notebook.AddPage(self.main, "Main")
-        self.outputs = OutputsPanel(self.notebook)
+        self.outputs = OutputsPanel(self.notebook, 'configuration/outputs.html')
         self.outputs.SetToolTip("Defined outputs.\nThings you can generate pressing the Run button")
         self.notebook.AddPage(self.outputs, "Outputs")
-        self.groups = GroupsPanel(self.notebook)
+        self.groups = GroupsPanel(self.notebook, 'configuration/outputs.html#grouping-outputs')
         self.groups.SetToolTip("Groups of outputs.\n"
                                "This makes easier to run some and exclude others.\n"
                                "A group can contain another group.")
         self.notebook.AddPage(self.groups, "Groups")
-        self.preflights = PreflightsPanel(self.notebook)
+        self.preflights = PreflightsPanel(self.notebook, 'configuration/preflight.html')
         self.preflights.SetToolTip("Tasks executed before generating outputs.\n"
                                    "I.e. run the DRC and or ERC.")
         self.notebook.AddPage(self.preflights, "Preflights")
-        self.filters = FiltersPanel(self.notebook)
+        self.filters = FiltersPanel(self.notebook, 'configuration/filters.html')
         self.filters.SetToolTip("Defined filters.\n"
                                 "Used to include or exclude certain components.\n"
                                 "Some filters can apply transformations to components.")
         self.notebook.AddPage(self.filters, "Filters")
-        self.variants = VariantsPanel(self.notebook)
+        self.variants = VariantsPanel(self.notebook, 'configuration/filters.html#supported-variants')
         self.variants.SetToolTip("Assembly variants for your project.\n"
                                  "Same PCB for different products.")
         self.notebook.AddPage(self.variants, "Variants")
-        self.about = AboutPanel(self.notebook)
+        self.about = AboutPanel(self.notebook, 'credits.html')
         self.notebook.AddPage(self.about, "About")
 
         # Buttons
         but_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.but_help = wx.Button(self, wx.ID_HELP, name='main.help')
+        but_sizer.Add(self.but_help, gh.SIZER_FLAGS_0_NO_EXPAND)
         # Save config
         self.but_save = wx.Button(self, label="Save config", id=create_id('ID_SAVE'))
         self.but_save.Disable()
@@ -170,6 +175,7 @@ class MainDialog(InjectDialog):
         self.edited = False
 
         # Connect Events
+        self.but_help.Bind(wx.EVT_BUTTON, self.OnHelp)
         self.but_save.Bind(wx.EVT_BUTTON, self.OnSave)
         self.but_generate.Bind(wx.EVT_BUTTON, self.OnGenerateOuts)
         self.but_globals.Bind(wx.EVT_BUTTON, self.OnGlobals)
@@ -354,6 +360,10 @@ class MainDialog(InjectDialog):
         # When we disable the button nothing is focused, so things like ESC stops working
         self.notebook.SetFocus()
 
+    def OnHelp(self, event):
+        current_panel = self.notebook.GetCurrentPage()
+        webbrowser.open(BASE_HELP+current_panel.help_domain)
+
 
 # ##########################################################################
 # # class DictPanel
@@ -361,9 +371,10 @@ class MainDialog(InjectDialog):
 # ##########################################################################
 
 class DictPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, help):
         wx.Panel.__init__(self, parent, name=self.dict_type+'.panel')
         self.can_remove_first_level = True
+        self.help_domain = help
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -452,9 +463,10 @@ class DictPanel(wx.Panel):
 # ##########################################################################
 
 class MainPanel(wx.Panel):
-    def __init__(self, parent, main, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority):
+    def __init__(self, parent, main, cfg_file, targets, invert_targets, skip_pre, cli_order, no_priority, help):
         wx.Panel.__init__(self, parent)
         self.main = main
+        self.help_domain = help
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -1002,9 +1014,9 @@ class MainPanel(wx.Panel):
 # ##########################################################################
 
 class OutputsPanel(DictPanel):
-    def __init__(self, parent):
+    def __init__(self, parent, help):
         self.dict_type = "output"
-        super().__init__(parent)
+        super().__init__(parent, help)
 
     def refresh_lbox(self):
         set_items(self.lbox, RegOutput.get_outputs())   # Populate the listbox
@@ -1075,8 +1087,9 @@ class OutputsPanel(DictPanel):
 # ##########################################################################
 
 class GroupsPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, help):
         wx.Panel.__init__(self, parent, name='groups')
+        self.help_domain = help
 
         # All the widgets
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -1363,9 +1376,9 @@ class EditGroupDialog(InjectDialog):
 # ##########################################################################
 
 class FiltersPanel(DictPanel):
-    def __init__(self, parent):
+    def __init__(self, parent, help):
         self.dict_type = "filter"
-        super().__init__(parent)
+        super().__init__(parent, help)
 
     def refresh_lbox(self):
         set_items(self.lbox, [f for f in RegOutput.get_filters().values() if not f.name.startswith('_')])
@@ -1395,9 +1408,9 @@ class FiltersPanel(DictPanel):
 # ##########################################################################
 
 class VariantsPanel(DictPanel):
-    def __init__(self, parent):
+    def __init__(self, parent, help):
         self.dict_type = "variant"
-        super().__init__(parent)
+        super().__init__(parent, help)
 
     def refresh_lbox(self):
         set_items(self.lbox, list(RegOutput.get_variants().values()))
@@ -1426,9 +1439,9 @@ class VariantsPanel(DictPanel):
 # ##########################################################################
 
 class PreflightsPanel(DictPanel):
-    def __init__(self, parent):
+    def __init__(self, parent, help):
         self.dict_type = "preflight"
-        super().__init__(parent)
+        super().__init__(parent, help)
         self.can_remove_first_level = False
 
     def refresh_lbox(self):
@@ -1661,8 +1674,9 @@ def show_splash(target, args):
 # ##########################################################################
 
 class AboutPanel(wx.Panel):
-    def __init__(self, parent):
+    def __init__(self, parent, help):
         wx.Panel.__init__(self, parent)
+        self.help_domain = help
 
         # All the widgets
         self.sizer = main_sizer = wx.BoxSizer(wx.VERTICAL)

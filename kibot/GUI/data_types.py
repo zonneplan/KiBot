@@ -9,6 +9,8 @@
 
 from copy import deepcopy
 import math
+import os
+import webbrowser
 import wx
 from .validators import NumberValidator, LowerCaseValidator
 from .gui_helpers import (move_sel_up, move_sel_down, ok_cancel, remove_item, input_label_and_text, get_client_data, set_items,
@@ -18,7 +20,7 @@ from . import gui_helpers as gh
 from .gui_config import USE_DIALOG_FOR_NESTED, TYPE_SEL_RIGHT, SEPARATE_ADVANCED
 from .gui_inject import create_id, InjectDialog
 from ..error import KiPlotConfigurationError
-from ..misc import typeof, try_int, RE_LEN
+from ..misc import typeof, try_int, RE_LEN, BASE_HELP_CFG
 from ..optionable import Optionable
 from .. import log
 logger = log.get_logger()
@@ -916,9 +918,17 @@ class EditDict(InjectDialog):
     def OnHelp(self, event):
         name = self.GetName()
         name = name.replace('.dict', '')
-        logger.error(name)
-        # https://kibot.readthedocs.io/en/latest/configuration/outputs/blender_export.html
-        # https://kibot.readthedocs.io/en/latest/configuration/outputs/BlenderCameraOptions.html
+        path = name.split('.')
+        help = None
+        if path[0] in {'output', 'preflight', 'filter', 'variant'}:
+            if len(path) == 2:
+                help = os.path.join(BASE_HELP_CFG, path[0]+'s', path[1]+'.html')
+            else:
+                help = os.path.join(BASE_HELP_CFG, path[0]+'s', self.obj.__class__.__name__+'.html')
+        if help:
+            webbrowser.open(help)
+        else:
+            logger.debug(f'Unknown help domain {name} {path}')
 
     def OnResize(self, event):
         self.compute_scroll_hints()

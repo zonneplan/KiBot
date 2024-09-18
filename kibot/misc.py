@@ -91,6 +91,8 @@ error_level_to_name = ['NONE',
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
+BASE_HELP = 'https://kibot.readthedocs.io/en/latest/'
+BASE_HELP_CFG = BASE_HELP+'configuration/'
 AUTO_SCALE = 0
 KICAD_VERSION_5_99 = 50990000
 KICAD_VERSION_6_0_0 = 60000000
