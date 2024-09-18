@@ -26,6 +26,9 @@ filters:
   rotations_and_offsets:
   - field: References
     regex: ^TSSOP-
+- name: filter.separate_pins
+  type: separate_pins
+  comment: Separate Pins
 - name: filter.spec_to_field
   type: spec_to_field
   comment: Spec to Field
