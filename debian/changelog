@@ -1,3 +1,9 @@
+kibot (1.8.1-1) UNRELEASED; urgency=medium
+
+  * Next release
+
+ -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Wed, 18 Sep 2024 09:21:46 -0300
+
 kibot (1.8.0-1) stable; urgency=medium
 
   * Added experimental Altium PCB conversion
