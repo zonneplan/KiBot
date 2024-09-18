@@ -125,6 +125,7 @@ class GS(object):
                             'm': 1000*IU_PER_MM, 'mil': IU_PER_MILS, 'inch': 1000*IU_PER_MILS,
                             'in': 1000*IU_PER_MILS}
     ci_cd_detected = False
+    stop_flag = False
     # Maximum recursive replace
     MAXDEPTH = 20
     #
