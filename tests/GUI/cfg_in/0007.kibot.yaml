@@ -2,20 +2,6 @@
 kibot:
   version: 1
 
-groups:
-  - name: fab
-    outputs:
-      - gerbers
-      - excellon_drill
-      - position
-  - name: plot
-    outputs:
-      - PcbDraw
-      - PcbDraw2
-  - name: fab_svg
-    outputs:
-      - fab
-
 outputs:
   - name: 'gerbers'
     comment: "Gerbers for the Gerber god"

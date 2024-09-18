@@ -139,7 +139,7 @@ class GS(object):
     # The class that controls the global options
     class_for_global_opts = None
     # The last tree we used to configure it
-    globals_tree = {}
+    globals_tree = None
     # Global options
     global_allow_component_ranges = None
     global_always_warn_about_paste_pads = None
@@ -1008,3 +1008,16 @@ class GS(object):
         prj = GS.read_pro()
         board.Save(pcb_file)
         GS.write_pro(prj)
+
+    # Naive stop mechanism, abstracted in case we need something more complex
+    @staticmethod
+    def reset_stop_flag():
+        GS.stop_flag = False
+
+    @staticmethod
+    def set_stop_flag():
+        GS.stop_flag = True
+
+    @staticmethod
+    def get_stop_flag():
+        return GS.stop_flag

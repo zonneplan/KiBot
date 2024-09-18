@@ -259,15 +259,23 @@ def init():
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors"""
 
-    def __init__(self, stream=None):
+    def __init__(self, stream=None, force_tty=False):
         super(logging.Formatter, self).__init__()
-        if stream is not None and stream.isatty():
+        if (stream is not None and stream.isatty()):
             white = Fore.WHITE
             yellow = Fore.YELLOW + Style.BRIGHT
             red = Fore.RED + Style.BRIGHT
             red_alarm = Fore.RED + Back.WHITE + Style.BRIGHT
             cyan = Fore.CYAN + Style.BRIGHT
             reset = Style.RESET_ALL
+        elif force_tty:
+            # This mechanism is used by the GUI, is simpler than parsing ANSI escape sequences
+            white = ""
+            yellow = "\033Y"
+            red = "\033R"
+            red_alarm = "\033r"
+            cyan = "\033C"
+            reset = ""
         else:
             white = ""
             yellow = ""
@@ -304,3 +312,15 @@ def set_file_log(fname):
 
 def remove_file_log(fh):
     root_logger.removeHandler(fh)
+
+
+def set_log_handler(handler):
+    global visual_level
+    handler.setLevel(visual_level)
+    handler.setFormatter(CustomFormatter(force_tty=True))
+    root_logger.addHandler(handler)
+    return handler
+
+
+def remove_log_handler(handler):
+    root_logger.removeHandler(handler)

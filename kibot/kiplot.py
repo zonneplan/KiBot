@@ -77,7 +77,7 @@ def _import(name, path):
     try_register_deps(mod, name)
 
 
-def _load_actions(path, load_internals=False):
+def _load_actions(path, load_internals=False, progress=None):
     logger.debug("Importing from "+path)
     lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py'))
     lst += glob(os.path.join(path, 'var_*.py')) + glob(os.path.join(path, 'fil_*.py'))
@@ -85,11 +85,14 @@ def _load_actions(path, load_internals=False):
         lst += [os.path.join(path, 'globals.py')]
     for p in sorted(lst):
         name = os.path.splitext(os.path.basename(p))[0]
-        logger.debug("- Importing "+name)
+        msg = "Importing "+name
+        logger.debug('- '+msg)
+        if progress:
+            progress(msg)
         _import(name, p)
 
 
-def load_actions():
+def load_actions(progress=None):
     """ Load all the available outputs and preflights """
     global actions_loaded
     if actions_loaded:
@@ -98,7 +101,7 @@ def load_actions():
     try_register_deps(dep_downloader, 'global')
     from kibot.mcpyrate import activate
     # activate.activate()
-    _load_actions(os.path.abspath(os.path.dirname(__file__)), True)
+    _load_actions(os.path.abspath(os.path.dirname(__file__)), True, progress)
     home = os.environ.get('HOME')
     if home:
         dir = os.path.join(home, '.config', 'kiplot', 'plugins')
@@ -655,6 +658,8 @@ def _generate_outputs(targets, invert, skip_pre, cli_order, no_priority, dont_st
         logger.debug('Outputs after sorting: {}'.format([t.name for t in targets]))
     # Configure and run the outputs
     for out in targets:
+        if GS.get_stop_flag():
+            break
         if config_output(out, dont_stop=dont_stop):
             logger.info('- '+str(out))
             run_output(out, dont_stop)
@@ -1010,6 +1015,8 @@ def discover_files(dest_dir):
 
 
 def load_config(plot_config):
+    if not plot_config:
+        return []
     cr = CfgYamlReader()
     outputs = None
     try:
