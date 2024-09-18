@@ -9,6 +9,7 @@ import csv
 import json
 import logging
 import os
+import pytest
 import signal
 from subprocess import Popen, TimeoutExpired
 import sys
@@ -335,12 +336,14 @@ def try_groups_1_recipe(ctx):
     return e
 
 
+@pytest.mark.indep
 def test_gui_new_board_view_1(test_dir):
     """ We start without config.
         Force a known YAML, set an SCH, add a boardview output, name it test_output and save """
     run_test(1, test_dir, 'light_control', new_board_view_recipe, keep_project=True, no_board_file=True, no_yaml_file=True)
 
 
+@pytest.mark.indep
 def test_gui_new_board_view_2(test_dir):
     """ We start with config and SCH.
         Add a boardview output, name it test_output and save """
@@ -490,21 +493,26 @@ def try_all_variants_recipe(ctx):
     return e
 
 
+@pytest.mark.indep
 def test_gui_try_all_outputs_1(test_dir):
     run_test(3, test_dir, 'light_control', try_all_outputs_recipe, keep_project=True)
 
 
+@pytest.mark.indep
 def test_gui_try_all_preflights_1(test_dir):
     run_test(4, test_dir, 'light_control', try_all_preflights_recipe, keep_project=True)
 
 
+@pytest.mark.indep
 def test_gui_try_all_filters_1(test_dir):
     run_test(5, test_dir, 'light_control', try_all_filters_recipe, keep_project=True)
 
 
+@pytest.mark.indep
 def test_gui_try_all_variants_1(test_dir):
     run_test(6, test_dir, 'light_control', try_all_variants_recipe, keep_project=True)
 
 
+@pytest.mark.indep
 def test_gui_groups_1(test_dir):
     run_test(7, test_dir, 'light_control', try_groups_1_recipe, keep_project=True)
