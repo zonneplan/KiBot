@@ -113,13 +113,6 @@ class PcbDrawStyle(Optionable):
         return {k.replace('_', '-'): v for k, v in self.get_attrs_gen()}
 
 
-class PcbDrawRemap(Optionable):
-    """ This class accepts a free form dict.
-        No validation is done. """
-    def config(self, parent):
-        pass
-
-
 class PcbDrawResistorRemap(Optionable):
     """ Reference -> New value """
     def __init__(self):
@@ -188,9 +181,9 @@ class PcbDrawOptions(VariantOptions):
             """ [list(string)] List of libraries """
             self.placeholder = False
             """ Show placeholder for missing components """
-            self.remap = PcbDrawRemap
-            """ [dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
-                Use `remap_components` instead """
+            self.remap = Optionable
+            """ [string_dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components
+                (lib:component). Use `remap_components` instead """
             self.remap_components = PcbDrawRemapComponents
             """ [list(dict)=[]] Replacements for PCB references using specified components.
                 Replaces `remap` with type check """
@@ -280,7 +273,7 @@ class PcbDrawOptions(VariantOptions):
             self.show_components = self.solve_kf_filters(self.show_components)
         # Resistors Remap
         self._remap = {}
-        if isinstance(self.remap, PcbDrawRemap):
+        if isinstance(self.remap, Optionable):
             for ref, v in self.remap._tree.items():
                 if not isinstance(v, str):
                     raise KiPlotConfigurationError("Wrong PcbDraw remap, must be `ref: lib:component` ({}: {})".format(ref, v))

@@ -142,14 +142,14 @@ Outputs sorted by depth:
 -             Number:  266
 - ListStringSingular:  222
 -             Choice:   94
--               Dict:   80
+-               Dict:   79
 -   ListDictOrString:   21
 -           ListDict:   20
 -              Combo:   14
 -         ListString:    9
 -   ListDictSingular:    5
 -     ListListString:    2
--         StringDict:    1
+-         StringDict:    2
 -       NumberChoice:    1
 --------------------------------------------------------------------------------
 Used as single data type:
@@ -168,16 +168,17 @@ Used as single data type:
 -         StringDict:    1 ['download_datasheets.options.classify_extra']
 -       NumberChoice:    1 ['gerber.options.gerber_precision']
 --------------------------------------------------------------------------------
-9 different data type combinations
+10 different data type combinations
 -              Number,String:   92 
 -             Boolean,String:   52 
 -     Combo,ListDictOrString:   12 
--                Dict,String:    6 ['blender_export.options.pcb3d', 'excellon.options.report', 'gerb_drill.options.report', 'kibom.options.conf', 'pcbdraw.options.style', 'pcbdraw.options.remap']
+-                Dict,String:    5 ['blender_export.options.pcb3d', 'excellon.options.report', 'gerb_drill.options.report', 'kibom.options.conf', 'pcbdraw.options.style']
 -    ListDictOrString,String:    4 ['bom.options.columns.join', 'bom.options.cost_extra_columns.join', 'bom.options.xlsx.specs_columns.join', 'panelize.options.configs']
 - Boolean,ListStringSingular:    3 ['bom.options.html.lcsc_link', 'bom.options.xlsx.lcsc_link', 'kibom.options.conf.lcsc_link']
 -                Choice,Dict:    2 ['excellon.options.map', 'gerb_drill.options.map']
 -                Dict,Number:    2 ['pcbdraw.options.margin', 'svg.options.margin']
 -             Boolean,Choice:    1 ['ibom.options.highlight_pin1']
+-          String,StringDict:    1 ['pcbdraw.options.remap']
 ================================================================================
 ================================================================================
 21 preflights types with a total of 120 different parameters
@@ -599,14 +600,14 @@ Totals sorted by depth:
 -             Number:  295
 - ListStringSingular:  251
 -             Choice:  124
--               Dict:   89
+-               Dict:   88
 -           ListDict:   30
 -   ListDictOrString:   22
 -              Combo:   14
 -         ListString:   12
 -   ListDictSingular:   10
 -     ListListString:    4
--         StringDict:    1
+-         StringDict:    2
 -       NumberChoice:    1
 --------------------------------------------------------------------------------
 Used as single data type:
@@ -625,15 +626,16 @@ Used as single data type:
 -         StringDict:    1 ['download_datasheets.options.classify_extra']
 -       NumberChoice:    1 ['gerber.options.gerber_precision']
 --------------------------------------------------------------------------------
-10 different data type combinations
+11 different data type combinations
 -              Number,String:  107 
 -             Boolean,String:   52 
 -     Combo,ListDictOrString:   12 
--                Dict,String:    6 ['blender_export.options.pcb3d', 'excellon.options.report', 'gerb_drill.options.report', 'kibom.options.conf', 'pcbdraw.options.style', 'pcbdraw.options.remap']
 -               Boolean,Dict:    6 ['draw_stackup.draw_stackup', 'drc.drc', 'erc.erc', 'run_drc.run_drc', 'run_erc.run_erc', 'update_xml.update_xml']
+-                Dict,String:    5 ['blender_export.options.pcb3d', 'excellon.options.report', 'gerb_drill.options.report', 'kibom.options.conf', 'pcbdraw.options.style']
 -    ListDictOrString,String:    4 ['bom.options.columns.join', 'bom.options.cost_extra_columns.join', 'bom.options.xlsx.specs_columns.join', 'panelize.options.configs']
 - Boolean,ListStringSingular:    3 ['bom.options.html.lcsc_link', 'bom.options.xlsx.lcsc_link', 'kibom.options.conf.lcsc_link']
 -                Choice,Dict:    2 ['excellon.options.map', 'gerb_drill.options.map']
 -                Dict,Number:    2 ['pcbdraw.options.margin', 'svg.options.margin']
 -             Boolean,Choice:    1 ['ibom.options.highlight_pin1']
+-          String,StringDict:    1 ['pcbdraw.options.remap']
 Found 2 unique warning/s (3 total)

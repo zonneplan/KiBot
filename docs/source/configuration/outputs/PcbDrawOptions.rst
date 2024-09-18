@@ -39,8 +39,9 @@ PcbDrawOptions parameters
 -  ``pre_transform`` :index:`: <pair: output - pcbdraw - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
    A short-cut to use for simple cases where a variant is an overkill.
 
--  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>`  [:ref:`PcbDrawRemap parameters <PcbDrawRemap>`] [:ref:`dict <dict>` | :ref:`string <string>`] (default: ``'None'``) (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+-  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [:ref:`string_dict <string_dict>` | :ref:`string <string>`] (default: ``'None'``) (DEPRECATED) Replacements for PCB references using specified components (lib:component).
    Use `remap_components` instead.
+
 -  ``remap_components`` :index:`: <pair: output - pcbdraw - options; remap_components>`  [:ref:`PcbDrawRemapComponents parameters <PcbDrawRemapComponents>`] [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Replacements for PCB references using specified components.
    Replaces `remap` with type check.
 -  ``resistor_flip`` :index:`: <pair: output - pcbdraw - options; resistor_flip>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``''``) [:ref:`comma separated <comma_sep>`] List of resistors to flip its bands.
@@ -66,7 +67,6 @@ PcbDrawOptions parameters
 .. toctree::
    :caption: Used dicts
 
-   PcbDrawRemap
    PcbDrawRemapComponents
    PcbDrawResistorRemap
    PcbDrawStyle

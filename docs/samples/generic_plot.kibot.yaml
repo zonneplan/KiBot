@@ -2845,9 +2845,9 @@ outputs:
       # [string|list(string)='_null'] Name of the filter to transform fields before applying other filters.
       # A short-cut to use for simple cases where a variant is an overkill
       pre_transform: '_null'
-      # [dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
+      # [string_dict|string='None'] (DEPRECATED) Replacements for PCB references using specified components (lib:component).
       # Use `remap_components` instead
-      remap:
+      remap: 'None'
       # [list(dict)=[]] Replacements for PCB references using specified components.
       # Replaces `remap` with type check
       remap_components:

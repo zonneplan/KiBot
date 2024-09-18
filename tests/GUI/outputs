@@ -8953,10 +8953,10 @@
         [
           "remap",
           [
-            "DataTypeDict",
+            "DataTypeStringDict",
             "DataTypeString"
           ],
-          []
+          null
         ],
         [
           "remap_components",
