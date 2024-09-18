@@ -163,7 +163,7 @@ jobs:
 
     runs-on: ubuntu-latest
     # We use a modern container because the GUI needs a modern wxWidgets
-    container: ghcr.io/inti-cmnb/kicad8_auto_test:latest
+    container: ghcr.io/inti-cmnb/kicad_auto_test:ki8
 
     steps:
     - uses: actions/checkout@v4
