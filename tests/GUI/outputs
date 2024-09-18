@@ -11479,6 +11479,13 @@
           null
         ],
         [
+          "enable_crop_workaround",
+          [
+            "DataTypeBoolean"
+          ],
+          null
+        ],
+        [
           "transparent_background",
           [
             "DataTypeBoolean"
@@ -11744,7 +11751,7 @@
         [
           "template",
           [
-            "DataTypeString"
+            "DataTypeCombo"
           ],
           null
         ],
@@ -11815,6 +11822,27 @@
           "stencil_thickness",
           [
             "DataTypeNumber"
+          ],
+          null
+        ],
+        [
+          "variant",
+          [
+            "DataTypeString"
+          ],
+          null
+        ],
+        [
+          "dnf_filter",
+          [
+            "DataTypeListStringSingular"
+          ],
+          null
+        ],
+        [
+          "pre_transform",
+          [
+            "DataTypeListStringSingular"
           ],
           null
         ]

@@ -359,6 +359,13 @@
           null
         ],
         [
+          "force_english",
+          [
+            "DataTypeBoolean"
+          ],
+          null
+        ],
+        [
           "category",
           [
             "DataTypeListStringSingular"
@@ -458,6 +465,13 @@
           "units",
           [
             "DataTypeChoice"
+          ],
+          null
+        ],
+        [
+          "force_english",
+          [
+            "DataTypeBoolean"
           ],
           null
         ],

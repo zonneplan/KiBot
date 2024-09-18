@@ -531,6 +531,50 @@
       null
     ]
   ],
+  "separate_pins": [
+    [
+      "name",
+      [
+        "DataTypeString"
+      ],
+      null
+    ],
+    [
+      "type",
+      [
+        "DataTypeString"
+      ],
+      null
+    ],
+    [
+      "comment",
+      [
+        "DataTypeString"
+      ],
+      null
+    ],
+    [
+      "ref_sep",
+      [
+        "DataTypeString"
+      ],
+      null
+    ],
+    [
+      "attribute",
+      [
+        "DataTypeListStringSingular"
+      ],
+      null
+    ],
+    [
+      "keep_component",
+      [
+        "DataTypeBoolean"
+      ],
+      null
+    ]
+  ],
   "spec_to_field": [
     [
       "name",
