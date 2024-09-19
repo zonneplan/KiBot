@@ -20,8 +20,16 @@ introduced listening to a podcast, you can try the following
    </div>
 
 
+Here is another podcast, more centered on the CI/CD side:
 
-For example, it’s common that you might want for each board rev to create/do:
+.. raw:: html
+
+   <div style="text-align: center;">
+     <iframe width="560" height="315" src="https://www.youtube.com/embed/BgSvupdpGvo?si=tTksrCmQKnQTNxad" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+   </div>
+
+
+So, for example, it’s common that you might want for each board rev to create/do:
 
 -  Check ERC/DRC one last time (using `KiCad Automation
    Scripts <https://github.com/INTI-CMNB/kicad-automation-scripts/>`__)
