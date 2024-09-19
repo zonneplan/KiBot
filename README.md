@@ -23,12 +23,12 @@ introduced listening to a podcast, you can try the following
 (english audio, english and spanish subtitles available):
 
 <div style="text-align: center;">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/rfq6ljDD6FI?si=ZfAGqzq4e1UcjbaS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/rfq6ljDD6FI/0.jpg)](https://www.youtube.com/watch?v=rfq6ljDD6FI)
 </div>
 
 
 Here is another podcast, more centered on the CI/CD side:
 
 <div style="text-align: center;">
-<iframe width="560" height="315" src="https://www.youtube.com/embed/BgSvupdpGvo?si=tTksrCmQKnQTNxad" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+[![IMAGE ALT TEXT HERE](https://img.youtube.com/vi/BgSvupdpGvo/0.jpg)](https://www.youtube.com/watch?v=BgSvupdpGvo)
 </div>
