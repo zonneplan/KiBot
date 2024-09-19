@@ -17,3 +17,18 @@ For more information consult the [documentation](https://kibot.readthedocs.io/en
 
 If you want to see an example of what KiBot can generate visit this
 [project](https://inti-cmnb.github.io/kibot_variants_arduprog_site/Browse/t1-navigate.html)
+
+If this is the first time you read about KiBot, and you prefer to be
+introduced listening to a podcast, you can try the following
+(english audio, english and spanish subtitles available):
+
+<div style="text-align: center;">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/rfq6ljDD6FI?si=ZfAGqzq4e1UcjbaS" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
+
+
+Here is another podcast, more centered on the CI/CD side:
+
+<div style="text-align: center;">
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/BgSvupdpGvo?si=tTksrCmQKnQTNxad" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+</div>
