@@ -39,8 +39,8 @@ PcbDrawOptions parameters
 -  ``pre_transform`` :index:`: <pair: output - pcbdraw - options; pre_transform>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to transform fields before applying other filters.
    A short-cut to use for simple cases where a variant is an overkill.
 
--  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [:ref:`string_dict <string_dict>` | :ref:`string <string>`] (default: ``'None'``) (DEPRECATED) Replacements for PCB references using specified components (lib:component).
-   Use `remap_components` instead.
+-  ``remap`` :index:`: <pair: output - pcbdraw - options; remap>` [:ref:`string_dict <string_dict>` | :ref:`string <string>`] (default: ``'None'``) (DEPRECATED) Replacements for PCB references using specified components
+   (lib:component). Use `remap_components` instead.
 
 -  ``remap_components`` :index:`: <pair: output - pcbdraw - options; remap_components>`  [:ref:`PcbDrawRemapComponents parameters <PcbDrawRemapComponents>`] [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Replacements for PCB references using specified components.
    Replaces `remap` with type check.
