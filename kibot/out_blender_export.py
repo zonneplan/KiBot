@@ -422,7 +422,7 @@ class Blender_ExportOptions(BaseOptions):
                 order += 1
         return files
 
-    def create_vrml(self, dest_dir):
+    def create_vrml(self, dest_dir, outputs):
         tree = {'name': '_temporal_vrml_for_pcb3d',
                 'type': 'vrml',
                 'comment': 'Internally created for the PCB3D',
@@ -437,8 +437,10 @@ class Blender_ExportOptions(BaseOptions):
         out.options.copy_options(self.pcb3d)
         logger.debug(' - Creating VRML ...')
         out.options.run(os.path.join(dest_dir, 'pcb.wrl'))
+        RegOutput.add_output(out)
+        outputs.append(out)
 
-    def create_layers(self, dest_dir):
+    def create_layers(self, dest_dir, outputs):
         out_dir = os.path.join(dest_dir, 'layers')
         tree = {'name': '_temporal_svgs_layers',
                 'type': 'svg',
@@ -452,9 +454,11 @@ class Blender_ExportOptions(BaseOptions):
                 'layers': ['F.Cu', 'B.Cu', 'F.Paste', 'B.Paste', 'F.Mask', 'B.Mask',
                            {'layer': 'F.SilkS', 'suffix': 'F_SilkS'},
                            {'layer': 'B.SilkS', 'suffix': 'B_SilkS'}]}
-        configure_and_run(tree, out_dir, ' - Creating SVG for layers ...')
+        out = configure_and_run(tree, out_dir, ' - Creating SVG for layers ...')
+        RegOutput.add_output(out)
+        outputs.append(out)
 
-    def create_pads(self, dest_dir):
+    def create_pads(self, dest_dir, outputs):
         options = {'stackup_create': False}
         if self.pcb3d.version == '2.1_haschtl':
             options['stackup_create'] = True
@@ -473,38 +477,27 @@ class Blender_ExportOptions(BaseOptions):
             if not self.pcb3d._show_all_components:
                 sc = 'none' if not self.pcb3d.show_components else self.pcb3d._show_components_raw
             tree['options']['show_components'] = sc
-        configure_and_run(tree, dest_dir, ' - Creating Pads and boundary ...')
+        out = configure_and_run(tree, dest_dir, ' - Creating Pads and boundary ...')
+        RegOutput.add_output(out)
+        outputs.append(out)
 
-    def create_pcb3d(self, data_dir):
+    def create_pcb3d(self, data_dir, outputs):
         out_dir = self._parent.output_dir
         # Compute the name for the PCB3D
         out_name = self.pcb3d.get_output_name(out_dir)
+        files = [{'from_output': o.name, 'from_output_dir': True, 'dest': 'layers' if o.type == 'svg' else ''}
+                 for o in outputs]
         tree = {'name': '_temporal_compress_pcb3d',
                 'type': 'compress',
                 'comment': 'Internally created for the PCB3D',
                 'dir': out_dir,
                 'options': {'output': out_name,
                             'format': 'ZIP',
-                            'files': [{'source': os.path.join(data_dir, 'boards'),
-                                       'dest': '/'},
-                                      {'source': os.path.join(data_dir, 'boards/*'),
-                                       'dest': 'boards'},
-                                      {'source': os.path.join(data_dir, 'components'),
-                                       'dest': '/'},
-                                      {'source': os.path.join(data_dir, 'components/*'),
-                                       'dest': 'components'},
-                                      {'source': os.path.join(data_dir, 'layers'),
-                                       'dest': '/'},
-                                      {'source': os.path.join(data_dir, 'layers/*'),
-                                       'dest': 'layers'},
-                                      {'source': os.path.join(data_dir, 'pads'),
-                                       'dest': '/'},
-                                      {'source': os.path.join(data_dir, 'pads/*'),
-                                       'dest': 'pads'},
-                                      {'source': os.path.join(data_dir, 'pcb.wrl'),
-                                       'dest': '/'},
-                                      ]}}
+                            'files': files}}
         configure_and_run(tree, out_dir, ' - Creating the PCB3D ...')
+        # Remove the temporal outputs
+        for o in outputs:
+            RegOutput.remove_output(o)
         return out_name
 
     def solve_pcb3d(self):
@@ -523,14 +516,15 @@ class Blender_ExportOptions(BaseOptions):
         else:
             # We create it
             with TemporaryDirectory() as tmp_dir:
+                outputs = []
                 # VRML
-                self.create_vrml(tmp_dir)
+                self.create_vrml(tmp_dir, outputs)
                 # SVG layers
-                self.create_layers(tmp_dir)
+                self.create_layers(tmp_dir, outputs)
                 # Pads and bounds
-                self.create_pads(tmp_dir)
+                self.create_pads(tmp_dir, outputs)
                 # Compress the files
-                pcb3d_file = self.create_pcb3d(tmp_dir)
+                pcb3d_file = self.create_pcb3d(tmp_dir, outputs)
             self._pcb3d = self.pcb3d
             # Needed by ensure tool
             self.type = self._parent.type
