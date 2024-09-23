@@ -583,8 +583,9 @@ def configure_and_run(tree, out_dir, msg):
     out = RegOutput.get_class_for(tree['type'])()
     out.set_tree(tree)
     config_output(out)
-    logger.debug(' - Creating the PCB3D ...')
+    logger.debug(msg)
     out.run(out_dir)
+    return out
 
 
 def look_for_output(name, op_name, parent, valids):
