@@ -147,7 +147,7 @@ def update_footprint(ref, name, s, aliases, logger):
         cur_side = next(filter(lambda s: isinstance(s, list) and s[0].value() == "layer", keep))[1]
         if cur_side != lib_side:
             # Flipped, flip every layer reference
-            logger.debug('- Flipping {ref}')
+            logger.debug(f'- Flipping {ref}')
             for sexp in from_lib:
                 flip_sexp(sexp)
     except StopIteration:
