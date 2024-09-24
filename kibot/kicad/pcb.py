@@ -99,7 +99,8 @@ def save_pcb_from_sexp(pcb, logger, replace_pcb=True):
         logger.debug('- Replacing the old PCB')
         GS.save_pcb()
         # After saving the file the name isn't changed, we must force it!!!
-        GS.board.SetFileName(GS.pcb_file)
+    # Keep the original name, not the temporal one
+    GS.board.SetFileName(GS.pcb_file)
 
 
 def keep_attr(names, sexp):
