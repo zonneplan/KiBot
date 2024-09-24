@@ -26,6 +26,8 @@ Fixed
 
 -  Blender Export: stacked boards when using an automatically generated
    PCB3D.
+-  Footprint variant: flipped components didn’t get flipped after
+   replacement (#664)
 
 [1.8.0] - 2024-09-17
 --------------------

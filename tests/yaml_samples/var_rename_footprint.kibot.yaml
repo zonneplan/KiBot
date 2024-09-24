@@ -47,3 +47,6 @@ outputs:
         - layers:
             - layer: F.Cu
             - layer: F.SilkS
+        - layers:
+            - layer: B.Cu
+            - layer: B.SilkS
