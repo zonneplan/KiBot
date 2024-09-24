@@ -1025,8 +1025,8 @@ class PCB_PrintOptions(VariantOptions):
         bbox = GS.board.GetBoundingBox()
         # KiCad 7 workaround, doing GS.board.GetBoundingBox().GetSize() fails
         sz = bbox.GetSize()
-        scale_x = FromMM(self.paper_w-self.autoscale_margin_x*2)/sz.x
-        scale_y = FromMM(self.paper_h-self.autoscale_margin_y*2)/sz.y
+        scale_x = FromMM(self.paper_w-self.autoscale_margin_x*2)/sz.x if sz.x else 1
+        scale_y = FromMM(self.paper_h-self.autoscale_margin_y*2)/sz.y if sz.y else 1
         scale = min(scale_x, scale_y)
         po.SetScale(scale)
         logger.debug('- Autoscale: {}'.format(scale))

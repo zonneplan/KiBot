@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Blender Export: stacked boards when using an automatically generated PCB3D.
 - Footprint variant: flipped components didn't get flipped after replacement
   (#664)
+- PCB print: errors when printing a fully empty layer
 
 
 ## [1.8.0] - 2024-09-17
