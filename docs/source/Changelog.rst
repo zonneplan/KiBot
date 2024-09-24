@@ -26,8 +26,11 @@ Fixed
 
 -  Blender Export: stacked boards when using an automatically generated
    PCB3D.
--  Footprint variant: flipped components didn’t get flipped after
-   replacement (#664)
+-  Footprint variant (created by Var Replace filter):
+
+   -  Flipped components didn’t get flipped after replacement (#664)
+   -  Problems generating drill outputs (#663)
+
 -  PCB print: errors when printing a fully empty layer
 
 [1.8.0] - 2024-09-17
