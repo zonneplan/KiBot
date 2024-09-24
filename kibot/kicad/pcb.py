@@ -10,7 +10,7 @@ Currently used only for the paper size
 import os
 from .config import KiConf
 from ..error import KiPlotConfigurationError
-from ..misc import W_NOLIB
+from ..misc import W_NOLIB, W_MISSFPINFO
 from ..gs import GS
 from .sexpdata import load, dumps, SExpData, sexp_iter, Symbol
 from .sexp_helpers import _check_relaxed, _get_symbol_name, make_separated, load_sexp_file
@@ -106,6 +106,19 @@ def keep_attr(names, sexp):
     return not isinstance(sexp, list) or len(sexp) < 2 or not isinstance(sexp[0], Symbol) or sexp[0].value() in names
 
 
+def flip_sexp(sexp):
+    if not isinstance(sexp, list) or len(sexp) < 2 or not isinstance(sexp[0], Symbol):
+        return
+    if sexp[0].value().startswith('layer'):  # layer/layers
+        for n in range(1, len(sexp)):
+            side = sexp[n][0]
+            if side in 'BF':
+                sexp[n] = ('B' if side == 'F' else 'F') + sexp[n][1:]
+    else:
+        for s in sexp[1:]:
+            flip_sexp(s)
+
+
 def update_footprint(ref, name, s, aliases, logger):
     """ Change footprint 'ref' using 'name' lib footprint """
     logger.debug(f'Replacing {ref} using {name}')
@@ -128,6 +141,17 @@ def update_footprint(ref, name, s, aliases, logger):
     keep = list(filter(lambda s: keep_attr(attrs, s), s))
     # Get the other attributes from the lib version
     from_lib = list(filter(lambda s: not keep_attr(attrs, s), c[0]))
+    # Check if the component is flipped
+    try:
+        lib_side = next(filter(lambda s: isinstance(s, list) and s[0].value() == "layer", c[0]))[1]
+        cur_side = next(filter(lambda s: isinstance(s, list) and s[0].value() == "layer", keep))[1]
+        if cur_side != lib_side:
+            # Flipped, flip every layer reference
+            logger.debug('- Flipping {ref}')
+            for sexp in from_lib:
+                flip_sexp(sexp)
+    except StopIteration:
+        logger.warning(W_MISSFPINFO+f'Missing footprint layer {ref}')
     # Replace the footprint using the combination
     s[:] = keep+from_lib
     return True

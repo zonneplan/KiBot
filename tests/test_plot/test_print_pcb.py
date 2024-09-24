@@ -177,8 +177,12 @@ def test_var_rename_footprint_1(test_dir):
     ctx = context.TestContext(test_dir, prj, prj, 'PNG')
     ctx.run(extra=['-g', 'variant=production'])
     ctx.compare_image(prj+'-assembly_page_01_(PROD).png', tol=DIFF_TOL, sub=True)
+    if context.ki8():
+        ctx.compare_image(prj+'-assembly_page_02_(PROD).png', tol=DIFF_TOL, sub=True)
     ctx.run(extra=['-g', 'variant=development'])
     ctx.compare_image(prj+'-assembly_page_01_(DEV).png', tol=DIFF_TOL, sub=True)
+    if context.ki8():
+        ctx.compare_image(prj+'-assembly_page_02_(DEV).png', tol=DIFF_TOL, sub=True)
     ctx.clean_up()
 
 
