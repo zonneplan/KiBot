@@ -28,6 +28,7 @@ Fixed
    PCB3D.
 -  Footprint variant: flipped components didn’t get flipped after
    replacement (#664)
+-  PCB print: errors when printing a fully empty layer
 
 [1.8.0] - 2024-09-17
 --------------------
