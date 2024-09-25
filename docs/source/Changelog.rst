@@ -24,8 +24,12 @@ Added
 Fixed
 ~~~~~
 
--  Blender Export: stacked boards when using an automatically generated
-   PCB3D.
+-  Blender Export:
+
+   -  Stacked boards when using an automatically generated PCB3D.
+   -  Point of view when using the human names instead of the axis
+      names.
+
 -  Footprint variant (created by Var Replace filter):
 
    -  Flipped components didn’t get flipped after replacement (#664)

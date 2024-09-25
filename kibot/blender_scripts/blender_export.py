@@ -81,17 +81,17 @@ def do_rotate(rots):
 
 def do_point_of_view(scene, name):
     view = scene.get(name)
-    if view is None or view == 'z':
+    if view is None or view == 'z' or view == 'top':
         return (0, 0, 0)
-    if view == 'Z':
+    if view == 'Z' or view == 'bottom':
         return (0, 180, 0)
-    if view == 'y':
+    if view == 'y' or view == 'front':
         return (-90, 0, 0)
-    if view == 'Y':
+    if view == 'Y' or view == 'rear':
         return (90, 0, 180)
-    if view == 'x':
+    if view == 'x' or view == 'right':
         return (0, 90, 90)
-    if view == 'X':
+    if view == 'X' or view == 'left':
         return (0, -90, -90)
     print(f'Unknown view `{view}`')
     return (0, 0, 0)
