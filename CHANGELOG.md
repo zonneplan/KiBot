@@ -10,7 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Experimental GUI
 
 ### Fixed
-- Blender Export: stacked boards when using an automatically generated PCB3D.
+- Blender Export:
+  - Stacked boards when using an automatically generated PCB3D.
+  - Point of view when using the human names instead of the axis names.
 - Footprint variant (created by Var Replace filter):
   - Flipped components didn't get flipped after replacement (#664)
   - Problems generating drill outputs (#663)

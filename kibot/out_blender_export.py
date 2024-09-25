@@ -589,12 +589,12 @@ class Blender_ExportOptions(BaseOptions):
                         povs.append({'rotate_x': -last_pov.rotate_x,
                                      'rotate_y': -last_pov.rotate_y,
                                      'rotate_z': -last_pov.rotate_z,
-                                     'view': pov.view})
+                                     'view': pov._view})
                 else:
                     povs.append({'rotate_x': -pov.rotate_x,
                                  'rotate_y': -pov.rotate_y,
                                  'rotate_z': -pov.rotate_z,
-                                 'view': pov.view})
+                                 'view': pov._view})
                     last_pov = pov
             scene['point_of_view'] = povs
             text = json.dumps(scene, sort_keys=True, indent=2)
