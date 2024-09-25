@@ -6,9 +6,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 
 ## [1.8.1] - UNRELEASED
-### Added
-- Experimental GUI
-
 ### Fixed
 - Blender Export:
   - Stacked boards when using an automatically generated PCB3D.
