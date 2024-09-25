@@ -1,8 +1,15 @@
-kibot (1.8.1-1) UNRELEASED; urgency=medium
+kibot (1.8.1-1) stable; urgency=medium
 
-  * Next release
+  * Bug fix release
+  * Blender Export:
+    - Stacked boards when using an automatically generated PCB3D.
+    - Point of view when using the human names instead of the axis names.
+  * Footprint variant (created by Var Replace filter):
+    - Flipped components didn't get flipped after replacement
+    - Problems generating drill outputs
+  * PCB print: errors when printing a fully empty layer
 
- -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Wed, 18 Sep 2024 09:21:46 -0300
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Wed, 25 Sep 2024 08:58:13 -0300
 
 kibot (1.8.0-1) stable; urgency=medium
 
@@ -85,7 +92,7 @@ kibot (1.8.0-1) stable; urgency=medium
     - Spec to Field: some simple defaults for the specs (voltage, current, power
       and tolerance)
 
- -- Salvador Eduardo Tropea <salvador@inti.gob.ar>  Tue, 17 Sep 2024 10:09:33 -0300
+ -- Salvador E. Tropea <salvador@inti.gob.ar>  Tue, 17 Sep 2024 10:09:33 -0300
 
 kibot (1.7.0-1) stable; urgency=medium
 
