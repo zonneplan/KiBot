@@ -40,7 +40,7 @@ jobs:
     needs: check
     if: ${{ needs.check.outputs.IS_TAG == 'yes' }}
     outputs:
-      deb_name: ${{ steps.mdeb.outputs.deb_name }}
+      DEB_NAME: ${{ steps.mdeb.outputs.DEB_NAME }}
 
     steps:
       - name: Checkout
