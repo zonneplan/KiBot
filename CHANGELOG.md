@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Experimental GUI
 
+### Fixed
+- PCB Print: allow specifying `repeat_for_layer` with empty `repeat_layers`.
+  This was the old behavior (i.e. 1.7.0) (#671)
+
 
 ## [1.8.1] - 2024-09-25
 ### Fixed

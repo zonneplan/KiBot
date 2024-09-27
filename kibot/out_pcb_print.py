@@ -45,7 +45,7 @@ from .kicad.config import KiConf
 from .kicad.v5_sch import SchError
 from .kicad.pcb import PCB
 from .misc import (PDF_PCB_PRINT, W_PDMASKFAIL, W_MISSTOOL, PCBDRAW_ERR, W_PCBDRAW, VIATYPE_THROUGH, VIATYPE_BLIND_BURIED,
-                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418, pretty_list, try_int, W_NOPAGES, W_NOLAYERS)
+                   VIATYPE_MICROVIA, FONT_HELP_TEXT, W_BUG16418, pretty_list, try_int, W_NOPAGES, W_NOLAYERS, W_NOTHREPE)
 from .create_pdf import create_pdf_from_pages
 from .macros import macros, document, output_class  # noqa: F401
 from .drill_marks import DRILL_MARKS_MAP, add_drill_marks
@@ -276,8 +276,14 @@ class PagesOptions(Optionable):
                 raise KiPlotConfigurationError("Layer `{}` specified in `repeat_for_layer` isn't valid".format(layer))
             self._repeat_for_layer_index = self._layers.index(self._repeat_for_layer)
             self._repeat_layers = LayerOptions.solve(self.repeat_layers)
-            if not self._repeat_layers:
+            if not self.repeat_layers:
+                # Here we check the user specified something (or left the default)
+                # We don't check this "something" is usable (self._repeat_layers) because this prevents using default values
+                # for multiple projects (See #671)
                 raise KiPlotConfigurationError('`repeat_for_layer` specified, but nothing to repeat')
+            if not self._repeat_layers:
+                # If the result is empty just note it as a warning
+                logger.warning(W_NOTHREPE+'`repeat_for_layer` specified, but nothing to repeat')
 
 
 class PCB_PrintOptions(VariantOptions):
