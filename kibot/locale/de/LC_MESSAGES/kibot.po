@@ -17,33 +17,35 @@ msgstr ""
 
 #: GUI/gui.py:74
 msgid "Declared"
-msgstr ""
+msgstr "Deklarieren"
 
 #: GUI/gui.py:74
 msgid "Invert selection"
-msgstr ""
+msgstr "Auswahl invertieren"
 
 #: GUI/gui.py:74
 msgid "Selected"
-msgstr ""
+msgstr "Ausgewählt"
 
 #: GUI/gui.py:74
 msgid "Sort by priority"
-msgstr ""
+msgstr "Nach Priorität sortieren"
 
 #: GUI/gui.py:121
 msgid "Main"
-msgstr ""
+msgstr "Hauptpfad"
 
 #: GUI/gui.py:123
 msgid ""
 "Defined outputs.\n"
 "Things you can generate pressing the Run button"
 msgstr ""
+"Definierte Exporte.\n"
+"Exportieren mit Ausführen"
 
 #: GUI/gui.py:124
 msgid "Outputs"
-msgstr ""
+msgstr "Exporte"
 
 #: GUI/gui.py:126
 msgid ""
@@ -51,20 +53,24 @@ msgid ""
 "This makes easier to run some and exclude others.\n"
 "A group can contain another group."
 msgstr ""
+"Macht es einfacher gewisse Exporte auszuführen und andere zu überspringen.\n"
+"Eine Gruppe kann eine Zusammenfassung in einer anderen Gruppe sein."
 
 #: GUI/gui.py:129
 msgid "Groups"
-msgstr ""
+msgstr "Gruppen"
 
 #: GUI/gui.py:131
 msgid ""
 "Tasks executed before generating outputs.\n"
 "I.e. run the DRC and or ERC."
 msgstr ""
+"Aufgaben welche vor den Exporten ausgeführt werden.\n"
+"Zum Beispiel ERC und DRC."
 
 #: GUI/gui.py:133
 msgid "Preflights"
-msgstr ""
+msgstr "Preflights"
 
 #: GUI/gui.py:135
 msgid ""
@@ -72,54 +78,61 @@ msgid ""
 "Used to include or exclude certain components.\n"
 "Some filters can apply transformations to components."
 msgstr ""
+"Definierte Filter.\n"
+"Wird benutzt um gewissen Bauteile oder Komponenten einzubinden oder auszuschließen\n"
+"Einige Filter erlauben das verändern von Bauteilen oder Komponenten."
 
 #: GUI/gui.py:138
 msgid "Filters"
-msgstr ""
+msgstr "Filter"
 
 #: GUI/gui.py:140
 msgid ""
 "Assembly variants for your project.\n"
 "Same PCB for different products."
 msgstr ""
+"Erzeuge Varianten für dein Projekt.\n"
+"Die gleiche Platine als einen anderes Produkt oder andere Bestückungsvariante."
 
 #: GUI/gui.py:142
 msgid "Variants"
-msgstr ""
+msgstr "Varianten"
 
 #: GUI/gui.py:144
 msgid "About"
-msgstr ""
+msgstr "Über"
 
 #: GUI/gui.py:151
 msgid "Save config"
-msgstr ""
+msgstr "Konfiguration speichern"
 
 #: GUI/gui.py:153
 msgid "Save the current state to the `Config file' (Main tab)"
-msgstr ""
+msgstr "Speichere die aktuelle Konfiguration zum Hauptpfad"
 
 #: GUI/gui.py:157
 msgid "Globals"
-msgstr ""
+msgstr "Global"
 
 #: GUI/gui.py:159
 msgid "Global configuration options, applies to all outputs"
-msgstr ""
+msgstr "Globale Konfigurationsoptionen welche für alle Exporte gelten"
 
 #: GUI/gui.py:162
 msgid "Recent"
-msgstr ""
+msgstr "Zuletzt"
 
 #: GUI/gui.py:163
 msgid ""
 "Recently used setups.\n"
 "Files and directories recently used"
 msgstr ""
+"Zuletzt verwendetes setup.\n"
+"Zuletzt verwendete Dateien und Ordner"
 
 #: GUI/gui.py:167
 msgid "Warnings"
-msgstr ""
+msgstr "Warnungen"
 
 #: GUI/gui.py:168
 msgid ""
@@ -127,10 +140,13 @@ msgid ""
 "Note that they are reported just once.\n"
 "Here are all the issued warnings"
 msgstr ""
+"Letzte Warnungen.\n"
+"Wird nur einmalig angezeigt.\n"
+"Hier sind alle Warnungen"
 
 #: GUI/gui.py:178
 msgid "Run"
-msgstr ""
+msgstr "Start"
 
 #: GUI/gui.py:179
 msgid "Run preflights and generate the outputs (targets)"
