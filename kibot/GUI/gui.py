@@ -18,7 +18,7 @@ from .. import log
 from ..config_reader import get_doc_lines
 from ..gs import GS
 from ..kiplot import config_output, load_board, load_sch, load_config, reset_config, generate_outputs
-from ..misc import BASE_HELP
+from ..misc import BASE_HELP, W_LANGNOTA
 from ..pre_base import BasePreFlight
 from ..registrable import RegOutput, Group, GroupEntry, RegFilter, RegVariant
 from .data_types import edit_dict, create_new_optionable
@@ -58,14 +58,20 @@ builtins.__dict__['_'] = wx.GetTranslation
 # Add ../locale as a place to look for catalogs
 wx.Locale.AddCatalogLookupPathPrefix(os.path.join(os.path.dirname(__file__), '..', 'locale'))
 # Select the language
-lang = os.environ.get('LANG', 'en')[:2]
+lang = os.environ.get('LANG', 'C')[:2]
 from .gui_config import lang_domain, sup_lang
-locale = wx.Locale(sup_lang.get(lang, wx.LANGUAGE_SPANISH))
-# Add KiBot domain
-if locale.IsOk():
-    locale.AddCatalog(lang_domain)
-else:
-    locale = None
+selected_language = sup_lang.get(lang, wx.LANGUAGE_DEFAULT)
+# Avoid a nasty dialog (GUI people!!!) by asking if available
+if wx.Locale.IsAvailable(selected_language):
+    locale = wx.Locale(selected_language)
+    # Add KiBot domain
+    if locale.IsOk():
+        locale.AddCatalog(lang_domain)
+    else:
+        locale = None
+elif lang != 'C':
+    name = wx.Locale.GetLanguageName(selected_language)
+    logger.warning(W_LANGNOTA+f'Error setting the current locale ({lang}: {name}), please install it')
 # ################################################
 
 OK_CHAR = '\U00002714'
