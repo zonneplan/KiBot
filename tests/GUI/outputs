@@ -12822,6 +12822,13 @@
           null
         ],
         [
+          "use_aux_axis_as_origin",
+          [
+            "DataTypeBoolean"
+          ],
+          null
+        ],
+        [
           "limit_viewbox",
           [
             "DataTypeBoolean"

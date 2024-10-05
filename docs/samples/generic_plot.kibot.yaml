@@ -3819,6 +3819,8 @@ outputs:
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
+      # [boolean=false] Use the auxiliary axis as origin for coordinates
+      use_aux_axis_as_origin: false
       # [string=''] Board variant to apply
       variant: ''
     layers: all

@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.8.2] - UNRELEASED
 ### Added
 - Experimental GUI
+- SVG: `use_aux_axis_as_origin` option (#681)
 
 ### Fixed
 - PCB Print: allow specifying `repeat_for_layer` with empty `repeat_layers`.

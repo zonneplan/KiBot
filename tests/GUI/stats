@@ -1,5 +1,5 @@
-48 outputs types with a total of 1872 different parameters
-Single type parameters: 1698 (91 %)
+48 outputs types with a total of 1873 different parameters
+Single type parameters: 1699 (91 %)
 Multi type parameters: 174 (9 %)
 Average parameters: 39
 Maximum number of parameters: 213
@@ -9,8 +9,8 @@ Histogram:
  10- 19: ******
  20- 29: *********************
  30- 39: *******
- 40- 49: *******
- 50- 59: *
+ 40- 49: ******
+ 50- 59: **
  60- 69: **
  70- 79: *
  80- 89: *
@@ -68,7 +68,7 @@ Outputs sorted by parameters:
 - kibom: 45
 - ibom: 46
 - ps: 46
-- svg: 49
+- svg: 50
 - pcbdraw: 58
 - pdf: 63
 - render_3d: 66
@@ -138,7 +138,7 @@ Outputs sorted by depth:
 --------------------------------------------------------------------------------
 14 different data types
 -             String:  843
--            Boolean:  468
+-            Boolean:  469
 -             Number:  266
 - ListStringSingular:  222
 -             Choice:   94
@@ -154,7 +154,7 @@ Outputs sorted by depth:
 --------------------------------------------------------------------------------
 Used as single data type:
 -             String:  689 
--            Boolean:  412 
+-            Boolean:  413 
 - ListStringSingular:  219 
 -             Number:  172 
 -             Choice:   91 
@@ -384,8 +384,8 @@ Used as single data type:
 -              Number,String:   15 
 ================================================================================
 ================================================================================
-84 totals types with a total of 2201 different parameters
-Single type parameters: 2006 (91 %)
+84 totals types with a total of 2202 different parameters
+Single type parameters: 2007 (91 %)
 Multi type parameters: 195 (9 %)
 Average parameters: 26
 Maximum number of parameters: 213
@@ -395,8 +395,8 @@ Histogram:
  10- 19: **************
  20- 29: *************************
  30- 39: ********
- 40- 49: *******
- 50- 59: *
+ 40- 49: ******
+ 50- 59: **
  60- 69: **
  70- 79: *
  80- 89: *
@@ -490,7 +490,7 @@ Totals sorted by parameters:
 - kibom: 45
 - ibom: 46
 - ps: 46
-- svg: 49
+- svg: 50
 - pcbdraw: 58
 - pdf: 63
 - render_3d: 66
@@ -596,7 +596,7 @@ Totals sorted by depth:
 --------------------------------------------------------------------------------
 14 different data types
 -             String:  987
--            Boolean:  556
+-            Boolean:  557
 -             Number:  295
 - ListStringSingular:  251
 -             Choice:  124
@@ -612,7 +612,7 @@ Totals sorted by depth:
 --------------------------------------------------------------------------------
 Used as single data type:
 -             String:  818 
--            Boolean:  494 
+-            Boolean:  495 
 - ListStringSingular:  248 
 -             Number:  186 
 -             Choice:  121 
@@ -638,4 +638,4 @@ Used as single data type:
 -                Dict,Number:    2 ['pcbdraw.options.margin', 'svg.options.margin']
 -             Boolean,Choice:    1 ['ibom.options.highlight_pin1']
 -          String,StringDict:    1 ['pcbdraw.options.remap']
-Found 2 unique warning/s (3 total)
+Found 3 unique warning/s (4 total)
