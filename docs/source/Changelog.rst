@@ -27,6 +27,7 @@ Fixed
 
 -  PCB Print: allow specifying ``repeat_for_layer`` with empty
    ``repeat_layers``. This was the old behavior (i.e. 1.7.0) (#671)
+-  Copy Files: problems when using from compress and using worksheets.
 
 [1.8.1] - 2024-09-25
 --------------------

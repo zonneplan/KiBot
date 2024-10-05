@@ -245,11 +245,16 @@ class Copy_FilesOptions(Base3DOptions):
             if dru_name:
                 extra_files.append(dru_name)
             # Worksheet
+            # In dry mode we just want to know which WKSs are used
+            # In regular mode we copy the originals to the local names
             prj_name_used = prj_name
             if dry and prj_name_used is not None and not os.path.isfile(prj_name_used):
                 prj_name_used = GS.pro_file
             wks = GS.fix_page_layout(prj_name_used, dry=dry)
-            extra_files += [w for w in wks if w]
+            if wks[0]:  # Schematic WKS
+                extra_files.append(os.path.join(os.path.dirname(prj_name), 'schematic.kicad_wks'))
+            if wks[1]:  # PCB WKS
+                extra_files.append(os.path.join(os.path.dirname(prj_name), 'pcbnew.kicad_wks'))
             if mode_project:
                 extra_files += self.copy_footprints(f.dest, dry)
                 extra_files += self.copy_symbols(f.dest, dry)
