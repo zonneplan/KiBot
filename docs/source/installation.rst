@@ -34,7 +34,17 @@ Notes:
 - Note that on some systems (i.e. Debian) ImageMagick disables PDF
   manipulation in its ``policy.xml`` file. Comment or remove lines like this:
   ``<policy domain="coder" rights="none" pattern="PDF" />`` (On Debian:
-  ``/etc/ImageMagick-6/policy.xml``)
+  ``/etc/ImageMagick-6/policy.xml``).
+
+  Here is an example for the case of Debian 12:
+
+     .. code-block:: bash
+
+        sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<!-- <policy domain="coder" rights="none" pattern="PDF" \/> -->/g' /etc/ImageMagick-6/policy.xml
+        sed -i 's/<policy domain="coder" rights="none" pattern="PS" \/>/<!-- <policy domain="coder" rights="none" pattern="PS" \/> -->/g' /etc/ImageMagick-6/policy.xml
+
+  For more information consult `this post <https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion>`__
+
 - |Debian| Link to Debian stable package.
 - |Python module| This is a Python module, not a separated
   tool.
