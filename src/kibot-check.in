@@ -17,6 +17,7 @@ from shutil import which
 import site
 import subprocess
 import sys
+import tempfile
 
 deps = '@json_dep@'
 # Dirs to look for plugins
@@ -40,6 +41,10 @@ tests_ok = True
 tests_msg = ''
 is_x86 = is_64 = is_linux = False
 ver_re = re.compile(r'(\d+)\.(\d+)(?:\.(\d+))?(?:[\.-](\d+))?')
+BOGUS_PDF = """%PDF-1.0
+1 0 obj<</Type/Catalog/Pages 2 0 R>>endobj 2 0 obj<</Type/Pages/Kids[3 0 R]/Count 1>>
+endobj 3 0 obj<</Type/Page/MediaBox[0 0 3 3]>>endobj
+trailer<</Root 1 0 R>>"""
 
 
 def check_tool_binary_python(name):
@@ -70,7 +75,7 @@ def look_for_command(command):
     return cmd_full
 
 
-def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
+def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False, no_err_msg=False):
     global last_ok
     global last_cmd
     cmd_full = look_for_command(cmd[0])
@@ -86,7 +91,7 @@ def run_command(cmd, only_first_line=False, pre_ver_text=None, no_err_2=False):
         last_ok = False
         return NOT_AVAIL
     except subprocess.CalledProcessError as e:
-        if e.returncode != 2 or not no_err_2:
+        if (e.returncode != 2 or not no_err_2) and not no_err_msg:
             print('Failed to run %s, error %d' % (cmd[0], e.returncode))
             if e.output:
                 print('Output from command: '+e.output.decode())
@@ -286,8 +291,35 @@ def python_module(severity, name, deb_package, roles, arch):
     print(RESET)
 
 
-def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader, comments, arch, extra_arch):
+def check_imagick_policy(command):
+    with tempfile.NamedTemporaryFile(mode='w', delete=False, suffix='.pdf', prefix='kibot-check_') as f:
+        f.write(BOGUS_PDF)
+    ps_file = f.name.replace('.pdf', '.ps')
+    try:
+        r = run_command([command, f.name, ps_file], no_err_msg=True)
+    finally:
+        os.remove(f.name)
+    if r == UNKNOWN:
+        print(do_color('- Image Magick is installed, but its configuration forbids the PS/PDF manipulation', 1))
+        print(do_color('  You must edit it in order to get full functionality', 1))
+        print(do_color('  Consult the installation section of the docs:', 1))
+        print(do_color('  https://kibot.readthedocs.io/en/master/installation.html', 1))
+        if os.path.isfile(ps_file):
+            os.remove(ps_file)
+        return
+
+
+def do_extra_checks(extra_checks, cmd_found):
+    if not extra_checks:
+        return
+    for check in extra_checks:
+        globals()[check](cmd_found)
+
+
+def binary_tool(severity, name, url, url_down, deb_package, deb, extra_deb, roles, downloader, comments, arch, extra_arch,
+                extra_checks, cmd_found):
     if not severity:
+        do_extra_checks(extra_checks, cmd_found)
         return
     print(sev2color(severity)+'* {} not installed or too old'.format(name))
     if deb and debian_support:
@@ -500,6 +532,7 @@ for name, d in dependencies.items():
             # It will just confuse run_command thinking we need to check Python
             cmd.insert(0, 'python3')
         version = run_command(cmd, no_err_2=d['no_cmd_line_version_old'])
+    d['cmd_found'] = command
     sev, ver = check_version(version, d['role'], tests=d['tests'])
     d['sev'] = sev
     version = version.split('\n')[0]
@@ -573,7 +606,8 @@ for name, d in dependencies.items():
         python_module(d['sev'], d['pypi_name'], d['deb_package'], d['role'], d['arch'])
     else:
         binary_tool(d['sev'], d['name'], d['url'], d['url_down'], d['deb_package'], d['in_debian'], d['extra_deb'],
-                    d['role'], d['downloader_str'], d['comments'], d['arch'], d['extra_arch'])
+                    d['role'], d['downloader_str'], d['comments'], d['arch'], d['extra_arch'], d['extra_checks'],
+                    d['cmd_found'])
 
 if sys.stdout.isatty():
     labels = ('ok', 'optional for an output', 'optional for general use', 'mandatory for an output', 'mandatory for general use')

@@ -60,6 +60,7 @@ Dependencies:
     debian: imagemagick
     arch: imagemagick
     extra_arch: ['gsfonts']
+    extra_checks: ['check_imagick_policy']
   - name: KiCost
     github: hildogjr/KiCost
     pypi: KiCost
@@ -907,7 +908,8 @@ class ToolDependency(object):
     """ Class used to define tools needed for an output """
     def __init__(self, output, name, url=None, url_down=None, is_python=False, deb=None, in_debian=True, extra_deb=None,
                  role=None, plugin_dirs=None, command=None, pypi_name=None, module_name=None, no_cmd_line_version=False,
-                 help_option=None, no_cmd_line_version_old=False, downloader=None, arch=None, extra_arch=None, tests=None):
+                 help_option=None, no_cmd_line_version_old=False, downloader=None, arch=None, extra_arch=None, tests=None,
+                 extra_checks=None):
         # The associated output
         self.output = output
         # Name of the tool
@@ -941,6 +943,8 @@ class ToolDependency(object):
         # Can be installed as a KiCad plug-in?
         self.is_kicad_plugin = plugin_dirs is not None
         self.plugin_dirs = plugin_dirs
+        # Extra checks
+        self.extra_checks = extra_checks
         # Command we run
         self.command = command if command is not None else name.lower()
         self.no_cmd_line_version = no_cmd_line_version
@@ -991,6 +995,7 @@ def register_dep(context, dep):
     extra_deb = dep.get('extra_deb', None)
     arch = dep.get('arch', None)
     extra_arch = dep.get('extra_arch', None)
+    extra_checks = dep.get('extra_checks', None)
     is_python = dep.get('python_module', False)
     module_name = dep.get('module_name', None)
     plugin_dirs = dep.get('plugin_dirs', None)
@@ -1010,7 +1015,8 @@ def register_dep(context, dep):
                         extra_deb=extra_deb, is_python=is_python, module_name=module_name, plugin_dirs=plugin_dirs,
                         command=command, help_option=help_option, pypi_name=pypi_name,
                         no_cmd_line_version_old=no_cmd_line_version_old, downloader=downloader, arch=arch,
-                        extra_arch=extra_arch, tests=tests, no_cmd_line_version=no_cmd_line_version)
+                        extra_arch=extra_arch, tests=tests, no_cmd_line_version=no_cmd_line_version,
+                        extra_checks=extra_checks)
     # Extra comments
     comments = dep.get('comments', [])
     if isinstance(comments, str):
