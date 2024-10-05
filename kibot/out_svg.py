@@ -33,6 +33,8 @@ class SVGOptions(DrillMarks):
             """ [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
                 The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
                 Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5 """
+            self.use_aux_axis_as_origin = False
+            """ Use the auxiliary axis as origin for coordinates """
             self.limit_viewbox = False
             """ When enabled the view box is limited to a selected area.
                 This option can't be enabled when using a scale """
@@ -54,6 +56,7 @@ class SVGOptions(DrillMarks):
         po.SetMirror(self.mirror_plot)
         if GS.ki5:
             po.SetLineWidth(FromMM(self.line_width))
+        po.SetUseAuxOrigin(self.use_aux_axis_as_origin)
         po.SetNegative(self.negative_plot)
         GS.SetSvgPrecision(po, self.svg_precision)
 
@@ -61,6 +64,7 @@ class SVGOptions(DrillMarks):
         super().read_vals_from_po(po)
         if GS.ki5:
             self.line_width = ToMM(po.GetLineWidth())
+        self.use_aux_axis_as_origin = po.GetUseAuxOrigin()
         self.negative_plot = po.GetNegative()
         self.mirror_plot = po.GetMirror()
 
