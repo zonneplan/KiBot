@@ -4,10 +4,17 @@
 Installation
 ------------
 
-KiBot main target is Linux, but some users successfully use it on
-Windows. For Windows you’ll need to install tools to mimic a Linux
-environment. Running KiBot on MacOSX should be possible now that KiCad
-migrated to Python 3.x.
+In general the simplest way to start using KiBot is using docker.
+This is because you can download docker images containing all the
+needed dependencies. Once you are familiarized with KiBot, installing
+it locally will offer better performance. Docker can run KiBot for
+Windows, macOS and Linux.
+
+When you don't use docker images: KiBot main target is Linux, but some
+users successfully use it on Windows. For Windows you’ll need to
+install tools to mimic a Linux environment, like WSL2 (part of Windows
+10 and newer). Running KiBot on macOS should be possible now
+that KiCad migrated to Python 3.x, volunteers to test it are welcome.
 
 You can also run KiBot using docker images in a CI/CD environment like
 GitHub or GitLab. In this case you don’t need to install anything
@@ -15,42 +22,94 @@ locally.
 
 
 .. index::
-   pair: installation; dependencies
+   pair: installation; docker
 
-Dependencies
-~~~~~~~~~~~~
+Installation using docker
+~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Notes:
+The basic idea is to:
 
-- When installing from the `Debian repo <https://set-soft.github.io/debian/>`__ you
-  don’t need to worry about dependencies, just pay attention to *recommended* and
-  *suggested* packages.
-- When installing using ``pip`` the dependencies marked with
-  |PyPi dependency| will be automatically installed.
-- The dependencies marked with |Auto-download| can be downloaded on-demand
-  by KiBot. Note this is poorly tested and is mostly oriented to 64 bits
-  Linux systems. Please report problems.
-- The ``kibot-check`` tool can help you to know which dependencies are missing.
-- Note that on some systems (i.e. Debian) ImageMagick disables PDF
-  manipulation in its ``policy.xml`` file. Comment or remove lines like this:
-  ``<policy domain="coder" rights="none" pattern="PDF" />`` (On Debian:
-  ``/etc/ImageMagick-6/policy.xml``).
+1. Install docker
+2. Download the docker image
+3. Run the docker image containing KiBot
 
-  Here is an example for the case of Debian 12:
+There are many ways to achieve this, here is more detailed description for
+Linux:
+
+1. Install docker on your system. You just need the Docker Engine,
+   but you can use Docker Desktop (which includes Docker Engine).
+
+   - To install Docker Engine visit this `site <https://docs.docker.com/engine/install/>`__
+   - Once docker is installed make sure your user has rights to run
+     docker, the docs explains how to run a simple example:
+     `docker run hello-world`. You should be able to run it without
+     the need to use `root` or `sudo`. Otherwise you'll need to
+     follow the instructions about what to do after installation (i.e.
+     add your user to the *docker* group).
+2. To download the docker image for KiCad 8 just run:
+   `docker pull ghcr.io/inti-cmnb/kicad8_auto_full:latest`
+   Replace 8 by the KiCad version you are using (i.e. kicad7_auto_full
+   for KiCad 7). This will download all the needed tools.
+
+   - If you need to test the current development code replace *latest*
+     by *dev*.
+   - If you need to save disk space, and you don't need high quality
+     3D renders and PDF reports you can try the smaller images.
+     They are named like this: *kicad8_auto* (without *full*)
+3. Start the docker image. As a first approach you can try using a
+   script like this: (`downloadable <https://github.com/INTI-CMNB/KiBot/blob/dev/tools/docker_kibot_linux.sh>`__)
+
+   .. code-block:: bash
+
+      #!/bin/sh
+      export USER_ID=$(id -u)
+      export GROUP_ID=$(id -g)
+      docker run --rm -it \
+          --user $USER_ID:$GROUP_ID \
+          --env NO_AT_BRIDGE=1 \
+          --env DISPLAY=$DISPLAY \
+          --workdir="/home/$USER" \
+          --volume=/tmp/.X11-unix:/tmp/.X11-unix \
+          --volume="/etc/group:/etc/group:ro" \
+          --volume="/home/$USER:/home/$USER:rw" \
+          --volume="/etc/passwd:/etc/passwd:ro" \
+          --volume="/etc/shadow:/etc/shadow:ro" \
+          --volume="/home/$USER:/home/$USER:rw" \
+          ghcr.io/inti-cmnb/kicad8_auto_full:latest /bin/bash
+
+   Here you should replace *ghcr.io/inti-cmnb/kicad8_auto_full:latest*
+   by the name of the docker image you downloaded.
+   This script will:
+
+   - Use the system users in your docker image. So you can change users
+     like in your system.
+   - Start using the same user you are using in your main system.
+   - Mount the *home* of your user in the docker image, so you can access
+     your files from the docker image.
+   - Export your graphics environment information so you can even run
+     the KiCad in the docker image and display it in your graphics
+     environment.
+     Note that you might need to run:
 
      .. code-block:: bash
 
-        sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<!-- <policy domain="coder" rights="none" pattern="PDF" \/> -->/g' /etc/ImageMagick-6/policy.xml
-        sed -i 's/<policy domain="coder" rights="none" pattern="PS" \/>/<!-- <policy domain="coder" rights="none" pattern="PS" \/> -->/g' /etc/ImageMagick-6/policy.xml
+        xhost +local:docker
 
-  For more information consult `this post <https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion>`__
+     from a graphics terminal so applications in the docker image can get
+     access to your screen.
+   - Start with a shell (*/bin/bash*) with the current directory as your
+     *home*
+   - Note that when you exit this docker image (just executing *exit*
+     from the created shell) the docker instance will be stopped and
+     any change to the image itself will be discarded (**--rm**)
 
-- |Debian| Link to Debian stable package.
-- |Python module| This is a Python module, not a separated
-  tool.
-- |Tool| This is an independent tool, can be a binary or a Python script.
+   Once running the docker image you can try:
 
-.. include:: dependencies.rst
+  .. code-block:: bash
+
+     kibot --version
+
+
 
 .. index::
    pair: installation; Ubuntu
@@ -129,6 +188,9 @@ Scripts <https://github.com/INTI-CMNB/kicad-automation-scripts/>`__
 dependencies. If you have a Debian based OS I strongly recommend trying
 to use the ``.deb`` packages for all the tools.
 
+Also note that in modern Linux system you might need to add the
+*--break-system-packages* option.
+
 If you want to install the code only for the current user add the
 ``--user`` option.
 
@@ -180,10 +242,52 @@ env to the system level libs.
 Installation on other targets
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  Install KiCad 5.1.6 or newer
--  Install Python 3.5 or newer
+-  Install KiCad 6.0.11 or newer
+-  Install Python 3.7 or newer
 -  Install the Python Yaml and requests modules
 -  Run the script *src/kibot*
+
+
+.. index::
+   pair: installation; dependencies
+
+Dependencies
+~~~~~~~~~~~~
+
+Notes:
+
+- When installing from the `Debian repo <https://set-soft.github.io/debian/>`__, you
+  don’t need to worry about dependencies, just pay attention to *recommended* and
+  *suggested* packages.
+- All dependencies are available in the *full* docker images.
+- When installing using ``pip`` the dependencies marked with
+  |PyPi dependency| will be automatically installed.
+- The dependencies marked with |Auto-download| can be downloaded on-demand
+  by KiBot. Note this is poorly tested and is mostly oriented to 64 bits
+  Linux systems. Please report problems.
+- The ``kibot-check`` tool can help you to know which dependencies are missing.
+- Note that on some systems (i.e. Debian) ImageMagick disables PDF
+  manipulation in its ``policy.xml`` file. Comment or remove lines like this:
+  ``<policy domain="coder" rights="none" pattern="PDF" />`` (On Debian:
+  ``/etc/ImageMagick-6/policy.xml``).
+
+  Here is an example for the case of Debian 12:
+
+     .. code-block:: bash
+
+        sed -i 's/<policy domain="coder" rights="none" pattern="PDF" \/>/<!-- <policy domain="coder" rights="none" pattern="PDF" \/> -->/g' /etc/ImageMagick-6/policy.xml
+        sed -i 's/<policy domain="coder" rights="none" pattern="PS" \/>/<!-- <policy domain="coder" rights="none" pattern="PS" \/> -->/g' /etc/ImageMagick-6/policy.xml
+
+  For more information consult `this post <https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion>`__
+
+- |Debian| Link to Debian stable package.
+- |Python module| This is a Python module, not a separated
+  tool.
+- |Tool| This is an independent tool, can be a binary or a Python script.
+
+.. include:: dependencies.rst
+
+
 
 
 .. |Debian| image:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/debian-openlogo-22x22.png
