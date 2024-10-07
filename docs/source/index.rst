@@ -1,7 +1,7 @@
 KiBot (formerly KiPlot)
 =======================
 
-.. figure:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png
+.. figure:: https://raw.githubusercontent.com/INTI-CMNB/KiBot/dev/docs/images/kibot_740x400_logo.png
    :alt: KiBot Logo
 
 |Python application| |Coverage Status| |PyPI version| |DOCs status| |Donate|
