@@ -48,7 +48,7 @@ Credits
 
 -  **Others**:
 
-   -  **Robot in the logo**: @Merlin2525 from OpenClipArt / Christian Plaza (from pixabay)
+   -  **Robot in the logo**: Inspired by versions attributed to @Merlin2525 from OpenClipArt / Christian Plaza (from pixabay)
    -  **Robot arm in assembly_simple.svg**:
       `Pixlok <https://pixlok.com/>`__
    -  **Chip in assembly_simple.svg**: `oNline Web
