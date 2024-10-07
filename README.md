@@ -1,6 +1,6 @@
 # KiBot (formerly KiPlot)
 
-![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
+![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/dev/docs/images/kibot_740x400_logo.png)
 
 [![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=dev&style=plastic&logo=github)](https://github.com/INTI-CMNB/KiBot/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic&logo=coveralls&branch=dev)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=dev)
