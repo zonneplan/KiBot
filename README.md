@@ -22,7 +22,7 @@ If this is the first time you read about KiBot, and you prefer to be
 introduced listening to a podcast, you can try the following
 (english audio, english and spanish subtitles available):
 
-[![General podcast](https://img.youtube.com/vi/rfq6ljDD6FI/0.jpg)](https://www.youtube.com/watch?v=rfq6ljDD6FI)
+[![General podcast](https://img.youtube.com/vi/6eYtJ9xiS1U/0.jpg)](https://www.youtube.com/watch?v=6eYtJ9xiS1U)
 
 
 Here is another podcast, more centered on the CI/CD side:
