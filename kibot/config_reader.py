@@ -903,6 +903,8 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
         if separate_files and isinstance(v, type) and has_dict:
             preface += f" [:ref:`{v.__name__} parameters <{v.__name__+id}>`] "
         clines = len(lines)
+        if not rst_mode:
+            lines = [ln.replace(' |br|', ' ') for ln in lines]
         print(preface+adapt_text(lines[0].strip()+('.' if clines == 1 and dot else '')))
         if rst_mode:
             if skip_keys:
