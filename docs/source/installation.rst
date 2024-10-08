@@ -33,7 +33,7 @@ The basic idea is to:
 2. Download the docker image
 3. Run the docker image containing KiBot
 
-There are many ways to achieve this, here is more detailed description for
+There are many ways to achieve this, here is a more detailed description for
 Linux:
 
 1. Install docker on your system. You just need the Docker Engine,
@@ -42,20 +42,30 @@ Linux:
    - To install Docker Engine visit this `site <https://docs.docker.com/engine/install/>`__
    - Once docker is installed make sure your user has rights to run
      docker, the docs explains how to run a simple example:
-     `docker run hello-world`. You should be able to run it without
-     the need to use `root` or `sudo`. Otherwise you'll need to
-     follow the instructions about what to do after installation (i.e.
-     add your user to the *docker* group).
+
+     .. code-block:: bash
+
+        docker run hello-world
+
+     You should be able to run it without the need to use `root` or `sudo`.
+     Otherwise you'll need to follow the instructions about what to do after
+     installation (i.e. add your user to the *docker* group and reload groups).
 2. To download the docker image for KiCad 8 just run:
-   `docker pull ghcr.io/inti-cmnb/kicad8_auto_full:latest`
-   Replace 8 by the KiCad version you are using (i.e. kicad7_auto_full
-   for KiCad 7). This will download all the needed tools.
+
+   .. code-block:: bash
+
+      docker pull ghcr.io/inti-cmnb/kicad8_auto_full:latest
+
+   Replace **8** by the KiCad version you are using (i.e. *kicad7_auto_full*
+   for KiCad **7**). This will download all the needed tools.
 
    - If you need to test the current development code replace *latest*
      by *dev*.
    - If you need to save disk space, and you don't need high quality
      3D renders and PDF reports you can try the smaller images.
      They are named like this: *kicad8_auto* (without *full*)
+
+
 3. Start the docker image. As a first approach you can try using a
    script like this: (`downloadable <https://github.com/INTI-CMNB/KiBot/blob/dev/tools/docker_kibot_linux.sh>`__)
 
@@ -97,8 +107,7 @@ Linux:
 
      from a graphics terminal so applications in the docker image can get
      access to your screen.
-   - Start with a shell (*/bin/bash*) with the current directory as your
-     *home*
+   - Start with a shell (*/bin/bash*) with your *home* as the current directory
    - Note that when you exit this docker image (just executing *exit*
      from the created shell) the docker instance will be stopped and
      any change to the image itself will be discarded (**--rm**)
