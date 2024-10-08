@@ -90,7 +90,13 @@ Linux:
           ghcr.io/inti-cmnb/kicad8_auto_full:latest /bin/bash
 
    Here you should replace *ghcr.io/inti-cmnb/kicad8_auto_full:latest*
-   by the name of the docker image you downloaded.
+   by the name of the docker image you downloaded. Don't forget to make the
+   script executable using, assuming you used the same name used in the repo:
+
+   .. code-block:: bash
+
+      chmod +x docker_kibot_linux.sh
+
    This script will:
 
    - Use the system users in your docker image. So you can change users
