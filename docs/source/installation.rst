@@ -49,7 +49,9 @@ Linux:
 
      You should be able to run it without the need to use `root` or `sudo`.
      Otherwise you'll need to follow the instructions about what to do after
-     installation (i.e. add your user to the *docker* group and reload groups).
+     installation (i.e. add your user to the *docker* group and reload groups,
+     `try here <https://docs.docker.com/engine/install/linux-postinstall/>`__).
+
 2. To download the docker image for KiCad 8 just run:
 
    .. code-block:: bash
