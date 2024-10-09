@@ -21,7 +21,7 @@ from .error import SchError, SchFileError, SchLibError
 from ..gs import GS
 from ..misc import (W_BADPOLI, W_POLICOORDS, W_BADSQUARE, W_BADCIRCLE, W_BADARC, W_BADTEXT, W_BADPIN, W_BADCOMP, W_BADDRAW,
                     W_UNKDCM, W_UNKAR, W_ARNOPATH, W_ARNOREF, W_MISCFLD, W_EXTRASPC, W_NOLIB, W_INCPOS, W_NOANNO, W_MISSLIB,
-                    W_MISSDCM, W_MISSCMP, W_MISFLDNAME, W_NOENDLIB)
+                    W_MISSDCM, W_MISSCMP, W_MISFLDNAME, W_NOENDLIB, try_decode_utf8)
 from .. import log
 
 logger = log.get_logger()
@@ -69,19 +69,7 @@ class DCMLineReader(LineReader):
         super().__init__(f, file)
 
     def readline(self):
-        res = self.f.readline()
-        try:
-            res = res.decode()
-        except UnicodeDecodeError:
-            logger.non_critical_error(f'Invalid UTF-8 sequence at line {self.line+1} of file `{self.file}`')
-            nres = ''
-            for c in res:
-                if c > 127:
-                    c = 32
-                nres += chr(c)
-            res = nres
-            logger.non_critical_error('Using: '+res.rstrip())
-        return res
+        return try_decode_utf8(self.f.readline(), f'line {self.line+1} of file `{self.file}`', logger)
 
     def get_line(self):
         res = self.readline()

@@ -26,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP,
-                   W_BADREF, W_MULTIREF)
+                   W_BADREF, W_MULTIREF, try_decode_utf8)
 from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -145,8 +145,8 @@ def extract_errors(text):
 
 
 def debug_output(res):
-    if res.stdout:
-        logger.debug('- Output from command: '+res.stdout.decode())
+    if res:
+        logger.debug('- Output from command: '+res)
 
 
 def _run_command(command, change_to):
@@ -171,8 +171,9 @@ def run_command(command, change_to=None, just_raise=False, use_x11=False, err_ms
         if err_msg is not None:
             err_msg = err_msg.format(ret=e.returncode)
         GS.exit_with_error(err_msg, err_lvl, e)
-    debug_output(res)
-    return res.stdout.decode().rstrip()
+    msg = try_decode_utf8(res.stdout, 'output from command', logger)
+    debug_output(msg)
+    return msg.rstrip()
 
 
 def exec_with_retry(cmd, exit_with=None):
