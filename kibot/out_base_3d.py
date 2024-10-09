@@ -475,8 +475,8 @@ class Base3DOptions(VariantOptions):
                 self._tmp_dir = os.path.join(os.path.expanduser('~'), '.cache', 'kibot', '3d')
             else:
                 self._tmp_dir = os.path.abspath(self._tmp_dir)
-            rel_dirs.append(self._tmp_dir)
             logger.debug('Using `{}` as dir for downloaded 3D models'.format(self._tmp_dir))
+        rel_dirs.append(self._tmp_dir)
         # Look for all the footprints
         for m in GS.get_modules():
             ref = m.GetReference()
