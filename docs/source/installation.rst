@@ -126,6 +126,55 @@ Linux:
 
      kibot --version
 
+A more elaborated script for docker images on Linux
+===================================================
+
+The following (`script <https://github.com/INTI-CMNB/KiBot/blob/dev/tools/docker_kibot_linux_allow.sh>`__)
+can be used to run KiBot from a docker image with some versatility.
+
+The script takes two optional arguments:
+
+1. The name of the command to run inside the docker container. By default is
+   */bin/bash*, so you get a bash shell.
+2. The name of the docker image to use. Currently *kicad8_auto_full:latest*,
+   but might change in the future.
+
+It will use the current directory, so you can do things like:
+
+.. code-block:: bash
+
+   docker_kibot_linux_allow.sh "kibot --quick-start"
+
+To run KiBot in quick-start mode in the current directory. Note that this
+assumes the current directory can be accessed from your user *home*.
+
+You can also check the version of KiBot found in different docker images
+like this:
+
+.. code-block:: bash
+
+   docker_kibot_linux_allow.sh "kibot --version" kicad8_auto_full:latest
+   docker_kibot_linux_allow.sh "kibot --version" kicad8_auto_full:dev
+
+Or you can even run the KiCad inside the docker image:
+
+.. code-block:: bash
+
+   docker_kibot_linux_allow.sh kicad
+
+Even run an old version of KiCad:
+
+.. code-block:: bash
+
+   docker_kibot_linux_allow.sh kicad kicad7_auto_full:latest
+
+Note that the script gives access to the current user to connect to your
+display, this is normally what you want to do.
+
+Be careful with the quotes, the first argument is the command that we pass
+to docker. From the point of view of the script, and docker, is just one
+string, but can be multiple arguments once inside the docker container
+("kibot --version" becomes "kibot" "--version").
 
 
 .. index::
