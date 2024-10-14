@@ -164,7 +164,7 @@ Here is an example of workflow file using the GitHub Action:
        runs-on: ubuntu-latest
        steps:
        - uses: actions/checkout@v2
-       - uses: INTI-CMNB/KiBot@v2
+       - uses: INTI-CMNB/KiBot@v2_k8
          with:
            # Required - kibot config file
            config: config.kibot.yaml
@@ -175,15 +175,16 @@ Here is an example of workflow file using the GitHub Action:
            # optional - PCB design file
            board: 'pcb.kicad_pcb'
        - name: upload results
-         uses: actions/upload-artifact@v2
+         if: ${{ always() }}
+         uses: actions/upload-artifact@v4
          with:
            name: output
            path: output
 
-For KiCad 6 use ``v2_k6`` instead of ``v2`` (``v2_k7`` for KiCad 7
-or ``v2_k8`` for KiCad 8).
+For KiCad 5 use ``v2`` instead of ``v2_k8`` (``v2_k7`` for KiCad 7
+or ``v2_k6`` for KiCad 6).
 These actions use the last KiBot stable release, to use the current
-development code use ``v2_dk6`` (KiCad 6) and ``v2_d`` (KiCad 5).
+development code use ``v2_dk8`` (KiCad 8) (``v2_dk7``, ``v2_dk6``, ``v2_d``).
 
 A working example applied to a repo can be found
 `here <https://github.com/INTI-CMNB/kicad-ci-test-spora/tree/test_gh_action>`__
