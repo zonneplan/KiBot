@@ -125,6 +125,8 @@ Linux:
 
      kibot --version
 
+.. _docker_script:
+
 A more elaborated script for docker images on Linux
 ===================================================
 
@@ -175,6 +177,11 @@ to docker. From the point of view of the script, and docker, is just one
 string, but can be multiple arguments once inside the docker container
 ("kibot --version" becomes "kibot" "--version").
 
+Additionaly this script can run Blender from the docker image, just rename
+it *blender* and run the script pretending this is blender. In this case
+all arguments are passed to Blender and you can't select which docker image
+is used.
+
 
 .. index::
    pair: installation; Ubuntu
@@ -209,6 +216,22 @@ packages are a mandatory dependency. The
 `KiBoM <https://github.com/INTI-CMNB/KiBoM>`__,
 `InteractiveHtmlBom <https://github.com/INTI-CMNB/InteractiveHtmlBom>`__
 and `PcbDraw <https://github.com/INTI-CMNB/PcbDraw>`__ are recommended.
+
+
+About Blender on Debian systems
+===============================
+
+The Debian maintainer disagrees with Intel people about the AI denoiser used by
+Blender and distributes a package with it disabled. If you use the official
+Debian package you'll need to enable the `no_denoiser` option. This might
+seem simple, but the problem is that on CI/CD environments Blender won't use
+GPU accelerated render, so the lack of a denoiser means you need 10 times
+more time to render the image.
+
+To make things worst the pcb2blender plug-in is very dependant on the Blender
+version (Blender fault). The simplest solution is to run Blender from the
+docker images, even on a local system. For this you can use the
+:ref:`following script <docker_script>`.
 
 
 .. index::

@@ -3,15 +3,24 @@
 cmd=/bin/bash
 image=kicad8_auto_full:latest
 
-# Check for optional arguments
-if [ ! -z "$1" ]; then
-    cmd="$1"
-fi
+# If this script is named "blender" it will try to start blender from the docker image
+SCRIPT_NAME=$(basename "$0")
+# Define a variable based on the script name
+if [ "$SCRIPT_NAME" == "blender" ]; then
+    ARGS=$(printf "%q " "$@")
+    cmd="nice blender $ARGS"
+    INTERACTIVE=""
+else
+    INTERACTIVE="-it"
+    # Check for optional arguments
+    if [ ! -z "$1" ]; then
+        cmd="$1"
+    fi
 
-if [ ! -z "$2" ]; then
-    image="$2"
+    if [ ! -z "$2" ]; then
+        image="$2"
+    fi
 fi
-
 
 # Save current xhost access control state to a variable
 original_state=$(xhost)
@@ -27,11 +36,18 @@ else
     added_access="true"
 fi
 
+# Try to export the Direct Rendering Interface for Blender
+DOCKER_DEV=""
+if [ -d "/dev/dri" ]; then
+    DOCKER_DEV=" --device /dev/dri:/dev/dri"
+fi
+
 # Start the docker container
 echo "Starting " $image " ..."
 export USER_ID=$(id -u)
 export GROUP_ID=$(id -g)
-docker run --rm -it \
+echo "Command:" $cmd
+docker run --rm $INTERACTIVE \
     --user $USER_ID:$GROUP_ID \
     --env NO_AT_BRIDGE=1 \
     --env DISPLAY=$DISPLAY \
@@ -40,8 +56,10 @@ docker run --rm -it \
     --volume="/etc/group:/etc/group:ro" \
     --volume="/etc/passwd:/etc/passwd:ro" \
     --volume="/etc/shadow:/etc/shadow:ro" \
+    --volume="/etc/timezone:/etc/timezone:ro" \
     --volume="/home/$USER:/home/$USER:rw" \
-    ghcr.io/inti-cmnb/$image $cmd
+    $DOCKER_DEV \
+    ghcr.io/inti-cmnb/$image /bin/bash -c "$cmd"
 
 if [[ "$added_access" == "true" ]]; then
     # Revert back to original xhost access control state
