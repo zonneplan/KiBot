@@ -83,7 +83,6 @@ Linux:
           --workdir="/home/$USER" \
           --volume=/tmp/.X11-unix:/tmp/.X11-unix \
           --volume="/etc/group:/etc/group:ro" \
-          --volume="/home/$USER:/home/$USER:rw" \
           --volume="/etc/passwd:/etc/passwd:ro" \
           --volume="/etc/shadow:/etc/shadow:ro" \
           --volume="/home/$USER:/home/$USER:rw" \
