@@ -9,7 +9,10 @@ SVG Schematic Print
 Exports the schematic in a vectorized graphics format.
 This is a format to document your schematic. |br|
 This output is what you get from the 'File/Plot' menu in eeschema. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``svg_sch_print``
 

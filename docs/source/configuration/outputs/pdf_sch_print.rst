@@ -9,7 +9,10 @@ PDF Schematic Print (Portable Document Format)
 Exports the schematic to the most common exchange format. Suitable for printing.
 This is the main format to document your schematic. |br|
 This output is what you get from the 'File/Plot' menu in eeschema. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``pdf_sch_print``
 

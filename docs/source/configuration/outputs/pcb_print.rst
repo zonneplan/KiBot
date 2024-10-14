@@ -8,7 +8,16 @@ PCB Print
 
 Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
 Supports PDF, SVG, PNG, EPS and PS formats. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. warning::
+   `colored_vias` and `colored_pads` usually involves a zones refill, disable them
+   if your project can't be refilled. |br|
+..
+
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``pcb_print``
 

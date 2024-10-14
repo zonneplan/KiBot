@@ -338,11 +338,13 @@ class PCB_PrintOptions(VariantOptions):
             """ [36,1200] Resolution (Dots Per Inch) for the output file. Most objects are vectors, but thing
                 like the the solder mask are handled as images by the conversion tools """
             self.colored_pads = True
-            """ Plot through-hole in a different color. Like KiCad GUI does """
+            """ Plot through-hole in a different color. Like KiCad GUI does.
+                Warning: this usually involves a zones refill """
             self.pad_color = ''
             """ Color used for `colored_pads` """
             self.colored_vias = True
-            """ Plot vias in a different color. Like KiCad GUI does """
+            """ Plot vias in a different color. Like KiCad GUI does.
+                Warning: this usually involves a zones refill """
             self.via_color = ''
             """ Color used for through-hole `colored_vias` """
             self.micro_via_color = ''
@@ -1338,7 +1340,9 @@ class PCB_PrintOptions(VariantOptions):
 class PCB_Print(BaseOutput):  # noqa: F821
     """ PCB Print
         Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.
-        Supports PDF, SVG, PNG, EPS and PS formats. """
+        Supports PDF, SVG, PNG, EPS and PS formats.
+        Warning: `colored_vias` and `colored_pads` usually involves a zones refill, disable them
+        if your project can't be refilled. """
     __doc__ += FONT_HELP_TEXT
 
     def __init__(self):

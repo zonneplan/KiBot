@@ -9,7 +9,10 @@ SVG PCB Print (Scalable Vector Graphics) *Deprecated*
 Exports the PCB to the scalable vector graphics format.
 This output is what you get from the 'File/Print' menu in pcbnew. |br|
 The `pcb_print` is usually a better alternative. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``svg_pcb_print``
 

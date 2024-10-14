@@ -22,6 +22,8 @@ Added
 -  Experimental GUI
 -  SVG: ``use_aux_axis_as_origin`` option (#681)
 -  Report: thickness units (#685)
+-  PCB Print: Note about ``colored_pads`` and ``colored_vias`` side
+   effects (#682)
 
 Fixed
 ~~~~~

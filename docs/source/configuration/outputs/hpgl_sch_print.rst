@@ -8,7 +8,10 @@ HPGL Schematic Print (Hewlett & Packard Graphics Language)
 
 Exports the schematic to the most common plotter format.
 This output is what you get from the 'File/Plot' menu in eeschema. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``hpgl_sch_print``
 

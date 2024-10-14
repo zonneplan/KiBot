@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Experimental GUI
 - SVG: `use_aux_axis_as_origin` option (#681)
 - Report: thickness units (#685)
+- PCB Print: Note about `colored_pads` and `colored_vias` side effects (#682)
 
 ### Fixed
 - PCB Print: allow specifying `repeat_for_layer` with empty `repeat_layers`.

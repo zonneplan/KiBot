@@ -11,11 +11,12 @@ Separate Pins
    Use it as a `pre_transform` filter for the `bom` output. |br|
 
 .. note::
-   The pin coordinates aren't affected by the rotation filters. |br|
+      The pin coordinates aren't affected by the rotation filters. |br|
 
 .. note::
-   Needs KiCad 6 or newer. |br|
-.. 
+         Needs KiCad 6 or newer. |br|
+..
+
 
    -  **comment** :index:`: <pair: filter - separate_pins; comment>` [:ref:`string <string>`] (default: ``''``) A comment for documentation purposes.
    -  **name** :index:`: <pair: filter - separate_pins; name>` [:ref:`string <string>`] (default: ``''``) Used to identify this particular filter definition.

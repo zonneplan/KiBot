@@ -1185,21 +1185,30 @@ def adapt_text(text):
                     if in_list:
                         in_list = False
                         t.append('')
+                exit_warning = False
                 if ln[-1] == '.' and not in_list:
                     ln += ' |br|'
+                    if in_warning:
+                        exit_warning = True
+                if in_warning:
+                    ln = '   '+ln
                 if 'Warning: ' in ln:
                     indent = ln.index('Warning: ')
                     t.append('')
                     t.append('.. warning::')
                     in_warning = True
-                    ln = ln[:indent]+ln[indent+9:]
+                    ln = ln[:indent]+'   '+ln[indent+9:]
                 if 'Important: ' in ln:
                     indent = ln.index('Important: ')
                     t.append('')
                     t.append('.. note::')
                     in_warning = True
-                    ln = ln[:indent]+ln[indent+11:]
+                    ln = ln[:indent]+'   '+ln[indent+11:]
                 t.append(ln)
+                if exit_warning:
+                    t.append('..')
+                    t.append('')
+                    in_warning = False
             if in_warning:
                 t.append('.. ')
             text = '\n'.join(t)

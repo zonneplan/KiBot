@@ -24,7 +24,9 @@ PCB_PrintOptions parameters
 -  ``background_image`` :index:`: <pair: output - pcb_print - options; background_image>` [:ref:`string <string>`] (default: ``''``) Background image, must be an SVG, only when `add_background` is enabled.
 -  ``blind_via_color`` :index:`: <pair: output - pcb_print - options; blind_via_color>` [:ref:`string <string>`] (default: ``''``) Color used for blind/buried `colored_vias`.
 -  ``colored_pads`` :index:`: <pair: output - pcb_print - options; colored_pads>` [:ref:`boolean <boolean>`] (default: ``true``) Plot through-hole in a different color. Like KiCad GUI does.
+   Warning: this usually involves a zones refill.
 -  ``colored_vias`` :index:`: <pair: output - pcb_print - options; colored_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Plot vias in a different color. Like KiCad GUI does.
+   Warning: this usually involves a zones refill.
 -  ``dnf_filter`` :index:`: <pair: output - pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
    A short-cut to use for simple cases where a variant is an overkill.
 
