@@ -1141,8 +1141,6 @@ def print_variants_help(rst):
         else:
             title, help = reformat_text(help, ind_size)
             title = f'(**{title}**)'
-        if rst:
-            title = f'{title} :index:`. <pair: variant; {n}>`'
         if split:
             print(f'   variants/{n}')
             dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
@@ -1151,7 +1149,8 @@ def print_variants_help(rst):
             sys.stdout = f
             print(RST_WARNING)
             name2 = n.replace('_', ' ').capitalize() if not help else f'**{n}** {title}'
-            print(f'.. index::\n   pair: {name2}; {n}\n')
+            name3 = name2.replace('*', '')
+            print(f'.. index::\n   pair: {name3}; {n}\n')
             print(name2)
             print('~'*len(name2))
             print()
@@ -1159,6 +1158,8 @@ def print_variants_help(rst):
                 print(help)
                 print()
         else:
+            if rst:
+                title = f'{title} :index:`. <pair: variant; {n}>`'
             print(f'- {extra}**{n}**: {title}\n\n{help}.')
         print_output_options(n, o, ind_size, 'variant - '+n, separate_files=split, skip_keys=True)
         if split:
