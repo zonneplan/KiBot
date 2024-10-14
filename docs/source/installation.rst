@@ -125,6 +125,9 @@ Linux:
 
      kibot --version
 
+.. index::
+   pair: Blender; from docker
+
 .. _docker_script:
 
 A more elaborated script for docker images on Linux
@@ -217,6 +220,9 @@ packages are a mandatory dependency. The
 `InteractiveHtmlBom <https://github.com/INTI-CMNB/InteractiveHtmlBom>`__
 and `PcbDraw <https://github.com/INTI-CMNB/PcbDraw>`__ are recommended.
 
+.. index::
+   pair: Blender; Debian
+   pair: Blender; Ubuntu
 
 About Blender on Debian systems
 ===============================
