@@ -917,6 +917,8 @@ class PlotComponents(PlotInterface):
             return
         try:
             res, tolerance = self._get_resistance_from_value(value)
+            if not res:
+                return
             power = math.floor(res.log10()) - 1
             res = str(Decimal(int(res / Decimal(10) ** power)))
             if power == -3:

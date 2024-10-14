@@ -20,8 +20,8 @@ outputs:
         highlight_style: "stroke:none;fill:#ff0000;opacity:0.5;"
         highlight_padding: 1.5
       libs:
-        - default
-        - eagle-default
+        - KiCAD-base
+        - Eagle-export
       remap:
         L_G1: "LEDs:LED-5MM_green"
         L_B1: "LEDs:LED-5MM_blue"

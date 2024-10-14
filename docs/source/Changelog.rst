@@ -30,6 +30,7 @@ Fixed
 -  Copy Files: problems when using from compress and using worksheets.
 -  Export Project: problems when downloading KiCad models and trying to
    compress the result.
+-  PcbDraw: problems with 0 ohms THT resistors (#689)
 
 [1.8.1] - 2024-09-25
 --------------------
