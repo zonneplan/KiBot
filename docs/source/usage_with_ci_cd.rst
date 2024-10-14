@@ -186,6 +186,8 @@ or ``v2_k6`` for KiCad 6).
 These actions use the last KiBot stable release, to use the current
 development code use ``v2_dk8`` (KiCad 8) (``v2_dk7``, ``v2_dk6``, ``v2_d``).
 
+Note: the `if: ${{ always() }}` is used to collect artifacts even on fails.
+
 A working example applied to a repo can be found
 `here <https://github.com/INTI-CMNB/kicad-ci-test-spora/tree/test_gh_action>`__
 (`spora_main.yml <https://github.com/INTI-CMNB/kicad-ci-test-spora/blob/test_gh_action/.github/workflows/spora_main.yml>`__).
