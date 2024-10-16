@@ -322,7 +322,8 @@ class PCB_PrintOptions(VariantOptions):
                 internal: KiBot loads the `.kicad_wks` and does the drawing work.
                 Best option, but some details are different from what the GUI generates.
                 plot: uses KiCad Python API. Not available for KiCad 5.
-                You get the default frame and some substitutions doesn't work """
+                You get the default frame and some substitutions doesn't work. |br|
+                Important: colors and fonts doesn't work, not supported by the API. Try *gui*, might work"""
             self.pages = PagesOptions
             """ *[list(dict)=[]] List of pages to include in the output document.
                 Each page contains one or more layers of the PCB """
@@ -540,6 +541,8 @@ class PCB_PrintOptions(VariantOptions):
         po.SetPlotFrameRef(False)
         po.SetScale(1.0)
         po.SetNegative(False)
+        # Trying to set the color mode here doesn't change the mode (GetColorMode() returns False)
+        # pc.SetColorMode(True)
         pc.SetLayer(self.cleared_layer)
         # Load the WKS
         error = None
@@ -552,6 +555,8 @@ class PCB_PrintOptions(VariantOptions):
         tb_vars = self.fill_kicad_vars(page, pages, p)
         ws.draw(GS.board, self.cleared_layer, page, self.paper_w, self.paper_h, tb_vars)
         pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
+        # At least on 8.0.5 the following is useless:
+        # pc.SetColorMode(True)
         pc.PlotLayer()
         pc.ClosePlot()
         ws.undraw(GS.board)

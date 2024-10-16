@@ -2603,7 +2603,8 @@ outputs:
       # internal: KiBot loads the `.kicad_wks` and does the drawing work.
       # Best option, but some details are different from what the GUI generates.
       # plot: uses KiCad Python API. Not available for KiCad 5.
-      # You get the default frame and some substitutions doesn't work
+      # You get the default frame and some substitutions doesn't work. |br|
+      # Important: colors and fonts doesn't work, not supported by the API. Try *gui*, might work
       frame_plot_mechanism: 'internal'
       # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
       # Affected by global options

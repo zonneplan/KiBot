@@ -24,6 +24,8 @@ Added
 -  Report: thickness units (#685)
 -  PCB Print: Note about ``colored_pads`` and ``colored_vias`` side
    effects (#682)
+-  Worksheet: undocumented font face and color now can be used, but not
+   correctly rendered (See #695)
 
 Fixed
 ~~~~~

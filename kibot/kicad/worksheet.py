@@ -23,7 +23,7 @@ if not GS.kicad_version_n:
 if GS.ki7:
     from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_H_ALIGN_LEFT,
                         GR_TEXT_H_ALIGN_RIGHT, GR_TEXT_H_ALIGN_CENTER, GR_TEXT_V_ALIGN_TOP, GR_TEXT_V_ALIGN_CENTER,
-                        GR_TEXT_V_ALIGN_BOTTOM)
+                        GR_TEXT_V_ALIGN_BOTTOM, COLOR4D)
     # Is this change really needed??!!! People doesn't have much to do ...
     GR_TEXT_HJUSTIFY_LEFT = GR_TEXT_H_ALIGN_LEFT
     GR_TEXT_HJUSTIFY_RIGHT = GR_TEXT_H_ALIGN_RIGHT
@@ -34,17 +34,17 @@ if GS.ki7:
 elif GS.ki6:
     from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_HJUSTIFY_LEFT,
                         GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER,
-                        GR_TEXT_VJUSTIFY_BOTTOM)
+                        GR_TEXT_VJUSTIFY_BOTTOM, COLOR4D)
 else:
     from pcbnew import (DRAWSEGMENT, TEXTE_PCB, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
-                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
+                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM, COLOR4D)
     PCB_SHAPE = DRAWSEGMENT
     PCB_TEXT = TEXTE_PCB
     FILL_T_FILLED_SHAPE = 0
     SHAPE_T_POLY = 4
 from .sexpdata import load, SExpData
 from .sexp_helpers import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
-                           _check_relaxed, _get_points, _check_symbol_str)
+                           _check_relaxed, _get_points, _check_symbol_str, Color)
 from ..svgutils.transform import ImageElement, GroupElement
 from ..misc import W_WKSVERSION
 from .. import log
@@ -225,6 +225,8 @@ class WksFont(object):
         self.italic = False
         self.size = wxSize(setup.text_w, setup.text_h)
         self.line_width = setup.text_line_width
+        self.color = None
+        self.face = None
 
     @staticmethod
     def parse(items):
@@ -239,6 +241,10 @@ class WksFont(object):
                 s.size = _get_size(items, c+1, i_type, WksFont.name)
             elif i_type == 'linewidth':
                 s.line_width = _check_mm(i, 1, i_type)
+            elif i_type == 'color':  # Undocumented, as usually
+                s.color = Color.parse(i)
+            elif i_type == 'face':  # Undocumented, as usually
+                s.face = _check_str(i, 1, 'font face')
             else:
                 raise WksError('Unknown font attribute `{}`'.format(i))
         return s
@@ -317,6 +323,11 @@ class WksText(WksDrawing):
             s.SetLayer(p.layer)
             if e.font.italic:
                 s.SetItalic(True)
+            if e.font.color:
+                # For KiCad 8.0.5 this is useless because the plot API fails to use the color
+                s.SetTextColor(COLOR4D(e.font.color.r/255.0, e.font.color.g/255.0, e.font.color.b/255.0, e.font.color.a))
+            # if e.face:
+            #  ... incomplete API for 8.0.5, SetFont needs KIFONT::FONT, not defined
             if e.rotate:
                 s.SetTextAngle(GS.angle(e.rotate))
             # Adjust the text size to the maximum allowed
