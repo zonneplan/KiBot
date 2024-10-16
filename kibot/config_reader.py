@@ -902,9 +902,9 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
             preface = preface[:-2] + f' :index:`: <pair: {context}; {k}>` '
         if separate_files and isinstance(v, type) and has_dict:
             preface += f" [:ref:`{v.__name__} parameters <{v.__name__+id}>`] "
-        clines = len(lines)
         if not rst_mode:
             lines = [ln.replace(' |br|', ' ') for ln in lines]
+        clines = len(lines)
         print(preface+adapt_text(lines[0].strip()+('.' if clines == 1 and dot else '')))
         if rst_mode:
             if skip_keys:
@@ -936,6 +936,9 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
                 if in_list:
                     in_list = False
                     print()
+            if (text.startswith('Important: ') or text.startswith('Warning: ')) and ln+1 < clines:
+                print(adapt_text(ind_help+text+'\n'+('\n'.join(lines[ln+1:]))+'.'))
+                break
             print(ind_help+adapt_text(text+('.' if ln+1 == clines else '')))
         num_opts = num_opts+1
         if isinstance(v, type):
@@ -1212,6 +1215,25 @@ def adapt_text(text):
             if in_warning:
                 t.append('.. ')
             text = '\n'.join(t)
+        else:
+            if 'Warning: ' in text:
+                t = []
+                indent = text.index('Warning: ')
+                t.append('')
+                t.append('.. warning::')
+                t.append(text[:indent]+'   '+text[indent+9:])
+                t.append('..')
+                t.append('')
+                text = '\n'.join(t)
+            if 'Important: ' in text:
+                t = []
+                indent = text.index('Important: ')
+                t.append('')
+                t.append('.. note::')
+                t.append(text[:indent]+'   '+text[indent+11:])
+                t.append('..')
+                t.append('')
+                text = '\n'.join(t)
         return adapt_to_rst_urls(text)
     text = text.replace('\\*', '*')
     return text

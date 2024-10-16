@@ -9,8 +9,12 @@ SCH_ReplaceOptions parameters
    Will return the date in YYYY-MM-DD format. |br|
    ```date -d @`git log -1 --format='%at' -- "$KIBOT_SCH_NAME"` +%Y-%m-%d_%H-%M-%S``` |br|
    Will return the date in YYYY-MM-DD_HH-MM-SS format. |br|
-   Important: on KiCad 6 the title block data is optional.
-   This command will work only if you have a date in the SCH/Schematic.
+
+.. note::
+      on KiCad 6 the title block data is optional. |br|
+                   This command will work only if you have a date in the SCH/Schematic. |br|
+..
+
 -  ``replace_tags`` :index:`: <pair: preflight - sch_replace - sch_replace; replace_tags>`  [:ref:`TagReplaceSCH parameters <TagReplaceSCH>`] [:ref:`dict <dict>` | :ref:`list(dict) <list(dict)>`] (default: ``[]``) Tag or tags to replace.
 
 .. toctree::
