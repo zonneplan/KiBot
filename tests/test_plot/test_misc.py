@@ -1383,6 +1383,8 @@ def test_quick_start_1(test_dir):
     ctx.run_command(['git', 'commit', '-m', 'Reference'], chdir_out=dest_dir)
     # Modify the PCB
     shutil.copy2(ctx.board_file.replace(prj, prj+'_diff'), dest_file)
+    ctx.run_command(['git', 'add', board_file], chdir_out=dest_dir)
+    ctx.run_command(['git', 'commit', '-m', 'Change'], chdir_out=dest_dir)
     # 1) Run the Quick Start
     ctx.run(extra=['--quick-start', '--dry', '--start', dest_dir], no_board_file=True, no_yaml_file=True)
     dest_conf = os.path.join(dir_o, generated)
