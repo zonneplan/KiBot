@@ -31,7 +31,7 @@ from .kiplot import load_any_sch, run_command, config_output, get_output_dir, ru
 from .layer import Layer
 from .misc import DIFF_TOO_BIG, FAILED_EXECUTE
 from .registrable import RegOutput
-from .out_any_diff import AnyDiffOptions
+from .out_any_diff import AnyDiffOptions, has_repo
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -580,19 +580,10 @@ class Diff(BaseOutput):  # noqa: F821
         return {'layer': la.layer, 'suffix': la.suffix, 'description': la.description}
 
     @staticmethod
-    def has_repo(git_command, file):
-        try:
-            run_command([git_command, 'ls-files', '--error-unmatch', file], change_to=os.path.dirname(file), just_raise=True)
-        except CalledProcessError:
-            logger.debug("File `{}` not inside a repo".format(file))
-            return False
-        return True
-
-    @staticmethod
     def get_conf_examples(name, layers):
         outs = []
         git_command = GS.check_tool(name, 'Git')
-        if GS.pcb_file and Diff.has_repo(git_command, GS.pcb_file):
+        if GS.pcb_file and has_repo(git_command, GS.pcb_file) > 1:
             gb = {}
             gb['name'] = 'basic_{}_pcb'.format(name)
             gb['comment'] = 'PCB diff between the last two changes'
@@ -602,7 +593,7 @@ class Diff(BaseOutput):  # noqa: F821
             gb['options'] = {'old': 'KIBOT_LAST-1', 'old_type': 'git', 'new': 'HEAD', 'new_type': 'git',
                              'cache_dir': os.path.abspath('.cache'), 'add_link_id': True}
             outs.append(gb)
-        if GS.sch_file and Diff.has_repo(git_command, GS.sch_file):
+        if GS.sch_file and has_repo(git_command, GS.sch_file) > 1:
             gb = {}
             gb['name'] = 'basic_{}_sch'.format(name)
             gb['comment'] = 'Schematic diff between the last two changes'

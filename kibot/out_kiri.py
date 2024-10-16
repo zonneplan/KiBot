@@ -28,14 +28,13 @@ except Exception:
     pass
 import os
 from shutil import copy2, rmtree
-from subprocess import CalledProcessError
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .kicad.color_theme import load_color_theme
-from .kiplot import load_any_sch, run_command
+from .kiplot import load_any_sch
 from .layer import Layer
 from .misc import W_NOTHCMP
-from .out_any_diff import AnyDiffOptions
+from .out_any_diff import AnyDiffOptions, has_repo
 from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
@@ -369,22 +368,14 @@ class KiRi(BaseOutput):  # noqa: F821
         return {'layer': la.layer, 'suffix': la.suffix, 'description': la.description}
 
     @staticmethod
-    def has_repo(git_command, file):
-        try:
-            run_command([git_command, 'ls-files', '--error-unmatch', file], change_to=os.path.dirname(file), just_raise=True)
-        except CalledProcessError:
-            logger.debug("File `{}` not inside a repo".format(file))
-            return False
-        return True
-
-    @staticmethod
     def get_conf_examples(name, layers):
         outs = []
         git_command = GS.check_tool(name, 'Git')
         if not git_command or not GS.check_tool(name, 'KiDiff'):
             return None
-        if (GS.pcb_file and GS.sch_file and KiRi.has_repo(git_command, GS.pcb_file) and
-           KiRi.has_repo(git_command, GS.sch_file)):
+        pcb_commits = has_repo(git_command, GS.pcb_file)
+        sch_commits = has_repo(git_command, GS.sch_file)
+        if GS.pcb_file and GS.sch_file and pcb_commits and sch_commits and (pcb_commits > 1 or sch_commits > 1):
             ops = KiRiOptions()
             ops.git_command = git_command
             hashes, sch_dirty, pcb_dirty, _ = ops.collect_hashes()
