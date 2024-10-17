@@ -644,6 +644,9 @@ class KiConf(object):
                         return dest
                     else:
                         GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
+            elif forced:
+                data[key]['page_layout_descr_file'] = forced
+                logger.debug(f'Adding page layout {pl} -> {forced}')
         return None
 
     def fix_page_layout_k6(project, dry, force_sch, force_pcb):

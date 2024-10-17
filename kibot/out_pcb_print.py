@@ -581,6 +581,10 @@ class PCB_PrintOptions(VariantOptions):
         self._files_to_remove = []
         # Save the PCB
         pcb_name, pcb_dir = self.save_tmp_dir_board('pcb_print')
+        if self._sheet_reference_layout:
+            # Worksheet override
+            wks = os.path.abspath(self._sheet_reference_layout)
+            KiConf.fix_page_layout(os.path.join(pcb_dir, GS.pro_fname), force_pcb=wks, force_sch=wks)
         self._files_to_remove.append(pcb_dir)
         # Restore the layer
         self.restore_layer()

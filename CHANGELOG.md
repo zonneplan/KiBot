@@ -25,6 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     This was the old behavior (i.e. 1.7.0) (#671)
   - Problems with drill marks on KiCad 8.0.4+, which prints them in every
     single layer (even technical ones) (#696)
+  - When trying to force a WKS and the project didn't define a WKS.
+    The "gui" strategy failed to use the specified WKS
 - Expansion of internal field names. KiCad expands "VALUE", not "Value", which
   is what you see in the GUI
 
