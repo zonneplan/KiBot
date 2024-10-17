@@ -22,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PcbDraw: problems with 0 ohms THT resistors (#689)
 - PCB Print: allow specifying `repeat_for_layer` with empty `repeat_layers`.
   This was the old behavior (i.e. 1.7.0) (#671)
+- Expansion of internal field names. KiCad expands "VALUE", not "Value", which
+  is what you see in the GUI
 
 ### Changed
 - Quick Start:

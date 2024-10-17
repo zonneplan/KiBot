@@ -36,6 +36,7 @@ from .kicad.v5_sch import Schematic, SchFileError, SchError, SchematicField
 from .kicad.v6_sch import SchematicV6, SchematicComponentV6
 from .kicad.config import KiConfError, KiConf, expand_env
 from . import log
+INTERNAL_FIELDS = {'reference', 'value', 'footprint', 'datasheet', 'description'}
 
 logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
@@ -457,7 +458,7 @@ def get_board_comps_data(comps):
 
 
 def expand_comp_fields(c, env):
-    extra_env = {f.name: f.value for f in c.fields}
+    extra_env = {f.name.upper() if f.name.lower() in INTERNAL_FIELDS else f.name: f.value for f in c.fields}
     for f in c.fields:
         new_value = f.value
         depth = 1
