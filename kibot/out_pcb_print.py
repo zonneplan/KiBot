@@ -507,6 +507,7 @@ class PCB_PrintOptions(VariantOptions):
         po.SetPlotFrameRef(True)
         po.SetScale(1.0)
         po.SetNegative(False)
+        po.SetDrillMarksType(0)
         pc.SetLayer(self.cleared_layer)
         pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
         pc.PlotLayer()
@@ -541,6 +542,8 @@ class PCB_PrintOptions(VariantOptions):
         po.SetPlotFrameRef(False)
         po.SetScale(1.0)
         po.SetNegative(False)
+        # We don't want drill marks in the frame
+        po.SetDrillMarksType(0)
         # Trying to set the color mode here doesn't change the mode (GetColorMode() returns False)
         # pc.SetColorMode(True)
         pc.SetLayer(self.cleared_layer)
