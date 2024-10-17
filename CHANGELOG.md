@@ -15,12 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   correctly rendered (See #695)
 
 ### Fixed
-- PCB Print: allow specifying `repeat_for_layer` with empty `repeat_layers`.
-  This was the old behavior (i.e. 1.7.0) (#671)
+- BoM: Sub-PCBs not applied (#697)
 - Copy Files: problems when using from compress and using worksheets.
 - Export Project: problems when downloading KiCad models and trying to compress
   the result.
 - PcbDraw: problems with 0 ohms THT resistors (#689)
+- PCB Print: allow specifying `repeat_for_layer` with empty `repeat_layers`.
+  This was the old behavior (i.e. 1.7.0) (#671)
 
 ### Changed
 - Quick Start:

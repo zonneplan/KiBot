@@ -29,7 +29,7 @@ from .misc import W_BADFIELD, W_NEEDSPCB, DISTRIBUTORS, W_NOPART, W_MISSREF, DIS
 from .optionable import Optionable, BaseOptions
 from .registrable import RegOutput
 from .error import KiPlotConfigurationError
-from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import, expand_fields, run_command
+from .kiplot import get_board_comps_data, load_any_sch, register_xmp_import, expand_fields, run_command, load_board
 from .kicad.v5_sch import SchematicComponent, SchematicField
 from .bom.columnlist import ColumnList, BoMError
 from .bom.bom import do_bom
@@ -904,6 +904,14 @@ class BoMOptions(BaseOptions):
         # Get the components list from the schematic
         # We use a copy because we could expand the field values using ${VAR}
         comps = expand_fields(GS.sch.get_components())
+        must_revert_sub_pcb = False
+        if self.variant and self.variant._sub_pcb and GS.pcb_file:
+            # We have a sub-PCB defined, filter the components inside the sub-PCB
+            load_board()
+            comps_hash = {c.ref: c for c in comps}
+            self.variant._sub_pcb.apply(comps_hash)
+            comps = [c for c in comps_hash.values() if c.included]
+            must_revert_sub_pcb = True
         get_board_comps_data(comps)
         if self.count_smd_tht and not GS.pcb_file:
             logger.warning(W_NEEDSPCB+"`count_smd_tht` is enabled, but no PCB provided")
@@ -969,6 +977,9 @@ class BoMOptions(BaseOptions):
             for c in filter(lambda c: c.project == GS.sch_basename, comps):
                 c.ref = c.ref[l_id:]
                 c.ref_id = ''
+        # Undo sub_pcb
+        if must_revert_sub_pcb:
+            self.variant._sub_pcb.revert(comps_hash)
 
     def get_targets(self, out_dir):
         return [self._parent.expand_filename(out_dir, self.output)]

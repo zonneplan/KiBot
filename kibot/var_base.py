@@ -325,6 +325,9 @@ class SubPCBOptions(PanelOptions):
         else:
             # Using KiKit:
             self.separate_board(comps_hash)
+        # Now mark as excluded all components outside the sub-PCB
+        for c in self._excl_by_sub_pcb:
+            comps_hash[c].included = False
         # This can't be cloned
         self._board_rect = None
 
