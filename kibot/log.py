@@ -175,8 +175,13 @@ class MyLogger(logging.Logger):
                 filt_msg = ', {} filtered'.format(MyLogger.n_filtered)
             self.info('Found {} unique warning/s ({} total{})'.format(MyLogger.warn_cnt, MyLogger.warn_tcnt, filt_msg))
 
-    def non_critical_error(self, msg):
-        self.error(msg)
+    def non_critical_error(self, msg, *args, **kwargs):
+        buf = str(msg)
+        push_error_msg(buf)
+        if sys.version_info >= (3, 8):
+            super().error(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
+        else:
+            super().error(buf, **kwargs)
         self.check_warn_stop()
 
     def findCaller(self, stack_info=False, stacklevel=1):
