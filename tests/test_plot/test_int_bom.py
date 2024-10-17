@@ -113,7 +113,7 @@ def check_kibom_test_netlist(rows, ref_column, groups, exclude, comps, ref_sep='
             components.extend(r[ref_column].split(ref_sep))
             if val_column:
                 comp_vals[r[ref_column]] = r[val_column]
-        assert len(components) == len(comps), "Number of components"
+        assert len(components) == len(comps)
         logging.debug(str(len(comps)) + " components OK")
     # Excluded
     if exclude:
@@ -1825,4 +1825,18 @@ def test_value_change_2(test_dir):
                              ['C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'J1', 'J2', 'R1', 'R2', 'R3', 'R4', 'R5', 'R6'],
                              vals={'C1 C3 C6': '150p', 'C2 C4': '220p', 'C5': '330p'},
                              val_column=header.index('Value'))
+    ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Target is v8+")
+def test_int_bom_simple_sub_pcb(test_dir):
+    prj = 'simple_sub_pcb'
+    ctx = context.TestContextSCH(test_dir, prj, 'int_bom_simple_sub_pcb')
+    ctx.run()
+    rows, header, info = ctx.load_csv(prj+'-bom_board1.csv')
+    ref_column = header.index("Designator")
+    check_kibom_test_netlist(rows, ref_column, 1, ['R6', 'R7', 'R8', 'R9', 'R10'], ['R1', 'R2', 'R3', 'R4', 'R5'], ref_sep=',')
+    rows, header, info = ctx.load_csv(prj+'-bom_board2.csv')
+    ref_column = header.index("Designator")
+    check_kibom_test_netlist(rows, ref_column, 1, ['R1', 'R2', 'R3', 'R4', 'R5'], ['R6', 'R7', 'R8', 'R9', 'R10'], ref_sep=',')
     ctx.clean_up()
