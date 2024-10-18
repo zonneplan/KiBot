@@ -34,7 +34,8 @@ import re
 import os
 import importlib
 from pcbnew import B_Cu, B_Mask, F_Cu, F_Mask, FromMM, IsCopperLayer, LSET, PLOT_CONTROLLER, PLOT_FORMAT_SVG
-from shutil import rmtree
+from shutil import rmtree, copy2
+import sys
 from .error import KiPlotConfigurationError
 from .gs import GS
 from .optionable import Optionable
@@ -533,7 +534,7 @@ class PCB_PrintOptions(VariantOptions):
         vars['SHEETNAME'] = p.sheet
         vars['SHEETPATH'] = ''  # Only relevant for an schematic
         vars['LAYER'] = p.layer_var
-        vars['PAPER'] = self.paper
+        vars['PAPER'] = self.pcb.paper
         return vars
 
     def plot_frame_internal(self, pc, po, p, page, pages):
@@ -544,8 +545,6 @@ class PCB_PrintOptions(VariantOptions):
         po.SetNegative(False)
         # We don't want drill marks in the frame
         po.SetDrillMarksType(0)
-        # Trying to set the color mode here doesn't change the mode (GetColorMode() returns False)
-        # pc.SetColorMode(True)
         pc.SetLayer(self.cleared_layer)
         # Load the WKS
         error = None
@@ -556,10 +555,8 @@ class PCB_PrintOptions(VariantOptions):
         if error:
             raise KiPlotConfigurationError('Error reading `{}` ({})'.format(self.layout, error))
         tb_vars = self.fill_kicad_vars(page, pages, p)
-        ws.draw(GS.board, self.cleared_layer, page, self.paper_w, self.paper_h, tb_vars)
+        ws.draw(GS.board, self.cleared_layer, page, self.pcb.paper_w, self.pcb.paper_h, tb_vars)
         pc.OpenPlotfile('frame', PLOT_FORMAT_SVG, p.sheet)
-        # At least on 8.0.5 the following is useless:
-        # pc.SetColorMode(True)
         pc.PlotLayer()
         pc.ClosePlot()
         ws.undraw(GS.board)
@@ -594,8 +591,60 @@ class PCB_PrintOptions(VariantOptions):
         # Execute it
         self.exec_with_retry(self.add_extra_options(cmd, dir_name), PDF_PCB_PRINT)
         # Rotate the paper size if needed and remove the background (or it will be over the drawings)
-        patch_svg_file(output, remove_bkg=True, is_portrait=self.paper_portrait)
+        patch_svg_file(output, remove_bkg=True, is_portrait=self.pcb.paper_portrait)
         self._files_to_remove = cur_files_to_remove
+
+    def plot_frame_ki8_external(self, dir_name, p, page, pages, color):
+        logger.debug('- Plotting the frame using an external script')
+        # Create a bogus PCB with the same paper size
+        pcb_dir = GS.mkdtemp('pcb_print_tmp_pcb_for_frame')
+        logger.debugl(1, '  - Temporal dir: '+pcb_dir)
+        pcb_name = os.path.join(pcb_dir, GS.pcb_fname)
+        self.pcb.write(pcb_name)
+        # Copy the project
+        pro_name, _, _ = GS.copy_project(pcb_name)
+        # Make a local WKS available
+        if self._sheet_reference_layout:
+            # Worksheet override
+            wks = os.path.abspath(self._sheet_reference_layout)
+            KiConf.fix_page_layout(os.path.join(pcb_dir, GS.pro_fname), force_pcb=wks, force_sch=wks)
+        else:
+            # Original worksheet
+            wks = KiConf.fix_page_layout(os.path.join(pcb_dir, GS.pro_fname))
+            wks = wks[1]
+        logger.debugl(1, '  - Worksheet: '+wks)
+        # Expand the variables in the copied worksheet
+        tb_vars = self.fill_kicad_vars(page, pages, p)
+        with open(wks) as f:
+            wks_text = f.read()
+        wks_text = GS.expand_text_variables(wks_text, tb_vars)
+        with open(wks, "w") as f:
+            f.write(wks_text)
+        # Plot the frame using a helper script
+        script = os.path.join(GS.get_resource_path('tools'), 'frame_plotter')
+        c_rgb = hex_to_rgb(color)[0]
+        res = run_command([sys.executable, script, pcb_name, str(c_rgb[0]), str(c_rgb[1]), str(c_rgb[2])])
+        # Copy the result
+        copy2(os.path.join(pcb_dir, GS.pcb_basename+'-frame.svg'), os.path.join(dir_name, GS.pcb_basename+"-frame.svg"))
+        rmtree(pcb_dir)
+        if 'Unknown image data format' in res:
+            # But ... looks like KiCad fails on images
+            # Do a manual draw, just to collect any image
+            logger.debugl(1, '  - Fixing images')
+            try:
+                ws = kicad_worksheet.Worksheet.load(wks)
+                error = None
+            except (kicad_worksheet.WksError, SchError) as e:
+                error = str(e)
+            if error:
+                raise KiPlotConfigurationError('Error reading `{}` ({})'.format(self.layout, error))
+            ws.draw(GS.board, GS.board.GetLayerID('Rescue'), page, self.pcb.paper_w, self.pcb.paper_h, tb_vars)
+            ws.undraw(GS.board)
+            # We need to plot the images in a separated pass
+            self.last_worksheet = ws
+        else:
+            # We didn't use a loaded worksheet, external
+            self.last_worksheet = False
 
     def plot_pads(self, la, pc, p, filelist):
         id = la._id
@@ -742,7 +791,7 @@ class PCB_PrintOptions(VariantOptions):
 
     def add_frame_images(self, svg, monochrome):
         if (not self.plot_sheet_reference or not self.frame_plot_mechanism == 'internal' or
-           not self.last_worksheet.has_images):
+           not self.last_worksheet or not self.last_worksheet.has_images):
             return
         if monochrome:
             convert_command = self.ensure_tool('ImageMagick')
@@ -891,13 +940,6 @@ class PCB_PrintOptions(VariantOptions):
                 svg_out.insert(text)
         svg_out.save(os.path.join(output_folder, output_file))
 
-    def find_paper_size(self):
-        pcb = PCB.load(GS.pcb_file)
-        self.paper_w = pcb.paper_w
-        self.paper_h = pcb.paper_h
-        self.paper_portrait = pcb.paper_portrait
-        self.paper = pcb.paper
-
     def plot_extra_cu(self, id, la, pc, p, filelist):
         """ Plot pads and vias to make them different """
         if id >= F_Cu and id <= B_Cu:
@@ -1045,8 +1087,8 @@ class PCB_PrintOptions(VariantOptions):
         bbox = GS.board.GetBoundingBox()
         # KiCad 7 workaround, doing GS.board.GetBoundingBox().GetSize() fails
         sz = bbox.GetSize()
-        scale_x = FromMM(self.paper_w-self.autoscale_margin_x*2)/sz.x if sz.x else 1
-        scale_y = FromMM(self.paper_h-self.autoscale_margin_y*2)/sz.y if sz.y else 1
+        scale_x = FromMM(self.pcb.paper_w-self.autoscale_margin_x*2)/sz.x if sz.x else 1
+        scale_y = FromMM(self.pcb.paper_h-self.autoscale_margin_y*2)/sz.y if sz.y else 1
         scale = min(scale_x, scale_y)
         po.SetScale(scale)
         logger.debug('- Autoscale: {}'.format(scale))
@@ -1106,8 +1148,8 @@ class PCB_PrintOptions(VariantOptions):
             logger.debug('- Creating {} from {}'.format(pdf_file, svg_file))
             self.svg_to_pdf(input_folder, svg_file, pdf_file)
             svg_files.append(os.path.join(input_folder, pdf_file))
-        logger.debug('- Joining {} into {} ({}x{})'.format(svg_files, output_fn, self.paper_w, self.paper_h))
-        create_pdf_from_pages(svg_files, output_fn, forced_width=self.paper_w)
+        logger.debug('- Joining {} into {} ({}x{})'.format(svg_files, output_fn, self.pcb.paper_w, self.pcb.paper_h))
+        create_pdf_from_pages(svg_files, output_fn, forced_width=self.pcb.paper_w)
 
     def check_tools(self):
         if self.format != 'SVG':
@@ -1175,7 +1217,8 @@ class PCB_PrintOptions(VariantOptions):
         temp_dir_base = output_dir if self.keep_temporal_files else GS.mkdtemp('pcb_print')
         logger.debug(f'Starting to generate `{output}`')
         logger.debug(f'- Temporal dir: {temp_dir_base}')
-        self.find_paper_size()
+        # Find information about the page (size, orientation)
+        self.pcb = PCB.load(GS.pcb_file)
         if self._sheet_reference_layout:
             layout = self._sheet_reference_layout
         else:
@@ -1287,13 +1330,20 @@ class PCB_PrintOptions(VariantOptions):
             po.SetMirror(False)
             if self.plot_sheet_reference:
                 logger.debug('- Plotting the frame')
+                color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
                 if self.frame_plot_mechanism == 'gui':
                     self.plot_frame_gui(temp_dir)
                 elif self.frame_plot_mechanism == 'plot':
                     self.plot_frame_api(pc, po, p)
                 else:   # internal
-                    self.plot_frame_internal(pc, po, p, len(pages)+1, len(self._pages))
-                color = p.sheet_reference_color if p.sheet_reference_color else self._color_theme.pcb_frame
+                    if GS.ki8:
+                        # KiCad 8 adds colors and custom fonts, the API doesn't support them
+                        # So we use a trick to plot the frame externally
+                        self.plot_frame_ki8_external(temp_dir, p, len(pages)+1, len(self._pages), color)
+                        # We already have the correct color, marking it as black will keep the color
+                        color = '#000000'
+                    else:
+                        self.plot_frame_internal(pc, po, p, len(pages)+1, len(self._pages))
                 filelist.append((GS.pcb_basename+"-frame.svg", color))
             # 3) Stack all layers in one file
             if self.format == 'SVG':

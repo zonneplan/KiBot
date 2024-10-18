@@ -22,10 +22,12 @@ Added
 -  Experimental GUI
 -  SVG: ``use_aux_axis_as_origin`` option (#681)
 -  Report: thickness units (#685)
--  PCB Print: Note about ``colored_pads`` and ``colored_vias`` side
-   effects (#682)
--  Worksheet: undocumented font face and color now can be used, but not
-   correctly rendered (See #695)
+-  PCB Print:
+
+   -  Note about ``colored_pads`` and ``colored_vias`` side effects
+      (#682)
+   -  Worksheet: undocumented font face and color now can be used (See
+      #695)
 
 Fixed
 ~~~~~

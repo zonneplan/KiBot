@@ -13,8 +13,8 @@ from ..error import KiPlotConfigurationError
 from ..misc import W_NOLIB, W_MISSFPINFO
 from ..gs import GS
 from .sexpdata import load, dumps, SExpData, sexp_iter, Symbol
-from .sexp_helpers import _check_relaxed, _get_symbol_name, make_separated, load_sexp_file
-from .v6_sch import _check_str, _check_symbol, _check_is_symbol_list, _check_float
+from .sexp_helpers import _check_relaxed, _get_symbol_name, make_separated, load_sexp_file, _symbol
+from .v6_sch import _check_str, _check_symbol, _check_is_symbol_list, _check_float, _check_integer
 PAGE_SIZE = {'A0': (841, 1189),
              'A1': (594, 841),
              'A2': (420, 594),
@@ -46,6 +46,7 @@ class PCB(object):
         self.paper = 'A4'
         self.paper_portrait = False
         self.paper_w = self.paper_h = 0
+        self.version = 0
 
     @staticmethod
     def load(file):
@@ -62,7 +63,9 @@ class PCB(object):
         o = PCB()
         for e in pcb[1:]:
             e_type = _check_is_symbol_list(e)
-            if e_type == 'paper' or e_type == 'page':
+            if e_type == 'version':
+                o.version = _check_integer(e, 1, e_type)
+            elif e_type == 'paper' or e_type == 'page':
                 o.paper = _check_str(e, 1, e_type) if e_type == 'paper' else _check_symbol(e, 1, e_type)
                 if o.paper == 'User':
                     o.paper_w = _check_float(e, 2, e_type)
@@ -80,6 +83,20 @@ class PCB(object):
                         o.paper_h = size[0]
                 break
         return o
+
+    def write(self, fname):
+        pcb = [Symbol('kicad_pcb')]
+        if self.version:
+            pcb.append(_symbol('version', [self.version]))
+        paper_data = [self.paper]
+        if self.paper == 'User':
+            paper_data.extend([self.paper_w, self.paper_h])
+        elif self.paper_portrait:
+            paper_data.append(Symbol('portrait'))
+        pcb.append(_symbol('paper', paper_data))
+        with open(fname, 'wt') as f:
+            f.write(dumps(pcb))
+            f.write('\n')
 
 
 def save_pcb_from_sexp(pcb, logger, replace_pcb=True):
