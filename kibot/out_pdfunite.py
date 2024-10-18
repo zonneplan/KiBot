@@ -19,7 +19,7 @@ from . import log
 logger = log.get_logger()
 
 
-class FilesList(Optionable):
+class FilesListPDFUnite(Optionable):
     def __init__(self):
         super().__init__()
         with document:
@@ -46,7 +46,7 @@ class PDFUniteOptions(BaseOptions):
         with document:
             self.output = GS.def_global_output
             """ *Name for the generated PDF (%i=name of the output %x=pdf) """
-            self.outputs = FilesList
+            self.outputs = FilesListPDFUnite
             """ *[list(dict)=[]] Which files will be included """
             self.use_external_command = False
             """ Use the `pdfunite` tool instead of PyPDF2 Python module """

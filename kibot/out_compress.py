@@ -32,7 +32,7 @@ from . import log
 logger = log.get_logger()
 
 
-class FilesList(Optionable):
+class FilesListCompress(Optionable):
     def __init__(self):
         super().__init__()
         with document:
@@ -81,7 +81,7 @@ class CompressOptions(BaseOptions):
             """ *[ZIP,TAR,RAR] Output file format """
             self.compression = 'auto'
             """ [auto,stored,deflated,bzip2,lzma] Compression algorithm. Use auto to let KiBot select a suitable one """
-            self.files = FilesList
+            self.files = FilesListCompress
             """ *[list(dict)=[]] Which files will be included """
             self.move_files = False
             """ Move the files to the archive. In other words: remove the files after adding them to the archive """
