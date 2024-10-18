@@ -612,14 +612,16 @@ class PCB_PrintOptions(VariantOptions):
             # Original worksheet
             wks = KiConf.fix_page_layout(os.path.join(pcb_dir, GS.pro_fname))
             wks = wks[1]
-        logger.debugl(1, '  - Worksheet: '+wks)
-        # Expand the variables in the copied worksheet
-        tb_vars = self.fill_kicad_vars(page, pages, p)
-        with open(wks) as f:
-            wks_text = f.read()
-        wks_text = GS.expand_text_variables(wks_text, tb_vars)
-        with open(wks, "w") as f:
-            f.write(wks_text)
+        if wks:
+            logger.debugl(1, '  - Worksheet: '+wks)
+            # Expand the variables in the copied worksheet
+            tb_vars = self.fill_kicad_vars(page, pages, p)
+            with open(wks) as f:
+                wks_text = f.read()
+            logger.error(tb_vars)
+            wks_text = GS.expand_text_variables(wks_text, tb_vars)
+            with open(wks, "w") as f:
+                f.write(wks_text)
         # Plot the frame using a helper script
         script = os.path.join(GS.get_resource_path('tools'), 'frame_plotter')
         c_rgb = hex_to_rgb(color)[0]
@@ -627,7 +629,7 @@ class PCB_PrintOptions(VariantOptions):
         # Copy the result
         copy2(os.path.join(pcb_dir, GS.pcb_basename+'-frame.svg'), os.path.join(dir_name, GS.pcb_basename+"-frame.svg"))
         rmtree(pcb_dir)
-        if 'Unknown image data format' in res:
+        if wks and 'Unknown image data format' in res:
             # But ... looks like KiCad fails on images
             # Do a manual draw, just to collect any image
             logger.debugl(1, '  - Fixing images')
