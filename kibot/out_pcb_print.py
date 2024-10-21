@@ -1258,6 +1258,7 @@ class PCB_PrintOptions(VariantOptions):
         # Plot options
         pc, po = self.init_plot_controller()
         # Helpers for force_edge_cuts
+        edge_id = None
         if self.force_edge_cuts:
             edge_layer = LayerOptions.create_layer('Edge.Cuts')
             edge_id = edge_layer._id
