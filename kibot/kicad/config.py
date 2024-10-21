@@ -628,25 +628,18 @@ class KiConf(object):
     def fix_page_layout_k6_key(key, data, dest_dir, forced):
         if key in data:
             section = data[key]
-            pl = section.get('page_layout_descr_file', None)
+            pl = section.get('page_layout_descr_file', None) if not forced else forced
             if pl:
-                if forced:
-                    data[key]['page_layout_descr_file'] = forced
-                    logger.debug(f'Replacing page layout {pl} -> {forced}')
+                fname = KiConf.expand_env(pl)
+                if os.path.isfile(fname):
+                    dest = os.path.join(dest_dir, key+'.kicad_wks')
+                    logger.debug('Copying {} -> {}'.format(fname, dest))
+                    copy2(fname, dest)
+                    data[key]['page_layout_descr_file'] = key+'.kicad_wks'
+                    logger.debug(f'Replacing page layout {pl} -> {key}.kicad_wks')
+                    return dest
                 else:
-                    fname = KiConf.expand_env(pl)
-                    if os.path.isfile(fname):
-                        dest = os.path.join(dest_dir, key+'.kicad_wks')
-                        logger.debug('Copying {} -> {}'.format(fname, dest))
-                        copy2(fname, dest)
-                        data[key]['page_layout_descr_file'] = key+'.kicad_wks'
-                        logger.debug(f'Replacing page layout {pl} -> {key}.kicad_wks')
-                        return dest
-                    else:
-                        GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
-            elif forced:
-                data[key]['page_layout_descr_file'] = forced
-                logger.debug(f'Adding page layout {pl} -> {forced}')
+                    GS.exit_with_error('Missing page layout file: '+fname, MISSING_WKS)
         return None
 
     def fix_page_layout_k6(project, dry, force_sch, force_pcb):
