@@ -42,7 +42,7 @@ else:
     PCB_TEXT = TEXTE_PCB
     FILL_T_FILLED_SHAPE = 0
     SHAPE_T_POLY = 4
-from .sexpdata import load, SExpData
+from .sexpdata import load, dumps, SExpData
 from .sexp_helpers import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
                            _check_relaxed, _get_points, _check_symbol_str, Color)
 from ..svgutils.transform import ImageElement, GroupElement
@@ -498,13 +498,14 @@ class WksBitmap(WksDrawing):
 
 
 class Worksheet(object):
-    def __init__(self, setup, elements, version, generator, has_images):
+    def __init__(self, setup, elements, version, generator, has_images, sexp):
         super().__init__()
         self.setup = setup
         self.elements = elements
         self.version = version
         self.generator = generator
         self.has_images = has_images
+        self.sexp = sexp
 
     @staticmethod
     def load(file):
@@ -552,7 +553,7 @@ class Worksheet(object):
                 generator_version = ' v'+_check_str(e, 1, e_type)
             else:
                 raise WksError('Unknown worksheet attribute `{}`'.format(e_type))
-        return Worksheet(setup, elements, version, generator+generator_version, has_images)
+        return Worksheet(setup, elements, version, generator+generator_version, has_images, wks)
 
     def set_page(self, pw, ph):
         pw = FromMM(pw)
@@ -606,3 +607,22 @@ class Worksheet(object):
     def undraw(self, board):
         for e in self.pcb_items:
             board.Remove(e)
+
+    def expand(self, vars, remove_images=False):
+        """ Expands all the tbtext texts
+            Can also remove images, to workaround KiCad bugs plotting from Python API
+            This function works on the sexp data """
+        new_sexp = [self.sexp[0]]   # The file type is special
+        for e in self.sexp[1:]:
+            e_type = _check_is_symbol_list(e)
+            if e_type == 'tbtext':
+                e[1] = GS.expand_text_variables(e[1], vars)
+            if e_type != 'bitmap' or not remove_images:
+                new_sexp.append(e)
+        self.sexp = new_sexp
+
+    def save(self, fname):
+        """ Save the sexp to a file """
+        with open(fname, 'wt') as f:
+            f.write(dumps(self.sexp))
+            f.write('\n')

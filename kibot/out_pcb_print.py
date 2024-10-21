@@ -607,39 +607,35 @@ class PCB_PrintOptions(VariantOptions):
         if self._sheet_reference_layout:
             # Worksheet override
             wks = os.path.abspath(self._sheet_reference_layout)
-            KiConf.fix_page_layout(os.path.join(pcb_dir, GS.pro_fname), force_pcb=wks, force_sch=wks)
+            wks = KiConf.fix_page_layout(os.path.join(pcb_dir, GS.pro_fname), force_pcb=wks, force_sch=wks)
         else:
             # Original worksheet
             wks = KiConf.fix_page_layout(os.path.join(pcb_dir, GS.pro_fname))
-            wks = wks[1]
+        wks = wks[1]
         if wks:
             logger.debugl(1, '  - Worksheet: '+wks)
-            # Expand the variables in the copied worksheet
-            tb_vars = self.fill_kicad_vars(page, pages, p)
-            with open(wks) as f:
-                wks_text = f.read()
-            logger.error(tb_vars)
-            wks_text = GS.expand_text_variables(wks_text, tb_vars)
-            with open(wks, "w") as f:
-                f.write(wks_text)
-        # Plot the frame using a helper script
-        script = os.path.join(GS.get_resource_path('tools'), 'frame_plotter')
-        c_rgb = hex_to_rgb(color)[0]
-        res = run_command([sys.executable, script, pcb_name, str(c_rgb[0]), str(c_rgb[1]), str(c_rgb[2])])
-        # Copy the result
-        copy2(os.path.join(pcb_dir, GS.pcb_basename+'-frame.svg'), os.path.join(dir_name, GS.pcb_basename+"-frame.svg"))
-        rmtree(pcb_dir)
-        if wks and 'Unknown image data format' in res:
-            # But ... looks like KiCad fails on images
-            # Do a manual draw, just to collect any image
-            logger.debugl(1, '  - Fixing images')
             try:
                 ws = kicad_worksheet.Worksheet.load(wks)
                 error = None
             except (kicad_worksheet.WksError, SchError) as e:
                 error = str(e)
             if error:
-                raise KiPlotConfigurationError('Error reading `{}` ({})'.format(self.layout, error))
+                raise KiPlotConfigurationError('Error reading `{}` ({})'.format(wks, error))
+            # Expand the variables in the copied worksheet
+            tb_vars = self.fill_kicad_vars(page, pages, p)
+            ws.expand(tb_vars, remove_images=True)
+            ws.save(wks)
+        # Plot the frame using a helper script
+        script = os.path.join(GS.get_resource_path('tools'), 'frame_plotter')
+        c_rgb = hex_to_rgb(color)[0]
+        run_command([sys.executable, script, pcb_name, str(c_rgb[0]), str(c_rgb[1]), str(c_rgb[2])])
+        # Copy the result
+        copy2(os.path.join(pcb_dir, GS.pcb_basename+'-frame.svg'), os.path.join(dir_name, GS.pcb_basename+"-frame.svg"))
+        rmtree(pcb_dir)
+        if wks and ws.has_images:
+            # But ... looks like KiCad fails on images
+            logger.debugl(1, '  - Fixing images')
+            # Do a manual draw, just to collect any image
             ws.draw(GS.board, GS.board.GetLayerID('Rescue'), page, self.pcb.paper_w, self.pcb.paper_h, tb_vars)
             ws.undraw(GS.board)
             # We need to plot the images in a separated pass
