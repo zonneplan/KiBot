@@ -626,6 +626,7 @@ class PCB_PrintOptions(VariantOptions):
             ws.expand(tb_vars, remove_images=True)
             ws.save(wks)
         # Plot the frame using a helper script
+        # kicad-cli fails: https://gitlab.com/kicad/code/kicad/-/issues/18928
         script = os.path.join(GS.get_resource_path('tools'), 'frame_plotter')
         c_rgb = hex_to_rgb(color)[0]
         run_command([sys.executable, script, pcb_name, str(c_rgb[0]), str(c_rgb[1]), str(c_rgb[2])])
@@ -634,6 +635,7 @@ class PCB_PrintOptions(VariantOptions):
         rmtree(pcb_dir)
         if wks and ws.has_images:
             # But ... looks like KiCad fails on images
+            # https://gitlab.com/kicad/code/kicad/-/issues/18959
             logger.debugl(1, '  - Fixing images')
             # Do a manual draw, just to collect any image
             ws.draw(GS.board, GS.board.GetLayerID('Rescue'), page, self.pcb.paper_w, self.pcb.paper_h, tb_vars)
