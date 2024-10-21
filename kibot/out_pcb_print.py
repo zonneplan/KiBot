@@ -1371,7 +1371,9 @@ class PCB_PrintOptions(VariantOptions):
             if re_filled_zones and not BasePreFlight.get_option('check_zone_fills'):
                 fill_pre = BasePreFlight.get_preflight('fill_zones')
                 if not fill_pre or not fill_pre._enabled:
+                    self.unfilter_pcb_components()
                     load_board(forced=True)
+                    self.filter_pcb_components()
                     # Plot options
                     pc, po = self.init_plot_controller()
                     # Make visible only the layers we need
