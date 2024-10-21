@@ -24,17 +24,7 @@ PCB_PrintOptions parameters
 -  ``background_image`` :index:`: <pair: output - pcb_print - options; background_image>` [:ref:`string <string>`] (default: ``''``) Background image, must be an SVG, only when `add_background` is enabled.
 -  ``blind_via_color`` :index:`: <pair: output - pcb_print - options; blind_via_color>` [:ref:`string <string>`] (default: ``''``) Color used for blind/buried `colored_vias`.
 -  ``colored_pads`` :index:`: <pair: output - pcb_print - options; colored_pads>` [:ref:`boolean <boolean>`] (default: ``true``) Plot through-hole in a different color. Like KiCad GUI does.
-   
-.. warning::
-   this usually involves a zones refill.
-..
-
 -  ``colored_vias`` :index:`: <pair: output - pcb_print - options; colored_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Plot vias in a different color. Like KiCad GUI does.
-   
-.. warning::
-   this usually involves a zones refill.
-..
-
 -  ``dnf_filter`` :index:`: <pair: output - pcb_print - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
    A short-cut to use for simple cases where a variant is an overkill.
 
@@ -51,12 +41,7 @@ PCB_PrintOptions parameters
    internal: KiBot loads the `.kicad_wks` and does the drawing work.
    Best option, but some details are different from what the GUI generates.
    plot: uses KiCad Python API. Not available for KiCad 5.
-   You get the default frame and some substitutions doesn't work. |br|
-   
-.. note::
-   colors and fonts doesn't work, not supported by the API. Try *gui*, might work.
-..
-
+   You get the default frame and some substitutions doesn't work.
 -  ``hide_excluded`` :index:`: <pair: output - pcb_print - options; hide_excluded>` [:ref:`boolean <boolean>`] (default: ``false``) Hide components in the Fab layer that are marked as excluded by a variant.
    Affected by global options.
 -  ``individual_page_scaling`` :index:`: <pair: output - pcb_print - options; individual_page_scaling>` [:ref:`boolean <boolean>`] (default: ``true``) Tell KiCad to apply the scaling for each page as a separated entity.
@@ -77,6 +62,11 @@ PCB_PrintOptions parameters
    In order to get a good looking select a color with transparency, i.e. '#14332440'.
    PcbDraw must be installed in order to use this option.
 -  ``sheet_reference_layout`` :index:`: <pair: output - pcb_print - options; sheet_reference_layout>` [:ref:`string <string>`] (default: ``''``) Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+   
+.. warning::
+   you must provide a project.
+..
+
 -  ``svg_precision`` :index:`: <pair: output - pcb_print - options; svg_precision>` [:ref:`number <number>`] (default: ``4``) (range: 0 to 6) Scale factor used to represent 1 mm in the SVG (KiCad 6).
    The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
    Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.

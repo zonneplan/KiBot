@@ -2548,8 +2548,9 @@ outputs:
       variant: ''
   # PCB Print:
   # Supports PDF, SVG, PNG, EPS and PS formats.
-  # Warning: `colored_vias` and `colored_pads` usually involves a zones refill, disable them
-  # if your project can't be refilled.
+  # Important: `colored_vias` and `colored_pads` usually involves a zones refill. To avoid side
+  # effects we reload the PCB, which might be slow. If refills are tolerable for your case and
+  # you want to make it faster just add a `check_zone_fills` preflight. This will skip the reload
   # Important: If you use custom fonts and/or colors please consult the `resources_dir` global variable.
   - name: 'pcb_print_example'
     comment: 'Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print` and `svg_pcb_print`.'
@@ -2572,11 +2573,9 @@ outputs:
       # To use the KiCad 6 default colors select `_builtin_default`.
       # Usually user colors are stored as `user`, but you can give it another name
       color_theme: '_builtin_classic'
-      # [boolean=true] Plot through-hole in a different color. Like KiCad GUI does.
-      # Warning: this usually involves a zones refill
+      # [boolean=true] Plot through-hole in a different color. Like KiCad GUI does
       colored_pads: true
-      # [boolean=true] Plot vias in a different color. Like KiCad GUI does.
-      # Warning: this usually involves a zones refill
+      # [boolean=true] Plot vias in a different color. Like KiCad GUI does
       colored_vias: true
       # [string|list(string)='_null'] Name of the filter to mark components as not fitted.
       # A short-cut to use for simple cases where a variant is an overkill
@@ -2603,8 +2602,7 @@ outputs:
       # internal: KiBot loads the `.kicad_wks` and does the drawing work.
       # Best option, but some details are different from what the GUI generates.
       # plot: uses KiCad Python API. Not available for KiCad 5.
-      # You get the default frame and some substitutions doesn't work. |br|
-      # Important: colors and fonts doesn't work, not supported by the API. Try *gui*, might work
+      # You get the default frame and some substitutions doesn't work
       frame_plot_mechanism: 'internal'
       # [boolean=false] Hide components in the Fab layer that are marked as excluded by a variant.
       # Affected by global options
@@ -2753,7 +2751,8 @@ outputs:
       realistic_solder_mask: true
       # [number=1.0] Default scale factor (0 means autoscaling)
       scaling: 1.0
-      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project
+      # [string=''] Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+      # Warning: you must provide a project
       sheet_reference_layout: ''
       # [number=4] [0,6] Scale factor used to represent 1 mm in the SVG (KiCad 6).
       # The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).

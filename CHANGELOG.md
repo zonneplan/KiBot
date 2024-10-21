@@ -11,7 +11,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - SVG: `use_aux_axis_as_origin` option (#681)
 - Report: thickness units (#685)
 - PCB Print:
-  - Note about `colored_pads` and `colored_vias` side effects (#682)
   - Worksheet: undocumented font face and color now can be used (See #695)
 
 ### Fixed
@@ -33,6 +32,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Quick Start:
   - Diff/KiRi: Avoid creating when we don't have at least 2 to compare
+- PCB Print:
+  - Avoid `colored_pads` and `colored_vias` side effects (#682)
 
 
 ## [1.8.1] - 2024-09-25
