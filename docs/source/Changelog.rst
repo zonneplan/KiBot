@@ -44,6 +44,11 @@ Fixed
    -  When trying to force a WKS and the project didn’t define a WKS.
       The “gui” strategy failed to use the specified WKS
 
+-  Draw stackup:
+
+   -  Segmentation Fault on KiCad 8 when creating a new group
+   -  Units not applied when creating a new group
+
 -  Expansion of internal field names. KiCad expands “VALUE”, not
    “Value”, which is what you see in the GUI
 

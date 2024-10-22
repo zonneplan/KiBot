@@ -397,7 +397,7 @@ class GS(object):
 
     @staticmethod
     def unit_name_to_scale_factor(units):
-        if units == 'millimeters':
+        if units == 'millimeters' or units == 'mm':
             return 1.0/IU_PER_MM
         if units == 'mils':
             return 1.0/IU_PER_MILS
