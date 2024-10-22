@@ -313,15 +313,17 @@ class VariantOptions(BaseOptions):
         return ToMM(val)
 
     @staticmethod
-    def cross_module(m, rect, layer):
+    def cross_module(m, rect, layer, angle):
         """ Draw a cross over a module.
             The rect is a Rect object with the size.
-            The layer is which layer id will be used. """
+            The layer is which layer id will be used. 
+            The angle is the cross angle, which matches the footprint. """
         seg1 = GS.create_module_element(m)
         seg1.SetWidth(120000)
         seg1.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y1)))
         seg1.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y2)))
         seg1.SetLayer(layer)
+        seg1.Rotate(GS.p2v_k7(seg1.GetCenter()), GS.angle(angle))
         GS.footprint_update_local_coords(seg1)
         m.Add(seg1)
         seg2 = GS.create_module_element(m)
@@ -329,19 +331,24 @@ class VariantOptions(BaseOptions):
         seg2.SetStart(GS.p2v_k7(wxPoint(rect.x1, rect.y2)))
         seg2.SetEnd(GS.p2v_k7(wxPoint(rect.x2, rect.y1)))
         seg2.SetLayer(layer)
+        seg2.Rotate(GS.p2v_k7(seg2.GetCenter()), GS.angle(angle))
         GS.footprint_update_local_coords(seg2)
         m.Add(seg2)
         return [seg1, seg2]
 
-    def cross_modules(self, board, comps_hash):
-        """ Draw a cross in all 'not fitted' modules using *.Fab layer """
+    def cross_modules(self, board, comps_hash, tlayer, blayer):
+        """ Draw a cross in all 'not fitted' modules using *.Fab layer for 
+            component positions and plots them on the provided tlayer (top)
+            and blayer (bottom) """
         if comps_hash is None or not GS.global_cross_footprints_for_dnp:
             return
         # Cross the affected components
         ffab = board.GetLayerID('F.Fab')
         bfab = board.GetLayerID('B.Fab')
-        extra_ffab_lines = []
-        extra_bfab_lines = []
+        tlay = board.GetLayerID(tlayer)
+        blay = board.GetLayerID(blayer)
+        extra_tlay_lines = []
+        extra_blay_lines = []
         for m in GS.get_modules_board(board):
             ref = m.GetReference()
             # Rectangle containing the drawings, no text
@@ -350,6 +357,8 @@ class VariantOptions(BaseOptions):
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
                 # Measure the component BBox (only graphics)
+                fp_angle = m.GetOrientation().AsDegrees()
+                m.Rotate(GS.p2v_k7(m.GetCenter()), GS.angle(-fp_angle))
                 for gi in m.GraphicalItems():
                     if gi.GetClass() == GS.footprint_gr_type:
                         l_gi = gi.GetLayer()
@@ -357,21 +366,23 @@ class VariantOptions(BaseOptions):
                             frect.Union(GS.get_rect_for(gi.GetBoundingBox()))
                         if l_gi == bfab:
                             brect.Union(GS.get_rect_for(gi.GetBoundingBox()))
+                # Rotate the footprint back
+                m.Rotate(GS.p2v_k7(m.GetCenter()), GS.angle(fp_angle))
                 # Cross the graphics in *.Fab
                 if frect.x1 is not None:
-                    extra_ffab_lines.append(self.cross_module(m, frect, ffab))
+                    extra_tlay_lines.append(self.cross_module(m, frect, tlay, fp_angle))
                 else:
-                    extra_ffab_lines.append(None)
+                    extra_tlay_lines.append(None)
                 if brect.x1 is not None:
-                    extra_bfab_lines.append(self.cross_module(m, brect, bfab))
+                    extra_blay_lines.append(self.cross_module(m, brect, blay, fp_angle))
                 else:
-                    extra_bfab_lines.append(None)
+                    extra_blay_lines.append(None)
         # Remmember the data used to undo it
-        self.extra_ffab_lines = extra_ffab_lines
-        self.extra_bfab_lines = extra_bfab_lines
+        self.extra_tlay_lines = extra_tlay_lines
+        self.extra_blay_lines = extra_blay_lines
 
     def uncross_modules(self, board, comps_hash):
-        """ Undo the crosses in *.Fab layer """
+        """ Undo the crosses in provided top or bottom layers (default *.Fab) """
         if comps_hash is None or not GS.global_cross_footprints_for_dnp:
             return
         # Undo the drawings
@@ -379,11 +390,11 @@ class VariantOptions(BaseOptions):
             ref = m.GetReference()
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
-                restore = self.extra_ffab_lines.pop(0)
+                restore = self.extra_tlay_lines.pop(0)
                 if restore:
                     for line in restore:
                         m.Remove(line)
-                restore = self.extra_bfab_lines.pop(0)
+                restore = self.extra_blay_lines.pop(0)
                 if restore:
                     for line in restore:
                         m.Remove(line)
@@ -832,7 +843,7 @@ class VariantOptions(BaseOptions):
         logger.debug(f'Replacing footprints from variant change {to_change}')
         replace_footprints(GS.pcb_file, to_change, logger, replace_pcb=False)
 
-    def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
+    def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None, tlayer='F.Fab', blayer='B.Fab'):
         if not self.will_filter_pcb_components():
             return False
         self._comps_hash = self.get_refs_hash()
@@ -841,7 +852,7 @@ class VariantOptions(BaseOptions):
         if self._comps:
             if do_2D:
                 self.apply_footprint_variants(GS.board, self._comps_hash)
-                self.cross_modules(GS.board, self._comps_hash)
+                self.cross_modules(GS.board, self._comps_hash, tlayer, blayer)
                 self.remove_paste_and_glue(GS.board, self._comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:
                     self.remove_fab(GS.board, self._comps_hash)
