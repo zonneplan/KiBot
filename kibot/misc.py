@@ -343,8 +343,11 @@ SOLDER_COLORS = {'green': ("#285e3a", "#208b47"),
                  'yellow': ("#73823d", "#f2a756"),
                  'purple': ("#30234a", "#451d70")}
 SILK_COLORS = {'black': "0b1013", 'white': "d5dce4"}
-# Some browser name to pretend
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
+# Some browser name to pretend, popular at the moment
+# https://techblog.willshouse.com/2012/01/03/most-common-user-agents/ on 2024-10-22
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
+# Old value, caused problems with Zscaler
+# USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
 # Text used to disable 3D models
 DISABLE_3D_MODEL_TEXT = '_Disabled_by_KiBot'
 RENDERERS = ['pcbdraw', 'render_3d', 'blender_export']
