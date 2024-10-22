@@ -20,6 +20,10 @@ Added
 ~~~~~
 
 -  Experimental GUI
+-  Preflights:
+
+   -  Draw Fancy Stackup: which includes the type of vias used (#699)
+
 -  SVG: ``use_aux_axis_as_origin`` option (#681)
 -  Report: thickness units (#685)
 -  PCB Print:

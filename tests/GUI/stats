@@ -181,15 +181,16 @@ Used as single data type:
 -          String,StringDict:    1 ['pcbdraw.options.remap']
 ================================================================================
 ================================================================================
-21 preflights types with a total of 120 different parameters
-Single type parameters: 114 (95 %)
-Multi type parameters: 6 (5 %)
+22 preflights types with a total of 142 different parameters
+Single type parameters: 135 (95 %)
+Multi type parameters: 7 (5 %)
 Average parameters: 6
-Maximum number of parameters: 18
+Maximum number of parameters: 22
 Minimum number of parameters: 1
 Histogram:
   0-  9: ****************
  10- 19: *****
+ 20- 29: *
 Preflights sorted by parameters:
 - annotate_power: 1
 - check_zone_fills: 1
@@ -212,14 +213,15 @@ Preflights sorted by parameters:
 - draw_stackup: 15
 - erc: 15
 - drc: 18
-Average depth: 1.8095238095238095
+- draw_fancy_stackup: 22
+Average depth: 1.8636363636363635
 Maximum depth: 3
 Minimum depth: 1
 Histogram:
 0: 
 1: *********
 2: *******
-3: *****
+3: ******
 Preflights sorted by depth:
 - annotate_power: 1
 - check_zone_fills: 1
@@ -237,6 +239,7 @@ Preflights sorted by depth:
 - run_erc: 2
 - set_text_variables: 2
 - update_xml: 2
+- draw_fancy_stackup: 3
 - draw_stackup: 3
 - drc: 3
 - erc: 3
@@ -244,29 +247,29 @@ Preflights sorted by depth:
 - sch_replace: 3
 --------------------------------------------------------------------------------
 9 different data types
--             String:   40
--            Boolean:   38
--             Choice:   15
--             Number:   11
--               Dict:    9
+-             String:   44
+-            Boolean:   43
+-             Number:   22
+-             Choice:   16
+-               Dict:   10
 - ListStringSingular:    5
 -   ListDictSingular:    4
 -           ListDict:    3
--   ListDictOrString:    1
+-   ListDictOrString:    2
 --------------------------------------------------------------------------------
 Used as single data type:
--             String:   40 
--            Boolean:   32 
--             Choice:   15 
--             Number:   11 
+-             String:   44 
+-            Boolean:   36 
+-             Number:   22 
+-             Choice:   16 
 - ListStringSingular:    5 ['drc.drc.format', 'drc.drc.category', 'erc.erc.format', 'erc.erc.category', 'update_footprint.update_footprint']
 -   ListDictSingular:    4 ['check_fields.check_fields', 'pcb_replace.pcb_replace.replace_tags', 'sch_replace.sch_replace.replace_tags', 'set_text_variables.set_text_variables']
 -           ListDict:    3 ['filters.filters', 'drc.drc.filters', 'erc.erc.filters']
 -               Dict:    3 ['annotate_pcb.annotate_pcb', 'pcb_replace.pcb_replace', 'sch_replace.sch_replace']
--   ListDictOrString:    1 ['draw_stackup.draw_stackup.columns']
+-   ListDictOrString:    2 ['draw_fancy_stackup.draw_fancy_stackup.columns', 'draw_stackup.draw_stackup.columns']
 --------------------------------------------------------------------------------
 1 different data type combinations
--               Boolean,Dict:    6 ['draw_stackup.draw_stackup', 'drc.drc', 'erc.erc', 'run_drc.run_drc', 'run_erc.run_erc', 'update_xml.update_xml']
+-               Boolean,Dict:    7 ['draw_fancy_stackup.draw_fancy_stackup', 'draw_stackup.draw_stackup', 'drc.drc', 'erc.erc', 'run_drc.run_drc', 'run_erc.run_erc', 'update_xml.update_xml']
 ================================================================================
 ================================================================================
 12 filters types with a total of 138 different parameters
@@ -384,16 +387,16 @@ Used as single data type:
 -              Number,String:   15 
 ================================================================================
 ================================================================================
-84 totals types with a total of 2202 different parameters
-Single type parameters: 2007 (91 %)
-Multi type parameters: 195 (9 %)
+85 totals types with a total of 2224 different parameters
+Single type parameters: 2028 (91 %)
+Multi type parameters: 196 (9 %)
 Average parameters: 26
 Maximum number of parameters: 213
 Minimum number of parameters: 1
 Histogram:
   0-  9: ***********************
  10- 19: **************
- 20- 29: *************************
+ 20- 29: **************************
  30- 39: ********
  40- 49: ******
  50- 59: **
@@ -455,6 +458,7 @@ Totals sorted by parameters:
 - navigate_results: 21
 - populate: 21
 - download_datasheets: 22
+- draw_fancy_stackup: 22
 - rot_footprint: 22
 - dxf_sch_print: 23
 - kicanvas: 23
@@ -498,14 +502,14 @@ Totals sorted by parameters:
 - pcb_print: 89
 - bom: 145
 - panelize: 213
-Average depth: 2.1666666666666665
+Average depth: 2.176470588235294
 Maximum depth: 5
 Minimum depth: 1
 Histogram:
 0: 
 1: *****************
 2: *****************************************
-3: **********************
+3: ***********************
 4: ***
 5: *
 Totals sorted by depth:
@@ -584,6 +588,7 @@ Totals sorted by depth:
 - ps: 3
 - qr_lib: 3
 - svg: 3
+- draw_fancy_stackup: 3
 - draw_stackup: 3
 - drc: 3
 - erc: 3
@@ -595,14 +600,14 @@ Totals sorted by depth:
 - bom: 5
 --------------------------------------------------------------------------------
 14 different data types
--             String:  987
--            Boolean:  557
--             Number:  295
+-             String:  991
+-            Boolean:  562
+-             Number:  306
 - ListStringSingular:  251
--             Choice:  124
--               Dict:   88
+-             Choice:  125
+-               Dict:   89
 -           ListDict:   30
--   ListDictOrString:   22
+-   ListDictOrString:   23
 -              Combo:   14
 -         ListString:   12
 -   ListDictSingular:   10
@@ -611,16 +616,16 @@ Totals sorted by depth:
 -       NumberChoice:    1
 --------------------------------------------------------------------------------
 Used as single data type:
--             String:  818 
--            Boolean:  495 
+-             String:  822 
+-            Boolean:  499 
 - ListStringSingular:  248 
--             Number:  186 
--             Choice:  121 
+-             Number:  197 
+-             Choice:  122 
 -               Dict:   73 
 -           ListDict:   30 
 -         ListString:   12 
 -   ListDictSingular:   10 ['blender_export.options.outputs', 'blender_export.options.light', 'blender_export.options.point_of_view', 'kikit_present.options.boards', 'qr_lib.options.qrs', 'check_fields.check_fields', 'pcb_replace.pcb_replace.replace_tags', 'sch_replace.sch_replace.replace_tags', 'set_text_variables.set_text_variables', 'spec_to_field.specs']
--   ListDictOrString:    6 ['bom.options.columns', 'bom.options.cost_extra_columns', 'bom.options.xlsx.specs_columns', 'kibom.options.conf.columns', 'position.options.columns', 'draw_stackup.draw_stackup.columns']
+-   ListDictOrString:    7 ['bom.options.columns', 'bom.options.cost_extra_columns', 'bom.options.xlsx.specs_columns', 'kibom.options.conf.columns', 'position.options.columns', 'draw_fancy_stackup.draw_fancy_stackup.columns', 'draw_stackup.draw_stackup.columns']
 -     ListListString:    4 ['bom.options.component_aliases', 'kibom.options.conf.component_aliases', 'rot_footprint.rotations', 'rot_footprint.offsets']
 -              Combo:    2 ['report.options.template', 'step.options.origin']
 -         StringDict:    1 ['download_datasheets.options.classify_extra']
@@ -630,7 +635,7 @@ Used as single data type:
 -              Number,String:  107 
 -             Boolean,String:   52 
 -     Combo,ListDictOrString:   12 
--               Boolean,Dict:    6 ['draw_stackup.draw_stackup', 'drc.drc', 'erc.erc', 'run_drc.run_drc', 'run_erc.run_erc', 'update_xml.update_xml']
+-               Boolean,Dict:    7 ['draw_fancy_stackup.draw_fancy_stackup', 'draw_stackup.draw_stackup', 'drc.drc', 'erc.erc', 'run_drc.run_drc', 'run_erc.run_erc', 'update_xml.update_xml']
 -                Dict,String:    5 ['blender_export.options.pcb3d', 'excellon.options.report', 'gerb_drill.options.report', 'kibom.options.conf', 'pcbdraw.options.style']
 -    ListDictOrString,String:    4 ['bom.options.columns.join', 'bom.options.cost_extra_columns.join', 'bom.options.xlsx.specs_columns.join', 'panelize.options.configs']
 - Boolean,ListStringSingular:    3 ['bom.options.html.lcsc_link', 'bom.options.xlsx.lcsc_link', 'kibom.options.conf.lcsc_link']

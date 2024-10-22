@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [1.8.2] - UNRELEASED
 ### Added
 - Experimental GUI
+- Preflights:
+  - Draw Fancy Stackup: which includes the type of vias used (#699)
 - SVG: `use_aux_axis_as_origin` option (#681)
 - Report: thickness units (#685)
 - PCB Print:
