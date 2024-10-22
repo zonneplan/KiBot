@@ -738,7 +738,8 @@ def compute_via_layer_pairs(ops):
             unique_vias[via_key] = via
 
     if not len(unique_vias):
-        logger.warning(W_NOVIAS+'No vias detected, disabling the `draw_vias` option')
+        if ops.get_user_defined('draw_vias'):
+            logger.warning(W_NOVIAS+'No vias detected, disabling the `draw_vias` option')
         ops.draw_vias = False
 
     # Add remaining unpaired vias as lists of single elements
