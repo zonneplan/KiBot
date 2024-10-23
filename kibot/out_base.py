@@ -336,7 +336,7 @@ class VariantOptions(BaseOptions):
         m.Add(seg2)
         return [seg1, seg2]
 
-    def cross_modules(self, board, comps_hash, tlayer, blayer):
+    def cross_modules(self, board, comps_hash):
         """ Draw a cross in all 'not fitted' modules using *.Fab layer for 
             component positions and plots them on the provided tlayer (top)
             and blayer (bottom) """
@@ -345,8 +345,8 @@ class VariantOptions(BaseOptions):
         # Cross the affected components
         ffab = board.GetLayerID('F.Fab')
         bfab = board.GetLayerID('B.Fab')
-        tlay = board.GetLayerID(tlayer)
-        blay = board.GetLayerID(blayer)
+        tlay = board.GetLayerID(GS.global_dnp_cross_top_layer)
+        blay = board.GetLayerID(GS.global_dnp_cross_bottom_layer)
         extra_tlay_lines = []
         extra_blay_lines = []
         for m in GS.get_modules_board(board):
@@ -843,7 +843,7 @@ class VariantOptions(BaseOptions):
         logger.debug(f'Replacing footprints from variant change {to_change}')
         replace_footprints(GS.pcb_file, to_change, logger, replace_pcb=False)
 
-    def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None, tlayer='F.Fab', blayer='B.Fab'):
+    def filter_pcb_components(self, do_3D=False, do_2D=True, highlight=None):
         if not self.will_filter_pcb_components():
             return False
         self._comps_hash = self.get_refs_hash()
@@ -852,7 +852,7 @@ class VariantOptions(BaseOptions):
         if self._comps:
             if do_2D:
                 self.apply_footprint_variants(GS.board, self._comps_hash)
-                self.cross_modules(GS.board, self._comps_hash, tlayer, blayer)
+                self.cross_modules(GS.board, self._comps_hash)
                 self.remove_paste_and_glue(GS.board, self._comps_hash)
                 if hasattr(self, 'hide_excluded') and self.hide_excluded:
                     self.remove_fab(GS.board, self._comps_hash)

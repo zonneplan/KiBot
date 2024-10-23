@@ -388,10 +388,6 @@ class PCB_PrintOptions(VariantOptions):
             """ Invert the meaning of the `use_for_center` layer option.
                 This can be used to just select the edge cuts for centering, in this case enable this option
                 and disable the `use_for_center` option of the edge cuts layer """
-            self.dnp_cross_top_layer = 'F.Fab' 
-            """ Layer on which to add DNP cross for the front components """
-            self.dnp_cross_bottom_layer = 'B.Fab'
-            """ Layer on which to add DNP cross for the bottom components """
         add_drill_marks(self)
         super().__init__()
         self._expand_id = 'assembly'
@@ -1421,7 +1417,7 @@ class PCB_PrintOptions(VariantOptions):
         svgutils = importlib.import_module('.svgutils.transform', package=__package__)
         global kicad_worksheet
         kicad_worksheet = importlib.import_module('.kicad.worksheet', package=__package__)
-        self.filter_pcb_components(tlayer=self.dnp_cross_top_layer, blayer=self.dnp_cross_bottom_layer)
+        self.filter_pcb_components()
         self.generate_output(output)
         self.unfilter_pcb_components()
 
