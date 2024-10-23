@@ -8,7 +8,9 @@ RUN     dpkg --remove kibot && \
 	unzip pp.zip && \
 	curl https://codeload.github.com/yaqwsx/PcbDraw-Lib/zip/refs/heads/master --output pp2.zip && \
 	unzip pp2.zip -d KiBot-dev/kibot/resources/pcbdraw/ && \
-	mv KiBot-dev/kibot/resources/pcbdraw/PcbDraw-Lib-master/ KiBot-dev/kibot/resources/pcbdraw/footprints && \
+	ls -la KiBot-dev/kibot/resources/pcbdraw/ && \
+	mv KiBot-dev/kibot/resources/pcbdraw/PcbDraw-Lib-master KiBot-dev/kibot/resources/pcbdraw/footprints && \
+	ls -la KiBot-dev/kibot/resources/pcbdraw/ && \
 	pip3 install --break-system-packages --no-compile KiBot-dev/ && \
 	rm -rf KiBot-dev pp.zip pp2.zip && \
 	dpkg --remove kidiff kiauto && \
