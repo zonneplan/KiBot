@@ -10,6 +10,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Experimental GUI
 - Preflights:
   - Draw Fancy Stackup: which includes the type of vias used (#699)
+- Globals:
+  - `dnp_cross_top_layer` and `dnp_cross_bottom_layer`: to control the layer
+    where footprints are crossed. (#700 and #622)
 - SVG: `use_aux_axis_as_origin` option (#681)
 - Report: thickness units (#685)
 - PCB Print:
