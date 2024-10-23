@@ -6,7 +6,9 @@ import os
 import csv
 from .error import KiPlotConfigurationError
 from .gs import GS
-from .kicad.pcb_draw_helpers import draw_rect, draw_line, draw_text, get_text_width
+from .kicad.pcb_draw_helpers import (draw_rect, draw_line, draw_text, get_text_width,
+                                     GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT,
+                                     GR_TEXT_HJUSTIFY_CENTER)
 from .kiplot import load_board, get_output_targets, look_for_output
 from .optionable import Optionable
 from .macros import macros, document, pre_class  # noqa: F401
@@ -14,9 +16,10 @@ from . import log
 import pcbnew
 logger = log.get_logger()
 
-ALIGNMENT = {'left': pcbnew.GR_TEXT_H_ALIGN_LEFT,
-             'center': pcbnew.GR_TEXT_H_ALIGN_CENTER,
-             'right': pcbnew.GR_TEXT_H_ALIGN_RIGHT}
+ALIGNMENT = {'left': GR_TEXT_HJUSTIFY_LEFT,
+             'center': GR_TEXT_HJUSTIFY_CENTER,
+             'right': GR_TEXT_HJUSTIFY_RIGHT}
+
 
 class OutputOptions(Optionable):
     """ Data for a layer """
@@ -61,6 +64,7 @@ class OutputOptions(Optionable):
         else:
             raise KiPlotConfigurationError("text_alignment must be 'left', 'center' or 'right'")
 
+
 class IncludeTableOptions(Optionable):
     """ Include table options """
     def __init__(self):
@@ -86,11 +90,13 @@ class IncludeTableOptions(Optionable):
         if not self._outputs[0].name:
             raise KiPlotConfigurationError('No outputs provided')
 
+
 class ITColumns:
     def __init__(self, header='', width=10):
         self.header = header  # Column header name
         self.width = width  # Relative width (default to 10)
         self.data = []  # List to hold data for the column
+
 
 def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     # Purge all content
@@ -100,14 +106,14 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
 
     with open(csv_file) as csvfile:
         reader = csv.reader(csvfile, delimiter=out.delimiter)
-        
+
         if out.has_header:
             headers = next(reader)
             for header in headers:
                 cols.append(ITColumns(header=header))
         else:
             first_row = next(reader)
-            for i in range(len(first_row)):
+            for _ in range(len(first_row)):
                 cols.append(ITColumns())
 
             # Add the first row data to the cols
@@ -126,7 +132,7 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     measure_table(cols, out)
 
     total_char_w = sum(c.width_char for c in cols)
-    total_rel_w = sum((c.width for c in cols)) # should be equal to 1
+    total_rel_w = sum((c.width for c in cols))  # should be equal to 1
 
     font_w = int(width/total_char_w)
 
@@ -148,17 +154,17 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     row_h = out.row_spacing*font_w
 
     if out.has_header:
-        y += int(row_h/2) + row_h # Space for top rule + column titles + header rule
+        y += int(row_h/2) + row_h  # Space for top rule + column titles + header rule
         draw_line(g, pos_x, y, pos_x + width, y, tlayer, line_w=GS.from_mm(out.header_rule_width))
         # Draw headers
         for c in cols:
-            draw_text(g, c.x + c.xoffset, int(pos_y + font_w/2), c.header, font_w, font_w, 
-                        tlayer, bold=out.bold_headers, alignment=out.text_alignment)
+            draw_text(g, c.x + c.xoffset, int(pos_y + font_w/2), c.header, font_w, font_w,
+                      tlayer, bold=out.bold_headers, alignment=out.text_alignment)
 
     # Draw horizontal rules
     for i in range(max_row_data-1):
         rule_y = int(y + (i+1)*row_h)
-        draw_line(g, pos_x, rule_y, pos_x+width, rule_y, tlayer, line_w = GS.from_mm(out.horizontal_rules_width))
+        draw_line(g, pos_x, rule_y, pos_x+width, rule_y, tlayer, line_w=GS.from_mm(out.horizontal_rules_width))
 
     table_h = 0
     for c in cols:
@@ -170,15 +176,16 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
 
     # Draw top and bottom rules
     draw_line(g, pos_x, pos_y, pos_x + width, pos_y, tlayer, line_w=GS.from_mm(out.top_rule_width))
-    draw_line(g, pos_x, pos_y + table_h, pos_x + width, pos_y + table_h, tlayer, line_w=GS.from_mm(out.bottom_rule_width)) 
+    draw_line(g, pos_x, pos_y + table_h, pos_x + width, pos_y + table_h, tlayer, line_w=GS.from_mm(out.bottom_rule_width))
 
     for n, c in enumerate(cols):
         if n > 0:
             vrule_x = int(c.x - out.column_spacing*font_w/2)
-            draw_line(g, vrule_x, pos_y, vrule_x, pos_y + table_h, tlayer, line_w = GS.from_mm(out.vertical_rule_width))
-    
+            draw_line(g, vrule_x, pos_y, vrule_x, pos_y + table_h, tlayer, line_w=GS.from_mm(out.vertical_rule_width))
+
     # Draw rectangle around table
-    draw_rect(g, pos_x, pos_y, width, table_h, tlayer, line_w = GS.from_mm(out.border_width))
+    draw_rect(g, pos_x, pos_y, width, table_h, tlayer, line_w=GS.from_mm(out.border_width))
+
 
 def measure_table(cols, out):
 
@@ -195,6 +202,7 @@ def measure_table(cols, out):
     # Compute relative widths
     for c in cols:
         c.width = c.max_len/tot_len
+
 
 def update_table(ops, parent):
     load_board()
@@ -249,7 +257,7 @@ def update_table(ops, parent):
                         if csv_files[i] in out_to_csv_mapping[out]:
                             update_table_group(g, x1, y1, x2 - x1, layer, ops, out, csv_files[i])
                             break
-            
+
             if not csv_found:
                 logger.debug(f'No CSV file found for group {g.GetName()}')
 
@@ -263,7 +271,7 @@ def update_table(ops, parent):
 class Include_Table(BasePreFlight):  # noqa: F821
     """ Include Table
         Includes CSV Table generated by an output. Needs KiCad 7 or newer.
-        To specify the position and size of the drawing you should draw a rectangle in your PCB 
+        To specify the position and size of the drawing you should draw a rectangle in your PCB
         with the size and layer you want.
         Then draw another thing inside the rectangle, select both and create a group
         (right mouse button, then Grouping -> Group). Now edit the group and change its name
