@@ -37,7 +37,7 @@ class OutputOptions(Optionable):
             """ Whether or not the headers should be in bold """
             self.vertical_rule_width = 0.1
             """ Width of vertical rules between columns. Use 0 to eliminate it """
-            self.horizontal_rules_width = 0.1
+            self.horizontal_rule_width = 0.1
             """ Width of vertical rules between rows (doesn't include header).
                 Use 0 to eliminate it """
             self.top_rule_width = 0.4
@@ -164,7 +164,7 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     # Draw horizontal rules
     for i in range(max_row_data-1):
         rule_y = int(y + (i+1)*row_h)
-        draw_line(g, pos_x, rule_y, pos_x+width, rule_y, tlayer, line_w=GS.from_mm(out.horizontal_rules_width))
+        draw_line(g, pos_x, rule_y, pos_x+width, rule_y, tlayer, line_w=GS.from_mm(out.horizontal_rule_width))
 
     table_h = 0
     for c in cols:
