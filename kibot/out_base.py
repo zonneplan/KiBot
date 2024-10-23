@@ -316,7 +316,7 @@ class VariantOptions(BaseOptions):
     def cross_module(m, rect, layer, angle):
         """ Draw a cross over a module.
             The rect is a Rect object with the size.
-            The layer is which layer id will be used. 
+            The layer is which layer id will be used.
             The angle is the cross angle, which matches the footprint. """
         seg1 = GS.create_module_element(m)
         seg1.SetWidth(120000)
@@ -337,7 +337,7 @@ class VariantOptions(BaseOptions):
         return [seg1, seg2]
 
     def cross_modules(self, board, comps_hash):
-        """ Draw a cross in all 'not fitted' modules using *.Fab layer for 
+        """ Draw a cross in all 'not fitted' modules using *.Fab layer for
             component positions and plots them on the provided tlayer (top)
             and blayer (bottom) """
         if comps_hash is None or not GS.global_cross_footprints_for_dnp:
