@@ -357,7 +357,7 @@ class VariantOptions(BaseOptions):
             c = comps_hash.get(ref, None)
             if c and c.included and not c.fitted:
                 # Measure the component BBox (only graphics)
-                fp_angle = m.GetOrientation().AsDegrees()
+                fp_angle = m.GetOrientationDegrees()
                 m.Rotate(GS.p2v_k7(m.GetCenter()), GS.angle(-fp_angle))
                 for gi in m.GraphicalItems():
                     if gi.GetClass() == GS.footprint_gr_type:
