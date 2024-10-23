@@ -248,7 +248,7 @@ class PagesOptions(Optionable):
             sheet = sheet.replace('%ln', layer.layer)
             sheet = sheet.replace('%ls', layer.suffix)
             sheet = sheet.replace('%ld', layer.description)
-        return self.expand_filename_pcb(sheet)
+        return self.expand_filename_pcb(sheet, make_safe=False)
 
     def config(self, parent):
         super().config(parent)

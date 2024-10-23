@@ -550,11 +550,11 @@ class Optionable(object):
             logger.debug('Expanded `{}`'.format(name))
         return name
 
-    def expand_filename_pcb(self, name):
+    def expand_filename_pcb(self, name, make_safe=True):
         """ Expands %* values in filenames.
             Uses data from the PCB. """
         # This member can be called with a preflight object
-        return Optionable.expand_filename_both(self, name, is_sch=False)
+        return Optionable.expand_filename_both(self, name, is_sch=False, make_safe=make_safe)
 
     def expand_filename_sch(self, name):
         """ Expands %* values in filenames.
