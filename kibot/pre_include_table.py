@@ -154,11 +154,11 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     row_h = out.row_spacing*font_w
 
     if out.has_header:
-        y += int(row_h/2) + row_h  # Space for top rule + column titles + header rule
+        y += int(row_h)  # Space for top rule + column titles + header rule
         draw_line(g, pos_x, y, pos_x + width, y, tlayer, line_w=GS.from_mm(out.header_rule_width))
         # Draw headers
         for c in cols:
-            draw_text(g, c.x + c.xoffset, int(pos_y + font_w/2), c.header, font_w, font_w,
+            draw_text(g, c.x + c.xoffset, int(pos_y + 0.5*row_h - font_w), c.header, font_w, font_w,
                       tlayer, bold=out.bold_headers, alignment=out.text_alignment)
 
     # Draw horizontal rules
@@ -168,11 +168,11 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
 
     table_h = 0
     for c in cols:
-        row_y = y
+        row_y = int(y + row_h/2)
         for d in c.data:
-            draw_text(g, c.x + c.xoffset, row_y, d, font_w, font_w, tlayer, alignment=out.text_alignment)
+            draw_text(g, c.x + c.xoffset, int(row_y - font_w), d, font_w, font_w, tlayer, alignment=out.text_alignment)
             row_y += row_h
-        table_h = max(table_h, row_y-pos_y)
+        table_h = int(max(table_h, row_y-pos_y) - row_h/2)
 
     # Draw top and bottom rules
     draw_line(g, pos_x, pos_y, pos_x + width, pos_y, tlayer, line_w=GS.from_mm(out.top_rule_width))
