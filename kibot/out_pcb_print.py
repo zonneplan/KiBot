@@ -388,7 +388,7 @@ class PCB_PrintOptions(VariantOptions):
             """ Invert the meaning of the `use_for_center` layer option.
                 This can be used to just select the edge cuts for centering, in this case enable this option
                 and disable the `use_for_center` option of the edge cuts layer """
-            self.dnp_cross_top_layer = 'F.Fab'
+            self.dnp_cross_top_layer = 'F.Fab' 
             """ Layer on which to add DNP cross for the front components """
             self.dnp_cross_bottom_layer = 'B.Fab'
             """ Layer on which to add DNP cross for the bottom components """
