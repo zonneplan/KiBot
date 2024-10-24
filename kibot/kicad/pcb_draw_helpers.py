@@ -7,6 +7,23 @@
 from ..gs import GS
 import pcbnew
 
+if GS.ki7:
+    from pcbnew import (GR_TEXT_H_ALIGN_LEFT, GR_TEXT_H_ALIGN_RIGHT, GR_TEXT_H_ALIGN_CENTER,
+                        GR_TEXT_V_ALIGN_TOP, GR_TEXT_V_ALIGN_CENTER, GR_TEXT_V_ALIGN_BOTTOM)
+
+    GR_TEXT_HJUSTIFY_LEFT = GR_TEXT_H_ALIGN_LEFT
+    GR_TEXT_HJUSTIFY_RIGHT = GR_TEXT_H_ALIGN_RIGHT
+    GR_TEXT_HJUSTIFY_CENTER = GR_TEXT_H_ALIGN_CENTER
+    GR_TEXT_VJUSTIFY_TOP = GR_TEXT_V_ALIGN_TOP
+    GR_TEXT_VJUSTIFY_CENTER = GR_TEXT_V_ALIGN_CENTER
+    GR_TEXT_VJUSTIFY_BOTTOM = GR_TEXT_V_ALIGN_BOTTOM
+elif GS.ki6:
+    from pcbnew import (GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
+                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
+else:
+    from pcbnew import (GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
+                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
+
 
 def draw_rect(g, x, y, w, h, layer, filled=False, line_w=10000):
     if not line_w:
@@ -33,7 +50,7 @@ def draw_rect(g, x, y, w, h, layer, filled=False, line_w=10000):
     GS.board.Add(nl)
 
 
-def draw_line(g, x1, y1, x2, y2, layer):
+def draw_line(g, x1, y1, x2, y2, layer, line_w=10000):
     nl = pcbnew.PCB_SHAPE(GS.board)
     pos = nl.GetStart()
     pos.x = x1
@@ -44,12 +61,12 @@ def draw_line(g, x1, y1, x2, y2, layer):
     pos.y = y2
     nl.SetEnd(pos)
     nl.SetLayer(layer)
-    nl.SetWidth(10000)
+    nl.SetWidth(line_w)
     g.AddItem(nl)
     GS.board.Add(nl)
 
 
-def draw_text(g, x, y, text, h, w, layer, bold=False):
+def draw_text(g, x, y, text, h, w, layer, bold=False, alignment=GR_TEXT_HJUSTIFY_LEFT):
     nt = pcbnew.PCB_TEXT(GS.board)
     nt.SetText(text)
     nt.SetBold(bold)
@@ -58,8 +75,8 @@ def draw_text(g, x, y, text, h, w, layer, bold=False):
     nt.SetLayer(layer)
     nt.SetTextWidth(w)
     nt.SetTextHeight(h)
-    nt.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
-    nt.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
+    nt.SetHorizJustify(alignment)
+    nt.SetVertJustify(GR_TEXT_VJUSTIFY_CENTER)
     g.AddItem(nt)
     GS.board.Add(nt)
     return nt, nt.GetTextBox().GetWidth()
