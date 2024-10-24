@@ -145,7 +145,7 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     total_char_w = sum(c.width_char for c in cols)
     total_rel_w = sum((c.width for c in cols))  # should be equal to 1
 
-    font_w = int(width/total_char_w)
+    font_w = int(width/total_char_w) if total_char_w else 0
 
     xpos_x = int(pos_x + out.column_spacing*font_w/2)
     max_row_data = 0
