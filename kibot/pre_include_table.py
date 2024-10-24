@@ -195,12 +195,11 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
 
 
 def measure_table(cols, out):
-
     col_spacing_width = get_text_width('o')*out.column_spacing
 
     for c in cols:
-        max_data_len = max(get_text_width(d) for d in c.data)
-        max_data_width_char = max(len(d) for d in c.data)
+        max_data_len = max(get_text_width(d) for d in c.data) if c.data else 0
+        max_data_width_char = max(len(d) for d in c.data) if c.data else 0
         c.max_len = max(get_text_width(c.header), max_data_len) + col_spacing_width
         c.width_char = max(len(c.header), max_data_width_char) + out.column_spacing
 
