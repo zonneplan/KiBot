@@ -119,7 +119,9 @@ preflight:
   # to *kibot_table_X* where X should match the name of the output. Consult the
   # `group_name` option for details. |br|
   # After running this preflight the rectangle will contain the table with the same name.
-  # Only the width of the table is important, the height will be adjusted .
+  # Only the width of the table is important, the height will be adjusted.
+  # Important: This preflight assumes that a separated KiBot run generated the outputs
+  # needed for the tables .
   # [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior.
   include_table: true
   # PCB Replace (**Deprecated**)

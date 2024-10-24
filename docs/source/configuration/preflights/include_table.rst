@@ -14,7 +14,12 @@ Then draw another thing inside the rectangle, select both and create a group
 to *kibot_table_X* where X should match the name of the output. Consult the
 `group_name` option for details. |br|
 After running this preflight the rectangle will contain the table with the same name. |br|
-Only the width of the table is important, the height will be adjusted
+Only the width of the table is important, the height will be adjusted. |br|
+
+.. note::
+   This preflight assumes that a separated KiBot run generated the outputs
+   needed for the tables
+.. 
 
    -  **include_table** :index:`: <pair: preflight - include_table; include_table>`  [:ref:`IncludeTableOptions parameters <IncludeTableOptions>`] [:ref:`boolean <boolean>` | :ref:`dict <dict>`] (default: ``false``) Use a boolean for simple cases or fine-tune its behavior.
 
