@@ -31,7 +31,7 @@ class IncTableOutputOptions(Optionable):
         self._unknown_is_error = True
         with document:
             self.name = ''
-            """ Name of output """
+            """ *Name of output """
             self.delimiter = ''
             """ Delimiter used for CSV files """
             self.has_header = True
