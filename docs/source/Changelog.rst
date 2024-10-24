@@ -72,6 +72,10 @@ Changed
 
    -  Avoid ``colored_pads`` and ``colored_vias`` side effects (#682)
 
+-  BoM:
+
+   -  Avoid leaking DIGIKEY_CLIENT_ID and DIGIKEY_CLIENT_SECRET in logs
+
 [1.8.1] - 2024-09-25
 --------------------
 

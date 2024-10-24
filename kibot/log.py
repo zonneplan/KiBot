@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
 """
@@ -11,6 +11,7 @@ Handles logging initialization and formatting.
 """
 import io
 import os
+import re
 import sys
 import traceback
 import logging
@@ -34,6 +35,8 @@ debug_level = 0
 stop_on_warnings = False
 record_error_msgs = False
 recorded_error_msgs = []
+re_dk_client_id = re.compile("DIGIKEY_CLIENT_ID=([^']+)")
+re_dk_client_secret = re.compile("DIGIKEY_CLIENT_SECRET=([^']+)")
 
 
 def get_logger(name=None, indent=None):
@@ -144,6 +147,25 @@ class MyLogger(logging.Logger):
             return
         if isinstance(msg, tuple):
             msg = ' '.join(map(str, msg))
+        if sys.version_info >= (3, 8):
+            super(self.__class__, self).debug(msg, *args, **kwargs, stacklevel=2)  # pragma: no cover (Py38)
+        else:
+            super(self.__class__, self).debug(msg, *args, **kwargs)
+
+    def debug(self, msg, *args, **kwargs):
+        # Avoid leaking secrets in the log files
+        # Digi-Key KiCost plug-in variables
+        if 'DIGIKEY_' in str(msg):
+            match = re_dk_client_id.search(msg)
+            if match:
+                val = match.group(1)
+                new_val = 'x'*(len(val)-3)+val[-3:]
+                msg = msg.replace(val, new_val)
+            match = re_dk_client_secret.search(msg)
+            if match:
+                val = match.group(1)
+                new_val = 'x'*(len(val)-3)+val[-3:]
+                msg = msg.replace(val, new_val)
         if sys.version_info >= (3, 8):
             super(self.__class__, self).debug(msg, *args, **kwargs, stacklevel=2)  # pragma: no cover (Py38)
         else:

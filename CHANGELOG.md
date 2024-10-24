@@ -42,6 +42,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Diff/KiRi: Avoid creating when we don't have at least 2 to compare
 - PCB Print:
   - Avoid `colored_pads` and `colored_vias` side effects (#682)
+- BoM:
+  - Avoid leaking DIGIKEY_CLIENT_ID and DIGIKEY_CLIENT_SECRET in logs
 
 
 ## [1.8.1] - 2024-09-25
