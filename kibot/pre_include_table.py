@@ -31,7 +31,8 @@ class IncTableOutputOptions(Optionable):
         with document:
             self.name = ''
             """ *Name of output """
-            self.delimiter = ''
+            # TODO: should be autodetected
+            self.delimiter = ','
             """ Delimiter used for CSV files """
             self.has_header = True
             """ Plot header on the table """
