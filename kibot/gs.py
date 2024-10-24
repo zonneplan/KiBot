@@ -319,6 +319,8 @@ class GS(object):
             except ValueError as e:
                 logger.warning(W_DATEFORMAT+"Trying to reformat {} time, but not in ISO format ({})".format(what, d))
                 logger.warning(W_DATEFORMAT+"Problem: {}".format(e))
+                logger.warning(W_DATEFORMAT+"You should enter the date in the title block using YYYY-MM-DD format")
+                logger.warning(W_DATEFORMAT+"Then adjust `date_time_format` global variable to your preference")
                 return d
             return dt.strftime(GS.global_date_format)
         return d
