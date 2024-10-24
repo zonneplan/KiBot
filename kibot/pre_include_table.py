@@ -31,9 +31,6 @@ class IncTableOutputOptions(Optionable):
         with document:
             self.name = ''
             """ *Name of output """
-            # TODO: should be autodetected
-            self.delimiter = ','
-            """ Delimiter used for CSV files """
             self.has_header = True
             """ Plot header on the table """
             self.bold_headers = True
@@ -116,7 +113,7 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     cols = []
 
     with open(csv_file) as csvfile:
-        reader = csv.reader(csvfile, delimiter=out.delimiter)
+        reader = csv.reader(csvfile, delimiter=out._obj.get_csv_separator())
 
         if out.has_header:
             headers = next(reader)
@@ -227,6 +224,7 @@ def update_table(ops, parent):
         if not csv:
             logger.debug(f'  - {out.name} no CSV')
             continue
+        out._obj = csv
         targets, _, _ = get_output_targets(out.name, parent)
 
         # Filter targets to include only CSV files

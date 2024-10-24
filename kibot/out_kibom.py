@@ -421,6 +421,9 @@ class KiBoM(BaseOutput):  # noqa: F821
             """ *[dict={}] Options for the `kibom` output """
         self._sch_related = True
 
+    def get_csv_separator(self):
+        return self.options.separator
+
     def get_dependencies(self):
         files = super().get_dependencies()
         if isinstance(self.options.conf, str):
