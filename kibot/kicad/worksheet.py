@@ -14,34 +14,22 @@ Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 from base64 import b64decode
 import io
 from struct import unpack
-from pcbnew import (wxPoint, wxSize, FromMM, wxPointMM)
+from pcbnew import wxPoint, wxSize, FromMM, wxPointMM
 from ..gs import GS
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
-if GS.ki7:
-    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_H_ALIGN_LEFT,
-                        GR_TEXT_H_ALIGN_RIGHT, GR_TEXT_H_ALIGN_CENTER, GR_TEXT_V_ALIGN_TOP, GR_TEXT_V_ALIGN_CENTER,
-                        GR_TEXT_V_ALIGN_BOTTOM, COLOR4D)
-    # Is this change really needed??!!! People doesn't have much to do ...
-    GR_TEXT_HJUSTIFY_LEFT = GR_TEXT_H_ALIGN_LEFT
-    GR_TEXT_HJUSTIFY_RIGHT = GR_TEXT_H_ALIGN_RIGHT
-    GR_TEXT_HJUSTIFY_CENTER = GR_TEXT_H_ALIGN_CENTER
-    GR_TEXT_VJUSTIFY_TOP = GR_TEXT_V_ALIGN_TOP
-    GR_TEXT_VJUSTIFY_CENTER = GR_TEXT_V_ALIGN_CENTER
-    GR_TEXT_VJUSTIFY_BOTTOM = GR_TEXT_V_ALIGN_BOTTOM
-elif GS.ki6:
-    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_HJUSTIFY_LEFT,
-                        GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER,
-                        GR_TEXT_VJUSTIFY_BOTTOM, COLOR4D)
+if GS.ki6:
+    from pcbnew import PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, COLOR4D
 else:
-    from pcbnew import (DRAWSEGMENT, TEXTE_PCB, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
-                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM, COLOR4D)
+    from pcbnew import DRAWSEGMENT, TEXTE_PCB, COLOR4D
     PCB_SHAPE = DRAWSEGMENT
     PCB_TEXT = TEXTE_PCB
     FILL_T_FILLED_SHAPE = 0
     SHAPE_T_POLY = 4
+from .pcb_draw_helpers import (GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
+                               GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
 from .sexpdata import load, dumps, SExpData
 from .sexp_helpers import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
                            _check_relaxed, _get_points, _check_symbol_str, Color)
