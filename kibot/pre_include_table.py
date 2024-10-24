@@ -268,7 +268,10 @@ def update_table(ops, parent):
             logger.debug(f'    - {group_suffix} index: {index}')
         csv = out_to_csv_mapping.get(group_suffix)
         if csv:
-            # TODO: validate index and document it
+            if index < 0 or index >= len(csv):
+                msg = f'index {index+1} is out of range, '+('only one CSV available' if len(csv) == 1 else
+                                                            f'must be in the [1,{len(csv)}] range')
+                raise KiPlotConfigurationError(msg)
             # We know about it
             x1, y1, x2, y2 = GS.compute_group_boundary(g)
             item = g.GetItems()[0]
