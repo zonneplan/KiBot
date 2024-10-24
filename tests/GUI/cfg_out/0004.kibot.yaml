@@ -17,6 +17,7 @@ preflight:
   - filter: preflight.filters.filters.dict
     error: lib_symbol_issues
   ignore_unconnected: false
+  include_table: true
   pcb_replace:
     date_command: preflight.pcb_replace
     replace_tags:
