@@ -25,7 +25,7 @@ VALID_OUTPUT_TYPES = {'bom', 'kibom', 'position'}
 
 class IncTableOutputOptions(Optionable):
     """ Data for a layer """
-    def __init__(self, name=None):
+    def __init__(self, name=None, parent=None):
         super().__init__()
         self._unknown_is_error = True
         with document:
@@ -60,6 +60,7 @@ class IncTableOutputOptions(Optionable):
             """ Invert column order. Useful when inverting PCB texts in PCB Print """
         if name is not None:
             self.name = name
+            self.config(parent)
 
     def __str__(self):
         v = f'{self.name} ({self.text_alignment}'
@@ -92,7 +93,7 @@ class IncludeTableOptions(Optionable):
         super().config(parent)
         # TODO: Remove
         logger.debug(self.outputs)
-        self._outputs = [IncTableOutputOptions(o) if isinstance(o, str) else o for o in self.outputs]
+        self._outputs = [IncTableOutputOptions(o, self) if isinstance(o, str) else o for o in self.outputs]
         # TODO: Remove
         for o in self._outputs:
             logger.debug(o)
