@@ -16,7 +16,6 @@ from .kiplot import load_board, get_output_targets, look_for_output
 from .optionable import Optionable
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
-import pcbnew
 logger = log.get_logger()
 
 ALIGNMENT = {'left': GR_TEXT_HJUSTIFY_LEFT,
@@ -56,16 +55,13 @@ class IncTableOutputOptions(Optionable):
             self.row_spacing = 2
             """ Space (in number of characters) between rows """
             self.text_alignment = 'left'
-            """ Text alignment in the table. Valid values are 'left', 'center', 'right' """
+            """ [left,center,right] Text alignment in the table """
             self.invert_columns_order = False
             """ Invert column order. Useful when inverting PCB texts in PCB Print """
 
     def config(self, parent):
         super().config(parent)
-        if self.text_alignment in ALIGNMENT:
-            self.text_alignment = ALIGNMENT[self.text_alignment]
-        else:
-            raise KiPlotConfigurationError("text_alignment must be 'left', 'center' or 'right'")
+        self._text_alignment = ALIGNMENT[self.text_alignment]
 
 
 class IncludeTableOptions(Optionable):
@@ -144,11 +140,11 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     for c in cols:
         c.w = int(c.width/total_rel_w*width)
         c.x = xpos_x
-        if out.text_alignment == pcbnew.GR_TEXT_H_ALIGN_LEFT:
+        if out._text_alignment == GR_TEXT_HJUSTIFY_LEFT:
             c.xoffset = 0
-        if out.text_alignment == pcbnew.GR_TEXT_H_ALIGN_RIGHT:
+        if out._text_alignment == GR_TEXT_HJUSTIFY_RIGHT:
             c.xoffset = int(c.w - out.column_spacing*font_w)
-        elif out.text_alignment == pcbnew.GR_TEXT_H_ALIGN_CENTER:
+        elif out._text_alignment == GR_TEXT_HJUSTIFY_CENTER:
             c.xoffset = int(c.w/2 - out.column_spacing*font_w/2)
         xpos_x += c.w
         max_row_data = max(max_row_data, len(c.data))
@@ -162,7 +158,7 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
         # Draw headers
         for c in cols:
             draw_text(g, c.x + c.xoffset, int(pos_y + 0.5*row_h - font_w), c.header, font_w, font_w,
-                      tlayer, bold=out.bold_headers, alignment=out.text_alignment)
+                      tlayer, bold=out.bold_headers, alignment=out._text_alignment)
 
     # Draw horizontal rules
     for i in range(max_row_data-1):
@@ -173,7 +169,7 @@ def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
     for c in cols:
         row_y = int(y + row_h/2)
         for d in c.data:
-            draw_text(g, c.x + c.xoffset, int(row_y - font_w), d, font_w, font_w, tlayer, alignment=out.text_alignment)
+            draw_text(g, c.x + c.xoffset, int(row_y - font_w), d, font_w, font_w, tlayer, alignment=out._text_alignment)
             row_y += row_h
         table_h = int(max(table_h, row_y-pos_y) - row_h/2)
 
