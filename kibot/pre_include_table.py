@@ -13,6 +13,7 @@ from .kicad.pcb_draw_helpers import (draw_rect, draw_line, draw_text, get_text_w
                                      GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT,
                                      GR_TEXT_HJUSTIFY_CENTER)
 from .kiplot import load_board, get_output_targets, look_for_output
+from .misc import W_NOMATCHGRP
 from .optionable import Optionable
 from .registrable import RegOutput
 from .macros import macros, document, pre_class  # noqa: F401
@@ -249,6 +250,7 @@ def update_table(ops, parent):
         logger.debug(f'  - {out.name} -> {csv_targets}')
 
     group_found = False  # Flag to track if any group was found with ops.group_name
+    updated = False
     group_prefix = ops.group_name + "_"
     group_prefix_l = len(group_prefix)
     logger.debug('- Scanning board groups')
@@ -267,26 +269,27 @@ def update_table(ops, parent):
             group_suffix = group_suffix[:-3]
             logger.debug(f'    - {group_suffix} index: {index}')
         csv = out_to_csv_mapping.get(group_suffix)
-        if csv:
-            if index < 0 or index >= len(csv):
-                msg = f'index {index+1} is out of range, '+('only one CSV available' if len(csv) == 1 else
-                                                            f'must be in the [1,{len(csv)}] range')
-                raise KiPlotConfigurationError(msg)
-            # We know about it
-            x1, y1, x2, y2 = GS.compute_group_boundary(g)
-            item = g.GetItems()[0]
-            layer = item.GetLayer()
-            logger.debug(f'    - Found group @{GS.to_mm(x1)},{GS.to_mm(y1)} mm'
-                         f' ({GS.to_mm(x2-x1)}x{GS.to_mm(y2-y1)} mm) layer {layer}'
-                         f' with name {g.GetName()}')
-            update_table_group(g, x1, y1, x2 - x1, layer, ops, out, csv[index])
-        else:
-            logger.debug(f'    - No CSV file found for group {g.GetName()}')
+        if not csv:
+            logger.warning(W_NOMATCHGRP+f'No output to handle `{group_name}` found')
+            continue
+        if index < 0 or index >= len(csv):
+            msg = f'index {index+1} is out of range, '+('only one CSV available' if len(csv) == 1 else
+                                                        f'must be in the [1,{len(csv)}] range')
+            raise KiPlotConfigurationError(msg)
+        # We know about it
+        x1, y1, x2, y2 = GS.compute_group_boundary(g)
+        item = g.GetItems()[0]
+        layer = item.GetLayer()
+        logger.debug(f'    - Found group @{GS.to_mm(x1)},{GS.to_mm(y1)} mm'
+                     f' ({GS.to_mm(x2-x1)}x{GS.to_mm(y2-y1)} mm) layer {layer}'
+                     f' with name {g.GetName()}')
+        update_table_group(g, x1, y1, x2 - x1, layer, ops, out, csv[index])
+        updated = True
 
     if not group_found:
-        logger.debug(f'No group found with name containing {ops.group_name}')
+        logger.warning(W_NOMATCHGRP+f'No `{ops.group_name}*` groups found, skipping `include_table` preflight')
 
-    return True
+    return updated
 
 
 @pre_class
