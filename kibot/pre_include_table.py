@@ -14,6 +14,7 @@ from .kicad.pcb_draw_helpers import (draw_rect, draw_line, draw_text, get_text_w
                                      GR_TEXT_HJUSTIFY_CENTER)
 from .kiplot import load_board, get_output_targets, look_for_output
 from .optionable import Optionable
+from .registrable import RegOutput
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 logger = log.get_logger()
@@ -78,7 +79,8 @@ class IncludeTableOptions(Optionable):
     def __init__(self):
         with document:
             self.outputs = IncTableOutputOptions
-            """ *[list(dict)|list(string)|string=[]] List of CSV-generating outputs """
+            """ *[list(dict)|list(string)|string=?] List of CSV-generating outputs.
+                When empty we include all possible outputs """
             self.enabled = True
             """ Enable the check. This is the replacement for the boolean value """
             self.group_name = 'kibot_table'
@@ -91,12 +93,11 @@ class IncludeTableOptions(Optionable):
 
     def config(self, parent):
         super().config(parent)
-        # TODO: Remove
-        logger.debug(self.outputs)
+        if isinstance(self.outputs, type):
+            # Nothing specified, look for candidates
+            self.outputs = [o.name for o in filter(lambda x: x.type in VALID_OUTPUT_TYPES, RegOutput.get_outputs())]
+            logger.debug('- Collected outputs: '+str(self.outputs))
         self._outputs = [IncTableOutputOptions(o, self) if isinstance(o, str) else o for o in self.outputs]
-        # TODO: Remove
-        for o in self._outputs:
-            logger.debug(o)
 
 
 class ITColumns:
@@ -222,7 +223,9 @@ def update_table(ops, parent):
 
     logger.debug('- Analyzing requested outputs')
     for out in ops._outputs:
-        csv = look_for_output(out.name, 'table', parent, VALID_OUTPUT_TYPES) if out.name else None
+        if not out.name:
+            raise KiPlotConfigurationError('output entry without a name')
+        csv = look_for_output(out.name, '`include table`', parent, VALID_OUTPUT_TYPES) if out.name else None
         if not csv:
             logger.debug(f'  - {out.name} no CSV')
             continue
@@ -294,13 +297,14 @@ class Include_Table(BasePreFlight):  # noqa: F821
         to *kibot_table_X* where X should match the name of the output. Consult the
         `group_name` option for details. |br|
         After running this preflight the rectangle will contain the table with the same name.
-        Only the width of the table is important, the height will be adjusted """
+        Only the width of the table is important, the height will be adjusted.
+        Important: This preflight assumes that a separated KiBot run generated the outputs
+        needed for the tables """
 
     def __init__(self):
         super().__init__()
         self._pcb_related = True
         with document:
-            # TODO: What true means here?
             self.include_table = IncludeTableOptions
             """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
