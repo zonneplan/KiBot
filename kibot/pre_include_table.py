@@ -17,10 +17,10 @@ from .optionable import Optionable
 from .macros import macros, document, pre_class  # noqa: F401
 from . import log
 logger = log.get_logger()
-
 ALIGNMENT = {'left': GR_TEXT_HJUSTIFY_LEFT,
              'center': GR_TEXT_HJUSTIFY_CENTER,
              'right': GR_TEXT_HJUSTIFY_RIGHT}
+VALID_OUTPUT_TYPES = {'bom', 'kibom', 'position'}
 
 
 class IncTableOutputOptions(Optionable):
@@ -218,55 +218,57 @@ def update_table(ops, parent):
     out_to_csv_mapping = {}  # Create a mapping of out variable to its corresponding CSV files
 
     for out in ops._outputs:
-        csv = look_for_output(out.name, 'table', parent, {'bom', 'kibom', 'position'}) if out.name else None
-        if csv:
-            targets, _, _ = get_output_targets(out.name, parent)
+        csv = look_for_output(out.name, 'table', parent, VALID_OUTPUT_TYPES) if out.name else None
+        if not csv:
+            continue
+        targets, _, _ = get_output_targets(out.name, parent)
 
-            # Filter targets to include only CSV files
-            csv_targets = [file for file in targets if file.endswith('.csv')]
+        # Filter targets to include only CSV files
+        csv_targets = [file for file in targets if file.endswith('.csv')]
 
-            for file in csv_targets:
-                csv_files.append(file)
+        for file in csv_targets:
+            csv_files.append(file)
 
-            # Append the CSV file names (without path and extension) to csv_name
-            for file in csv_targets:
-                file_name = os.path.basename(file)  # Get the file name
-                name_without_ext = os.path.splitext(file_name)[0]  # Remove the extension
-                csv_name.append(name_without_ext)
+        # Append the CSV file names (without path and extension) to csv_name
+        for file in csv_targets:
+            file_name = os.path.basename(file)  # Get the file name
+            name_without_ext = os.path.splitext(file_name)[0]  # Remove the extension
+            csv_name.append(name_without_ext)
 
-            # Map the CSV file names to the corresponding out variable
-            out_to_csv_mapping[out] = csv_targets
+        # Map the CSV file names to the corresponding out variable
+        out_to_csv_mapping[out] = csv_targets
 
-            group_found = False  # Flag to track if any group was found with ops.group_name
+        group_found = False  # Flag to track if any group was found with ops.group_name
 
     for g in GS.board.Groups():
         group_name = g.GetName()
-        if group_name.startswith(ops.group_name + "_"):
-            group_found = True  # A group with ops.group_name was found
-            csv_found = False  # Flag to track if a CSV was found for this group
+        if not group_name.startswith(ops.group_name + "_"):
+            continue
+        group_found = True  # A group with ops.group_name was found
+        csv_found = False  # Flag to track if a CSV was found for this group
 
-            # Extract the part after <group_name>_
-            group_suffix = group_name[len(ops.group_name) + 1:]
+        # Extract the part after <group_name>_
+        group_suffix = group_name[len(ops.group_name) + 1:]
 
-            for i, name in enumerate(csv_name):
-                if name == group_suffix:  # Only match if the name corresponds to the group suffix
-                    csv_found = True
-                    x1, y1, x2, y2 = GS.compute_group_boundary(g)
-                    item = g.GetItems()[0]
-                    layer = item.GetLayer()
-                    logger.debug(f'- Found group @{GS.to_mm(x1)},{GS.to_mm(y1)} mm'
-                                 f' ({GS.to_mm(x2-x1)}x{GS.to_mm(y2-y1)} mm) layer {layer}'
-                                 f' with name {g.GetName()}')
+        for i, name in enumerate(csv_name):
+            if name == group_suffix:  # Only match if the name corresponds to the group suffix
+                csv_found = True
+                x1, y1, x2, y2 = GS.compute_group_boundary(g)
+                item = g.GetItems()[0]
+                layer = item.GetLayer()
+                logger.debug(f'- Found group @{GS.to_mm(x1)},{GS.to_mm(y1)} mm'
+                             f' ({GS.to_mm(x2-x1)}x{GS.to_mm(y2-y1)} mm) layer {layer}'
+                             f' with name {g.GetName()}')
 
-                    # Get the correct out variable for the corresponding CSV file
-                    # Here we assume csv_files[i] corresponds to out
-                    for out in ops._outputs:
-                        if csv_files[i] in out_to_csv_mapping[out]:
-                            update_table_group(g, x1, y1, x2 - x1, layer, ops, out, csv_files[i])
-                            break
+                # Get the correct out variable for the corresponding CSV file
+                # Here we assume csv_files[i] corresponds to out
+                for out in ops._outputs:
+                    if csv_files[i] in out_to_csv_mapping[out]:
+                        update_table_group(g, x1, y1, x2 - x1, layer, ops, out, csv_files[i])
+                        break
 
-            if not csv_found:
-                logger.debug(f'No CSV file found for group {g.GetName()}')
+        if not csv_found:
+            logger.debug(f'No CSV file found for group {g.GetName()}')
 
     if not group_found:
         logger.debug(f'No group found with name containing {ops.group_name}')
