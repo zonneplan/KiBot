@@ -16,6 +16,7 @@ Supported preflights
    preflights/erc
    preflights/fill_zones
    preflights/filters
+   preflights/include_table
    preflights/set_text_variables
    preflights/update_footprint
    preflights/update_pcb_characteristics
