@@ -25,7 +25,7 @@ ALIGNMENT = {'left': GR_TEXT_HJUSTIFY_LEFT,
 
 class IncTableOutputOptions(Optionable):
     """ Data for a layer """
-    def __init__(self):
+    def __init__(self, name=None):
         super().__init__()
         self._unknown_is_error = True
         with document:
@@ -58,6 +58,16 @@ class IncTableOutputOptions(Optionable):
             """ [left,center,right] Text alignment in the table """
             self.invert_columns_order = False
             """ Invert column order. Useful when inverting PCB texts in PCB Print """
+        if name is not None:
+            self.name = name
+
+    def __str__(self):
+        v = f'{self.name} ({self.text_alignment}'
+        if self.invert_columns_order:
+            v += ' inverted'
+        if self.has_header:
+            v += ' header'
+        return v+')'
 
     def config(self, parent):
         super().config(parent)
@@ -68,26 +78,24 @@ class IncludeTableOptions(Optionable):
     """ Include table options """
     def __init__(self):
         with document:
+            self.outputs = IncTableOutputOptions
+            """ *[list(dict)|list(string)|string=[]] List of CSV-generating outputs """
             self.enabled = True
             """ Enable the check. This is the replacement for the boolean value """
             self.group_name = 'kibot_table'
             """ Name for the group containing the tables. The name of the group
                 should be <group_name>_X where X is the csv filename without extension """
-            self.outputs = IncTableOutputOptions
-            """ *[list(dict)|list(string)=?] List of CSV-generating outputs """
         super().__init__()
         self._unknown_is_error = True
 
     def config(self, parent):
         super().config(parent)
-
-        load_board()
-
-        self._outputs = Optionable.force_list(self.outputs)
-
-        # - Sanity
-        if not self._outputs[0].name:
-            raise KiPlotConfigurationError('No outputs provided')
+        # TODO: Remove
+        logger.debug(self.outputs)
+        self._outputs = [IncTableOutputOptions(o) if isinstance(o, str) else o for o in self.outputs]
+        # TODO: Remove
+        for o in self._outputs:
+            logger.debug(o)
 
 
 class ITColumns:
@@ -281,6 +289,7 @@ class Include_Table(BasePreFlight):  # noqa: F821
         super().__init__()
         self._pcb_related = True
         with document:
+            # TODO: What true means here?
             self.include_table = IncludeTableOptions
             """ [boolean|dict=false] Use a boolean for simple cases or fine-tune its behavior """
 
