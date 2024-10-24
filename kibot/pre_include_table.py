@@ -24,7 +24,7 @@ ALIGNMENT = {'left': GR_TEXT_HJUSTIFY_LEFT,
              'right': GR_TEXT_HJUSTIFY_RIGHT}
 
 
-class OutputOptions(Optionable):
+class IncTableOutputOptions(Optionable):
     """ Data for a layer """
     def __init__(self):
         super().__init__()
@@ -77,7 +77,7 @@ class IncludeTableOptions(Optionable):
             self.group_name = 'kibot_table'
             """ Name for the group containing the tables. The name of the group
                 should be <group_name>_X where X is the csv filename without extension. """
-            self.outputs = OutputOptions
+            self.outputs = IncTableOutputOptions
             """ *[list(dict)|list(string)=?] List of CSV-generating outputs. """
         super().__init__()
         self._unknown_is_error = True
