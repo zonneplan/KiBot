@@ -107,6 +107,8 @@ class ITColumns:
 
 
 def update_table_group(g, pos_x, pos_y, width, tlayer, ops, out, csv_file):
+    if not os.path.isfile(csv_file):
+        raise KiPlotConfigurationError(f'Missing `{csv_file}`, create it first using the `{out.name}` output')
     # Purge all content
     for item in g.GetItems():
         GS.board.Delete(item)
