@@ -41,6 +41,11 @@ GerberOptions parameters
    Note that this value is currently ignored by KiCad (6.0.9).
 -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - gerber - options; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
 -  ``tent_vias`` :index:`: <pair: output - gerber - options; tent_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Cover the vias.
+   
+.. warning::
+   KiCad 8 has a bug that ignores this option. Set it from KiCad GUI.
+..
+
 -  ``uppercase_extensions`` :index:`: <pair: output - gerber - options; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
 -  ``use_aux_axis_as_origin`` :index:`: <pair: output - gerber - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Use the auxiliary axis as origin for coordinates.
 -  ``variant`` :index:`: <pair: output - gerber - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.

@@ -9,6 +9,13 @@ PanelizeOptions parameters
    You can also include a preset using `:name`, i.e. `:vcuts`.
    Use a dict to specify the options using the KiBot YAML file.
 -  **output** :index:`: <pair: output - panelize - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Filename for the output (%i=panel, %x=kicad_pcb). Affected by global options.
+-  ``copy_vias_on_mask`` :index:`: <pair: output - panelize - options; copy_vias_on_mask>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "auto", "yes", "no") Copy the GUI option to plot vias on the mask layers from the original PCB to
+   the panel. |br|
+   This option is a workaround to KiCad 8 not allowing to choose to plot (or not to plot) vias
+   on the mask layers using the Python API. So you have to set it in the GUI, but this option
+   is lost during panelization. |br|
+   Setting this option to *auto* will copy the value for faulty KiCad 8 versions, but won't
+   waste time for working KiCad versions.
 -  ``create_preview`` :index:`: <pair: output - panelize - options; create_preview>` [:ref:`boolean <boolean>`] (default: ``false``) Use PcbDraw to create a preview of the panel.
 -  ``default_angles`` :index:`: <pair: output - panelize - options; default_angles>` [:ref:`string <string>`] (default: ``'deg'``) (choices: "deg", "°", "rad") Angles used when omitted.
 -  ``dnf_filter`` :index:`: <pair: output - panelize - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.

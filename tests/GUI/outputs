@@ -7766,6 +7766,13 @@
           null
         ],
         [
+          "copy_vias_on_mask",
+          [
+            "DataTypeChoice"
+          ],
+          null
+        ],
+        [
           "variant",
           [
             "DataTypeString"

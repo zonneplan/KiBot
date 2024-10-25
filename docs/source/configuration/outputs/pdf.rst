@@ -79,6 +79,11 @@ Parameters:
    Note that this value is currently ignored by KiCad (6.0.9).
 -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - pdf; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
 -  ``tent_vias`` :index:`: <pair: output - pdf; tent_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Cover the vias.
+   
+.. warning::
+   KiCad 8 has a bug that ignores this option. Set it from KiCad GUI.
+..
+
 -  ``uppercase_extensions`` :index:`: <pair: output - pdf; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
 -  ``variant`` :index:`: <pair: output - pdf; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 

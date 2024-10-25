@@ -1,8 +1,8 @@
-48 outputs types with a total of 1873 different parameters
-Single type parameters: 1699 (91 %)
+48 outputs types with a total of 1874 different parameters
+Single type parameters: 1700 (91 %)
 Multi type parameters: 174 (9 %)
 Average parameters: 39
-Maximum number of parameters: 213
+Maximum number of parameters: 214
 Minimum number of parameters: 14
 Histogram:
   0-  9: 
@@ -75,7 +75,7 @@ Outputs sorted by parameters:
 - blender_export: 75
 - pcb_print: 89
 - bom: 145
-- panelize: 213
+- panelize: 214
 Average depth: 2.5416666666666665
 Maximum depth: 5
 Minimum depth: 2
@@ -141,7 +141,7 @@ Outputs sorted by depth:
 -            Boolean:  469
 -             Number:  266
 - ListStringSingular:  222
--             Choice:   94
+-             Choice:   95
 -               Dict:   79
 -   ListDictOrString:   21
 -           ListDict:   20
@@ -157,7 +157,7 @@ Used as single data type:
 -            Boolean:  413 
 - ListStringSingular:  219 
 -             Number:  172 
--             Choice:   91 
+-             Choice:   92 
 -               Dict:   70 
 -           ListDict:   20 
 -         ListString:    9 ['blender_export.options.pcb3d.highlight', 'bom.options.group_fields', 'bom.options.group_fields_fallbacks', 'bom.options.no_conflict', 'kibom.options.conf.group_fields', 'pcbdraw.options.libs', 'pcbdraw.options.highlight', 'render_3d.options.highlight', 'vrml.options.highlight']
@@ -390,11 +390,11 @@ Used as single data type:
 -              Number,String:   15 
 ================================================================================
 ================================================================================
-86 totals types with a total of 2241 different parameters
-Single type parameters: 2043 (91 %)
+86 totals types with a total of 2242 different parameters
+Single type parameters: 2044 (91 %)
 Multi type parameters: 198 (9 %)
 Average parameters: 26
-Maximum number of parameters: 213
+Maximum number of parameters: 214
 Minimum number of parameters: 1
 Histogram:
   0-  9: ***********************
@@ -505,7 +505,7 @@ Totals sorted by parameters:
 - blender_export: 75
 - pcb_print: 89
 - bom: 145
-- panelize: 213
+- panelize: 214
 Average depth: 2.186046511627907
 Maximum depth: 5
 Minimum depth: 1
@@ -609,7 +609,7 @@ Totals sorted by depth:
 -            Boolean:  567
 -             Number:  314
 - ListStringSingular:  251
--             Choice:  126
+-             Choice:  127
 -               Dict:   90
 -           ListDict:   30
 -   ListDictOrString:   24
@@ -625,7 +625,7 @@ Used as single data type:
 -            Boolean:  503 
 - ListStringSingular:  248 
 -             Number:  205 
--             Choice:  123 
+-             Choice:  124 
 -               Dict:   73 
 -           ListDict:   30 
 -         ListString:   12 

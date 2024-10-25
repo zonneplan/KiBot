@@ -19,6 +19,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Report: thickness units (#685)
 - PCB Print:
   - Worksheet: undocumented font face and color now can be used (See #695)
+- Panelize:
+  - `copy_vias_on_mask` option to workaround KiCad's bug 18991 (See #703 and
+    #704)
 
 ### Fixed
 - BoM: Sub-PCBs not applied (#697)

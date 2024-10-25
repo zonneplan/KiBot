@@ -38,6 +38,11 @@ Added
    -  Worksheet: undocumented font face and color now can be used (See
       #695)
 
+-  Panelize:
+
+   -  ``copy_vias_on_mask`` option to workaround KiCad’s bug 18991 (See
+      #703 and #704)
+
 Fixed
 ~~~~~
 

@@ -52,6 +52,11 @@ SVGOptions parameters
    The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
    Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.
 -  ``tent_vias`` :index:`: <pair: output - svg - options; tent_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Cover the vias.
+   
+.. warning::
+   KiCad 8 has a bug that ignores this option. Set it from KiCad GUI.
+..
+
 -  ``uppercase_extensions`` :index:`: <pair: output - svg - options; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
 -  ``use_aux_axis_as_origin`` :index:`: <pair: output - svg - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Use the auxiliary axis as origin for coordinates.
 -  ``variant`` :index:`: <pair: output - svg - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.

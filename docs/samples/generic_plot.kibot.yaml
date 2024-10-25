@@ -1094,7 +1094,8 @@ outputs:
       sketch_pads_on_fab_layers: false
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false
-      # [boolean=true] Cover the vias
+      # [boolean=true] Cover the vias.
+      # Warning: KiCad 8 has a bug that ignores this option. Set it from KiCad GUI
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
@@ -1322,7 +1323,8 @@ outputs:
       sketch_pads_on_fab_layers: false
       # [boolean=false] Subtract the solder mask from the silk screen
       subtract_mask_from_silk: false
-      # [boolean=true] Cover the vias
+      # [boolean=true] Cover the vias.
+      # Warning: KiCad 8 has a bug that ignores this option. Set it from KiCad GUI
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
@@ -1405,7 +1407,8 @@ outputs:
       sketch_pads_on_fab_layers: false
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false
-      # [boolean=true] Cover the vias
+      # [boolean=true] Cover the vias.
+      # Warning: KiCad 8 has a bug that ignores this option. Set it from KiCad GUI
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
@@ -2501,6 +2504,14 @@ outputs:
             type: 'none'
             # [number|string=0] Vertical offset from panel edges
             voffset: 0
+      # [string='auto'] [auto,yes,no] Copy the GUI option to plot vias on the mask layers from the original PCB to
+      # the panel.
+      # This option is a workaround to KiCad 8 not allowing to choose to plot (or not to plot) vias
+      # on the mask layers using the Python API. So you have to set it in the GUI, but this option
+      # is lost during panelization.
+      # Setting this option to *auto* will copy the value for faulty KiCad 8 versions, but won't
+      # waste time for working KiCad versions
+      copy_vias_on_mask: 'auto'
       # [boolean=false] Use PcbDraw to create a preview of the panel
       create_preview: false
       # [string='deg'] [deg,°,rad] Angles used when omitted
@@ -3017,7 +3028,8 @@ outputs:
       sketch_pad_line_width: 0.1
       # [boolean=false] Draw only the outline of the pads on the *.Fab layers (KiCad 6+)
       sketch_pads_on_fab_layers: false
-      # [boolean=true] Cover the vias
+      # [boolean=true] Cover the vias.
+      # Warning: KiCad 8 has a bug that ignores this option. Set it from KiCad GUI
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
@@ -3290,7 +3302,8 @@ outputs:
       sketch_pads_on_fab_layers: false
       # [boolean=false] Don't fill objects, just draw the outline
       sketch_plot: false
-      # [boolean=true] Cover the vias
+      # [boolean=true] Cover the vias.
+      # Warning: KiCad 8 has a bug that ignores this option. Set it from KiCad GUI
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false
@@ -3845,7 +3858,8 @@ outputs:
       # The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
       # Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5
       svg_precision: 4
-      # [boolean=true] Cover the vias
+      # [boolean=true] Cover the vias.
+      # Warning: KiCad 8 has a bug that ignores this option. Set it from KiCad GUI
       tent_vias: true
       # [boolean=false] Use uppercase names for the extensions
       uppercase_extensions: false

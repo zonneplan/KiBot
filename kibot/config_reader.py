@@ -1322,7 +1322,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
             f.write(ind_str+'# `{}` is an alias for `{}`\n'.format(k, alias))
             continue
         if help:
-            help_lines = help.split('\n')
+            help_lines = help.replace('|br|', '').split('\n')
             for hl in help_lines:
                 # Dots at the beginning are replaced by spaces.
                 # Used to keep indentation.
