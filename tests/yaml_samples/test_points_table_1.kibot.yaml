@@ -1,0 +1,72 @@
+kibot:
+  version: 1
+
+preflight:
+  include_table: true
+#    outputs:
+#      - testpoints
+#      - position
+
+filters:
+  - name: only_testpoints
+    comment: "Select only testpoints"
+    type: generic
+    include_only:
+      - column: Value
+        regex: "^TestPoint"
+
+outputs:
+  - name: testpoints
+    comment: "Testpoint report"
+    type: bom
+    options:
+      pre_transform: ['_kicost_rename', '_rot_footprint']
+      exclude_filter: 'only_testpoints'
+      dnf_filter: '_null'
+      exclude_marked_in_sch: false
+      group_fields: []
+      sort_style: ref
+      use_aux_axis_as_origin: true
+      ignore_dnf: false
+      format: CSV
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+      columns:
+        - field: References
+          name: Designator
+        - field: Footprint X
+          name: X-Loc
+        - field: Footprint Y
+          name: Y-Loc
+        - field: Footprint Side
+          name: Side
+        - field: Footprint Type
+          name: Type
+        - field: Value
+        - field: Footprint
+
+  - name: 'position'
+    type: position
+    dir: positiondir
+    options:
+      format: CSV   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true
+      columns:
+        - "Ref"
+        - id: Val
+          name: Value
+        - id: PosX
+          name: "Center X"
+
+  - name: SVG
+    comment: "SVG files"
+    type: svg
+    run_by_default: false
+    options:
+      output: include_table_1.svg
+      drill_marks: none
+    layers:
+      - layer: Dwgs.User
