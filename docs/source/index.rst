@@ -14,14 +14,12 @@ KiBot (formerly KiPlot)
 - If you are looking for the GitHub Actions documentation, and you already know how
   to use KiBot, or want a quick start, read: :ref:`usage-of-github-actions`
 
-**New on v1.8.0**
+**New on v1.8.2**
 
-- New preflight: check_fields
-- New filters: separate_pins and _null
-- New global variables: use_pcb_fields and field_current
-- New internal templates: Testpoints_by_attr, Testpoints_by_attr_CSV, Testpoints_by_attr_HTML, Testpoints_by_value, Testpoints_by_value_CSV and Testpoints_by_value_HTML
-- Testpoints report
-- Better KiCad 8 support
+- New **Experimental GUI**
+- New preflights: draw_fancy_stackup and include_table
+- New global variables: dnp_cross_top_layer and dnp_cross_bottom_layer
+- Support for fonts and colors in the worksheet when printing the PCB
 
 .. toctree::
    :maxdepth: 3
