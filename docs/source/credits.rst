@@ -37,6 +37,7 @@ Credits
    -  **GENCAD export for KiAuto**: Theo Hussey (@flaminggoat)
    -  **Various fixes**: Henning Kleen (@hkleen)
    -  **SCH print all-pages option**: Kevin Dong (@kevin-dong-nai-jia)
+   -  **Fancy Draw Stackup** and **Include table** preflights: Nguyen Vincent (@nguyen-v)
 
 -  **Sources of inspiration and good ideas**:
 
