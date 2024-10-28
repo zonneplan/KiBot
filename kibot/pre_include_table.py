@@ -246,7 +246,7 @@ def update_table(ops, parent):
             csv_name.append(name_without_ext)
 
         # Map the CSV file names to the corresponding out variable
-        out_to_csv_mapping[out.name] = csv_targets
+        out_to_csv_mapping[out.name] = (out, csv_targets)
         logger.debug(f'  - {out.name} -> {csv_targets}')
 
     group_found = False  # Flag to track if any group was found with ops.group_name
@@ -268,7 +268,7 @@ def update_table(ops, parent):
             index = int(group_suffix[-2])-1
             group_suffix = group_suffix[:-3]
             logger.debug(f'    - {group_suffix} index: {index}')
-        csv = out_to_csv_mapping.get(group_suffix)
+        out, csv = out_to_csv_mapping.get(group_suffix)
         if not csv:
             logger.warning(W_NOMATCHGRP+f'No output to handle `{group_name}` found')
             continue
