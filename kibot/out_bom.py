@@ -1005,7 +1005,7 @@ class BoM(BaseOutput):  # noqa: F821
         self._category = 'Schematic/BoM'
 
     def get_csv_separator(self):
-        return self.csv.separator
+        return self.options.csv.separator
 
     @staticmethod
     def create_bom(fmt, subd, group_fields, join_fields, fld_names, cols=None):
