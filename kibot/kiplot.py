@@ -26,7 +26,7 @@ from .misc import (PLOT_ERROR, CORRUPTED_PCB, EXIT_BAD_ARGS, CORRUPTED_SCH, vers
                    MOD_VIRTUAL, W_PCBNOSCH, W_NONEEDSKIP, W_WRONGCHAR, name2make, W_TIMEOUT, W_KIAUTO, W_VARSCH,
                    NO_SCH_FILE, NO_PCB_FILE, W_VARPCB, NO_YAML_MODULE, WRONG_ARGUMENTS, FAILED_EXECUTE, W_VALMISMATCH,
                    MOD_EXCLUDE_FROM_POS_FILES, MOD_EXCLUDE_FROM_BOM, MOD_BOARD_ONLY, hide_stderr, W_MAXDEPTH, DONT_STOP,
-                   W_BADREF, W_MULTIREF)
+                   W_BADREF, W_MULTIREF, try_decode_utf8)
 from .error import PlotError, KiPlotConfigurationError, config_error, KiPlotError
 from .config_reader import CfgYamlReader
 from .pre_base import BasePreFlight
@@ -36,6 +36,7 @@ from .kicad.v5_sch import Schematic, SchFileError, SchError, SchematicField
 from .kicad.v6_sch import SchematicV6, SchematicComponentV6
 from .kicad.config import KiConfError, KiConf, expand_env
 from . import log
+INTERNAL_FIELDS = {'reference', 'value', 'footprint', 'datasheet', 'description'}
 
 logger = log.get_logger()
 # Cache to avoid running external many times to check their versions
@@ -77,7 +78,7 @@ def _import(name, path):
     try_register_deps(mod, name)
 
 
-def _load_actions(path, load_internals=False):
+def _load_actions(path, load_internals=False, progress=None):
     logger.debug("Importing from "+path)
     lst = glob(os.path.join(path, 'out_*.py')) + glob(os.path.join(path, 'pre_*.py'))
     lst += glob(os.path.join(path, 'var_*.py')) + glob(os.path.join(path, 'fil_*.py'))
@@ -85,11 +86,14 @@ def _load_actions(path, load_internals=False):
         lst += [os.path.join(path, 'globals.py')]
     for p in sorted(lst):
         name = os.path.splitext(os.path.basename(p))[0]
-        logger.debug("- Importing "+name)
+        msg = "Importing "+name
+        logger.debug('- '+msg)
+        if progress:
+            progress(msg)
         _import(name, p)
 
 
-def load_actions():
+def load_actions(progress=None):
     """ Load all the available outputs and preflights """
     global actions_loaded
     if actions_loaded:
@@ -98,7 +102,7 @@ def load_actions():
     try_register_deps(dep_downloader, 'global')
     from kibot.mcpyrate import activate
     # activate.activate()
-    _load_actions(os.path.abspath(os.path.dirname(__file__)), True)
+    _load_actions(os.path.abspath(os.path.dirname(__file__)), True, progress)
     home = os.environ.get('HOME')
     if home:
         dir = os.path.join(home, '.config', 'kiplot', 'plugins')
@@ -142,8 +146,8 @@ def extract_errors(text):
 
 
 def debug_output(res):
-    if res.stdout:
-        logger.debug('- Output from command: '+res.stdout.decode())
+    if res:
+        logger.debug('- Output from command: '+res)
 
 
 def _run_command(command, change_to):
@@ -168,8 +172,9 @@ def run_command(command, change_to=None, just_raise=False, use_x11=False, err_ms
         if err_msg is not None:
             err_msg = err_msg.format(ret=e.returncode)
         GS.exit_with_error(err_msg, err_lvl, e)
-    debug_output(res)
-    return res.stdout.decode().rstrip()
+    msg = try_decode_utf8(res.stdout, 'output from command', logger)
+    debug_output(msg)
+    return msg.rstrip()
 
 
 def exec_with_retry(cmd, exit_with=None):
@@ -453,7 +458,7 @@ def get_board_comps_data(comps):
 
 
 def expand_comp_fields(c, env):
-    extra_env = {f.name: f.value for f in c.fields}
+    extra_env = {f.name.upper() if f.name.lower() in INTERNAL_FIELDS else f.name: f.value for f in c.fields}
     for f in c.fields:
         new_value = f.value
         depth = 1
@@ -656,6 +661,8 @@ def _generate_outputs(targets, invert, skip_pre, cli_order, no_priority, dont_st
         logger.debug('Outputs after sorting: {}'.format([t.name for t in targets]))
     # Configure and run the outputs
     for out in targets:
+        if GS.get_stop_flag():
+            break
         if config_output(out, dont_stop=dont_stop):
             logger.info('- '+str(out))
             run_output(out, dont_stop)
@@ -1011,6 +1018,8 @@ def discover_files(dest_dir):
 
 
 def load_config(plot_config):
+    if not plot_config:
+        return []
     cr = CfgYamlReader()
     outputs = None
     try:

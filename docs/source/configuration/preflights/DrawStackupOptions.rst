@@ -14,7 +14,7 @@ DrawStackupOptions parameters
 -  ``enabled`` :index:`: <pair: preflight - draw_stackup - draw_stackup; enabled>` [:ref:`boolean <boolean>`] (default: ``true``) Enable the check. This is the replacement for the boolean value.
 -  ``group_name`` :index:`: <pair: preflight - draw_stackup - draw_stackup; group_name>` [:ref:`string <string>`] (default: ``'kibot_stackup'``) Name for the group containing the drawings. If KiBot can't find it will create
    a new group at the specified coordinates for the indicated layer.
--  ``height`` :index:`: <pair: preflight - draw_stackup - draw_stackup; height>` [:ref:`number <number>`] (default: ``200``) Height for the drawing. The units are defined by the global *units* variable.
+-  ``height`` :index:`: <pair: preflight - draw_stackup - draw_stackup; height>` [:ref:`number <number>`] (default: ``100``) Height for the drawing. The units are defined by the global *units* variable.
    Only used when the group can't be found.
 -  ``layer`` :index:`: <pair: preflight - draw_stackup - draw_stackup; layer>` [:ref:`string <string>`] (default: ``'Cmts.User'``) Layer used for the stackup. Only used when the group can't be found.
    Otherwise we use the layer for the first object in the group.

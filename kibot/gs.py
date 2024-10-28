@@ -125,6 +125,7 @@ class GS(object):
                             'm': 1000*IU_PER_MM, 'mil': IU_PER_MILS, 'inch': 1000*IU_PER_MILS,
                             'in': 1000*IU_PER_MILS}
     ci_cd_detected = False
+    stop_flag = False
     # Maximum recursive replace
     MAXDEPTH = 20
     #
@@ -139,7 +140,7 @@ class GS(object):
     # The class that controls the global options
     class_for_global_opts = None
     # The last tree we used to configure it
-    globals_tree = {}
+    globals_tree = None
     # Global options
     global_allow_component_ranges = None
     global_always_warn_about_paste_pads = None
@@ -148,6 +149,8 @@ class GS(object):
     global_colored_tht_resistors = None
     global_copper_thickness = None
     global_cross_footprints_for_dnp = None
+    global_dnp_cross_top_layer = None
+    global_dnp_cross_bottom_layer = None
     global_cross_no_body = None
     global_csv_accept_no_ref = None
     global_date_format = None
@@ -316,6 +319,8 @@ class GS(object):
             except ValueError as e:
                 logger.warning(W_DATEFORMAT+"Trying to reformat {} time, but not in ISO format ({})".format(what, d))
                 logger.warning(W_DATEFORMAT+"Problem: {}".format(e))
+                logger.warning(W_DATEFORMAT+"You should enter the date in the title block using YYYY-MM-DD format")
+                logger.warning(W_DATEFORMAT+"Then adjust `date_time_format` global variable to your preference")
                 return d
             return dt.strftime(GS.global_date_format)
         return d
@@ -396,7 +401,7 @@ class GS(object):
 
     @staticmethod
     def unit_name_to_scale_factor(units):
-        if units == 'millimeters':
+        if units == 'millimeters' or units == 'mm':
             return 1.0/IU_PER_MM
         if units == 'mils':
             return 1.0/IU_PER_MILS
@@ -1008,3 +1013,16 @@ class GS(object):
         prj = GS.read_pro()
         board.Save(pcb_file)
         GS.write_pro(prj)
+
+    # Naive stop mechanism, abstracted in case we need something more complex
+    @staticmethod
+    def reset_stop_flag():
+        GS.stop_flag = False
+
+    @staticmethod
+    def set_stop_flag():
+        GS.stop_flag = True
+
+    @staticmethod
+    def get_stop_flag():
+        return GS.stop_flag

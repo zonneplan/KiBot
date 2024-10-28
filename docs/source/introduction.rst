@@ -9,7 +9,27 @@ documentation files for your KiCad projects easily, repeatable, and most
 of all, scriptably. This means you can use a Makefile to export your
 KiCad PCBs just as needed, or do it in a CI/CD environment.
 
-For example, it’s common that you might want for each board rev to create/do:
+If this is the first time you read about KiBot, and you prefer to be
+introduced listening to a podcast, you can try the following
+(english audio, english and spanish subtitles available):
+
+.. raw:: html
+
+   <div style="text-align: center;">
+     <iframe width="560" height="315" src="https://www.youtube.com/embed/6eYtJ9xiS1U" title="KiBot - a simple introduction podcast (with avatars)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+   </div>
+
+
+Here is another podcast, more centered on the CI/CD side:
+
+.. raw:: html
+
+   <div style="text-align: center;">
+     <iframe width="560" height="315" src="https://www.youtube.com/embed/BgSvupdpGvo?si=tTksrCmQKnQTNxad" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+   </div>
+
+
+So, for example, it’s common that you might want for each board rev to create/do:
 
 -  Check ERC/DRC one last time (using `KiCad Automation
    Scripts <https://github.com/INTI-CMNB/kicad-automation-scripts/>`__)

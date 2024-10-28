@@ -6,6 +6,7 @@
 import os
 from .error import KiPlotConfigurationError
 from .gs import GS
+from .kicad.pcb_draw_helpers import draw_rect, draw_line, draw_text
 from .kiplot import load_board, get_output_targets, look_for_output
 from .layer import Layer
 from .optionable import Optionable
@@ -23,12 +24,12 @@ class SUColumns(Optionable):
         self._unknown_is_error = True
         with document:
             self.type = 'drawing'
-            """ *[gerber,drawing,description,thickness] The gerber column contains the
-                file names for the gerber files. Is usable only when a gerber output is
-                provided.
-                The drawing column contains the drawings for each layer.
-                The description column contains the description for each layer.
-                The thickness column just displays the total stackup height """
+            """ *[gerber,drawing,description,thickness] Type of column:
+                - *gerber*: the file names for the gerber files.
+                  Is usable only when a gerber output is provided.
+                - *drawing*: the drawings for each layer.
+                - *description*: the description for each layer.
+                - *thickness*: just displays the total stackup height """
             self.separator = ' '
             """ *Text used as separator, usually one or more spaces """
             self.width = 10
@@ -58,7 +59,7 @@ class DrawStackupOptions(Optionable):
             self.width = 120
             """ Width for the drawing. The units are defined by the global *units* variable.
                 Only used when the group can't be found """
-            self.height = 200
+            self.height = 100
             """ Height for the drawing. The units are defined by the global *units* variable.
                 Only used when the group can't be found """
             self.layer = 'Cmts.User'
@@ -94,8 +95,6 @@ class DrawStackupOptions(Optionable):
         # - Convert strings
         for c, col in enumerate(self._columns):
             if isinstance(col, str):
-                if col not in VALID_COLUMNS:
-                    raise KiPlotConfigurationError(f'Invalid column type {col} must be one of {VALID_COLUMNS}')
                 o = SUColumns()
                 o.type = col
                 if o.type == 'thickness':
@@ -104,47 +103,6 @@ class DrawStackupOptions(Optionable):
         # - Sanity
         if not self._columns:
             raise KiPlotConfigurationError('No columns provided')
-
-
-def draw_rect(g, x, y, w, h, layer, filled=False, line_w=10000):
-    if not line_w:
-        draw_line(g, x, y, x, y, layer)
-        x += w
-        y += h
-        draw_line(g, x, y, x, y, layer)
-        return
-    nl = pcbnew.PCB_SHAPE(GS.board)
-    nl.SetShape(1)
-    if filled:
-        nl.SetFilled(True)
-    pos = nl.GetStart()
-    pos.x = x
-    pos.y = y
-    nl.SetStart(pos)
-    pos = nl.GetEnd()
-    pos.x = x+w
-    pos.y = y+h
-    nl.SetEnd(pos)
-    nl.SetLayer(layer)
-    nl.SetWidth(line_w)
-    g.AddItem(nl)
-    GS.board.Add(nl)
-
-
-def draw_line(g, x1, y1, x2, y2, layer):
-    nl = pcbnew.PCB_SHAPE(GS.board)
-    pos = nl.GetStart()
-    pos.x = x1
-    pos.y = y1
-    nl.SetStart(pos)
-    pos = nl.GetEnd()
-    pos.x = x2
-    pos.y = y2
-    nl.SetEnd(pos)
-    nl.SetLayer(layer)
-    nl.SetWidth(10000)
-    g.AddItem(nl)
-    GS.board.Add(nl)
 
 
 def draw_core(g, x, y, w, h, layer):
@@ -196,22 +154,6 @@ def draw_mask(g, x, y, w, h, layer):
             w = xend-x
         draw_rect(g, x, y, w, h, layer, filled=True)
         x += 4*h
-
-
-def draw_text(g, x, y, text, h, w, layer):
-    h2 = int(h/2)
-    nt = pcbnew.PCB_TEXT(GS.board)
-    nt.SetText(text)
-    nt.SetTextX(x)
-    nt.SetTextY(y+h2)
-    nt.SetLayer(layer)
-    nt.SetTextWidth(w)
-    nt.SetTextHeight(h2)
-    nt.SetHorizJustify(pcbnew.GR_TEXT_H_ALIGN_LEFT)
-    nt.SetVertJustify(pcbnew.GR_TEXT_V_ALIGN_CENTER)
-    g.AddItem(nt)
-    GS.board.Add(nt)
-    return nt, nt.GetTextBox().GetWidth()
 
 
 def get_er_tan(la):
@@ -283,10 +225,8 @@ def draw_thickness(g, x, y, w, font_h, first, last, layer, right=True):
 
 
 def update_drawing_group(g, pos_x, pos_y, width, height, tlayer, border, gerber, cols):
-    pass
     # Purge all content
     for item in g.GetItems():
-        # logger.error(item.GetShape())
         GS.board.Delete(item)
     # Analyze the stackup
     stackup = []
@@ -370,10 +310,10 @@ def update_drawing_group(g, pos_x, pos_y, width, height, tlayer, border, gerber,
                 if la.draw is not None:
                     la.draw(g, c.x, y, c.w, row_h, tlayer)
             elif c.type == 'description':
-                la.desc_o, w = draw_text(g, c.x, y, la.description, row_h, c.font_w, tlayer)
+                la.desc_o, w = draw_text(g, c.x, y, la.description, int(row_h/2), c.font_w, tlayer)
                 c.max_txt_w = max(c.max_txt_w, w)
             elif c.type == 'gerber':
-                la.gbr_o, w = draw_text(g, c.x, y, la.gerber_name, row_h, c.font_w, tlayer)
+                la.gbr_o, w = draw_text(g, c.x, y, la.gerber_name, int(row_h/2), c.font_w, tlayer)
                 c.max_txt_w = max(c.max_txt_w, w)
         y += row_h
     if first_height != last_height:
@@ -415,10 +355,15 @@ def update_drawing(ops, parent):
             return update_drawing_group(g, x1, y1, x2-x1, y2-y1, layer, ops.border, gerber_names, ops._columns)
     g = pcbnew.PCB_GROUP(GS.board)
     g.SetName(ops.group_name)
-    logger.debug(f'- Creating group at @{GS.to_mm(ops.pos_x)},{GS.to_mm(ops.pos_y)} mm '
-                 f'({GS.to_mm(ops.width)}x{GS.to_mm(ops.height)} mm)')
-    return update_drawing_group(g, ops.pos_x, ops.pos_y, ops.width, ops.height, ops._layer, ops.border, gerber_names,
-                                ops._columns)
+    GS.board.Add(g)
+    units = GS.global_units or 'mm'
+    scale = GS.unit_name_to_scale_factor(units)
+    width = int(ops.width/scale)
+    height = int(ops.height/scale)
+    pos_x = int(ops.pos_x/scale)
+    pos_y = int(ops.pos_y/scale)
+    logger.debug(f'- Creating group at @{ops.pos_x},{ops.pos_y} {units} ({ops.width}x{ops.height} {units})')
+    return update_drawing_group(g, pos_x, pos_y, width, height, ops._layer, ops.border, gerber_names, ops._columns)
 
 
 @pre_class

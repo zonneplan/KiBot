@@ -91,6 +91,8 @@ error_level_to_name = ['NONE',
                        ]
 KICOST_SUBMODULE = '../submodules/KiCost/src/kicost'
 EXAMPLE_CFG = 'example_template.kibot.yaml'
+BASE_HELP = 'https://kibot.readthedocs.io/en/latest/'
+BASE_HELP_CFG = BASE_HELP+'configuration/'
 AUTO_SCALE = 0
 KICAD_VERSION_5_99 = 50990000
 KICAD_VERSION_6_0_0 = 60000000
@@ -118,7 +120,7 @@ MOD_ALLOW_SOLDERMASK_BRIDGES = 64
 MOD_ALLOW_MISSING_COURTYARD = 128
 # This is what a virtual component gets when loaded by KiCad 6
 MOD_VIRTUAL = MOD_EXCLUDE_FROM_POS_FILES | MOD_EXCLUDE_FROM_BOM
-# VIATYPE, not exported by KiCad
+# VIATYPE, not exported by KiCad 5 (6, 7 and 8 defines it the same way)
 VIATYPE_THROUGH = 3
 VIATYPE_BLIND_BURIED = 2
 VIATYPE_MICROVIA = 1
@@ -323,6 +325,10 @@ W_NOFOOTP = '(W161) '
 W_CHKFLD = '(W162) '
 W_ONMAC = '(W163) '
 W_MULTIREF = '(W164) '
+W_NOTHREPE = '(W165) '
+W_LANGNOTA = '(W166) '
+W_NOVIAS = '(W167) '
+W_NOMATCHGRP = '(W168) '
 # Somehow arbitrary, the colors are real, but can be different
 PCB_MAT_COLORS = {'fr1': "937042", 'fr2': "949d70", 'fr3': "adacb4", 'fr4': "332B16", 'fr5': "6cc290"}
 PCB_FINISH_COLORS = {'hal': "8b898c", 'hasl': "8b898c", 'imag': "8b898c", 'enig': "cfb96e", 'enepig': "cfb96e",
@@ -338,14 +344,18 @@ SOLDER_COLORS = {'green': ("#285e3a", "#208b47"),
                  'yellow': ("#73823d", "#f2a756"),
                  'purple': ("#30234a", "#451d70")}
 SILK_COLORS = {'black': "0b1013", 'white': "d5dce4"}
-# Some browser name to pretend
-USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
+# Some browser name to pretend, popular at the moment
+# https://techblog.willshouse.com/2012/01/03/most-common-user-agents/ on 2024-10-22
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36'
+# Old value, caused problems with Zscaler
+# USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:102.0) Gecko/20100101 Firefox/102.0'
 # Text used to disable 3D models
 DISABLE_3D_MODEL_TEXT = '_Disabled_by_KiBot'
 RENDERERS = ['pcbdraw', 'render_3d', 'blender_export']
 PCB_GENERATORS = ['pcb_variant', 'panelize']
 KIKIT_UNIT_ALIASES = {'millimeters': 'mm', 'inches': 'inch', 'mils': 'mil'}
-FONT_HELP_TEXT = '\n        If you use custom fonts and/or colors please consult the `resources_dir` global variable.'
+FONT_HELP_TEXT = ('\n        Important: If you use custom fonts and/or colors please consult the `resources_dir` '
+                  'global variable.')
 # CSS style for HTML tables used by BoM and ERC
 BG_GEN = "#DCF5E4"
 BG_KICAD = "#F5DCA9"
@@ -587,3 +597,18 @@ def try_int(value):
     f_val = float(value)
     i_val = int(f_val)
     return i_val if i_val == f_val else f_val
+
+
+def try_decode_utf8(data, where, logger):
+    try:
+        data = data.decode()
+    except UnicodeDecodeError:
+        logger.non_critical_error(f'Invalid UTF-8 sequence at {where}')
+        nres = ''
+        for c in data:
+            if c > 127:
+                c = 32
+            nres += chr(c)
+        data = nres
+        logger.non_critical_error('Using: '+data.rstrip())
+    return data

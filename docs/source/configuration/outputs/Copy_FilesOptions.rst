@@ -9,7 +9,7 @@ Copy_FilesOptions parameters
    They are downloaded to a temporal directory and discarded.
    If you want to cache the downloaded files specify a directory using the
    KIBOT_3D_MODELS environment variable.
--  **files** :index:`: <pair: output - copy_files - options; files>`  [:ref:`FilesList parameters <FilesList>`] [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
+-  **files** :index:`: <pair: output - copy_files - options; files>`  [:ref:`FilesListCopy parameters <FilesListCopy>`] [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
 -  **no_virtual** :index:`: <pair: output - copy_files - options; no_virtual>` [:ref:`boolean <boolean>`] (default: ``false``) Used to exclude 3D models for components with 'virtual' attribute.
 -  ``dnf_filter`` :index:`: <pair: output - copy_files - options; dnf_filter>` [:ref:`string <string>` | :ref:`list(string) <list(string)>`] (default: ``'_null'``) Name of the filter to mark components as not fitted.
    A short-cut to use for simple cases where a variant is an overkill.
@@ -31,4 +31,4 @@ Copy_FilesOptions parameters
 .. toctree::
    :caption: Used dicts
 
-   FilesList
+   FilesListCopy

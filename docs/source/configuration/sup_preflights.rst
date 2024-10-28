@@ -10,11 +10,13 @@ Supported preflights
    preflights/annotate_power
    preflights/check_fields
    preflights/check_zone_fills
+   preflights/draw_fancy_stackup
    preflights/draw_stackup
    preflights/drc
    preflights/erc
    preflights/fill_zones
    preflights/filters
+   preflights/include_table
    preflights/set_text_variables
    preflights/update_footprint
    preflights/update_pcb_characteristics

@@ -37,6 +37,7 @@ Credits
    -  **GENCAD export for KiAuto**: Theo Hussey (@flaminggoat)
    -  **Various fixes**: Henning Kleen (@hkleen)
    -  **SCH print all-pages option**: Kevin Dong (@kevin-dong-nai-jia)
+   -  **Fancy Draw Stackup** and **Include table** preflights: Nguyen Vincent (@nguyen-v)
 
 -  **Sources of inspiration and good ideas**:
 
@@ -48,7 +49,7 @@ Credits
 
 -  **Others**:
 
-   -  **Robot in the logo**: Christian Plaza (from pixabay)
+   -  **Robot in the logo**: Inspired by versions attributed to @Merlin2525 from OpenClipArt / Christian Plaza (from pixabay)
    -  **Robot arm in assembly_simple.svg**:
       `Pixlok <https://pixlok.com/>`__
    -  **Chip in assembly_simple.svg**: `oNline Web

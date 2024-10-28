@@ -294,4 +294,7 @@ update_gha:
 	git push origin -f --tags
 
 
-.PHONY: deb deb_clean lint test test_local gen_ref doc py_build pypi_upload py_clean
+i18n:
+	cd kibot ; ../tools/geni18n.py
+
+.PHONY: deb deb_clean lint test test_local gen_ref doc py_build pypi_upload py_clean i18n

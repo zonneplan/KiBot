@@ -1,6 +1,6 @@
 # KiBot (formerly KiPlot)
 
-![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/master/docs/images/kibot_740x400_logo.png)
+![KiBot Logo](https://raw.githubusercontent.com/INTI-CMNB/KiBot/dev/docs/images/kibot_740x400_logo.png)
 
 [![Python application](https://img.shields.io/github/actions/workflow/status/INTI-CMNB/KiBot/pythonapp.yml?branch=master&style=plastic&logo=github)](https://github.com/INTI-CMNB/KiBot/actions)
 [![Coverage Status](https://img.shields.io/coveralls/github/INTI-CMNB/KiBot?style=plastic&logo=coveralls&branch=master)](https://coveralls.io/github/INTI-CMNB/KiBot?branch=dev)
@@ -19,3 +19,14 @@ If you are looking for the last features and fixes visit the [dev branch](https:
 
 If you want to see an example of what KiBot can generate visit this
 [project](https://inti-cmnb.github.io/kibot_variants_arduprog_site/Browse/t1-navigate.html)
+
+If this is the first time you read about KiBot, and you prefer to be
+introduced listening to a podcast, you can try the following
+(english audio, english and spanish subtitles available):
+
+[![General podcast](https://img.youtube.com/vi/6eYtJ9xiS1U/0.jpg)](https://www.youtube.com/watch?v=6eYtJ9xiS1U)
+
+
+Here is another podcast, more centered on the CI/CD side:
+
+[![CI/CD podcast](https://img.youtube.com/vi/BgSvupdpGvo/0.jpg)](https://www.youtube.com/watch?v=BgSvupdpGvo)

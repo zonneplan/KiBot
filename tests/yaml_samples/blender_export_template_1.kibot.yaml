@@ -1,0 +1,5 @@
+kiplot:
+  version: 1
+
+import:
+  - file: 3DRender_top

@@ -9,7 +9,11 @@ PositionOptions parameters
    Only the options that explicitly say the format is supported.
 -  **only_smd** :index:`: <pair: output - position - options; only_smd>` [:ref:`boolean <boolean>`] (default: ``true``) Only include the surface mount components.
 -  **output** :index:`: <pair: output - position - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Output file name (%i='top_pos'|'bottom_pos'|'both_pos', %x='pos'|'csv'|'gbr').
-   Important: when using separate files you must use `%i` to differentiate them. Affected by global options.
+   
+.. note::
+   when using separate files you must use `%i` to differentiate them. Affected by global options.
+..
+
 -  **separate_files_for_front_and_back** :index:`: <pair: output - position - options; separate_files_for_front_and_back>` [:ref:`boolean <boolean>`] (default: ``true``) Generate two separated files, one for the top and another for the bottom.
 -  **units** :index:`: <pair: output - position - options; units>` [:ref:`string <string>`] (default: ``'millimeters'``) (choices: "millimeters", "inches", "mils") Units used for the positions. Affected by global options.
 -  ``bottom_negative_x`` :index:`: <pair: output - position - options; bottom_negative_x>` [:ref:`boolean <boolean>`] (default: ``false``) Use negative X coordinates for footprints on bottom layer.

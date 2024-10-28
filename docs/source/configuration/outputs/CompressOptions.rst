@@ -4,7 +4,7 @@
 CompressOptions parameters
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
--  **files** :index:`: <pair: output - compress - options; files>`  [:ref:`FilesList parameters <FilesList>`] [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
+-  **files** :index:`: <pair: output - compress - options; files>`  [:ref:`FilesListCompress parameters <FilesListCompress>`] [:ref:`list(dict) <list(dict)>`] (default: ``[]``) Which files will be included.
 -  **format** :index:`: <pair: output - compress - options; format>` [:ref:`string <string>`] (default: ``'ZIP'``) (choices: "ZIP", "TAR", "RAR") Output file format.
 -  **output** :index:`: <pair: output - compress - options; output>` [:ref:`string <string>`] (default: ``'%f-%i%I%v.%x'``) Name for the generated archive (%i=name of the output %x=according to format). Affected by global options.
 -  ``compression`` :index:`: <pair: output - compress - options; compression>` [:ref:`string <string>`] (default: ``'auto'``) (choices: "auto", "stored", "deflated", "bzip2", "lzma") Compression algorithm. Use auto to let KiBot select a suitable one.
@@ -16,4 +16,4 @@ CompressOptions parameters
 .. toctree::
    :caption: Used dicts
 
-   FilesList
+   FilesListCompress

@@ -1,0 +1,54 @@
+kibot:
+  version: 1
+
+variants:
+  # Corresponds to simple_sub_pcb.kicad_pcb from #697
+  - name: 'sub_pcb'
+    comment: 'Sub PCBs'
+    type: ibom
+    sub_pcbs:
+      - name: board1
+        tlx: 50
+        tly: 0
+        brx: 140
+        bry: 200
+      - name: board2
+        tlx: 140
+        tly: 0
+        brx: 200
+        bry: 200
+
+outputs:
+  - name: 'bom1'
+    comment: "BoM Test"
+    type: bom
+    options:
+      variant: sub_pcb[board1]
+      ref_separator: ','
+      columns:
+        - field: Value
+          name: Comment
+        - field: References
+          name: Designator
+        - Footprint
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+        quote_all: true
+
+  - name: 'bom2'
+    comment: "BoM Test"
+    type: bom
+    options:
+      variant: sub_pcb[board2]
+      ref_separator: ','
+      columns:
+        - field: Value
+          name: Comment
+        - field: References
+          name: Designator
+        - Footprint
+      csv:
+        hide_pcb_info: true
+        hide_stats_info: true
+        quote_all: true

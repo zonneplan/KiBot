@@ -1,0 +1,53 @@
+kibot:
+  version: 1
+preflight:
+  annotate_pcb:
+    top_main_ascending: false
+  annotate_power: false
+  check_fields:
+    field: References
+  check_zone_fills: false
+  draw_fancy_stackup: true
+  draw_stackup: true
+  drc: true
+  erc: true
+  erc_warnings: false
+  fill_zones: false
+  filters:
+  - filter: preflight.filters.filters.dict
+    error: lib_symbol_issues
+  ignore_unconnected: false
+  include_table: true
+  pcb_replace:
+    date_command: preflight.pcb_replace
+    replace_tags:
+      tag: preflight.pcb_replace.replace_tags.dict
+  run_drc: true
+  run_erc: true
+  sch_replace:
+    date_command: preflight.sch_replace
+    replace_tags:
+      tag: preflight.sch_replace.replace_tags.dict
+  set_text_variables:
+    name: preflight.set_text_variables.set_text_variables.dict
+  update_footprint: ''
+  update_pcb_characteristics: false
+  update_qr: false
+  update_stackup: false
+  update_xml: true
+outputs:
+- name: bom_html
+  comment: Bill of Materials in HTML format
+  type: kibom
+  dir: BoM
+  options:
+    format: HTML
+    variant: pp
+    output: ''
+    conf: ''
+- name: bom_csv
+  comment: Bill of Materials in CSV format
+  type: kibom
+  dir: BoM
+  options:
+    format: CSV

@@ -1,0 +1,461 @@
+kibot:
+  version: 1
+outputs:
+- name: bom_html
+  comment: Bill of Materials in HTML format
+  type: kibom
+  dir: BoM
+  options:
+    format: HTML
+    variant: pp
+    output: ''
+    conf: ''
+- name: bom_csv
+  comment: Bill of Materials in CSV format
+  type: kibom
+  dir: BoM
+  options:
+    format: CSV
+- name: output.blender_export
+  type: blender_export
+  comment: Exports the PCB in various 3D file formats
+  options:
+    pcb3d:
+      highlight_padding: 20
+    pcb_import:
+      components: false
+    outputs:
+      type: render
+      output: output.blender_export.options.dict.outputs.dict
+    light:
+      name: output.blender_export.options.dict.light.dict
+      pos_x: -size*3.33
+      pos_y: size*3.33
+      pos_z: size*5
+      energy: 0
+    add_default_light: false
+    camera:
+      name: output.blender_export.options.dict.camera.dict
+    render_options:
+      samples: 20
+    point_of_view:
+      rotate_x: 20
+      view: top
+- name: output.boardview
+  type: boardview
+  comment: Exports the PCB in board view format
+  options:
+    output: output.boardview.options.dict
+- name: output.bom
+  type: bom
+  comment: Used to generate the BoM in CSV, HTML, TSV, TXT, XML or XLSX format using
+    the internal BoM
+  options:
+    number: 20
+    columns:
+    - field: Row
+    - field: Description
+    - field: Part
+    - field: References
+    - field: Value
+    - field: Footprint
+    - field: Quantity Per PCB
+    - field: Status
+    - field: Datasheet
+    - field: LCSC#
+    - field: MFR
+    - field: MPN
+    - field: References
+      name: Line
+      join:
+      - field: Voltage
+    cost_extra_columns:
+    - field: References
+      name: Line
+      join:
+      - field: Voltage
+    html:
+      col_colors: false
+      row_colors:
+      - description: output.bom.options.dict.html.dict.row_colors.dict
+    xlsx:
+      col_colors: false
+      row_colors:
+      - description: output.bom.options.dict.xlsx.dict.row_colors.dict
+      specs_columns:
+      - field: References
+        name: Line
+        join:
+        - field: Voltage
+    hrtxt:
+      separator: ','
+    aggregate:
+    - file: output.bom.options.dict.aggregate.dict
+- name: output.compress
+  type: compress
+  comment: Generates a compressed file containing output files
+  options:
+    output: output.compress.options.dict
+    files:
+    - source: output.compress.options.dict.files.dict
+- name: output.copy_files
+  type: copy_files
+  comment: Used to copy files to the output directory
+  options:
+    files:
+    - source: output.copy_files.options.dict.files.dict
+    follow_links: false
+- name: output.diff
+  type: diff
+  comment: Generates a PDF with the differences between two PCBs or schematics
+  options:
+    output: output.diff.options.dict
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.diff.layers.dict
+- name: output.download_datasheets
+  type: download_datasheets
+  comment: Downloads the datasheets for the project
+  options:
+    field: References
+- name: output.dxf
+  type: dxf
+  comment: Exports the PCB to 2D mechanical EDA tools (like AutoCAD)
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.dxf.layers.dict
+  options:
+    exclude_edge_layer: false
+    custom_reports:
+    - output: output.dxf.options.dict.custom_reports.dict
+- name: output.dxf_sch_print
+  type: dxf_sch_print
+  comment: Exports the schematic to a format commonly used for CAD software
+  options:
+    output: output.dxf_sch_print.options.dict
+- name: output.excellon
+  type: excellon
+  comment: This is the main format for the drilling machine
+  options:
+    use_aux_axis_as_origin: true
+    map: None
+    report: ''
+- name: output.gencad
+  type: gencad
+  comment: Exports the PCB in GENCAD format
+  options:
+    output: output.gencad.options.dict
+- name: output.gerb_drill
+  type: gerb_drill
+  comment: This is the information for the drilling machine in gerber format
+  options:
+    use_aux_axis_as_origin: true
+    map: None
+    report: ''
+- name: output.gerber
+  type: gerber
+  comment: This is the main fabrication format for the PCB
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.gerber.layers.dict
+  options:
+    use_aux_axis_as_origin: true
+    custom_reports:
+    - output: output.gerber.options.dict.custom_reports.dict
+- name: output.hpgl
+  type: hpgl
+  comment: Exports the PCB for plotters and laser printers
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.hpgl.layers.dict
+  options:
+    exclude_edge_layer: false
+    custom_reports:
+    - output: output.hpgl.options.dict.custom_reports.dict
+- name: output.hpgl_sch_print
+  type: hpgl_sch_print
+  comment: Exports the schematic to the most common plotter format
+  options:
+    output: output.hpgl_sch_print.options.dict
+- name: output.ibom
+  type: ibom
+  comment: Generates an interactive web page useful to identify the position of the
+    components in the PCB
+  options:
+    output: output.ibom.options.dict
+- name: output.info
+  type: info
+  comment: Records information about the current run
+  options:
+    output: output.info.options.dict
+- name: output.kibom
+  type: kibom
+  comment: Used to generate the BoM in HTML or CSV format using the KiBoM plug-in
+  options:
+    number: 20
+    conf: bom.ini
+- name: output.kicanvas
+  type: kicanvas
+  comment: Generates an interactive web page to browse the schematic and/or PCB
+  options:
+    local_script: false
+- name: output.kicost
+  type: kicost
+  comment: Generates a spreadsheet containing components costs
+  options:
+    output: output.kicost.options.dict
+    translate_fields:
+    - field: References
+      name: manf#
+    aggregate:
+    - file: output.kicost.options.dict.aggregate.dict
+- name: output.kikit_present
+  type: kikit_present
+  comment: Creates an HTML file showing your project
+  options:
+    boards:
+      comment: output.kikit_present.options.dict.boards.dict
+    repository: output.kikit_present.options.dict
+- name: output.kiri
+  type: kiri
+  comment: Generates an interactive web page to browse the schematic and/or PCB differences
+    between git commits
+  options:
+    color_theme: output.kiri.options.dict
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.kiri.layers.dict
+- name: output.navigate_results
+  type: navigate_results
+  comment: Generates a web page to navigate the generated outputs
+  options:
+    output: output.navigate_results.options.dict
+- name: output.netlist
+  type: netlist
+  comment: Generates the list of connections for the project
+  options:
+    output: output.netlist.options.dict
+- name: output.panelize
+  type: panelize
+  comment: Creates a panel to fabricate various copies of the PCB at once
+  options:
+    output: output.panelize.options.dict
+    configs:
+    - name: output.panelize.options.dict.configs.dict
+      page:
+        posx: 1mm
+      layout:
+        hspace: 1mm
+      tabs:
+        vwidth: 1mm
+      cuts:
+        drill: 1mm
+      framing:
+        hspace: 1mm
+      tooling:
+        hoffset: 1mm
+      fiducials:
+        hoffset: 1mm
+      text:
+        text: output.panelize.options.dict.configs.dict.text.dict
+      text2:
+        text: output.panelize.options.dict.configs.dict.text2.dict
+      text3:
+        text: output.panelize.options.dict.configs.dict.text3.dict
+      text4:
+        text: output.panelize.options.dict.configs.dict.text4.dict
+      copperfill:
+        clearance: 1mm
+      post:
+        copperfill: true
+      debug:
+        drawPartitionLines: true
+- name: output.pcb2blender_tools
+  type: pcb2blender_tools
+  comment: A bunch of tools used to generate PCB3D files used to export PCBs to Blender
+  options:
+    output: output.pcb2blender_tools.options.dict
+- name: output.pcb_print
+  type: pcb_print
+  comment: Prints the PCB using a mechanism that is more flexible than `pdf_pcb_print`
+    and `svg_pcb_print`
+  options:
+    output: output.pcb_print.options.dict
+    pages:
+    - mirror: true
+      scaling: 1
+      autoscale_margin_x: 0
+      autoscale_margin_y: 0
+      layers:
+      - all
+      - layer: F.Cu
+        suffix: output.pcb_print.options.dict.pages.dict.layers.dict
+      repeat_layers:
+      - inners
+      - layer: output.pcb_print.options.dict.pages.dict.repeat_layers.dict
+- name: output.pcb_variant
+  type: pcb_variant
+  comment: Creates a copy of the PCB with all the filters and variants applied
+  options:
+    hide_excluded: true
+- name: output.pcbdraw
+  type: pcbdraw
+  comment: Exports the PCB as a 2D model (SVG, PNG or JPG)
+  options:
+    style:
+      copper: '#5e283a'
+    placeholder: true
+    remap_components:
+    - ref: output.pcbdraw.options.dict.remap_components.dict
+      lib: LEDs
+      comp: LED-5MM_green
+    margin: 0
+    resistor_remap:
+    - ref: output.pcbdraw.options.dict.resistor_remap.dict
+      val: 10k
+- exclude_edge_layer: false
+  custom_reports:
+  - output: output.pdf.custom_reports.dict
+  name: new_pdf_1
+  type: pdf
+  comment: Exports the PCB to the most common exchange format. Suitable for printing
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.pdf.layers.dict
+  options:
+    exclude_edge_layer: false
+    custom_reports:
+    - output: output.pdf.options.dict.custom_reports.dict
+- name: output.pdf_pcb_print
+  type: pdf_pcb_print
+  comment: Exports the PCB to the most common exchange format. Suitable for printing
+  options:
+    output: output.pdf_pcb_print.options.dict
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.pdf_pcb_print.layers.dict
+- name: output.pdf_sch_print
+  type: pdf_sch_print
+  comment: Exports the schematic to the most common exchange format. Suitable for
+    printing
+  options:
+    output: output.pdf_sch_print.options.dict
+- name: output.pdfunite
+  type: pdfunite
+  comment: Generates a new PDF from other outputs
+  options:
+    output: output.pdfunite.options.dict
+    outputs:
+    - source: output.pdfunite.options.dict.outputs.dict
+- name: output.populate
+  type: populate
+  comment: Creates a markdown and/or HTML file explaining how to assembly a PCB
+  options:
+    renderer: output.populate.options.dict
+- name: output.position
+  type: position
+  comment: Generates the file with position information for the PCB components, used
+    by the pick and place machine
+  options:
+    separate_files_for_front_and_back: false
+    columns:
+    - Ref
+    - Val
+    - Package
+    - PosX
+    - PosY
+    - Rot
+    - Side
+    - id: Ref
+      name: output.position.options.dict.columns.dict
+- name: output.ps
+  type: ps
+  comment: Exports the PCB to a format suitable for printing
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.ps.layers.dict
+  options:
+    exclude_edge_layer: false
+    custom_reports:
+    - output: output.ps.options.dict.custom_reports.dict
+- name: output.ps_sch_print
+  type: ps_sch_print
+  comment: Exports the schematic in postscript. Suitable for printing
+  options:
+    output: output.ps_sch_print.options.dict
+- name: output.qr_lib
+  type: qr_lib
+  comment: Generates a QR code symbol and footprint
+  options:
+    output: output.qr_lib.options.dict
+    qrs:
+      name: output.qr_lib.options.dict.qrs.dict
+- name: output.render_3d
+  type: render_3d
+  comment: Exports the image generated by KiCad's 3D viewer. *Deprecated*
+  options:
+    output: output.render_3d.options.dict
+- name: output.report
+  type: report
+  comment: Generates a report about the design
+  options:
+    output: output.report.options.dict
+- name: output.sch_variant
+  type: sch_variant
+  comment: Creates a copy of the schematic with all the filters and variants applied
+  options:
+    copy_project: true
+- name: output.stencil_3d
+  type: stencil_3d
+  comment: Creates a 3D self-registering model of a stencil you can easily print on
+  options:
+    thickness: 20
+- name: output.stencil_for_jig
+  type: stencil_for_jig
+  comment: Creates the gerber files needed to create steel stencils
+  options:
+    jigthickness: 20
+- name: output.step
+  type: step
+  comment: Exports the PCB as a 3D model
+  options:
+    metric_units: false
+- name: output.svg
+  type: svg
+  comment: Exports the PCB to a format suitable for 2D graphics software
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.svg.layers.dict
+  options:
+    exclude_edge_layer: false
+    custom_reports:
+    - output: output.svg.options.dict.custom_reports.dict
+    margin: 0
+- name: output.svg_pcb_print
+  type: svg_pcb_print
+  comment: Exports the PCB to the scalable vector graphics format
+  options:
+    output: output.svg_pcb_print.options.dict
+  layers:
+  - all
+  - layer: F.Cu
+    suffix: output.svg_pcb_print.layers.dict
+- name: output.svg_sch_print
+  type: svg_sch_print
+  comment: Exports the schematic in a vectorized graphics format
+  options:
+    output: output.svg_sch_print.options.dict
+- name: output.vrml
+  type: vrml
+  comment: Exports the PCB as a 3D model (WRL file)
+  options:
+    output: output.vrml.options.dict

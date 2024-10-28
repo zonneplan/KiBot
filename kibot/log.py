@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-# Copyright (c) 2020-2022 Salvador E. Tropea
-# Copyright (c) 2020-2022 Instituto Nacional de Tecnología Industrial
-# License: GPL-3.0
+# Copyright (c) 2020-2024 Salvador E. Tropea
+# Copyright (c) 2020-2024 Instituto Nacional de Tecnología Industrial
+# License: AGPL-3.0
 # Project: KiBot (formerly KiPlot)
 # Adapted from: https://stackoverflow.com/questions/384076/how-can-i-color-python-logging-output
 """
@@ -11,6 +11,7 @@ Handles logging initialization and formatting.
 """
 import io
 import os
+import re
 import sys
 import traceback
 import logging
@@ -34,6 +35,8 @@ debug_level = 0
 stop_on_warnings = False
 record_error_msgs = False
 recorded_error_msgs = []
+re_dk_client_id = re.compile("DIGIKEY_CLIENT_ID=([^']+)")
+re_dk_client_secret = re.compile("DIGIKEY_CLIENT_SECRET=([^']+)")
 
 
 def get_logger(name=None, indent=None):
@@ -149,6 +152,25 @@ class MyLogger(logging.Logger):
         else:
             super(self.__class__, self).debug(msg, *args, **kwargs)
 
+    def debug(self, msg, *args, **kwargs):
+        # Avoid leaking secrets in the log files
+        # Digi-Key KiCost plug-in variables
+        if 'DIGIKEY_' in str(msg):
+            match = re_dk_client_id.search(msg)
+            if match:
+                val = match.group(1)
+                new_val = 'x'*(len(val)-3)+val[-3:]
+                msg = msg.replace(val, new_val)
+            match = re_dk_client_secret.search(msg)
+            if match:
+                val = match.group(1)
+                new_val = 'x'*(len(val)-3)+val[-3:]
+                msg = msg.replace(val, new_val)
+        if sys.version_info >= (3, 8):
+            super(self.__class__, self).debug(msg, *args, **kwargs, stacklevel=2)  # pragma: no cover (Py38)
+        else:
+            super(self.__class__, self).debug(msg, *args, **kwargs)
+
     def info(self, msg, *args, **kwargs):
         if isinstance(msg, tuple):
             msg = ' '.join(map(str, msg))
@@ -175,8 +197,13 @@ class MyLogger(logging.Logger):
                 filt_msg = ', {} filtered'.format(MyLogger.n_filtered)
             self.info('Found {} unique warning/s ({} total{})'.format(MyLogger.warn_cnt, MyLogger.warn_tcnt, filt_msg))
 
-    def non_critical_error(self, msg):
-        self.error(msg)
+    def non_critical_error(self, msg, *args, **kwargs):
+        buf = str(msg)
+        push_error_msg(buf)
+        if sys.version_info >= (3, 8):
+            super().error(buf, stacklevel=2, **kwargs)  # pragma: no cover (Py38)
+        else:
+            super().error(buf, **kwargs)
         self.check_warn_stop()
 
     def findCaller(self, stack_info=False, stacklevel=1):
@@ -259,15 +286,23 @@ def init():
 class CustomFormatter(logging.Formatter):
     """Logging Formatter to add colors"""
 
-    def __init__(self, stream=None):
+    def __init__(self, stream=None, force_tty=False):
         super(logging.Formatter, self).__init__()
-        if stream is not None and stream.isatty():
+        if (stream is not None and stream.isatty()):
             white = Fore.WHITE
             yellow = Fore.YELLOW + Style.BRIGHT
             red = Fore.RED + Style.BRIGHT
             red_alarm = Fore.RED + Back.WHITE + Style.BRIGHT
             cyan = Fore.CYAN + Style.BRIGHT
             reset = Style.RESET_ALL
+        elif force_tty:
+            # This mechanism is used by the GUI, is simpler than parsing ANSI escape sequences
+            white = ""
+            yellow = "\033Y"
+            red = "\033R"
+            red_alarm = "\033r"
+            cyan = "\033C"
+            reset = ""
         else:
             white = ""
             yellow = ""
@@ -304,3 +339,15 @@ def set_file_log(fname):
 
 def remove_file_log(fh):
     root_logger.removeHandler(fh)
+
+
+def set_log_handler(handler):
+    global visual_level
+    handler.setLevel(visual_level)
+    handler.setFormatter(CustomFormatter(force_tty=True))
+    root_logger.addHandler(handler)
+    return handler
+
+
+def remove_log_handler(handler):
+    root_logger.removeHandler(handler)

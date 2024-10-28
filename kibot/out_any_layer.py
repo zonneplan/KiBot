@@ -67,7 +67,8 @@ class AnyLayerOptions(VariantOptions):
                 For this reason you must avoid generating two variants at the same directory when one of
                 them uses the default KiCad name """
             self.tent_vias = True
-            """ Cover the vias """
+            """ Cover the vias.
+                Warning: KiCad 8 has a bug that ignores this option. Set it from KiCad GUI """
             self.uppercase_extensions = False
             """ Use uppercase names for the extensions """
             self.inner_extension_pattern = ''

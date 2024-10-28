@@ -44,8 +44,12 @@ DiffOptions parameters
    changes in the history you want to go back. A 0 is the same as `HEAD`,
    a 1 means the last time the PCB/SCH was changed, etc.
    Use `KIBOT_TAG-n` to search for the last tag skipping `n` tags.
-   Important: when using the `checkout` GitHub action you just get the
-   last commit. To clone the full repo use `fetch-depth: '0'`.
+
+.. note::
+      when using the `checkout` GitHub action you just get the
+                   last commit. To clone the full repo use `fetch-depth: '0'`. |br|
+..
+
 -  ``old_type`` :index:`: <pair: output - diff - options; old_type>` [:ref:`string <string>`] (default: ``'git'``) (choices: "git", "file", "output", "multivar") How to interpret the `old` name. Use `git` for a git hash, branch, etc.
    Use `file` for a file name. Use `output` to specify the name of a `pcb_variant`/`sch_variant` output.
    Use `multivar` to specify a reference file when `new_type` is also `multivar`.

@@ -1,8 +1,8 @@
-.. _FilesList:
+.. _FilesListPDFUnite:
 
 
-FilesList parameters
-~~~~~~~~~~~~~~~~~~~~
+FilesListPDFUnite parameters
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  **from_output** :index:`: <pair: output - pdfunite - options - outputs; from_output>` [:ref:`string <string>`] (default: ``''``) Collect files from the selected output.
    When used the `source` option is ignored.

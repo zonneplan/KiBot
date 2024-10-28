@@ -84,6 +84,10 @@ ghcr.io/inti-cmnb/kicad5_auto_full:dev    git code     5.1.9
 ghcr.io/inti-cmnb/kicad6_auto_full:dev    git code     6.0.11
 ghcr.io/inti-cmnb/kicad7_auto_full:dev    git code     7.0.11
 ghcr.io/inti-cmnb/kicad8_auto_full:dev    git code     8.x
+ghcr.io/inti-cmnb/kicad5_auto_full:1.7.0  1.8.1        5.1.9
+ghcr.io/inti-cmnb/kicad6_auto_full:1.7.0  1.8.1        6.0.11
+ghcr.io/inti-cmnb/kicad7_auto_full:1.7.0  1.8.1        7.0.11
+ghcr.io/inti-cmnb/kicad8_auto_full:1.7.0  1.8.1        8.0.5
 ghcr.io/inti-cmnb/kicad5_auto_full:1.7.0  1.7.0        5.1.9
 ghcr.io/inti-cmnb/kicad6_auto_full:1.7.0  1.7.0        6.0.11
 ghcr.io/inti-cmnb/kicad7_auto_full:1.7.0  1.7.0        7.0.11
@@ -164,7 +168,7 @@ Here is an example of workflow file using the GitHub Action:
        runs-on: ubuntu-latest
        steps:
        - uses: actions/checkout@v2
-       - uses: INTI-CMNB/KiBot@v2
+       - uses: INTI-CMNB/KiBot@v2_k8
          with:
            # Required - kibot config file
            config: config.kibot.yaml
@@ -175,15 +179,18 @@ Here is an example of workflow file using the GitHub Action:
            # optional - PCB design file
            board: 'pcb.kicad_pcb'
        - name: upload results
-         uses: actions/upload-artifact@v2
+         if: ${{ always() }}
+         uses: actions/upload-artifact@v4
          with:
            name: output
            path: output
 
-For KiCad 6 use ``v2_k6`` instead of ``v2`` (``v2_k7`` for KiCad 7
-or ``v2_k8`` for KiCad 8).
+For KiCad 5 use ``v2`` instead of ``v2_k8`` (``v2_k7`` for KiCad 7
+or ``v2_k6`` for KiCad 6).
 These actions use the last KiBot stable release, to use the current
-development code use ``v2_dk6`` (KiCad 6) and ``v2_d`` (KiCad 5).
+development code use ``v2_dk8`` (KiCad 8) (``v2_dk7``, ``v2_dk6``, ``v2_d``).
+
+Note: the `if: ${{ always() }}` is used to collect artifacts even on fails.
 
 A working example applied to a repo can be found
 `here <https://github.com/INTI-CMNB/kicad-ci-test-spora/tree/test_gh_action>`__
@@ -265,6 +272,10 @@ v2_1_7_0    2   1.7.0        5.1.9
 v2_k6_1_7_0 2   1.7.0        6.0.11
 v2_k7_1_7_0 2   1.7.0        7.0.11
 v2_k8_1_7_0 2   1.7.0        8.0.4
+v2_1_8_1    2   1.8.1        5.1.9
+v2_k6_1_8_1 2   1.8.1        6.0.11
+v2_k7_1_8_1 2   1.8.1        7.0.11
+v2_k8_1_8_1 2   1.8.1        8.0.5
 v2          2   last release 5.1.9
 v2_k6       2   last release 6.0.11
 v2_k7       2   last release 7.0.11

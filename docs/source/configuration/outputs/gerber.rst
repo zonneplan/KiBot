@@ -8,7 +8,10 @@ Gerber format
 
 This is the main fabrication format for the PCB.
 This output is what you get from the File/Plot menu in pcbnew. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``gerber``
 

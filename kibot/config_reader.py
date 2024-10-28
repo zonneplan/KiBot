@@ -902,6 +902,8 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
             preface = preface[:-2] + f' :index:`: <pair: {context}; {k}>` '
         if separate_files and isinstance(v, type) and has_dict:
             preface += f" [:ref:`{v.__name__} parameters <{v.__name__+id}>`] "
+        if not rst_mode:
+            lines = [ln.replace(' |br|', ' ') for ln in lines]
         clines = len(lines)
         print(preface+adapt_text(lines[0].strip()+('.' if clines == 1 and dot else '')))
         if rst_mode:
@@ -934,6 +936,9 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
                 if in_list:
                     in_list = False
                     print()
+            if (text.startswith('Important: ') or text.startswith('Warning: ')) and ln+1 < clines:
+                print(adapt_text(ind_help+text+'\n'+('\n'.join(lines[ln+1:]))+'.'))
+                break
             print(ind_help+adapt_text(text+('.' if ln+1 == clines else '')))
         num_opts = num_opts+1
         if isinstance(v, type):
@@ -969,10 +974,15 @@ def print_output_options(name, cl, indent, context=None, skip_keys=False, skip_o
     #     print(ind_str+'  - No available options')
 
 
-def print_one_out_help(details, n, o):
+def get_doc_lines(o):
     lines = trim(o.__doc__)
     if len(lines) == 0:
         lines = ['Undocumented', 'No description']
+    return lines
+
+
+def print_one_out_help(details, n, o):
+    lines = get_doc_lines(o)
     ind_size = 3 if rst_mode else 2
     ind = ' '*ind_size
     extra = ' ' if rst_mode else ''
@@ -1134,8 +1144,6 @@ def print_variants_help(rst):
         else:
             title, help = reformat_text(help, ind_size)
             title = f'(**{title}**)'
-        if rst:
-            title = f'{title} :index:`. <pair: variant; {n}>`'
         if split:
             print(f'   variants/{n}')
             dest = os.path.relpath(os.path.join(GS.out_dir, f'{n}.rst'))
@@ -1144,7 +1152,8 @@ def print_variants_help(rst):
             sys.stdout = f
             print(RST_WARNING)
             name2 = n.replace('_', ' ').capitalize() if not help else f'**{n}** {title}'
-            print(f'.. index::\n   pair: {name2}; {n}\n')
+            name3 = name2.replace('*', '')
+            print(f'.. index::\n   pair: {name3}; {n}\n')
             print(name2)
             print('~'*len(name2))
             print()
@@ -1152,6 +1161,8 @@ def print_variants_help(rst):
                 print(help)
                 print()
         else:
+            if rst:
+                title = f'{title} :index:`. <pair: variant; {n}>`'
             print(f'- {extra}**{n}**: {title}\n\n{help}.')
         print_output_options(n, o, ind_size, 'variant - '+n, separate_files=split, skip_keys=True)
         if split:
@@ -1177,24 +1188,52 @@ def adapt_text(text):
                     if in_list:
                         in_list = False
                         t.append('')
+                exit_warning = False
                 if ln[-1] == '.' and not in_list:
                     ln += ' |br|'
+                    if in_warning:
+                        exit_warning = True
+                if in_warning:
+                    ln = '   '+ln
                 if 'Warning: ' in ln:
                     indent = ln.index('Warning: ')
                     t.append('')
                     t.append('.. warning::')
                     in_warning = True
-                    ln = ln[:indent]+ln[indent+9:]
+                    ln = ln[:indent]+'   '+ln[indent+9:]
                 if 'Important: ' in ln:
                     indent = ln.index('Important: ')
                     t.append('')
                     t.append('.. note::')
                     in_warning = True
-                    ln = ln[:indent]+ln[indent+11:]
+                    ln = ln[:indent]+'   '+ln[indent+11:]
                 t.append(ln)
+                if exit_warning:
+                    t.append('..')
+                    t.append('')
+                    in_warning = False
             if in_warning:
                 t.append('.. ')
             text = '\n'.join(t)
+        else:
+            if 'Warning: ' in text:
+                t = []
+                indent = text.index('Warning: ')
+                t.append('')
+                t.append('.. warning::')
+                t.append(text[:indent]+'   '+text[indent+9:])
+                t.append('..')
+                t.append('')
+                text = '\n'.join(t)
+            if 'Important: ' in text:
+                t = []
+                indent = text.index('Important: ')
+                t.append('')
+                t.append('.. note::')
+                t.append(text[:indent]+'   '+text[indent+11:])
+                t.append('..')
+                t.append('')
+                text = '\n'.join(t)
         return adapt_to_rst_urls(text)
     text = text.replace('\\*', '*')
     return text
@@ -1283,7 +1322,7 @@ def print_example_options(f, cls, name, indent, po, is_list=False):
             f.write(ind_str+'# `{}` is an alias for `{}`\n'.format(k, alias))
             continue
         if help:
-            help_lines = help.split('\n')
+            help_lines = help.replace('|br|', '').split('\n')
             for hl in help_lines:
                 # Dots at the beginning are replaced by spaces.
                 # Used to keep indentation.

@@ -8,7 +8,10 @@ DXF Schematic Print (Drawing Exchange Format)
 
 Exports the schematic to a format commonly used for CAD software.
 This output is what you get from the 'File/Plot' menu in eeschema. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``dxf_sch_print``
 

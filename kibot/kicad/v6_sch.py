@@ -22,7 +22,7 @@ from .sexpdata import load, SExpData, Symbol, dumps, Sep
 from .sexp_helpers import (_check_is_symbol_list, _check_len, _check_len_total, _check_symbol, _check_hide, _check_integer,
                            _check_float, _check_str, _check_symbol_value, _check_symbol_float, _check_symbol_int,
                            _check_symbol_str, _get_offset, _get_yes_no, _get_at, _get_size, _get_xy, _get_points,
-                           _check_relaxed)
+                           _check_relaxed, Color, _symbol)
 from .v5_sch import SchematicComponent, Schematic
 
 logger = log.get_logger()
@@ -266,26 +266,6 @@ class FontEffects(object):
         if self.href is not None:
             data.append(_symbol('href', [self.href]))
         return _symbol('effects', data)
-
-
-class Color(object):
-    def __init__(self, items=None):
-        super().__init__()
-        if items:
-            self.r = _check_integer(items, 1, 'red color')
-            self.g = _check_integer(items, 2, 'green color')
-            self.b = _check_integer(items, 3, 'blue color')
-            # Sheet sheet.fill.color is float ...
-            self.a = _check_float(items, 4, 'alpha color')
-        else:
-            self.r = self.g = self.b = self.a = 0
-
-    @staticmethod
-    def parse(items):
-        return Color(items)
-
-    def write(self):
-        return _symbol('color', [self.r, self.g, self.b, self.a])
 
 
 class Stroke(object):
@@ -1814,12 +1794,6 @@ class PCBLayer(object):
             for n, layer in enumerate(layers):
                 layer.name += ' ({}/{})'.format(n+1, n_layers)
         return layers
-
-
-def _symbol(name, content=None):
-    if content is None:
-        return [Symbol(name)]
-    return [Symbol(name)] + content
 
 
 def _symbol_yn(name, val):

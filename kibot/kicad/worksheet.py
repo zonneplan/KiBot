@@ -14,37 +14,25 @@ Documentation: https://dev-docs.kicad.org/en/file-formats/sexpr-worksheet/
 from base64 import b64decode
 import io
 from struct import unpack
-from pcbnew import (wxPoint, wxSize, FromMM, wxPointMM)
+from pcbnew import wxPoint, wxSize, FromMM, wxPointMM
 from ..gs import GS
 if not GS.kicad_version_n:
     # When running the regression tests we need it
     from kibot.__main__ import detect_kicad
     detect_kicad()
-if GS.ki7:
-    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_H_ALIGN_LEFT,
-                        GR_TEXT_H_ALIGN_RIGHT, GR_TEXT_H_ALIGN_CENTER, GR_TEXT_V_ALIGN_TOP, GR_TEXT_V_ALIGN_CENTER,
-                        GR_TEXT_V_ALIGN_BOTTOM)
-    # Is this change really needed??!!! People doesn't have much to do ...
-    GR_TEXT_HJUSTIFY_LEFT = GR_TEXT_H_ALIGN_LEFT
-    GR_TEXT_HJUSTIFY_RIGHT = GR_TEXT_H_ALIGN_RIGHT
-    GR_TEXT_HJUSTIFY_CENTER = GR_TEXT_H_ALIGN_CENTER
-    GR_TEXT_VJUSTIFY_TOP = GR_TEXT_V_ALIGN_TOP
-    GR_TEXT_VJUSTIFY_CENTER = GR_TEXT_V_ALIGN_CENTER
-    GR_TEXT_VJUSTIFY_BOTTOM = GR_TEXT_V_ALIGN_BOTTOM
-elif GS.ki6:
-    from pcbnew import (PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, GR_TEXT_HJUSTIFY_LEFT,
-                        GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER,
-                        GR_TEXT_VJUSTIFY_BOTTOM)
+if GS.ki6:
+    from pcbnew import PCB_SHAPE, PCB_TEXT, FILL_T_FILLED_SHAPE, SHAPE_T_POLY, COLOR4D
 else:
-    from pcbnew import (DRAWSEGMENT, TEXTE_PCB, GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
-                        GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
+    from pcbnew import DRAWSEGMENT, TEXTE_PCB, COLOR4D
     PCB_SHAPE = DRAWSEGMENT
     PCB_TEXT = TEXTE_PCB
     FILL_T_FILLED_SHAPE = 0
     SHAPE_T_POLY = 4
-from .sexpdata import load, SExpData
+from .pcb_draw_helpers import (GR_TEXT_HJUSTIFY_LEFT, GR_TEXT_HJUSTIFY_RIGHT, GR_TEXT_HJUSTIFY_CENTER,
+                               GR_TEXT_VJUSTIFY_TOP, GR_TEXT_VJUSTIFY_CENTER, GR_TEXT_VJUSTIFY_BOTTOM)
+from .sexpdata import load, dumps, SExpData
 from .sexp_helpers import (_check_is_symbol_list, _check_float, _check_integer, _check_symbol_value, _check_str, _check_symbol,
-                           _check_relaxed, _get_points, _check_symbol_str)
+                           _check_relaxed, _get_points, _check_symbol_str, Color)
 from ..svgutils.transform import ImageElement, GroupElement
 from ..misc import W_WKSVERSION
 from .. import log
@@ -225,6 +213,8 @@ class WksFont(object):
         self.italic = False
         self.size = wxSize(setup.text_w, setup.text_h)
         self.line_width = setup.text_line_width
+        self.color = None
+        self.face = None
 
     @staticmethod
     def parse(items):
@@ -239,6 +229,10 @@ class WksFont(object):
                 s.size = _get_size(items, c+1, i_type, WksFont.name)
             elif i_type == 'linewidth':
                 s.line_width = _check_mm(i, 1, i_type)
+            elif i_type == 'color':  # Undocumented, as usually
+                s.color = Color.parse(i)
+            elif i_type == 'face':  # Undocumented, as usually
+                s.face = _check_str(i, 1, 'font face')
             else:
                 raise WksError('Unknown font attribute `{}`'.format(i))
         return s
@@ -317,6 +311,11 @@ class WksText(WksDrawing):
             s.SetLayer(p.layer)
             if e.font.italic:
                 s.SetItalic(True)
+            if e.font.color:
+                # For KiCad 8.0.5 this is useless because the plot API fails to use the color
+                s.SetTextColor(COLOR4D(e.font.color.r/255.0, e.font.color.g/255.0, e.font.color.b/255.0, e.font.color.a))
+            # if e.face:
+            #  ... incomplete API for 8.0.5, SetFont needs KIFONT::FONT, not defined
             if e.rotate:
                 s.SetTextAngle(GS.angle(e.rotate))
             # Adjust the text size to the maximum allowed
@@ -487,13 +486,14 @@ class WksBitmap(WksDrawing):
 
 
 class Worksheet(object):
-    def __init__(self, setup, elements, version, generator, has_images):
+    def __init__(self, setup, elements, version, generator, has_images, sexp):
         super().__init__()
         self.setup = setup
         self.elements = elements
         self.version = version
         self.generator = generator
         self.has_images = has_images
+        self.sexp = sexp
 
     @staticmethod
     def load(file):
@@ -541,7 +541,7 @@ class Worksheet(object):
                 generator_version = ' v'+_check_str(e, 1, e_type)
             else:
                 raise WksError('Unknown worksheet attribute `{}`'.format(e_type))
-        return Worksheet(setup, elements, version, generator+generator_version, has_images)
+        return Worksheet(setup, elements, version, generator+generator_version, has_images, wks)
 
     def set_page(self, pw, ph):
         pw = FromMM(pw)
@@ -595,3 +595,22 @@ class Worksheet(object):
     def undraw(self, board):
         for e in self.pcb_items:
             board.Remove(e)
+
+    def expand(self, vars, remove_images=False):
+        """ Expands all the tbtext texts
+            Can also remove images, to workaround KiCad bugs plotting from Python API
+            This function works on the sexp data """
+        new_sexp = [self.sexp[0]]   # The file type is special
+        for e in self.sexp[1:]:
+            e_type = _check_is_symbol_list(e)
+            if e_type == 'tbtext':
+                e[1] = GS.expand_text_variables(e[1], vars)
+            if e_type != 'bitmap' or not remove_images:
+                new_sexp.append(e)
+        self.sexp = new_sexp
+
+    def save(self, fname):
+        """ Save the sexp to a file """
+        with open(fname, 'wt') as f:
+            f.write(dumps(self.sexp))
+            f.write('\n')

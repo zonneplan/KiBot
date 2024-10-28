@@ -48,6 +48,8 @@
       -  ``dir`` :index:`: <pair: global options; dir>` [:ref:`string <string>`] (default: ``''``) Default pattern for the output directories. It also applies to the preflights, unless
          `use_dir_for_preflights` is disabled.
       -  ``disable_3d_alias_as_env`` :index:`: <pair: global options; disable_3d_alias_as_env>` [:ref:`boolean <boolean>`] (default: ``false``) Disable the use of environment and text variables as 3D models aliases.
+      -  ``dnp_cross_bottom_layer`` :index:`: <pair: global options; dnp_cross_bottom_layer>` [:ref:`string <string>`] (default: ``'B.Fab'``) Layer on which to add DNP cross for the bottom components.
+      -  ``dnp_cross_top_layer`` :index:`: <pair: global options; dnp_cross_top_layer>` [:ref:`string <string>`] (default: ``'F.Fab'``) Layer on which to add DNP cross for the top components.
       -  ``drc_exclusions_workaround`` :index:`: <pair: global options; drc_exclusions_workaround>` [:ref:`boolean <boolean>`] (default: ``false``) KiCad 6 introduced DRC exclusions. They are stored in the project but ignored by the Python API.
          This problem affects KiCad 6 and 7.
          If you really need exclusions enable this option, this will use the GUI version of the DRC (slower).

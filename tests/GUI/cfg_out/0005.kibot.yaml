@@ -1,0 +1,83 @@
+kibot:
+  version: 1
+filters:
+- name: filter.expand_text_vars
+  type: expand_text_vars
+  comment: Expand Text Variables
+- name: filter.field_modify
+  type: field_modify
+  comment: Field Modifier
+- name: filter.field_rename
+  type: field_rename
+  comment: Field Renamer
+  rename:
+  - field: References
+    name: manf#
+- name: filter.generic
+  type: generic
+  comment: Generic filter
+  include_only:
+  - column: filter.generic.include_only.dict
+  exclude_any:
+  - column: filter.generic.exclude_any.dict
+- name: filter.rot_footprint
+  type: rot_footprint
+  comment: Footprint Rotator
+  rotations_and_offsets:
+  - field: References
+    regex: ^TSSOP-
+- name: filter.separate_pins
+  type: separate_pins
+  comment: Separate Pins
+- name: filter.spec_to_field
+  type: spec_to_field
+  comment: Spec to Field
+  from_output: bom_output_name
+  specs:
+  - spec: _voltage
+    field: _field_voltage
+  - spec: _tolerance
+    field: _field_tolerance
+  - spec: _power
+    field: _field_power
+  - spec: _current
+    field: _field_current
+  check_dist_fields:
+  - _value
+  - _tolerance
+  - _power
+  - _current
+  - _voltage
+  - _temp_coeff
+- name: filter.subparts
+  type: subparts
+  comment: Subparts
+- name: filter.urlify
+  type: urlify
+  comment: URLify
+  fields: Datasheet
+- name: filter.value_split
+  type: value_split
+  comment: Value Splitter
+- name: filter.var_rename
+  type: var_rename
+  comment: Variant Renamer
+- name: filter.var_rename_kicost
+  type: var_rename_kicost
+  comment: Variant Renamer KiCost style
+outputs:
+- name: bom_html
+  comment: Bill of Materials in HTML format
+  type: kibom
+  dir: BoM
+  options:
+    format: HTML
+    variant: pp
+    output: ''
+    conf: ''
+- name: bom_csv
+  comment: Bill of Materials in CSV format
+  type: kibom
+  dir: BoM
+  options:
+    format: CSV

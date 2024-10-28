@@ -664,6 +664,14 @@ class PanelizeOptions(VariantOptions):
             """ [deg,°,rad] Angles used when omitted """
             self.create_preview = False
             """ Use PcbDraw to create a preview of the panel """
+            self.copy_vias_on_mask = 'auto'
+            """ [auto,yes,no] Copy the GUI option to plot vias on the mask layers from the original PCB to
+                the panel. |br|
+                This option is a workaround to KiCad 8 not allowing to choose to plot (or not to plot) vias
+                on the mask layers using the Python API. So you have to set it in the GUI, but this option
+                is lost during panelization. |br|
+                Setting this option to *auto* will copy the value for faulty KiCad 8 versions, but won't
+                waste time for working KiCad versions """
         super().__init__()
         self._expand_id = 'panel'
         self._expand_ext = 'kicad_pcb'
@@ -766,6 +774,38 @@ class PanelizeOptions(VariantOptions):
         logger.debugl(1, js)
         return GS.tmp_file(content=js, suffix='.json', prefix='panel_cfg', what='panel config', a_logger=logger)
 
+    def do_copy_vias_on_mask(self, old, new):
+        """ KiCad 8 has a bug that prevents choosing if vias are or aren't plotted in the solder mask layer.
+            Only the setting in the PCB file is used, the API is ignored.
+            KiKit resets this option, most probably unintentionally.
+            So here we read the old PCB and we see if the new one needs to be updated. """
+        logger.debug('Copying viasonmask option')
+        # Read the old setting
+        logger.debug('- Reading the old PCB')
+        with open(old) as f:
+            old_pcb = f.read()
+        pattern = re.compile(r'\(viasonmask (.*)\)')
+        match = pattern.search(old_pcb)
+        if not match:
+            logger.debug("- The old PCB doesn't have the option!")
+            return
+        old_value = match.group(1)
+        logger.debug('- Reading the new PCB')
+        with open(new) as f:
+            new_pcb = f.read()
+        match = pattern.search(new_pcb)
+        if not match:
+            logger.debug("- The new PCB doesn't have the option!")
+            return
+        new_value = match.group(1)
+        if old_value == new_value:
+            logger.debug(f'- No need to change (both {new_value})')
+            return
+        new_pcb = new_pcb.replace('(viasonmask '+new_value, '(viasonmask '+old_value)
+        logger.debug(f'- Saving the panel PCB with `{old_value}`')
+        with open(new, 'w') as f:
+            f.write(new_pcb)
+
     def create_preview_file(self, name):
         if not self.create_preview or not os.path.isfile(name):
             return
@@ -816,6 +856,8 @@ class PanelizeOptions(VariantOptions):
             self.create_preview_file(output)
             remove_tmps = True
         finally:
+            if (self.copy_vias_on_mask == 'auto' and GS.ki8) or self.copy_vias_on_mask == 'yes':
+                self.do_copy_vias_on_mask(fname, output)
             if GS.debug_enabled and not remove_tmps:
                 if self._files_to_remove:
                     logger.warning(W_KEEPTMP+'Keeping temporal files: '+str(self._files_to_remove))

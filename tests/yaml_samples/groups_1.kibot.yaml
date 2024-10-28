@@ -151,7 +151,7 @@ outputs:
       show_components:
         - L_G1
         - L_B1
-      remap:
+      remap: None
 
   - name: compress_fab
     comment: "Generates a ZIP file with all the fab outputs"

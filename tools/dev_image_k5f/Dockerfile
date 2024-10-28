@@ -6,8 +6,12 @@ RUN     dpkg --remove kicost kibot && \
 	apt-get update && \
 	curl https://codeload.github.com/INTI-CMNB/KiBot/zip/refs/heads/dev --output pp.zip && \
 	unzip pp.zip && \
+	curl https://codeload.github.com/yaqwsx/PcbDraw-Lib/zip/refs/heads/master --output pp2.zip && \
+	unzip pp2.zip -d KiBot-dev/kibot/resources/pcbdraw/ && \
+	rmdir KiBot-dev/kibot/resources/pcbdraw/footprints && \
+	mv KiBot-dev/kibot/resources/pcbdraw/PcbDraw-Lib-master KiBot-dev/kibot/resources/pcbdraw/footprints && \
 	pip3 install --no-compile KiBot-dev/ && \
-	rm -rf KiBot-dev pp.zip && \
+	rm -rf KiBot-dev pp.zip pp2.zip && \
 	curl https://codeload.github.com/hildogjr/KiCost/zip/refs/heads/master --output pp.zip && \
 	unzip pp.zip && \
 	pip3 install KiCost-master/ && \

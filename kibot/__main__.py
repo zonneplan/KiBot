@@ -11,7 +11,7 @@ Usage:
   kibot [-b BOARD] [-e SCHEMA] [-c CONFIG] [-d OUT_DIR] [-s PRE]
          [-q | -v...] [-L LOGFILE] [-C | -i | -n] [-m MKFILE] [-A] [-g DEF] ...
          [-E DEF] ... [--defs-from-env] [-w LIST] [-D | -W] [--warn-ci-cd]
-         [--banner N] [TARGET...]
+         [--banner N] [--gui | --internal-check] [-I INJECT] [TARGET...]
   kibot [-v...] [-b BOARD] [-e SCHEMA] [-c PLOT_CONFIG] [--banner N]
          [-E DEF] ... [--defs-from-env] [--config-outs]
          [--only-pre|--only-groups] [--only-names] [--output-name-first] --list
@@ -52,7 +52,10 @@ Options:
   -e SCHEMA, --schematic SCHEMA    The schematic file (.sch/.kicad_sch)
   -E DEF, --define DEF             Define preprocessor value (VAR=VAL)
   -g DEF, --global-redef DEF       Overwrite a global value (VAR=VAL)
+  --gui                            Open a graphic dialog
+  --internal-check                 Run some outputs internal checks
   -i, --invert-sel                 Generate the outputs not listed as targets
+  -I, --gui-inject INJECT          Inject events to the GUI from INJECT file
   -l, --list                       List available outputs, preflights and
                                    groups (in the config file).
                                    You don't need to specify an SCH/PCB unless
@@ -228,7 +231,7 @@ def list_variants(logger, only_names, sub_pcbs):
                 logger.info(f'  - {s.name}')
 
 
-def solve_config(a_plot_config, quiet=False):
+def solve_config(a_plot_config, quiet, gui):
     plot_config = a_plot_config
     if not plot_config:
         plot_configs = glob('*.kibot.yaml')+glob('*.kiplot.yaml')+glob('*.kibot.yaml.gz')+glob('*.kibot.yml')
@@ -241,6 +244,8 @@ def solve_config(a_plot_config, quiet=False):
             logger.warning(W_VARCFG + 'More than one config file found in current directory.\n'
                            '  Using '+plot_config+' if you want to use another use -c option.')
         else:
+            if gui:
+                return ''
             GS.exit_with_error('No config file found (*.kibot.yaml), use -c to specify one.', EXIT_BAD_ARGS)
     if not os.path.isfile(plot_config):
         GS.exit_with_error("Plot config file not found: "+plot_config, EXIT_BAD_ARGS)
@@ -441,28 +446,7 @@ def check_needs_convert():
     return True
 
 
-def main():
-    set_locale()
-    ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
-    GS.out_dir_in_cmd_line = '-d' in sys.argv or '--out-dir' in sys.argv
-    args = docopt(__doc__, version=ver, options_first=True)
-
-    # Set the specified verbosity
-    GS.debug_enabled = log.set_verbosity(logger, args.verbose, args.quiet)
-    log.debug_level = GS.debug_level = args.verbose
-    # We can log all the debug info to a separated file
-    if args.log:
-        if os.path.isfile(args.log):
-            os.remove(args.log)
-        else:
-            os.makedirs(os.path.dirname(os.path.abspath(args.log)), exist_ok=True)
-        log.set_file_log(args.log)
-        log.debug_level = GS.debug_level = 10
-    # The log setup finished, this is our first log message
-    logger.debug('KiBot {} verbose level: {} started on {}'.format(__version__, args.verbose, datetime.now()))
-    apply_warning_filter(args)
-    log.stop_on_warnings = args.stop_on_warnings
-    # Now we have the debug level set we can check (and optionally inform) KiCad info
+def initialization(args, progress=None):
     detect_windows()
     detect_macos()
     detect_kicad()
@@ -484,7 +468,39 @@ def main():
     GS.out_dir = os.path.join(os.getcwd(), args.out_dir)
 
     # Load output and preflight plugins
-    load_actions()
+    load_actions(progress)
+
+
+def main():
+    set_locale()
+    ver = 'KiBot '+__version__+' - '+__copyright__+' - License: '+__license__
+    GS.out_dir_in_cmd_line = '-d' in sys.argv or '--out-dir' in sys.argv
+    args = docopt(__doc__, version=ver, options_first=True)
+
+    # Set the specified verbosity
+    GS.debug_enabled = log.set_verbosity(logger, args.verbose, args.quiet)
+    log.debug_level = GS.debug_level = args.verbose
+    # We can log all the debug info to a separated file
+    if args.log:
+        if os.path.isfile(args.log):
+            os.remove(args.log)
+        else:
+            os.makedirs(os.path.dirname(os.path.abspath(args.log)), exist_ok=True)
+        log.set_file_log(args.log)
+        log.debug_level = GS.debug_level = 10
+    # The log setup finished, this is our first log message
+    logger.debug('KiBot {} verbose level: {} started on {}'.format(__version__, args.verbose, datetime.now()))
+    apply_warning_filter(args)
+    log.stop_on_warnings = args.stop_on_warnings
+
+    # Now we have the debug level set we can check (and optionally inform) KiCad info
+    logger.debug('Start of initialization')
+    if args.gui:
+        from .GUI.gui import show_splash
+        show_splash(initialization, args)
+    else:
+        initialization(args)
+    logger.debug('End of initialization')
 
     if args.banner is not None:
         try:
@@ -540,7 +556,7 @@ def main():
         sys.exit(0)
 
     # Determine the YAML file
-    plot_config = solve_config(args.plot_config, args.only_names)
+    plot_config = solve_config(args.plot_config, args.only_names, args.gui or args.internal_check)
     if not (args.list or args.list_variants) or args.config_outs:
         # Determine the SCH file
         GS.set_sch(solve_schematic('.', args.schematic, args.board_file, plot_config))
@@ -554,6 +570,7 @@ def main():
     parse_defines(args)
 
     # Read the config file
+    logger.debug('Starting to load the configuration')
     outputs = load_config(plot_config)
 
     # Is just "list the available targets"?
@@ -569,6 +586,13 @@ def main():
     if args.makefile:
         # Only create a makefile
         generate_makefile(args.makefile, plot_config, outputs)
+    elif args.gui:
+        from .GUI.gui import do_gui
+        logger.debug('Starting the GUI')
+        do_gui(plot_config, args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority)
+    elif args.internal_check:
+        from .GUI.analyze import analyze
+        analyze()
     else:
         # Do all the job (preflight + outputs)
         generate_outputs(args.target, args.invert_sel, args.skip_pre, args.cli_order, args.no_priority,
@@ -578,4 +602,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()  # pragma: no cover
+    main()   # pragma: no cover

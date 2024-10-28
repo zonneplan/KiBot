@@ -11,6 +11,12 @@ from .sexpdata import Symbol, Sep, SExpData, load
 #                'kicad_sch', 'lib_symbols', 'symbol', 'sheet', 'sheet_instances', 'symbol_instances'}
 
 
+def _symbol(name, content=None):
+    if content is None:
+        return [Symbol(name)]
+    return [Symbol(name)] + content
+
+
 class Point(object):
     def __init__(self, items):
         super().__init__()
@@ -20,6 +26,26 @@ class Point(object):
     @staticmethod
     def parse(items):
         return Point(items)
+
+
+class Color(object):
+    def __init__(self, items=None):
+        super().__init__()
+        if items:
+            self.r = _check_integer(items, 1, 'red color')
+            self.g = _check_integer(items, 2, 'green color')
+            self.b = _check_integer(items, 3, 'blue color')
+            # Sheet sheet.fill.color is float ...
+            self.a = _check_float(items, 4, 'alpha color')
+        else:
+            self.r = self.g = self.b = self.a = 0
+
+    @staticmethod
+    def parse(items):
+        return Color(items)
+
+    def write(self):
+        return _symbol('color', [self.r, self.g, self.b, self.a])
 
 
 def make_separated(sexp):

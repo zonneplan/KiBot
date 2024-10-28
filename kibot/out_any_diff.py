@@ -4,6 +4,7 @@
 # License: GPL-3.0
 # Project: KiBot (formerly KiPlot)
 import os
+from subprocess import CalledProcessError
 from .gs import GS
 from .kiplot import run_command
 from .out_base import VariantOptions
@@ -12,6 +13,20 @@ from .macros import macros, document, output_class  # noqa: F401
 from . import log
 
 logger = log.get_logger()
+
+
+def has_repo(git_command, file):
+    try:
+        run_command([git_command, 'ls-files', '--error-unmatch', file], change_to=os.path.dirname(file), just_raise=True)
+    except CalledProcessError:
+        logger.debug("File `{}` not inside a repo".format(file))
+        return 0
+    try:
+        res = run_command([git_command, 'log', '--oneline', '--', file], change_to=os.path.dirname(file), just_raise=True)
+    except CalledProcessError:
+        logger.debug("Failed to get log for `{}`".format(file))
+        return 0
+    return len(res.split('\n'))
 
 
 class AnyDiffOptions(VariantOptions):

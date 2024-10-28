@@ -4,3 +4,6 @@
 [submodule "kibot/PcbDraw/resources/footprints"]
 	path = kibot/resources/pcbdraw/footprints
 	url = https://github.com/yaqwsx/PcbDraw-Lib.git
+[submodule "docs/extra/KiBot-media"]
+	path = docs/extra/KiBot-media
+	url = https://github.com/set-soft/KiBot-media.git

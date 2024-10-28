@@ -683,3 +683,24 @@ def test_check_fields_2(test_dir):
     ctx.run(CHECK_FIELD)
     ctx.search_err([r"WARNING:\(W162\) R1 missing field `Temp`", "ERROR:R2 field `Temp` doesn't match"])
     ctx.clean_up()
+
+
+@pytest.mark.skipif(not context.ki8(), reason="Implemented for 8 and up")
+def test_include_table_1(test_dir):
+    """ Draw tables and compare """
+    prj = 'test_points'
+    ctx = context.TestContext(test_dir, prj, 'test_points_table_1')
+    # Back-up the file
+    shutil.copy2(ctx.board_file, ctx.board_file+'.ok')
+    # First run without prefligh to generate the CSVs
+    ctx.run(extra=['-s', 'all', 'testpoints', 'position'])
+    # Second run with prefligh to generate the SVG plot
+    ctx.run(extra=['SVG'])
+    shutil.copy2(ctx.board_file+'.ok', ctx.board_file)
+    shutil.copy2(ctx.board_file, ctx.get_out_path(prj+'.kicad_pcb'))
+    file_back = ctx.board_file + '-bak'
+    assert os.path.isfile(file_back), file_back
+    os.remove(file_back)
+    os.remove(ctx.board_file+'.ok')
+    ctx.compare_image('include_table_1.svg')
+    ctx.clean_up(keep_project=True)

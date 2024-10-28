@@ -1,0 +1,150 @@
+# Groups test case and example
+kibot:
+  version: 1
+
+outputs:
+  - name: 'gerbers'
+    comment: "Gerbers for the Gerber god"
+    type: gerber
+    dir: gerberdir
+    layers: copper
+
+  - name: excellon_drill
+    comment: "Excellon drill files"
+    type: excellon
+    dir: Drill
+    options:
+      metric_units: true
+      pth_and_npth_single_file: false
+      use_aux_axis_as_origin: false
+      minimal_header: false
+      mirror_y_axis: false
+      report: '%f-%i.%x'
+      map: 'pdf'
+
+  - name: 'position'
+    comment: "Pick and place file"
+    type: position
+    dir: positiondir
+    options:
+      format: ASCII   # CSV or ASCII format
+      units: millimeters  # millimeters or inches
+      separate_files_for_front_and_back: true
+      only_smd: true
+
+  - name: SVG
+    comment: "SVG files"
+    type: svg
+    dir: SVG
+    groups:
+      - plot
+      - fab_svg
+    options:
+      exclude_edge_layer: false
+      exclude_pads_from_silkscreen: false
+      use_aux_axis_as_origin: false
+      plot_sheet_reference: false
+      plot_footprint_refs: true
+      plot_footprint_values: true
+      force_plot_invisible_refs_vals: false
+      tent_vias: true
+
+      # SVG options
+      line_width: 0.25
+      drill_marks: full
+      mirror_plot: true
+      negative_plot: true
+    layers:
+      - layer: F.Cu
+        suffix: F_Cu
+      - layer: F.Fab
+        suffix: F_Fab
+
+  - name: PcbDraw
+    comment: "PcbDraw test top"
+    type: pcbdraw
+    dir: PcbDraw
+    options: &pcb_draw_ops
+      format: svg
+      style:
+        board: "#1b1f44"
+        copper: "#00406a"
+        silk: "#d5dce4"
+        pads: "#cfb96e"
+        clad: "#72786c"
+        outline: "#000000"
+        vcut: "#bf2600"
+        highlight_on_top: false
+        highlight_style: "stroke:none;fill:#ff0000;opacity:0.5;"
+        highlight_padding: 1.5
+      libs:
+        - default
+        - eagle-default
+      remap:
+        L_G1: "LEDs:LED-5MM_green"
+        L_B1: "LEDs:LED-5MM_blue"
+        L_Y1: "LEDs:LED-5MM_yellow"
+        'REF**': "dummy:dummy"
+        G***: "dummy:dummy"
+        svg2mod: "dummy:dummy"
+        JP1: "dummy:dummy"
+        JP2: "dummy:dummy"
+        JP3: "dummy:dummy"
+        JP4: "dummy:dummy"
+      remap_components:
+        - ref: PHOTO1
+          lib: yaqwsx
+          comp: R_PHOTO_7mm
+        - reference: J8
+          library: yaqwsx
+          component: Pin_Header_Straight_1x02_circle
+      no_drillholes: false
+      mirror: false
+      highlight:
+        - L_G1
+        - L_B1
+        - R10
+        - RV1
+      show_components: all
+      vcuts: true
+      warnings: visible
+      dpi: 600
+      # margin:
+      #   left: 5
+      #   right: 1
+      #   top: 0
+      #   bottom: 6
+      # outline_width: 3
+      # show_solderpaste: false
+      resistor_remap:
+        - ref: R1
+          val: 10K
+        - ref: R2
+          val: 4k7
+      resistor_flip: "R2"
+      size_detection: svg_paths
+      # size_detection: kicad_all
+      # size_detection: kicad_edge
+
+  - name: PcbDraw2
+    comment: "PcbDraw test bottom"
+    type: pcbdraw
+    dir: PcbDraw
+    options:
+      <<: *pcb_draw_ops
+      style: set-red-enig
+      bottom: true
+      show_components:
+        - L_G1
+        - L_B1
+      remap: None
+
+  - name: compress_fab
+    comment: "Generates a ZIP file with all the fab outputs"
+    type: compress
+    run_by_default: false
+    options:
+      files:
+        - from_output: gerbers
+        - from_output: excellon_drill
+        - from_output: position

@@ -39,6 +39,11 @@ DXFOptions parameters
 -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - dxf - options; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
 -  ``sketch_plot`` :index:`: <pair: output - dxf - options; sketch_plot>` [:ref:`boolean <boolean>`] (default: ``false``) Don't fill objects, just draw the outline.
 -  ``tent_vias`` :index:`: <pair: output - dxf - options; tent_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Cover the vias.
+   
+.. warning::
+   KiCad 8 has a bug that ignores this option. Set it from KiCad GUI.
+..
+
 -  ``uppercase_extensions`` :index:`: <pair: output - dxf - options; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
 -  ``use_aux_axis_as_origin`` :index:`: <pair: output - dxf - options; use_aux_axis_as_origin>` [:ref:`boolean <boolean>`] (default: ``false``) Use the auxiliary axis as origin for coordinates.
 -  ``variant`` :index:`: <pair: output - dxf - options; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.

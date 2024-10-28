@@ -196,6 +196,10 @@ class Globals(FiltersOptions):
                 KiCad 6: you should set this in the Board Setup -> Physical Stackup """
             self.cross_footprints_for_dnp = True
             """ Draw a cross for excluded components in the `Fab` layer """
+            self.dnp_cross_top_layer = 'F.Fab'
+            """ Layer on which to add DNP cross for the top components """
+            self.dnp_cross_bottom_layer = 'B.Fab'
+            """ Layer on which to add DNP cross for the bottom components """
             self.cross_no_body = False
             """ Cross components even when they don't have a body. Only for KiCad 6 and internal cross """
             self.cross_using_kicad = True

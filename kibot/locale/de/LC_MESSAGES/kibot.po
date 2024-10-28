@@ -1,0 +1,579 @@
+# KiBot GUI translation
+# Copyright (c) 2018-2024, Salvador E. Tropea/INTI/John Beard
+# Salvador E. Tropea <stropea@inti.gob.ar>, 2024.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1\n"
+"POT-Creation-Date: 2024-10-01 10:11-0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+#: GUI/gui.py:74
+msgid "Declared"
+msgstr "Deklarieren"
+
+#: GUI/gui.py:74
+msgid "Invert selection"
+msgstr "Auswahl invertieren"
+
+#: GUI/gui.py:74
+msgid "Selected"
+msgstr "Ausgewählt"
+
+#: GUI/gui.py:74
+msgid "Sort by priority"
+msgstr "Nach Priorität sortieren"
+
+#: GUI/gui.py:121
+msgid "Main"
+msgstr "Hauptpfad"
+
+#: GUI/gui.py:123
+msgid ""
+"Defined outputs.\n"
+"Things you can generate pressing the Run button"
+msgstr ""
+"Definierte Exporte.\n"
+"Exportieren mit Ausführen"
+
+#: GUI/gui.py:124
+msgid "Outputs"
+msgstr "Exporte"
+
+#: GUI/gui.py:126
+msgid ""
+"Groups of outputs.\n"
+"This makes easier to run some and exclude others.\n"
+"A group can contain another group."
+msgstr ""
+"Macht es einfacher gewisse Exporte auszuführen und andere zu überspringen.\n"
+"Eine Gruppe kann eine Zusammenfassung in einer anderen Gruppe sein."
+
+#: GUI/gui.py:129
+msgid "Groups"
+msgstr "Gruppen"
+
+#: GUI/gui.py:131
+msgid ""
+"Tasks executed before generating outputs.\n"
+"I.e. run the DRC and or ERC."
+msgstr ""
+"Aufgaben welche vor den Exporten ausgeführt werden.\n"
+"Zum Beispiel ERC und DRC."
+
+#: GUI/gui.py:133
+msgid "Preflights"
+msgstr "Preflights"
+
+#: GUI/gui.py:135
+msgid ""
+"Defined filters.\n"
+"Used to include or exclude certain components.\n"
+"Some filters can apply transformations to components."
+msgstr ""
+"Definierte Filter.\n"
+"Wird benutzt um gewissen Bauteile oder Komponenten einzubinden oder auszuschließen\n"
+"Einige Filter erlauben das verändern von Bauteilen oder Komponenten."
+
+#: GUI/gui.py:138
+msgid "Filters"
+msgstr "Filter"
+
+#: GUI/gui.py:140
+msgid ""
+"Assembly variants for your project.\n"
+"Same PCB for different products."
+msgstr ""
+"Erzeuge Varianten für dein Projekt.\n"
+"Die gleiche Platine als einen anderes Produkt oder andere Bestückungsvariante."
+
+#: GUI/gui.py:142
+msgid "Variants"
+msgstr "Varianten"
+
+#: GUI/gui.py:144
+msgid "About"
+msgstr "Über"
+
+#: GUI/gui.py:151
+msgid "Save config"
+msgstr "Konfiguration speichern"
+
+#: GUI/gui.py:153
+msgid "Save the current state to the `Config file' (Main tab)"
+msgstr "Speichere die aktuelle Konfiguration zum Hauptpfad"
+
+#: GUI/gui.py:157
+msgid "Globals"
+msgstr "Global"
+
+#: GUI/gui.py:159
+msgid "Global configuration options, applies to all outputs"
+msgstr "Globale Konfigurationsoptionen welche für alle Exporte gelten"
+
+#: GUI/gui.py:162
+msgid "Recent"
+msgstr "Zuletzt"
+
+#: GUI/gui.py:163
+msgid ""
+"Recently used setups.\n"
+"Files and directories recently used"
+msgstr ""
+"Zuletzt verwendetes setup.\n"
+"Zuletzt verwendete Dateien und Ordner"
+
+#: GUI/gui.py:167
+msgid "Warnings"
+msgstr "Warnungen"
+
+#: GUI/gui.py:168
+msgid ""
+"Warnings issued on this run.\n"
+"Note that they are reported just once.\n"
+"Here are all the issued warnings"
+msgstr ""
+"Letzte Warnungen.\n"
+"Wird nur einmalig angezeigt.\n"
+"Hier sind alle Warnungen"
+
+#: GUI/gui.py:178
+msgid "Run"
+msgstr "Start"
+
+#: GUI/gui.py:179
+msgid "Run preflights and generate the outputs (targets)"
+msgstr ""
+
+#: GUI/gui.py:186
+msgid "Cancel"
+msgstr ""
+
+#: GUI/gui.py:209
+msgid "The configuration is changed, save?"
+msgstr ""
+
+#: GUI/gui.py:222
+msgid "No recent runs"
+msgstr ""
+
+#: GUI/gui.py:225
+msgid "Only one recent use with `{}`, use it?"
+msgstr ""
+
+#: GUI/gui.py:228
+msgid "setup"
+msgstr ""
+
+#: GUI/gui.py:266
+msgid "Configuration changed, save?"
+msgstr ""
+
+#: GUI/gui.py:273
+msgid "Global options"
+msgstr ""
+
+#: GUI/gui.py:280
+msgid "No warnings"
+msgstr ""
+
+#: GUI/gui.py:299
+msgid "Please add outputs and/or preflights first"
+msgstr ""
+
+#: GUI/gui.py:307 GUI/gui.py:759
+msgid "Invalid destination dir:\n"
+msgstr ""
+
+#: GUI/gui.py:447
+msgid "You must provide a name for the "
+msgstr ""
+
+#: GUI/gui.py:451
+msgid "The `{}` name is already used by {}"
+msgstr ""
+
+#: GUI/gui.py:470
+msgid "New"
+msgstr ""
+
+#: GUI/gui.py:477
+msgid "Are you sure you want to remove the `{}` "
+msgstr ""
+
+#: GUI/gui.py:497
+msgid "Paths"
+msgstr ""
+
+#: GUI/gui.py:499
+msgid "Files and directories used for the Run"
+msgstr ""
+
+#: GUI/gui.py:503
+msgid "Working dir"
+msgstr ""
+
+#: GUI/gui.py:504
+msgid "All execution is performed here"
+msgstr ""
+
+#: GUI/gui.py:508
+msgid "Config file"
+msgstr ""
+
+#: GUI/gui.py:509
+msgid "YAML file for the configuration"
+msgstr ""
+
+#: GUI/gui.py:513
+msgid "Destination"
+msgstr ""
+
+#: GUI/gui.py:514
+msgid "Base directory to store the results"
+msgstr ""
+
+#: GUI/gui.py:518
+msgid "Schematic"
+msgstr ""
+
+#: GUI/gui.py:519
+msgid "Schematic used, usually the top-level"
+msgstr ""
+
+#: GUI/gui.py:521 GUI/gui.py:671 GUI/gui.py:1000
+msgid "PCB"
+msgstr ""
+
+#: GUI/gui.py:522
+msgid "PCB used for the generated outputs"
+msgstr ""
+
+#: GUI/gui.py:525
+msgid "Targets"
+msgstr ""
+
+#: GUI/gui.py:527
+msgid "What is generated by the Run button"
+msgstr ""
+
+#: GUI/gui.py:531
+msgid "Skip preflights"
+msgstr ""
+
+#: GUI/gui.py:533
+msgid ""
+"Preflights that will be skipped.\n"
+"Leave it empty to run all preflights.\n"
+"Include the `all' name to skip all."
+msgstr ""
+
+#: GUI/gui.py:564
+msgid "Save to file:"
+msgstr ""
+
+#: GUI/gui.py:574
+msgid " already exists, overwrite?"
+msgstr ""
+
+#: GUI/gui.py:615 GUI/gui.py:1001
+msgid "config"
+msgstr ""
+
+#: GUI/gui.py:653
+msgid ""
+"The selected {} is not a file!\n"
+"{}"
+msgstr ""
+
+#: GUI/gui.py:656
+msgid ""
+"No permission to read the selected {}!\n"
+"{}"
+msgstr ""
+
+#: GUI/gui.py:662
+msgid ""
+"The selected {} is not a directory!\n"
+"{}"
+msgstr ""
+
+#: GUI/gui.py:665
+msgid ""
+"No permission to access the selected {}!\n"
+"{}"
+msgstr ""
+
+#: GUI/gui.py:716
+msgid "The selected schematic is not a file!"
+msgstr ""
+
+#: GUI/gui.py:719
+msgid "No permission to read the selected schematic!"
+msgstr ""
+
+#: GUI/gui.py:725 GUI/gui.py:1000
+msgid "schematic"
+msgstr ""
+
+#: GUI/gui.py:751
+msgid "destination dir"
+msgstr ""
+
+#: GUI/gui.py:772 GUI/gui.py:1001
+msgid "working dir"
+msgstr ""
+
+#: GUI/gui.py:779 GUI/gui.py:1026
+msgid "Invalid working dir:\n"
+msgstr ""
+
+#: GUI/gui.py:796 GUI/gui.py:1343
+msgid "No outputs available to add"
+msgstr ""
+
+#: GUI/gui.py:798 GUI/gui.py:1345
+msgid "output"
+msgstr ""
+
+#: GUI/gui.py:820
+msgid "No preflights available to add"
+msgstr ""
+
+#: GUI/gui.py:822 GUI/gui.py:1477
+msgid "preflight"
+msgstr ""
+
+#: GUI/gui.py:831
+msgid ""
+"Sort order and how to interpret the list.\n"
+"Sort by priority: uses the output priority, that you can adjust.\n"
+"Declared: is the order in which they are declared (see Outputs tab).\n"
+"Selected: is the order you see in the list.\n"
+"Invert selection: the list says which ones are excluded (declared order)"
+msgstr ""
+
+#: GUI/gui.py:836
+msgid "Generation order"
+msgstr ""
+
+#: GUI/gui.py:849
+msgid ""
+"List of outputs that will be generated by the Run button.\n"
+"Leave it empty to generate all possible outputs."
+msgstr ""
+
+#: GUI/gui.py:917
+msgid "No target targets will be generated"
+msgstr ""
+
+#: GUI/gui.py:919
+msgid "Will generate all but one target"
+msgstr ""
+
+#: GUI/gui.py:920
+msgid " targets not generated"
+msgstr ""
+
+#: GUI/gui.py:923
+msgid "All available targets will be generated"
+msgstr ""
+
+#: GUI/gui.py:925
+msgid "Will generate just one target"
+msgstr ""
+
+#: GUI/gui.py:926
+msgid " targets selected"
+msgstr ""
+
+#: GUI/gui.py:934
+msgid "Generation by priority"
+msgstr ""
+
+#: GUI/gui.py:936
+msgid "Generation in the above order"
+msgstr ""
+
+#: GUI/gui.py:937
+msgid "Generation in the \"Outputs\" order"
+msgstr ""
+
+#: GUI/gui.py:945
+msgid "All preflights will be applied"
+msgstr ""
+
+#: GUI/gui.py:948
+msgid "All but one preflight will be applied"
+msgstr ""
+
+#: GUI/gui.py:949
+msgid " preflights skipped"
+msgstr ""
+
+#: GUI/gui.py:950
+msgid "No preflight will be applied"
+msgstr ""
+
+#: GUI/gui.py:988
+msgid "Rename"
+msgstr ""
+
+#: GUI/gui.py:989
+msgid "Changes the name of the configuration file"
+msgstr ""
+
+#: GUI/gui.py:1074
+msgid "output type"
+msgstr ""
+
+#: GUI/gui.py:1082
+msgid "new"
+msgstr ""
+
+#: GUI/gui.py:1098 GUI/gui.py:1493
+msgid "Please first select a schematic"
+msgstr ""
+
+#: GUI/gui.py:1101 GUI/gui.py:1496
+msgid "Please first select a PCB"
+msgstr ""
+
+#: GUI/gui.py:1185
+msgid "new_group"
+msgstr ""
+
+#: GUI/gui.py:1188
+msgid "Are you sure you want to remove the `{}` group?"
+msgstr ""
+
+#: GUI/gui.py:1202
+msgid "Add/Edit group"
+msgstr ""
+
+#: GUI/gui.py:1208
+msgid "Name for the group. Must be unique and different from any output."
+msgstr ""
+
+#: GUI/gui.py:1209
+msgid "Group name"
+msgstr ""
+
+#: GUI/gui.py:1213
+msgid "Outputs and groups"
+msgstr ""
+
+#: GUI/gui.py:1220
+msgid "Outputs and groups that belongs to this group"
+msgstr ""
+
+#: GUI/gui.py:1225
+msgid "Add a group to this group"
+msgstr ""
+
+#: GUI/gui.py:1226
+msgid "Add one or more outputs to the group"
+msgstr ""
+
+#: GUI/gui.py:1233
+msgid "OK"
+msgstr ""
+
+#: GUI/gui.py:1293
+msgid "name "
+msgstr ""
+
+#: GUI/gui.py:1295
+msgid "no outputs selected"
+msgstr ""
+
+#: GUI/gui.py:1301
+msgid "is empty"
+msgstr ""
+
+#: GUI/gui.py:1303
+msgid "starts with underscore"
+msgstr ""
+
+#: GUI/gui.py:1306 GUI/gui.py:1313
+msgid "already used"
+msgstr ""
+
+#: GUI/gui.py:1363
+msgid "No groups available to add"
+msgstr ""
+
+#: GUI/gui.py:1365
+msgid "group"
+msgstr ""
+
+#: GUI/gui.py:1381
+msgid ""
+"This entry is from the `groups` option.\n"
+"Remove it from the output"
+msgstr ""
+
+#: GUI/gui.py:1387
+msgid ""
+"This entry was also defined in the `groups` option.\n"
+"Now removed from the `groups` section."
+msgstr ""
+
+#: GUI/gui.py:1409
+msgid "filter type"
+msgstr ""
+
+#: GUI/gui.py:1441
+msgid "variant type"
+msgstr ""
+
+#: GUI/gui.py:1453
+msgid "new_variant"
+msgstr ""
+
+#: GUI/gui.py:1508
+msgid "Generating targets"
+msgstr ""
+
+#: GUI/gui.py:1520
+msgid "Stop"
+msgstr ""
+
+#: GUI/gui.py:1524
+msgid "Close"
+msgstr ""
+
+#: GUI/gui.py:1563
+msgid "Waiting to finish this target to stop ...\n"
+msgstr ""
+
+#: GUI/gui.py:1573
+msgid "Finished\n"
+msgstr ""
+
+#: GUI/gui.py:1579
+msgid "Still generating targets, please wait"
+msgstr ""
+
+#: GUI/gui.py:1606
+msgid "Collected warnings"
+msgstr ""
+
+#: GUI/gui.py:1679
+msgid "Fatal error, exiting"
+msgstr ""
+
+#: GUI/gui.py:1709
+msgid "Version: "
+msgstr ""
+
+#: GUI/gui.py:1711
+msgid "Platform: "
+msgstr ""

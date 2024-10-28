@@ -10,7 +10,10 @@ Exports the PCB to the most common exchange format. Suitable for printing.
 This is the main format to document your PCB. |br|
 This output is what you get from the 'File/Print' menu in pcbnew. |br|
 The `pcb_print` is usually a better alternative. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``pdf_pcb_print``
 

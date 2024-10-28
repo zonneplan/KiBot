@@ -10,7 +10,10 @@ Exports the PCB to the most common exchange format. Suitable for printing.
 Note that this output isn't the best for documating your project. |br|
 This output is what you get from the File/Plot menu in pcbnew. |br|
 The `pcb_print` is usually a better alternative. |br|
-If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+
+.. note::
+   If you use custom fonts and/or colors please consult the `resources_dir` global variable. |br|
+.. 
 
 Type: ``pdf``
 
@@ -76,6 +79,11 @@ Parameters:
    Note that this value is currently ignored by KiCad (6.0.9).
 -  ``sketch_pads_on_fab_layers`` :index:`: <pair: output - pdf; sketch_pads_on_fab_layers>` [:ref:`boolean <boolean>`] (default: ``false``) Draw only the outline of the pads on the \\*.Fab layers (KiCad 6+).
 -  ``tent_vias`` :index:`: <pair: output - pdf; tent_vias>` [:ref:`boolean <boolean>`] (default: ``true``) Cover the vias.
+   
+.. warning::
+   KiCad 8 has a bug that ignores this option. Set it from KiCad GUI.
+..
+
 -  ``uppercase_extensions`` :index:`: <pair: output - pdf; uppercase_extensions>` [:ref:`boolean <boolean>`] (default: ``false``) Use uppercase names for the extensions.
 -  ``variant`` :index:`: <pair: output - pdf; variant>` [:ref:`string <string>`] (default: ``''``) Board variant to apply.
 

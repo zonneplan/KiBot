@@ -19,7 +19,7 @@ logger = log.get_logger()
 
 
 class TagReplacePCB(TagReplaceBase):
-    """ Tags to be replaced for an PCB """
+    """ Tags to be replaced for a PCB """
     def __init__(self):
         super().__init__()
         self._help_command += ".\nKIBOT_PCB_NAME variable is the name of the current PCB"

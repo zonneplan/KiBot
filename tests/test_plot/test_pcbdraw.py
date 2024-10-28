@@ -16,7 +16,8 @@ cov = coverage.Coverage()
 
 
 def test_pcbdraw_3Rs(test_dir):
-    prj = '3Rs'
+    # 4Rs includes a resistor with 0 ohms to check #689 regressions
+    prj = '4Rs' if context.ki8() else '3Rs'
     ctx = context.TestContext(test_dir, prj, 'pcbdraw', OUT_DIR)
     ctx.run()
     ctx.expect_out_file_d(prj+'-top.svg')

@@ -62,6 +62,11 @@ PCB_PrintOptions parameters
    In order to get a good looking select a color with transparency, i.e. '#14332440'.
    PcbDraw must be installed in order to use this option.
 -  ``sheet_reference_layout`` :index:`: <pair: output - pcb_print - options; sheet_reference_layout>` [:ref:`string <string>`] (default: ``''``) Worksheet file (.kicad_wks) to use. Leave empty to use the one specified in the project.
+   
+.. warning::
+   you must provide a project.
+..
+
 -  ``svg_precision`` :index:`: <pair: output - pcb_print - options; svg_precision>` [:ref:`number <number>`] (default: ``4``) (range: 0 to 6) Scale factor used to represent 1 mm in the SVG (KiCad 6).
    The value is how much zeros has the multiplier (1 mm = 10 power `svg_precision` units).
    Note that for an A4 paper Firefox 91 and Chrome 105 can't handle more than 5.

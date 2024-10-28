@@ -61,11 +61,11 @@ class Base_ReplaceOptions(Optionable):
         super().__init__()
         with document:
             self.date_command = ''
-            """ Command to get the date to use in the PCB.\\
-                ```git log -1 --format='%as' -- \"$KIBOT_PCB_NAME\"```\\
-                Will return the date in YYYY-MM-DD format.\\
-                ```date -d @`git log -1 --format='%at' -- \"$KIBOT_PCB_NAME\"` +%Y-%m-%d_%H-%M-%S```\\
-                Will return the date in YYYY-MM-DD_HH-MM-SS format.\\
+            """ Command to get the date to use in the PCB. |br|
+                ```git log -1 --format='%as' -- \"$KIBOT_PCB_NAME\"``` |br|
+                Will return the date in YYYY-MM-DD format. |br|
+                ```date -d @`git log -1 --format='%at' -- \"$KIBOT_PCB_NAME\"` +%Y-%m-%d_%H-%M-%S``` |br|
+                Will return the date in YYYY-MM-DD_HH-MM-SS format. |br|
                 Important: on KiCad 6 the title block data is optional.
                 This command will work only if you have a date in the PCB/Schematic """
             self.replace_tags = TagReplaceBase
